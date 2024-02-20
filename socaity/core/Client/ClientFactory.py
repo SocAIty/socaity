@@ -1,8 +1,9 @@
 from typing import Union
 
-from socaity.core.Client import LocalClient, RemoteClient
+from socaity.core.Client.LocalClient import LocalClient
+from socaity.core.Client.RemoteClient import RemoteClient
 from socaity.globals import ModelType, EndPointType
-from socaity.registry.registry import get_endpoint
+from socaity.registry.registry import get_endpoint, ACTIVE_CLIENT_REGISTRY
 
 
 def create_client(
@@ -25,9 +26,21 @@ def create_client(
     }
 
     endpoint = get_endpoint(model_type=model_type, model_name=model_name, endpoint_type=endpoint_type, provider=provider)
+
+    # check if the client is already created and return from the registry if it is the case
+    client = ACTIVE_CLIENT_REGISTRY.get_client(endpoint, default_return_value=None)
+    if client is not None:
+        return client
+
+
+    # create a new client
     if endpoint.endpoint_type in clients:
-        return clients[endpoint.endpoint_type](endpoint)
+        client = clients[endpoint.endpoint_type](endpoint)
     else:
         print(f"Endpoint type {endpoint_type} not supported. Defaulting to remote.")
-        return RemoteClient(endpoint)
+        client = RemoteClient(endpoint)
 
+    # add the client to the registry
+    ACTIVE_CLIENT_REGISTRY.add_active_client(client)
+
+    return client
