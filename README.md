@@ -10,7 +10,7 @@ The simpleAPI is literally a wrapper for the ClientAPI but simplifies the usage 
 The simple API contains functions for the most used models.
 
 ```python
-from socaity.api.simple_api import text2speech
+from socaity import text2speech
 
 text2speech("Hello World")
 ```
@@ -22,9 +22,10 @@ This code internally initializes an API client from the ClientAPI and uses it.
 
 The ClientAPI comes with predefined classes for the most used models.
 A ClientAPI defines pre -and post-processing functions and utility functions for those models.
+You can identify clientAPIs by a UpperCamelCase name or import them directly from the submodules api.*.
 
 ```python
-from socaity.api import Bark
+from socaity import Bark
 bark = Bark("localhost")
 bark.run("Hello World")
 ```
@@ -41,15 +42,5 @@ Internally a ClientAPI:
 
 ## Advanced usage
 
-Instead of using the predefined classes, you can also create a client directly from an Endpoint and use it.
-You can also define your own jobs and submit them to the client.
+Subclass the ClientAPI to define your own models and use them with the same interface.
 
-```python
-
-from socaity.ClientAPI import ClientAPI
-
-client = ClientAPI("http://localhost:5000")
-myJob = Job("")
-client.run(myJob)
-
-```
