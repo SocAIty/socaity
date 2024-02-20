@@ -10,13 +10,36 @@ class EndPoint:
         model_name: str,
         endpoint_type: EndPointType,
         provider: str = None,
+        post_params: list = None,
+        get_params: list = None,
+        files: list = None,
         *args,
         **kwargs
     ):
+        """
+        :param model_type: The type of the model (for example ModelType.TEXT2VOICE)
+        :param model_name: The name of the model (for example "bark")
+        :param endpoint_type: The type of the endpoint (for example EndPointType.REMOTE)
+        :param provider: The provider of the model (for example "socaity")
+        :param post_params: The parameters to be sent in the POST request
+        :param get_params: The parameters to be sent in the GET request
+        :param files: The files to be sent in the request
+        """
+
         self.model_name = model_name
         self.model_type = model_type
         self.endpoint_type = endpoint_type
         self.provider = provider
+
+        # initiating empty lists if not given to avoid errors
+        self.post_params = post_params if post_params is not None else []
+        self.get_params = get_params if get_params is not None else []
+        self.files = files if files is not None else []
+
+
+
+    def __str__(self):
+        return f"{self.model_type.value}_{self.model_name}_{self.endpoint_type.value}_{self.provider}"
 
 
 class RemoteEndPoint(EndPoint):

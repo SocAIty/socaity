@@ -1,7 +1,7 @@
 from typing import Union
 
-from socaity.core.Client.LocalClient import LocalClient
-from socaity.core.Client.RemoteClient import RemoteClient
+from socaity.core.client.local_client import LocalClient
+from socaity.core.client.remote_client import RemoteClient
 from socaity.globals import ModelType, EndPointType
 from socaity.registry.registry import get_endpoint, ACTIVE_CLIENT_REGISTRY
 

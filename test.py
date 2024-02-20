@@ -1,15 +1,16 @@
-from socaity.registry.jobs import text2speech
-from socaity.core.ClientFactory import create_client
+from socaity import create_client
 
-#### THIS IST THE WAY TO GO #####
+#### CLIENT API  ####
+from socaity import Bark
+result = Bark("localhost").run("Hello", affe=2) ## Represents client class subclassing
+
+### Simple API ###
+from socaity import text2speech
+text2speech("Hello") ## Represents decorator usage
+
+#### Advanced API ####
 # create a client
 bark_client = create_client(model_name="bark", endpoint_type="localhost")
 # create a job
 job = text2speech("Hello")
 bark_client.run(job)
-
-
-#### BY USING THE API CLASS WE CAN SIMPLIFY THE USAGE ####
-from socaity.api import bark, text2speech
-bark().run("Hello")
-text2speech("Hello")

@@ -1,34 +1,71 @@
 import time
 
 
+class JobStatistics:
+    """
+    Stores the time when the different stages of the job were executed.
+    """
+    def __init__(self):
+        self.created = time.time()
+        self.pre_processing_started = None
+        self.pre_processing_ended = None
+        self.request_send = None
+        self.request_result_received = None
+        self.post_processing_started = None
+        self.post_processing_ended = None
+
+
 class Job:
     """
-    A job is responsible for:
-     - the logic for pre -and post-processing of a request to an endpoint
+    A job contains the:
      - the payload to handle a request.
-    Subclass it to implement run custom models.
+     - references to the pre and post processing functions.
+     - the result of the request.
+     - the statistics and execution times of the job.
     """
-    def __init__(self, *args, **kwargs):
-        self.created = time.time()
+    def __init__(self,
+                 pre_process_func: callable = None,
+                 post_process_func: callable = None,
+                 **kwargs):
+        """
+        :param pre_process_func: A function that pre_processes the request parameters, before sending the request.
+        :param post_process_func: A function that post_processes the result of the request, before returning it.
+        :param post_params: A named list of parameters which are sent as post params in the request.
+        :param get_params: A named list of parameters which are sent as get params in the request.
+        :param files: A named list of parameters which are sent as files in the request.
+        :param kwargs: The named parameters of the request. (Note: args where transformed to kwargs in the clientAPI.)
 
-    def validate_params(self, *args, **kwargs):
+        If parameters are not named in post, get, or files, they are default sent as post parameters.
         """
-        The subclass can implement this method to validate the request parameters.
-        :return:
-        """
-        pass
 
-    def preprocess_params(self, *args, **kwargs):
+        self.preprocess_func = pre_process_func
+        self.post_process_func = post_process_func
+        self.job_statistics = JobStatistics()
+        self.result = None
+
+        # prepare payload
+        self.raw_payload = kwargs  # will be modified in job.preprocess_params in client.run
+        self.payload = None  # will be prepared for post, get, and file params in client before request is sent
+
+    def get_payload(self):
+        return self.payload
+
+    def pre_process_params(self):
         """
-        This function is called before the request is send.
-        Use it to modify the request parameters if needed.
+        This function is called before the request is sent.
+        Use it to modify the request payload parameters if needed.
         It is better to do it here than in the init function because this method will be called threaded.
         :param kwargs:
         :return:
         """
-        return kwargs
+        if self.preprocess_func is not None:
+            self.job_statistics.pre_processing_started = time.time()
+            self.raw_payload = self.preprocess_func(self.raw_payload)
+            self.job_statistics.pre_processing_ended = time.time()
 
-    def postprocess_result(self, result, *args, **kwargs):
+        return self.raw_payload
+
+    def post_process_result(self, result, *args, **kwargs):
         """
         The result of the request is the raw response from the server.
         Use this method to process the result before returning it.
@@ -36,4 +73,9 @@ class Job:
         :param kwargs:
         :return:
         """
-        return result
+        if self.post_process_func is not None:
+            self.job_statistics.post_processing_started = time.time()
+            self.result = self.post_process_func(result, *args, **kwargs)
+            self.job_statistics.post_processing_ended = time.time()
+
+        return self.result

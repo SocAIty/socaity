@@ -2,9 +2,9 @@ from typing import Union
 import requests
 from requests import JSONDecodeError
 
-from socaity.core.Client.Client import Client
-from socaity.core.Endpoint import RemoteEndPoint
-from socaity.core.Job import Job
+from socaity.core.client.client import Client
+from socaity.core.endpoint import RemoteEndPoint
+from socaity.core.job import Job
 
 
 class RemoteClient(Client):

@@ -1,11 +1,27 @@
 from typing import Union
 from socaity.globals import EndPointType, ModelType
 from socaity.registry.endpoints import Endpoints
-from socaity.core.Endpoint import LocalEndPoint, RemoteEndPoint
+from socaity.core.endpoint import LocalEndPoint, RemoteEndPoint, EndPoint
 
-# stores the clients created with the @ClientAPI decorator
-CLIENT_APIs = {}
 
+class ActiveClientRegistry:
+    """
+    This class stores the clients created. This is done to avoid creating multiple clients for the same model.
+    """
+    def __init__(self):
+        self.ACTIVE_CLIENTS = {}
+
+    def add_active_client(self, client):
+        self.ACTIVE_CLIENTS[str(client.endpoint)] = client
+
+    def get_client(self, endpoint: EndPoint, default_return_value=None):
+        return self.ACTIVE_CLIENTS.get(str(endpoint), default_return_value)
+
+    def remove_client(self, name: str):
+        self.ACTIVE_CLIENTS.pop(name, None)
+
+
+ACTIVE_CLIENT_REGISTRY = ActiveClientRegistry()
 
 
 def get_endpoint(

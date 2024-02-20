@@ -18,3 +18,22 @@ def encode_path_safe(filename: str, allow_unicode=False):
     return re.sub(r'[-\s]+', '-', filename).strip('-_')
 
 
+def get_function_parameters_as_dict(func, named_locals: dict, kwargs: dict = None):
+    """
+    Get the parameters of a function as a dict
+    :param func: the function to get the parameters from
+    :param named_locals: the local variables (args) of the function you can get them in your function with locals()
+    :param kwargs: the named parameters of the function usually you get them with **kwargs
+    :return: a dict with the parameters as key and the value as value
+    """
+    kwargs = {} if kwargs is None else kwargs  # makes it easier to process further
+
+    # filter locals and kwargs with excludes
+    excludes = ["self", "cls", "args", "kwargs"]
+    named_locals = {k: v for k, v in named_locals.items() if k not in excludes}
+    kwargs = {k: v for k, v in kwargs.items() if k not in excludes}
+    # get the parameters of the function
+    named_locals = {k: v for k, v in named_locals.items() if k in func.__code__.co_varnames}
+    # update locls with kwargs
+    named_locals.update(kwargs)
+    return named_locals

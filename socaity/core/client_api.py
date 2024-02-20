@@ -1,8 +1,8 @@
 from typing import Union
 
-from socaity.core.Client.ClientFactory import create_client
+from socaity.core.client.client_factory import create_client
 from socaity.globals import ModelType, EndPointType
-from socaity.core.Job import Job
+from socaity.core.job import Job
 
 
 class ClientAPI:

@@ -4,8 +4,8 @@ import os
 from subprocess import Popen, CREATE_NEW_CONSOLE
 from enum import Enum
 
-from socaity.core.Client.Client import Client
-from socaity.core.Endpoint import LocalEndPoint
+from socaity.core.client.client import Client
+from socaity.core.endpoint import LocalEndPoint
 
 class LocalServerStatus(Enum):
     OK = "ok"
@@ -48,7 +48,7 @@ class LocalClient(Client):
 
             return status
 
-        
+
     def _wait_for_ok_of_server(self):
         # print("wait until bark is ready")
         start_open = time.time()
