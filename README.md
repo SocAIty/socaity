@@ -1,11 +1,12 @@
-# SocAIty - Your AI Model Zoo
+# SocAIty - your AI Model Zoo
 Easy interface for AI models. Python package to use models across hosted environments. 
 We are your easy-to-use model zoo for generative AI.
 We provide generative models for text, audio, and images. Run them hosted on our servers or on your own.
 
 Use this package for simplified inference.
 
-# Inferencing
+
+# Usage
 We provide two APIs for inferencing, SimpleAPI and ClientAPI.
 The simpleAPI is literally a wrapper for the ClientAPI but simplifies the usage of the models.
 
@@ -36,6 +37,18 @@ audio, sample_rate = job.result
 The clientAPI also provides the possibility to:
 - specify an exact endpoint type like "localhost"
 - the provider
+
+# Setup:
+Install the package from pip:
+```python
+pip install socaity
+```
+or install from source if you want to work with the newest version:
+```python
+pip install git+git://github.com/SocAIty/socaity
+```
+
+
 
 ## How does the ClientAPI work?
 Internally a ClientAPI:
