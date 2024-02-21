@@ -1,10 +1,10 @@
-import requests
 import time
 import os
 from subprocess import Popen, CREATE_NEW_CONSOLE
 from enum import Enum
 
-from socaity.core.client.client import Client
+from socaity.core.job import Job
+from socaity.core.client.remote_client import RemoteClient, web_request
 from socaity.core.endpoint import LocalEndPoint
 
 class LocalServerStatus(Enum):
@@ -14,7 +14,7 @@ class LocalServerStatus(Enum):
 
 
 
-class LocalClient(Client):
+class LocalClient(RemoteClient):
     def __init__(self, endpoint: LocalEndPoint,
                  start_server_from_bat_file: bool = True,
                  server_not_reachable_timeout: int = 60
@@ -70,7 +70,7 @@ class LocalClient(Client):
         return status
 
     def stop_server(self):
-        if not self.process is None:
+        if self.process is not None:
             self.process.terminate()
             self.is_running = False
 
@@ -78,7 +78,8 @@ class LocalClient(Client):
         """
         Check if the server is running and responding with "ok"
         """
-        status = self.request_handler.make_request("status")
+        url = self.endpoint.service_url + "/status"
+        status = web_request(url=url)
         if "ok" in str(status).lower():
             self.is_running = True
             return LocalServerStatus.OK
@@ -86,20 +87,18 @@ class LocalClient(Client):
             return LocalServerStatus.NOT_OK
 
 
-    def make_request(self, api_route):
-
+    def request(self, job: Job):
+        """
+        Subclass of RemoteClient.request
+        :param job: the job with the payload to send
+        """
+        # start the server if not running
         if not self.is_running:
             if self.__start_server_from_bat_file:
                 self._start_server()
             else:
                 raise ValueError("Server is not running. Please start the server first.")
 
-        url = f"http://localhost:8000/{api_route}"
-        try:
-            response = requests.get(url)
-            res = response.json()
-        except Exception as e:
-            res = str(e)
-            print(f"API {url} call error: {str(e)}")
-
-        return res
+        # make the request
+        result = super().request(job)
+        return result

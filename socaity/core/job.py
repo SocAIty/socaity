@@ -30,9 +30,6 @@ class Job:
         """
         :param pre_process_func: A function that pre_processes the request parameters, before sending the request.
         :param post_process_func: A function that post_processes the result of the request, before returning it.
-        :param post_params: A named list of parameters which are sent as post params in the request.
-        :param get_params: A named list of parameters which are sent as get params in the request.
-        :param files: A named list of parameters which are sent as files in the request.
         :param kwargs: The named parameters of the request. (Note: args where transformed to kwargs in the clientAPI.)
 
         If parameters are not named in post, get, or files, they are default sent as post parameters.
@@ -60,7 +57,7 @@ class Job:
         """
         if self.preprocess_func is not None:
             self.job_statistics.pre_processing_started = time.time()
-            self.raw_payload = self.preprocess_func(self.raw_payload)
+            self.raw_payload = self.preprocess_func(**self.raw_payload)
             self.job_statistics.pre_processing_ended = time.time()
 
         return self.raw_payload
@@ -78,4 +75,4 @@ class Job:
             self.result = self.post_process_func(result, *args, **kwargs)
             self.job_statistics.post_processing_ended = time.time()
 
-        return self.result
+        return self

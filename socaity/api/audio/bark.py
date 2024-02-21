@@ -1,4 +1,6 @@
 from typing import Union
+
+from socaity.core.job import Job
 from socaity.core.client_api import ClientAPI
 from socaity.globals import ModelType, EndPointType
 from socaity.utils.audio import audio_from_bytes
@@ -43,7 +45,7 @@ class Bark(ClientAPI):
 
         # attempt to make it batched.
         if isinstance(text, str):
-            _kwargs[text.__str__] = [text]
+            _kwargs["text"] = [text]
 
         return _kwargs
 
@@ -80,7 +82,7 @@ class Bark(ClientAPI):
         coarse_top_p=0.95,
         fine_temp=0.5,
         **kwargs
-    ):
+    ) -> Job:
         # just reuse args to easy pass them to super
         _kwargs = get_function_parameters_as_dict(self.run, locals(), kwargs)
         return self.__call__(**_kwargs)

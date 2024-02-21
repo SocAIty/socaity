@@ -67,9 +67,11 @@ def get_endpoint(
         ]
         if len(filtered_endpoints) == 0:
             print(f"Provider {provider} for model {model_name} not found. Defaulting to any.")
-            return get_endpoint(model_type=model_type,
-                                    model_name=model_name,
-                                    endpoint_type=EndPointType.REMOTE,
-                                    provider=None)
+            return get_endpoint(
+                model_type=model_type,
+                model_name=model_name,
+                endpoint_type=endpoint_type,
+                provider=None
+            )
     # return the first endpoint
     return filtered_endpoints[0]

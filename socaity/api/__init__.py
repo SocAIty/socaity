@@ -12,7 +12,7 @@ The references to ClientAPIs and SimpleAPIs
 
 """
 # Defined ClientAPIs
-from audio import *
+from .audio import *
 
 # This references to all simple api functions
-from simple_api import *
+from .simple_api import *

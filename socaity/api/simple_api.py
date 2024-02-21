@@ -1,4 +1,4 @@
-from audio import Bark
+from socaity.api.audio import Bark
 from socaity.globals import EndPointType
 
 

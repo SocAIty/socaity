@@ -29,7 +29,7 @@ def get_function_parameters_as_dict(func, named_locals: dict, kwargs: dict = Non
     kwargs = {} if kwargs is None else kwargs  # makes it easier to process further
 
     # filter locals and kwargs with excludes
-    excludes = ["self", "cls", "args", "kwargs"]
+    excludes = ["self", "cls", "args", "kwargs", "__class__", "__len__"]
     named_locals = {k: v for k, v in named_locals.items() if k not in excludes}
     kwargs = {k: v for k, v in kwargs.items() if k not in excludes}
     # get the parameters of the function

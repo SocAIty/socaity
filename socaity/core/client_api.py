@@ -39,7 +39,7 @@ class ClientAPI:
         """
         pass
 
-    def __call__(self, **kwargs):
+    def __call__(self, **kwargs) -> Union[Job, None]:
         """
         Run the job with the given parameters.
         Subclass this method if you want type hinting. But don't forget to call super().__call__(..)
@@ -52,11 +52,13 @@ class ClientAPI:
 
         # The parameters for running the job are in *args and **kwargs and then stored in the job itself.
         job = Job(self._pre_process, self._post_process, **kwargs)
-        try:
-            result = self.client.run(job)
-        except Exception as e:
-            print(f"Job execution failed: {e}.")
-            return None
+
+        result = self.client.run(job)
+        #try:
+        #    result = self.client.run(job)
+        #except Exception as e:
+        #    print(f"Job execution failed: {e}.")
+        #    return None
 
         return result
 

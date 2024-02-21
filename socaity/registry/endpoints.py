@@ -18,8 +18,11 @@ GenerativeModelEndpoints = [
             #localhost
             LocalEndPoint(
                 model_type=ModelType.TEXT2VOICE,
-                model_name="bark", api_url="http://localhost:8009",
+                model_name="bark",
+                service_url="http://localhost:8009",
+                endpoint_name="text2voice",
                 start_bat_path="A:\\projects\\BarkVoiceCloneREST\\start_server.bat",
+                provider="socaity"
             )
 ]
 
