@@ -1,6 +1,9 @@
-# socaity
+# SocAIty - Your AI Model Zoo
 Easy interface for AI models. Python package to use models across hosted environments. 
-We are you're easy to use model zoo for generative AI.
+We are your easy-to-use model zoo for generative AI.
+We provide generative models for text, audio, and images. Run them hosted on our servers or on your own.
+
+Use this package for simplified inference.
 
 # Inferencing
 We provide two APIs for inferencing, SimpleAPI and ClientAPI.
@@ -23,11 +26,12 @@ This code internally initializes an API client from the ClientAPI and uses it.
 The ClientAPI comes with predefined classes for the most used models.
 A ClientAPI defines pre -and post-processing functions and utility functions for those models.
 You can identify clientAPIs by a UpperCamelCase name or import them directly from the submodules api.*.
+The run function returns the completed job.
 
 ```python
 from socaity import Bark
-bark = Bark("localhost")
-bark.run("Hello World")
+job = Bark("localhost").run("Hello", affe=2) 
+audio, sample_rate = job.result
 ```
 The clientAPI also provides the possibility to:
 - specify an exact endpoint type like "localhost"
@@ -44,3 +48,9 @@ Internally a ClientAPI:
 
 Subclass the ClientAPI to define your own models and use them with the same interface.
 
+
+# Endpoints
+
+The endpoints for the models are defined in the `socaity.endpoints` module.
+An endpoint contains the information to connect to an API like service_url, endpoint_name, endpoint_type, and provider.
+Feel free to add your own endpoints or use the predefined ones.
