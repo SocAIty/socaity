@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union,Tuple
 import requests
 from requests import JSONDecodeError
 
@@ -7,9 +7,18 @@ from socaity.core.endpoint import RemoteEndPoint
 from socaity.core.job import Job
 
 
-def web_request(url: str, get_params: dict = None, post_params: dict = None, files: dict = None):
+def web_request(
+        url: str,
+        get_params: dict = None,
+        post_params: dict = None,
+        files: dict = None) -> Tuple[object, Union[str, None]]:
     """
-    The method to make the request to the API.
+    Request an hosted API.
+    :param url: The url of the API
+    :param get_params: The parameters to be sent in the GET request
+    :param post_params: The parameters to be sent in the POST request
+    :param files: The files to be sent in the request.
+    :return: result, error_msg (or None if nor error occurred)
     """
     # add get parameters to url
     if get_params:
@@ -19,6 +28,8 @@ def web_request(url: str, get_params: dict = None, post_params: dict = None, fil
         url = url[:-1]
 
     # send request
+    error = None
+    res = None
     try:
         response = requests.post(url, params=post_params, files=files)
         if response.status_code == 500:
@@ -30,12 +41,12 @@ def web_request(url: str, get_params: dict = None, post_params: dict = None, fil
             res = response.json()
     except JSONDecodeError as e:
         print(f"Response of API {url} is not JSON format. Intended?")
-        res = str(e)
+        error = str(e)
     except Exception as e:
-        res = str(e)
+        error = str(e)
         print(f"API {url} call error: {str(e)}")
 
-    return res
+    return res, error
 
 class RemoteClient(Client):
     """
@@ -82,7 +93,10 @@ class RemoteClient(Client):
         url = self.endpoint.service_url
         url = url if self.endpoint.endpoint_name is None else f"{url}/{self.endpoint.endpoint_name}"
 
-        res = web_request(url, job.payload["get_params"], job.payload["post_params"], job.payload["files"])
+        res, error = web_request(url, job.payload["get_params"], job.payload["post_params"], job.payload["files"])
+
+        if error:
+            raise Exception(f"API {url} call error: {error}")
 
         return res
 

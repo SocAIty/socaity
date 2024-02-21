@@ -14,6 +14,12 @@ class JobStatistics:
         self.post_processing_started = None
         self.post_processing_ended = None
 
+    def get_execution_time(self):
+        """
+        The time it took to execute the job in seconds.
+        """
+        return self.post_processing_ended - self.pre_processing_started
+
 
 class Job:
     """
@@ -76,3 +82,4 @@ class Job:
             self.job_statistics.post_processing_ended = time.time()
 
         return self
+

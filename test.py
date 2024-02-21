@@ -7,7 +7,7 @@ audio, sample_rate = job.result
 
 ### Simple API ###
 from socaity import text2speech
-audio, sample_rate = text2speech("Hello") ## Represents decorator usage
+audio, sample_rate = text2speech("Hello")
 
 #### Advanced API ####
 # create a client

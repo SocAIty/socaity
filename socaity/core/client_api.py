@@ -52,7 +52,6 @@ class ClientAPI:
 
         # The parameters for running the job are in *args and **kwargs and then stored in the job itself.
         job = Job(self._pre_process, self._post_process, **kwargs)
-
         result = self.client.run(job)
         #try:
         #    result = self.client.run(job)

@@ -79,8 +79,8 @@ class LocalClient(RemoteClient):
         Check if the server is running and responding with "ok"
         """
         url = self.endpoint.service_url + "/status"
-        status = web_request(url=url)
-        if "ok" in str(status).lower():
+        status, error = web_request(url=url)
+        if "ok" in str(status).lower() and not error:
             self.is_running = True
             return LocalServerStatus.OK
         else:

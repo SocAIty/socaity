@@ -39,9 +39,11 @@ class Client:
         # obtain post, get, and files for web request
         self.prepare_payload(job)
         # make the request
+        print(f"Requesting {self.endpoint.endpoint_name} with job {job.job_statistics.created}")
         endpoint_result = self.request(job)  # result is also stored in the job
         # call post_process function of client api
         job.post_process_result(endpoint_result)
+        print(f"Job {job.job_statistics.created} finished in {job.job_statistics.get_execution_time()} seconds.")
         return job
 
     def run_async(self):

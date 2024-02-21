@@ -1,5 +1,5 @@
 # socaity
-Easy interface for any python model. Python package to use models across hosted environments. 
+Easy interface for AI models. Python package to use models across hosted environments. 
 We are you're easy to use model zoo for generative AI.
 
 # Inferencing

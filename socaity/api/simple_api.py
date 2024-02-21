@@ -2,7 +2,7 @@ from socaity.api.audio import Bark
 from socaity.globals import EndPointType
 
 
-def text2speech(text, *args, **kwargs):
+def text2speech(text, *args, **kwargs) -> (bytes, int):
     bark = Bark(endpoint_type=EndPointType.REMOTE)
     return bark.run(text, *args, **kwargs)
 
