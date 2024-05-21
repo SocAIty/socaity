@@ -1,9 +1,31 @@
 # SocAIty - your AI Model Zoo
-Easy interface for AI models. Python package to use models across hosted environments. 
-We are your easy-to-use model zoo for generative AI.
+Easy interface for AI models. Python package to use SOTA models across hosted environments. 
+We are your easy-to-use model zoo for generative AI. No GPU needed, no setup required.
+
 We provide generative models for text, audio, and images. Run them hosted on our servers or on your own.
 
 Use this package for simplified inference.
+
+# Model Zoo
+
+
+### Audio domain
+
+Use-Case      | Description                                                | Models
+------------- |------------------------------------------------------------| -------------
+Text-to-Speech| Convert text to natural sounding speech. In many languages | Bark
+voice2voice  | Convert one persons voice to another.                      |
+audio2face | Create expressive facial animation from audio.             |
+
+### Image domain
+
+
+### Animation
+Use-Case      | Description                                                | Models
+------------- |------------------------------------------------------------| -------------
+audio2face | Create expressive facial animation from audio.             | nvidia auio2face
+text2face | Convert text to audio and then to facial animation.         | text2speech, audio2face
+
 
 
 # Usage
@@ -11,11 +33,10 @@ We provide two APIs for inferencing, SimpleAPI and ClientAPI.
 The simpleAPI is literally a wrapper for the ClientAPI but simplifies the usage of the models.
 
 ## Simple API
-The simple API contains functions for the most used models.
+The simple API contains functions for the most use-cases. Behind
 
 ```python
-from socaity import text2speech
-
+from socaity import text2speech, text2img, voice2voice
 text2speech("Hello World")
 ```
 
@@ -30,9 +51,9 @@ You can identify clientAPIs by a UpperCamelCase name or import them directly fro
 The run function returns the completed job.
 
 ```python
-from socaity import Bark
+from socaity import Bark, await_result
 job = Bark("localhost").run("Hello", affe=2) 
-audio, sample_rate = job.result
+audio, sample_rate = await_result(job)
 ```
 The clientAPI also provides the possibility to:
 - specify an exact endpoint type like "localhost"

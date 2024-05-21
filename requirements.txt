@@ -1,5 +1,8 @@
 requests
+singleton_decorator
+tqdm
 
 # for audio processing
 librosa
 soundfile
+

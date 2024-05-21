@@ -1,10 +1,11 @@
+import logging
 from typing import Union,Tuple
 import requests
 from requests import JSONDecodeError
 
 from socaity.core.client.client import Client
-from socaity.core.endpoint import RemoteEndPoint
-from socaity.core.job import Job
+from socaity.core.endpoint import OpenAPIEndpoint
+from socaity.core.job.job import Job
 
 
 def web_request(
@@ -18,12 +19,12 @@ def web_request(
     :param get_params: The parameters to be sent in the GET request
     :param post_params: The parameters to be sent in the POST request
     :param files: The files to be sent in the request.
-    :return: result, error_msg (or None if nor error occurred)
+    :return: result, error_msg (or None if nor error_msg occurred)
     """
     # add get parameters to url
     if get_params:
         url += "?"
-        for k, v in get_params:
+        for k, v in get_params.items():
             url += f"{k}={v}&"
         url = url[:-1]
 
@@ -32,32 +33,32 @@ def web_request(
     res = None
     try:
         response = requests.post(url, params=post_params, files=files)
-        if response.status_code == 500:
-            print(f"API {url} call error: {response.content}")
-            return response.content
+        if response.status_code == 404:
+            error = f"API {url} not found."
+            return None, error
+        elif response.status_code == 500:
+            logging.error(f"API {url} call error_msg: {response.content}")
+            return None, response.content
+
         if response.headers.get("content-type") in ["audio/wav", "image/png", "image/jpg", "octet-stream"]:
             res = response.content
         else:
             res = response.json()
     except JSONDecodeError as e:
-        print(f"Response of API {url} is not JSON format. Intended?")
+        logging.warning(f"Response of API {url} is not JSON format. Intended?")
         error = str(e)
     except Exception as e:
         error = str(e)
-        print(f"API {url} call error: {str(e)}")
+        logging.error(f"API {url} call error_msg: {str(e)}")
 
     return res, error
 
-class RemoteClient(Client):
-    """
-    Used to interact with remote APIs. Implements Authentication and Authorization.
-    It creates Jobs which are then run in a thread.
-    The jobs have the required logic to pre and postprocess the requests.
 
-    1. Get the token
-    2. Make the request
+class OpenAPIClient(Client):
     """
-    def __init__(self, endpoint: RemoteEndPoint):
+    Used to interact with REST APIs that implement the openapi specification using web_requests.
+    """
+    def __init__(self, endpoint: OpenAPIEndpoint):
         super().__init__(endpoint)
         self.endpoint = endpoint
 
@@ -93,12 +94,12 @@ class RemoteClient(Client):
         url = self.endpoint.service_url
         url = url if self.endpoint.endpoint_name is None else f"{url}/{self.endpoint.endpoint_name}"
 
+        # prepare the payload
+        job = self.prepare_payload(job)
+
         res, error = web_request(url, job.payload["get_params"], job.payload["post_params"], job.payload["files"])
 
         if error:
-            raise Exception(f"API {url} call error: {error}")
+            raise Exception(f"Error calling {url} error_msg: {error}")
 
         return res
-
-    def run(self, job: Job, *args, **kwargs) -> Job:
-        return super().run(job, *args, **kwargs)

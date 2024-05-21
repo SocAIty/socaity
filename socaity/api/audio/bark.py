@@ -21,11 +21,12 @@ class Bark(ClientAPI):
     Bark is developed by Suno.ai. With this client you interact with the Bark adaptation of socAIty.
     For the repos visit: https://github.com/SocAIty/BarkVoiceCloneREST
     """
-    def __init__(self, endpoint_type: Union[EndPointType, str] = EndPointType.REMOTE):
+    def __init__(self, endpoint_type: Union[EndPointType, str] = EndPointType.REMOTE, *args, **kwargs):
         super().__init__(
             model_type=ModelType.TEXT2VOICE,
             model_name="bark",
-            endpoint_type=endpoint_type
+            endpoint_type=endpoint_type,
+            *args, **kwargs
         )
 
     def validate_params(
@@ -39,7 +40,7 @@ class Bark(ClientAPI):
         """
         return True, None
 
-    def _pre_process(self, text: str | list, *args, **kwargs):
+    def _pre_process(self, text: str | list, *args, **kwargs) -> dict:
         # add text again to args
         _kwargs = get_function_parameters_as_dict(self.run, locals(), kwargs)
 
@@ -87,3 +88,18 @@ class Bark(ClientAPI):
         _kwargs = get_function_parameters_as_dict(self.run, locals(), kwargs)
         return self.__call__(**_kwargs)
 
+    def run_sync(
+        self,
+        text: str | list,
+        voice_name_or_embedding_path: str = "en_speaker_3",
+        semantic_temp=0.7,
+        semantic_top_k=50,
+        semantic_top_p=0.95,
+        coarse_temp=0.7,
+        coarse_top_k=50,
+        coarse_top_p=0.95,
+        fine_temp=0.5,
+        **kwargs):
+        # just reuse args to easy pass them to super
+        _kwargs = get_function_parameters_as_dict(self.run, locals(), kwargs)
+        return super().run_sync(**_kwargs)

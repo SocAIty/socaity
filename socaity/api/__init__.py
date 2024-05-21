@@ -16,3 +16,4 @@ from .audio import *
 
 # This references to all simple api functions
 from .simple_api import *
+from .await_result import await_result, await_results
