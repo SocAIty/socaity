@@ -11,6 +11,7 @@ from socaity.core.endpoint import LocalEndPoint, SocaityServerEndpoint
 
 
 GenerativeModelEndpoints = [
+    # Text Domain
     ### TEXT2VOICE
         ## Bark
             #hosted
@@ -23,7 +24,20 @@ GenerativeModelEndpoints = [
                 endpoint_name="text2voice",
                 start_bat_path="A:\\projects\\BarkVoiceCloneREST\\start_server.bat",
                 endpoint_specification=EndpointSpecification.SOCAITY
-            )
+            ),
+
+   # Image Domain
+   ### FACE2FACE
+        # hosted
+        SocaityServerEndpoint(model_type=ModelType.FACE2FACE, model_name="face2face"),
+        LocalEndPoint(
+            model_type=ModelType.FACE2FACE,
+            model_name="face2face",
+            service_url="http://localhost:8020",
+            endpoint_name="swap_one",
+            start_bat_path="A:\\projects\\face2face\\start_server.bat",
+            endpoint_specification=EndpointSpecification.SOCAITY
+        ),
 ]
 
 # Make one dictionary from all endpoint dicts, to make it easier for parsing.

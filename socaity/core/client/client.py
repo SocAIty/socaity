@@ -6,7 +6,6 @@ class Client:
     """
     A Client handles the requests to an API.
     """
-
     def __init__(self, endpoint: EndPoint):
         self.endpoint = endpoint
 

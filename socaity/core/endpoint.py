@@ -9,8 +9,10 @@ class EndPoint:
     """
     def __init__(
             self,
+            # descriptors
             model_type: Union[ModelType, str],
             model_name: str,
+            # relevant for for execution
             endpoint_type: Union[EndPointType, str],
             endpoint_name: str = None,
             endpoint_specification: Union[EndpointSpecification, str] = EndpointSpecification.OPENAPI,
@@ -21,7 +23,7 @@ class EndPoint:
             **kwargs
     ):
         """
-        :param model_type: The type of the model (for example ModelType.TEXT2VOICE)
+        :param model_type: The type of the model (for example ModelType.TEXT2VOICE).
         :param model_name: The name of the model (for example "bark")
         :param endpoint_type: The type of the endpoint (for example EndPointType.REMOTE)
         :param endpoint_specification: The endpoint_specification of the model (for example "socaity")

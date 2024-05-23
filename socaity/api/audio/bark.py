@@ -1,5 +1,6 @@
 from typing import Union
 
+from socaity import AsyncServerJob
 from socaity.core.job import Job
 from socaity.core.client_api import ClientAPI
 from socaity.globals import ModelType, EndPointType
@@ -83,7 +84,7 @@ class Bark(ClientAPI):
         coarse_top_p=0.95,
         fine_temp=0.5,
         **kwargs
-    ) -> Job:
+    ) -> Union[Job, AsyncServerJob]:
         # just reuse args to easy pass them to super
         _kwargs = get_function_parameters_as_dict(self.run, locals(), kwargs)
         return self.__call__(**_kwargs)

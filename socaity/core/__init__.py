@@ -3,4 +3,4 @@ from .client import *
 # others
 from .client_api import ClientAPI
 from .endpoint import EndPoint, LocalEndPoint, OpenAPIEndpoint, EndPointType
-from .job import Job, JobStatistics
+from .job import Job, JobStatistics, AsyncServerJob
