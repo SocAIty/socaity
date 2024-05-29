@@ -4,7 +4,7 @@ import numpy as np
 
 from socaity import ClientAPI, Job
 from socaity.core.job.async_server_job import AsyncServerJob
-from socaity.globals import ModelType, EndPointType
+from socaity.new_registry.definitions.enums import EndPointType, ModelTag
 from socaity.utils import load_image_from_file
 from socaity.utils.utils import get_function_parameters_as_dict
 
@@ -20,7 +20,7 @@ class Face2Face(ClientAPI):
 
     def __init__(self, endpoint_type: Union[EndPointType, str] = EndPointType.REMOTE, *args, **kwargs):
         super().__init__(
-            model_type=ModelType.FACE2FACE,
+            model_type=ModelTag.FACE2FACE,
             model_name="face2face",
             endpoint_type=endpoint_type,
             *args, **kwargs

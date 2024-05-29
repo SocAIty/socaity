@@ -1,5 +1,5 @@
 from socaity.api.audio import Bark
-from socaity.globals import EndPointType
+from socaity.new_registry.definitions.enums import EndPointType
 
 
 def text2speech(text, *args, **kwargs) -> (bytes, int):

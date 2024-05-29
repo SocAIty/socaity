@@ -3,7 +3,7 @@ from typing import Union
 from socaity import AsyncServerJob
 from socaity.core.job import Job
 from socaity.core.client_api import ClientAPI
-from socaity.globals import ModelType, EndPointType
+from socaity.new_registry.definitions.enums import EndPointType, ModelTag
 from socaity.utils.audio import audio_from_bytes
 from socaity.utils.utils import get_function_parameters_as_dict
 
@@ -24,7 +24,7 @@ class Bark(ClientAPI):
     """
     def __init__(self, endpoint_type: Union[EndPointType, str] = EndPointType.REMOTE, *args, **kwargs):
         super().__init__(
-            model_type=ModelType.TEXT2VOICE,
+            model_type=ModelTag.TEXT2VOICE,
             model_name="bark",
             endpoint_type=endpoint_type,
             *args, **kwargs

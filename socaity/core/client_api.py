@@ -3,13 +3,13 @@ from typing import Union
 from socaity.core.client.client_factory import create_client
 from socaity.core.job.async_server_job import AsyncServerJob
 from socaity.core.job.job_queue import JobQueue
-from socaity.globals import ModelType, EndPointType, EndpointSpecification
+from socaity.new_registry.definitions.enums import EndPointType, EndpointSpecification, ModelTag
 from socaity.core.job.job import Job
 
 
 class ClientAPI:
     def __init__(self,
-                 model_type: Union[ModelType, str] = ModelType.ANY,
+                 model_type: Union[ModelTag, str] = ModelTag.ANY,
                  model_name: str = "new_model",
                  endpoint_type: Union[EndPointType, str] = EndPointType.REMOTE,
                  endpoint_specification: EndpointSpecification = EndpointSpecification.SOCAITY,

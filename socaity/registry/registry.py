@@ -2,7 +2,7 @@ import logging
 from typing import Union
 from singleton_decorator import singleton
 
-from socaity.globals import EndPointType, ModelType, EndpointSpecification
+from socaity.new_registry.definitions.enums import EndPointType, EndpointSpecification, ModelTag
 from socaity.registry.endpoints import Endpoints
 from socaity.core.endpoint import LocalEndPoint, OpenAPIEndpoint, EndPoint, SocaityEndPoint
 import threading
@@ -38,7 +38,7 @@ ACTIVE_CLIENT_REGISTRY = ActiveClientRegistry()
 
 
 def get_endpoint(
-        model_type: Union[ModelType, str] = None,
+        model_type: Union[ModelTag, str] = None,
         model_name: str = None,
         endpoint_type: Union[EndPointType, str] = EndPointType.REMOTE,
         endpoint_specification: Union[EndpointSpecification, str, None] = EndpointSpecification.SOCAITY
@@ -54,7 +54,7 @@ def get_endpoint(
     filtered_endpoints = Endpoints
     # filter endpoints by model_type
     if model_type is not None:
-        model_type = ModelType(model_type) if isinstance(endpoint_type, str) else model_type
+        model_type = ModelTag(model_type) if isinstance(endpoint_type, str) else model_type
         filtered_endpoints = [endpoint for endpoint in filtered_endpoints if endpoint.model_type == model_type]
 
     # filter endpoints by model_name
@@ -94,23 +94,24 @@ def get_endpoint(
 
 def add_endpoint(endpoint: EndPoint):
     """
-    Add an endpoint to the registry on the fly.
+    Add an endpoint to the services on the fly.
     :param endpoint: the endpoint to add
     """
     Endpoints.append(endpoint)
-    logging.info(f"Endpoint {endpoint} added to the registry.")
+    logging.info(f"Endpoint {endpoint} added to the services.")
+    return endpoint
 
 
 def add_openapi_endpoint(
         service_url: str,
         endpoint_name: str,
         endpoint_specification: EndpointSpecification = EndpointSpecification.SOCAITY,
-        model_type: ModelType = ModelType.ANY,
+        model_type: ModelTag = ModelTag.ANY,
         model_name: str = "new_model",
         *args, **kwargs
     ):
     """
-    Add a remote endpoint to the registry on the fly.
+    Add a remote endpoint to the services on the fly.
     For example service_url = "http://localhost:8009" and endpoint_name = "text2voice"
     results in "http://localhost:8009/text2voice"
     :param service_url: the url of the service
@@ -118,17 +119,17 @@ def add_openapi_endpoint(
     :param endpoint_specification: the endpoint_specification of the model (for example "socaity", "openapi")
     """
     _kwargs = get_function_parameters_as_dict(add_openapi_endpoint, locals(), kwargs)
-    add_endpoint(OpenAPIEndpoint(**_kwargs))
+    return add_endpoint(OpenAPIEndpoint(**_kwargs))
 
 
 def add_socaity_endpoint(service_url: str, endpoint_name: str,
-                         model_type: ModelType = ModelType.ANY,
+                         model_type: ModelTag = ModelTag.ANY,
                          model_name: str = "socaity_model", *args, **kwargs):
     _kwargs = get_function_parameters_as_dict(add_socaity_endpoint, locals(), kwargs)
-    add_endpoint(SocaityEndPoint(**_kwargs))
+    return add_endpoint(SocaityEndPoint(**_kwargs))
 
 
 def add_local_endpoint(service_url: str, endpoint_name: str, start_bat_path: str = "", *args, **kwargs):
     _kwargs = get_function_parameters_as_dict(add_local_endpoint, locals(), kwargs)
-    add_endpoint(LocalEndPoint(**_kwargs))
+    return add_endpoint(LocalEndPoint(**_kwargs))
 

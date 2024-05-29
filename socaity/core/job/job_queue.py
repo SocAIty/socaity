@@ -41,7 +41,8 @@ class JobQueue:
             pre_process_func=pre_process_func,
             post_process_func=post_process_func,
             request_func=request_func,
-            timeout=timeout, **kwargs
+            timeout=timeout,
+            **kwargs
         )
 
     def add_job(self, job: Union[Job, AsyncServerJob]) -> Union[Job, AsyncServerJob]:
