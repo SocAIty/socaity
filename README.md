@@ -1,3 +1,8 @@
+
+# PACKAGE IS UNDER DEVELOPMENT AND NOT YET READY TO USE
+## LEAVE A STAR TO GET NOTIFIED WHEN IT IS READY
+
+
 # SocAIty - your AI Model Zoo
 Easy interface for AI models. Python package to use SOTA models across hosted environments.
 We are your easy-to-use model zoo for generative AI. No GPU needed, no setup required.
