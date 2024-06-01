@@ -18,6 +18,9 @@ def parse_response(response: httpx.Response) -> Union[SocaityServerResponse, byt
     :param response: The response of the request either formatted as json or the raw content
     :return: The parsed response as SocaityServerResponse or the raw content.
     """
+    if response is None:
+        return None
+
     if response.headers.get("Content-Type") == "application/json":
         result = response.json()
         #message = parse_status_code(response)

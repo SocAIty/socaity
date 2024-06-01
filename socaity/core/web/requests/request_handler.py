@@ -49,7 +49,8 @@ class RequestHandler:
             headers: dict = None,
             files: dict = None,
             callback: callable = None,
-            delay: float = None
+            delay: float = None,
+            timeout: float = None
     ) -> AsyncJob:
         """
         Makes a request to the given url.
@@ -60,9 +61,10 @@ class RequestHandler:
         :param files: The files to be sent in the request.
         :param callback: The callback function to call when the request is done.
         :param delay: The delay in seconds before the request is made.
+        :param timeout: The timeout of the request.
         :return: The response of the request as an async_jobs job.
         """
-        req_coroutine = self.request(url, get_params, post_params, headers, files)
+        req_coroutine = self.request(url, get_params, post_params, headers, files, timeout=timeout)
 
         async_job = self.async_job_manager.submit(req_coroutine, callback=callback, delay=delay)
         return async_job
@@ -98,7 +100,14 @@ class RequestHandler:
         return url
 
     @staticmethod
-    async def request(url: str = None, get_params=None, post_params=None, headers=None, files=None):
+    async def request(
+            url: str = None,
+            get_params: dict = None,
+            post_params: dict = None,
+            headers: dict = None,
+            files: dict = None,
+            timeout: float = None
+    ):
         """
         Makes a request to the given url.
         :param get_params: The parameters to be sent in the GET request.
@@ -106,9 +115,10 @@ class RequestHandler:
         :param url: The url of the request.
         :param headers: The header_params of the request.
         :param files: The files to be sent in the request.
+        :param timeout: The timeout of the request.
         :return: The response of the request.
         """
         url = RequestHandler.add_get_params_to_url(url, get_params)
         async with httpx.AsyncClient() as client:
-            return await client.post(url, params=post_params, files=files, headers=headers)
+            return await client.post(url, params=post_params, files=files, headers=headers, timeout=timeout)
 

@@ -7,7 +7,6 @@ class EndPoint:
     def __init__(
             self,
             endpoint_route: str,
-            endpoint_specification: Union[EndpointSpecification, str] = EndpointSpecification.SOCAITY,
             get_params: dict = None,
             post_params: dict = None,
             file_params: dict = None,
@@ -15,9 +14,7 @@ class EndPoint:
             timeout: float = 3600
     ):
         """
-
-        :param endpoint_route:
-        :param endpoint_specification: determines how the endpoint is called. For example socaity endpoints use jobs.
+        :param endpoint_route: for example api/img2img/stable_diffusion
         :param get_params: Defines the parameters which are send as url?params=... to the endpoint.
             It is a dict in format {param_name: param_type} for example {"my_text": str}.
         :param post_params: Defines the parameters which are send as post parameters.
@@ -28,7 +25,6 @@ class EndPoint:
 
         # remove slash at beginning
         self.endpoint_route = endpoint_route if endpoint_route[0] != "/" else endpoint_route[1:]
-        self.endpoint_specification = endpoint_specification
         self.timeout = timeout
         self.get_params = get_params if get_params is not None else {}
         self.post_params = post_params if post_params is not None else {}
@@ -42,20 +38,3 @@ class EndPoint:
         return all_params
 
 
-def create_endpoint(
-        endpoint_route: str,
-        endpoint_specification: Union[EndpointSpecification, str] = EndpointSpecification.SOCAITY,
-        timeout: int = 3600
-):
-    return EndPoint(
-        endpoint_route=endpoint_route,
-        endpoint_specification=endpoint_specification,
-        timeout=timeout)
-
-
-def create_socaity_endpoint(endpoint_route: str, timeout: int = 3600):
-    return create_endpoint(
-        endpoint_route=endpoint_route,
-        endpoint_specification=EndpointSpecification.SOCAITY,
-        timeout=timeout
-    )

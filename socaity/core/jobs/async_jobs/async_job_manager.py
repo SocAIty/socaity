@@ -3,7 +3,8 @@ import concurrent.futures
 import threading
 import time
 from typing import Union
-from socaity.core.jobs. import AsyncJob
+
+from socaity.core.jobs.async_jobs.async_job import AsyncJob
 
 
 class AsyncJobManager:

@@ -18,7 +18,7 @@ class AsyncJob:
         self.delay = delay
 
         self.created_at = datetime.utcnow()
-        self._future_result_received_at = None
+        self.future_result_received_at = None
         self.coroutine_executed_at = None
 
     @property
@@ -35,7 +35,7 @@ class AsyncJob:
         if self.error is not None:
             return None
 
-        self._future_result_received_at = datetime.utcnow()
+        self.future_result_received_at = datetime.utcnow()
         future_result = self._future.result()
 
         return future_result
@@ -55,7 +55,7 @@ class AsyncJob:
                 await asyncio.sleep(self.delay)
 
             result = await self._coro
-            self._future_result_received_at = datetime.utcnow()
+            self.future_result_received_at = datetime.utcnow()
             self._future.set_result(result)
         except Exception as e:
             result = None
@@ -68,7 +68,7 @@ class AsyncJob:
         The interval_sec it took/takes to execute the job in seconds.
         """
         # still running
-        if self._future_result_received_at is None:
+        if self.future_result_received_at is None:
             return datetime.utcnow() - self.created_at
 
-        return self._future_result_received_at - self.created_at
+        return self.future_result_received_at - self.created_at

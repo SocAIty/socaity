@@ -1,3 +1,4 @@
+httpx
 requests
 singleton_decorator
 tqdm

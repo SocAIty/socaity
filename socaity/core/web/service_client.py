@@ -48,12 +48,17 @@ class ServiceClient:
         if not service_url.startswith("http") or not service_url.startswith("https"):
             service_url = f"http://{service_url}"
 
-        self.request_handler = RequestHandler(service_url=service_url)
+        self._request_handler = RequestHandler(service_url=service_url)
 
         self.endpoint_request_funcs = {}  # { endpoint_name: function, endpoint_name_async: function }
         self.endpoints = {}  # { endpoint_name: endpoint }
 
-    def _create_endpoint_func(self, endpoint: EndPoint, is_async: bool = False, refresh_interval: float = 0.5):
+    def _create_endpoint_func(
+            self,
+            endpoint: EndPoint, is_async: bool = False,
+            refresh_interval: float = 0.5,
+            retries_on_error: int = 3
+    ):
         """
         Creates a new function to call an endpoint and adds it to the class.
         :param endpoint: the definition of the endpoint
@@ -74,7 +79,8 @@ class ServiceClient:
             :return:
             """
             endpoint_request_manager = EndPointRequest(
-                endpoint=endpoint, request_handler=self._request_handler, refresh_interval=refresh_interval
+                endpoint=endpoint, request_handler=self._request_handler, refresh_interval=refresh_interval,
+                retries_on_error=retries_on_error
             )
             endpoint_request_manager.request( *args, **kwargs)
             return endpoint_request_manager
@@ -125,7 +131,6 @@ class ServiceClient:
             timeout: int = 3600):
         ep = EndPoint(
             endpoint_route=endpoint_route,
-            endpoint_specification=self.endpoint_specification,
             get_params=get_params,
             post_params=post_params,
             file_params=file_params,
