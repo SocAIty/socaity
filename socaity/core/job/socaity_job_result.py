@@ -27,6 +27,8 @@ class SocaityJobResult:
     execution_started_at: Optional[str] = None
     execution_finished_at: Optional[str] = None
 
+    endpoint_protocol: Optional[str] = "socaity"
+
 
 class JobResultFactory:
     @staticmethod
