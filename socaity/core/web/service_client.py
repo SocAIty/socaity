@@ -67,7 +67,7 @@ class ServiceClient:
                 the refresh interval is used to check for updates
         :return: the wrapped function
         """
-        def endpoint_async_job_wrapper(self, *args, **kwargs):
+        def endpoint_async_job_wrapper(self, *args, **kwargs) -> EndPointRequest:
             """
             This function is called when the endpoint is called.
             It submits a request to the given endpoint and receives an AsyncJob from the request handler.
@@ -78,12 +78,12 @@ class ServiceClient:
             :param kwargs:
             :return:
             """
-            endpoint_request_manager = EndPointRequest(
+            endpoint_request = EndPointRequest(
                 endpoint=endpoint, request_handler=self._request_handler, refresh_interval=refresh_interval,
                 retries_on_error=retries_on_error
             )
-            endpoint_request_manager.request( *args, **kwargs)
-            return endpoint_request_manager
+            endpoint_request.request( *args, **kwargs)
+            return endpoint_request
 
         # create method parameters
         ep_args = endpoint.params()
@@ -137,7 +137,6 @@ class ServiceClient:
             timeout=timeout)
         self._add_endpoint(ep)
 
-
     def list_endpoints(self) -> dict:
         """
         List all available endpoints of the service with their parameters.
@@ -147,8 +146,7 @@ class ServiceClient:
             print(f"{name}: {func.__signature__}")
         return self.endpoint_request_funcs
 
-
-    def __call__(self, endpoint_route: str, call_async: bool = False, *args, **kwargs):
+    def __call__(self, endpoint_route: str, call_async: bool = False, *args, **kwargs) -> EndPointRequest:
         """
         Call a function synchronously by name.
         :param endpoint_route: the name of the function

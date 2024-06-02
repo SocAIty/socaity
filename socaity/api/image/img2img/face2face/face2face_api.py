@@ -7,6 +7,10 @@ import cv2
 # The request function then is used within the methods.
 #   Using this approach I know when the server is called and from which function.
 #   Thus it can be added to the same "internal_job"
+
+face2face_service_client = ServiceClientAPI("face2face")
+
+
 @ServiceClientAPI("service_name")
 class face2face:
 
