@@ -4,7 +4,7 @@ import threading
 import time
 from typing import Union
 
-from socaity.core.jobs.async_jobs.async_job import AsyncJob
+from socaity.socaity_client.jobs.async_jobs.async_job import AsyncJob
 
 
 class AsyncJobManager:

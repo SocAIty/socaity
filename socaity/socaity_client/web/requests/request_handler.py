@@ -1,7 +1,7 @@
 import httpx
-from socaity.core.web.definitions.endpoint import EndPoint
-from socaity.core.jobs.async_jobs.async_job import AsyncJob
-from socaity.core.jobs.async_jobs.async_job_manager import AsyncJobManager
+from socaity.socaity_client.web.definitions.endpoint import EndPoint
+from socaity.socaity_client.jobs.async_jobs.async_job import AsyncJob
+from socaity.socaity_client.jobs.async_jobs.async_job_manager import AsyncJobManager
 
 
 class RequestHandler:
@@ -119,6 +119,7 @@ class RequestHandler:
         :return: The response of the request.
         """
         url = RequestHandler.add_get_params_to_url(url, get_params)
+
         async with httpx.AsyncClient() as client:
             return await client.post(url, params=post_params, files=files, headers=headers, timeout=timeout)
 

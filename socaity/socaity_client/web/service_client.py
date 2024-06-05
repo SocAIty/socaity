@@ -3,12 +3,12 @@ import inspect
 import types
 from typing import Union, Tuple
 
-from socaity.core.web.definitions.endpoint import EndPoint
-from socaity.core.definitions.enums import EndpointSpecification, ModelTag, ModelDomainTag
-from socaity.core.definitions.ai_model import AIModel
-from socaity.core.web.requests.endpoint_request import EndPointRequest
+from socaity.socaity_client.web.definitions.endpoint import EndPoint
+from socaity.socaity_client.definitions.enums import EndpointSpecification, ModelTag, ModelDomainTag
+from socaity.socaity_client.definitions.ai_model import AIModel
+from socaity.socaity_client.web.requests.endpoint_request import EndPointRequest
 
-from socaity.core.web.requests.request_handler import RequestHandler
+from socaity.socaity_client.web.requests.request_handler import RequestHandler
 
 
 class ServiceClient:
@@ -55,7 +55,8 @@ class ServiceClient:
 
     def _create_endpoint_func(
             self,
-            endpoint: EndPoint, is_async: bool = False,
+            endpoint: EndPoint,
+            is_async: bool = False,
             refresh_interval: float = 0.5,
             retries_on_error: int = 3
     ):
@@ -67,7 +68,7 @@ class ServiceClient:
                 the refresh interval is used to check for updates
         :return: the wrapped function
         """
-        def endpoint_async_job_wrapper(self, *args, **kwargs) -> EndPointRequest:
+        def endpoint_async_job_wrapper(*args, **kwargs) -> EndPointRequest:
             """
             This function is called when the endpoint is called.
             It submits a request to the given endpoint and receives an AsyncJob from the request handler.
@@ -79,10 +80,15 @@ class ServiceClient:
             :return:
             """
             endpoint_request = EndPointRequest(
-                endpoint=endpoint, request_handler=self._request_handler, refresh_interval=refresh_interval,
+                endpoint=endpoint,
+                request_handler=self._request_handler,
+                refresh_interval=refresh_interval,
                 retries_on_error=retries_on_error
             )
-            endpoint_request.request( *args, **kwargs)
+            endpoint_request.request(*args, **kwargs)
+            if not is_async:
+                endpoint_request.wait_until_finished()
+
             return endpoint_request
 
         # create method parameters
@@ -120,6 +126,7 @@ class ServiceClient:
         async_func = self._create_endpoint_func(endpoint, is_async=True)
 
         self.endpoints[endpoint.endpoint_route] = endpoint
+
         return sync_func, async_func
 
     def add_endpoint(

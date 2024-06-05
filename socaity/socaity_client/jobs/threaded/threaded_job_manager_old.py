@@ -6,10 +6,10 @@ from typing import Union
 
 from singleton_decorator import singleton
 
-from socaity.core.job.job import Job
-from socaity.core.job.async_server_job import AsyncServerJob
+from socaity.socaity_client.job.job import Job
+from socaity.socaity_client.job.async_server_job import AsyncServerJob
 
-from socaity.core.job.job_declarations import JobStatus
+from socaity.socaity_client.job.job_declarations import JobStatus
 
 
 @singleton

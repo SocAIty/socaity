@@ -1,5 +1,5 @@
 """
-This is a copy of the socaity_router job_result file and JobStatus file.
+This is a copy of the socaity_router job_result file and JOB_STATUS file.
 It mirrors the data structure of the job result object of socaity_router.
 If the result of an endpoint is this structure, the client_api assumes it is interacting with an socaity endpoint.
 On that way, we can queue, wait and get the result of the job.

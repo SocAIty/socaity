@@ -1,6 +1,6 @@
 from typing import Union
 
-from socaity.core.definitions.enums import EndpointSpecification
+from socaity.socaity_client.definitions.enums import EndpointSpecification
 
 
 class EndPoint:

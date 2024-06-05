@@ -1,10 +1,10 @@
 from httpx import ConnectError, HTTPStatusError
 
-from socaity.core.jobs.async_jobs.async_job import AsyncJob
-from socaity.core.web.definitions.endpoint import EndPoint
-from socaity.core.web.definitions.socaity_server_response import SocaityServerResponse, SocaityServerJobStatus
-from socaity.core.web.requests.request_handler import RequestHandler
-from socaity.core.web.requests.server_response_parser import parse_response
+from socaity.socaity_client.jobs.async_jobs.async_job import AsyncJob
+from socaity.socaity_client.web.definitions.endpoint import EndPoint
+from socaity.socaity_client.web.definitions.socaity_server_response import SocaityServerResponse, SocaityServerJobStatus
+from socaity.socaity_client.web.requests.request_handler import RequestHandler
+from socaity.socaity_client.web.requests.server_response_parser import parse_response, has_request_status_code_error
 import time
 
 class EndPointRequest:
@@ -57,7 +57,11 @@ class EndPointRequest:
         return self._ongoing_async_request.future_result_received_at
 
     def request(self, *args, **kwargs):
-        # schedule the first async_jobs job
+        """
+        Sends a request with the *args, **kwargs to the endpoint with the request handler.
+        That submits a coroutine which result is retrieved with a callback self._response_callback.
+            - In the callback it is checked for errors, response types and if the request is refreshed.
+        """
         self._ongoing_async_request = self._request_handler.request_endpoint_async(
             self._endpoint,
             callback=self._response_callback,
@@ -66,41 +70,54 @@ class EndPointRequest:
         )
         self.first_request_send_at = self._ongoing_async_request.coroutine_executed_at
 
-
     def wait_until_finished(self):
         """
         This function waits until the job is finished and returns the result.
         :return:
         """
-        while self.result is None:
+        while self.result is None and self.error is None:
             time.sleep(0.1)
-        return self.result
+        return self
 
     def _parse_result_and_refresh_if_necessary(self, async_job_result):
-        if async_job_result is None:
-            return None
+        """
+        If job result is not of type socaity: it is returned directly.
+        If job result is of type socaity:
+            - It will call the socaity server with the refresh_status function in the return until the job is finished.
+            - It checks for socaity request errors.
 
+        If the request was successfull it re
+        """
+
+        if async_job_result is None:
+            return self
+
+        # deal with status errors like Not Found 404 or internal server errors
+        request_status_error = has_request_status_code_error(async_job_result)
+        if request_status_error is not False:
+            self.error = request_status_error
+            return self
+
+        # Parse the result and convert it to SocaityServerResponse if is that response type.
         job_result = parse_response(async_job_result)
         # if not is a socaity job, we can return the result
         if not isinstance(job_result, SocaityServerResponse):
             self.result = job_result
-            return self.result
+            return self
         # check if socaity job is finished
         if job_result.status == SocaityServerJobStatus.FINISHED:
             self.in_between_result = None
             self.result = job_result
-            return self.result
-
+            return self
         elif job_result.status == SocaityServerJobStatus.FAILED:
             self.error = job_result.message
-            return None
+            return self
 
         # In this case it was a refresh call
         self.in_between_result = job_result
         # if not finished, we need to refresh the job
-        refresh_url = self._request_handler.service_url + job_result.refresh_job_url
-
         # by calling this recursively we can refresh the job until it's finished
+        refresh_url = self._request_handler.service_url + job_result.refresh_job_url
         self._ongoing_async_request = self._request_handler.request_url_async(
             refresh_url,
             callback=self._response_callback,
@@ -138,9 +155,8 @@ class EndPointRequest:
             self.first_response_received_at = async_job.future_result_received_at
             # If there was an error on the first request stop
             if async_job.error:
-                self.error = async_job.error
-                print(f"Error on first request to {self._endpoint.endpoint_route}: {self.error}")
-                return None
+                self.error = f"Error on first request to {self._endpoint.endpoint_route}: {async_job.error}"
+                return self
 
         # normal refresh
         if async_job.error is None:
@@ -158,3 +174,4 @@ class EndPointRequest:
                     return self._parse_result_and_refresh_if_necessary(self.in_between_result)
                 else:
                     self.error = async_job.error
+                    return self

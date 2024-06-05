@@ -1,110 +1,67 @@
+from socaity.socaity_client.definitions.enums import ModelDomainTag
+from socaity.socaity_client.jobs.threaded.internal_job import InternalJob
+from socaity.socaity_client.service_client_api import ServiceClientAPI
+from socaity.socaity_client.web.service_client import ServiceClient
 
-"""
-model_name, model_type gonna be optional and are used to better find registered models (with services)
-endpoint_specification determines how the thing is requested
-For services on localhost, in the init of the class one can change the service url.
-The thing is smart enough to change to default values if not provided.
-"""
-from socaity.core.client.request_param import RequestParam
-from socaity.core.service_client import ServiceClientAPI
+srvc_fries_maker = ServiceClient(
+    service_url="localhost:8000/api",
+    model_name="friesmaker",
+    model_domain_tags=[ModelDomainTag.IMAGE, ModelDomainTag.AUDIO],
+    model_tags=None
+)
+srvc_fries_maker.add_endpoint(endpoint_route="kartoffel", file_params={"image": bytes})
+srvc_fries_maker.add_endpoint(
+    endpoint_route="make_fries",
+    file_params={"potato_one": bytes, "potato_two": bytes, "potato_three": bytes}
+)
+fries_maker_client_api = ServiceClientAPI(srvc_fries_maker)
 
-### METHOD ONE ---> CURRENT NEW IMPLEMENTATION
-face2face = ServiceClientAPI(service_url="", endpoint_specification="socaity", model_name="test", model_type="")
+class FriesMaker:
 
-@face2face.endpoint(route="api/predict", endpoint_specification="socaity", func_type="pre_process")
-def swap_one(source_img: str, target_img: int):
-    source_img = RequestParam(name="source_img", val=source_img, method="post")
-    target_img = RequestParam(name="target_img", val=target_img, method="post")
-    return source_img, target_img
+    @fries_maker_client_api.job()
+    def _kartoffel(self, job: InternalJob, image: bytes):
+        """
+        Swaps a face from source_img to target_img;
+        in the manner that the face from source_img is placed on the face from target_img.
+        :param source_img: The image containing the face to be swapped. Read with open() -> f.read()
+        :param target_img: The image containing the face to be swapped to. Read with open() -> f.read()
+        """
+        endpoint_request = job.request_sync(endpoint_route="kartoffel", image=image)
 
-@face2face.prepare_params(route="api/swap_from_reference", func_type="definition_only")
-def swap_from_reference_face(face_name: str, source_img: str): pass
+        if endpoint_request.error is not None:
+            raise Exception(f"Error in making fries: {endpoint_request.error}")
 
-@face2face.endpoint_post_process(route="api/swap_from_reference")
-def swap_from_reference_post_process(job_result):
-    return job_result
+        return endpoint_request.result
 
-@face2face.endpoint(route="api/swap_from_reference")
-def swap_from_reference(face_name: str, source_img: str):
-    return RequestParam(source_img=source_img, target_img=target_img)
+    @fries_maker_client_api.job()
+    def _make_fries(self, job: InternalJob, potato_one: bytes, potato_two: bytes, potato_three: bytes):
+        endpoint_request = job.request_sync(endpoint_route="make_fries", potato_one=potato_one, potato_two=potato_two, potato_three=potato_three)
 
+        if endpoint_request.error is not None:
+            raise Exception(f"Error in making fries: {endpoint_request.error}")
 
-#### New Idea:
+        return endpoint_request.result
 
-# Jede Funktion für einen Client braucht eine preprocess, postprocess funktion.
-# Anstatt hier alles in einem Rutsch machen zu wollen, kann man wieder eine Methaebene Rauf gehen.
-# Sprich zuvor die clientAPI hatte diese Methoden.
-# Und nun die WIRKLICHE API, besteht aus mehreren "clientAPIs".
-# Die funktion wie swap_one() ruft dann die entsprechende clientAPI auf.
+    def make_fries(self, potato_one: str, potato_two) -> InternalJob:
+        """
+        Swaps a face from source_img to target_img;
+        in the manner that the face from source_img is placed on the face from target_img.
+        :param source_img: Path to the image containing the face to be swapped.
+            Or the image itself as bytes (with open(f): f.read()) .
+        """
+        #with open(potato_one, "rb") as f:
+        #    potato_one = f.read()
+        with open(potato_two, "rb") as f:
+            potato_two = f.read()
 
-# Naming Vorschlag:
-#   - ClientMethod(besteht aus pre/postprocess)
-#   - ServiceClientAPI(besteht aus mehreren ClientMethods)
-
-## Beispiel zur Umsetzung der neuen Idee:
-## HMMM???
-
-# f2f = ServiceClientAPI(service_url="", endpoint_specification="socaity", model_name="test", model_type="")
-# @f2f.client_method(endpoint_route="api/swap_one")
-# class SwapOne:
-#     def preprocess()
-#     def postprocess()
-
-# @f2f.api
-# class face2face:
-#    def swap_one(source_img: str, target_img: int) -> img: pass
-
-
-#### Weiteres Gedankenspiel:
-# Dekoratoren können in der Funktion ebenfalls gesetzt werden.
-# Est sowas möglich?
-
-# @ServiceClientAPI(service_url="", endpoint_specification="socaity", model_name="test", model_type="")
-# class Face2Face:
-#   def swap_one(target_img, source_img):
-        # @pre_process_result
-        # myvars
-        # @post_process_result
-        # do_something
-
-
-### Oder:
-# Service Interface and implement bast
-
-# @ServiceInterface:
-# class IFace2Face:
-#      def swap_one_img(target_img, source_img) -> blabla: pass
-#      def swap_reference(target_img, source_img) -> blabla: pass
-
-# iF2F = IFace2Face()
-
-
-#
-# @iF2F
-# class Face2Face:
-#    @iF2F.preprocess(name="swap_one_img")
-#    def swap_one_img(target_img, source_img):
-#        return params
-#    @iF2F.postprocess(swap_one_img)
-#    def swap_one_img(request_result):
-#        return post_processed_result
-#
-# @ServiceClientAPI(service_url="", endpoint_specification="socaity", model_name="test", model_type="")
+        return self._make_fries(open(potato_one, "rb"), potato_two, potato_two)
 
 
 
+img_1 = "A:\\projects\\_face2face\\face2face\\test\\test_imgs\\test_face_1.jpg"
+img2 = "A:\\projects\\_face2face\\face2face\\test\\test_imgs\\test_face_2.jpg"
 
-
-
-
-
-
-
-
-
-
-# client
-
-
-
-
+fries_maker = FriesMaker()
+job = fries_maker.make_fries(img_1, img2)
+job.run_sync()
+a = 1

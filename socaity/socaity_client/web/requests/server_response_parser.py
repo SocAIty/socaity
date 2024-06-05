@@ -1,7 +1,7 @@
 from typing import Union
 import httpx
 
-from socaity.core.web.definitions.socaity_server_response import SocaityServerResponse, SocaityServerJobStatus
+from socaity.socaity_client.web.definitions.socaity_server_response import SocaityServerResponse, SocaityServerJobStatus
 
 
 def is_socaity_server_response(json: dict) -> bool:
@@ -34,18 +34,21 @@ def parse_response(response: httpx.Response) -> Union[SocaityServerResponse, byt
         return response.content
 
 
-def parse_status_code(response: httpx.Response):
+def has_request_status_code_error(response: httpx.Response) -> Union[str, bool]:
     """
     Parses the status code of a response.
     :param response: The response of the request.
-    :return: The status code of the response.
+    :return: an error message if there was an error, otherwise False.
     """
     if response.status_code == 200:
-        return None
+        return False
     elif response.status_code == 404:
         return f"Endpoint {response.url} error: not found."
-    elif response.status_code == 500:
+    elif 404 <= response.status_code < 500:
+        return f"Endpoint {response.url} error: {response.content}."
+    elif response.status_code >= 500:
         return f"Endpoint {response.url} error: {response.content}."
 
-    return None
+    return False
+
 

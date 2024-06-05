@@ -1,61 +1,71 @@
-from socaity.core.jobs.threaded.job_manager import JobManager
-from socaity.api.image.img2img.face2face.face2face_service_client import srvc_face2face
-import cv2
+from typing import Union
+import numpy as np
+from socaity.socaity_client.jobs.threaded.internal_job import InternalJob
+from socaity.socaity_client.service_client_api import ServiceClientAPI
+from face2face_service_client import srvc_face2face
+
+face2face_service_client = ServiceClientAPI(srvc_face2face)
+
+class Face2Face:
+    @staticmethod
+    def _read_img(img: Union[str, bytes]):
+        if isinstance(img, str):
+            return open(img, "rb")
+        return img
+
+    def swap_one(self, source_img: Union[str, bytes], target_img: Union[str, bytes]) -> InternalJob:
+        """
+        Swaps a face from source_img to target_img;
+        in the manner that the face from source_img is placed on the face from target_img.
+        :param source_img: Path to the image containing the face to be swapped.
+            Or the image itself as bytes (with open(f): f.read()) .
+        :param target_img: Path to the image containing the face to be swapped to.
+            Or the image itself as bytes (with open(f): f.read()) .
+        """
+        source_img = self._read_img(source_img)
+        target_img = self._read_img(target_img)
+        return self._swap_one(source_img=source_img, target_img=target_img)
+
+    def swap_from_reference_face(self, face_name: str, target_img: Union[str, bytes]) -> InternalJob:
+        target_img = self._read_img(target_img)
+        return self._swap_from_reference_face(face_name=face_name, target_img=target_img)
+
+    def add_reference_face(self, face_name: str, source_img: Union[str, bytes], save: bool = True) -> InternalJob:
+        source_img = self._read_img(source_img)
+        return self._add_reference_face(face_name=face_name, source_img=source_img, save=save)
+
+    @face2face_service_client.job()
+    def _swap_one(self, job: InternalJob, source_img: bytes, target_img: bytes) -> np.array:
+        """
+        Swaps a face from source_img to target_img;
+        in the manner that the face from source_img is placed on the face from target_img.
+        :param source_img: The image containing the face to be swapped. Read with open() -> f.read()
+        :param target_img: The image containing the face to be swapped to. Read with open() -> f.read()
+        """
+        endpoint_request = job.request_sync(endpoint_route="swap_one", source_img=source_img, target_img=target_img)
+
+        if endpoint_request.error is not None:
+            raise Exception(f"Error in swap_one: {endpoint_request.error}")
+
+        return endpoint_request.result
+
+    @face2face_service_client.job()
+    def _swap_from_reference_face(self, job, face_name: str, target_img: bytes):
+        request_result = job.request("swap_from_reference", face_name, target_img)
+        return request_result
+
+    @face2face_service_client.job()
+    def _add_reference_face(self, face_name: str, source_img: bytes, save: bool = True):
+        request_result = job.request("add_reference_face", face_name, source_img, save)
+        return request_result
 
 
-# this adds a request function to the service client.
-# The request function then is used within the methods.
-#   Using this approach I know when the server is called and from which function.
-#   Thus it can be added to the same "internal_job"
+if __name__ == "__main__":
+    f2f = Face2Face()
+    img_1 = "A:\\projects\\_face2face\\face2face\\test\\test_imgs\\test_face_1.jpg"
+    img2 = "A:\\projects\\_face2face\\face2face\\test\\test_imgs\\test_face_2.jpg"
 
-face2face_service_client = ServiceClientAPI("face2face")
-
-
-@ServiceClientAPI("service_name")
-class face2face:
-
-    # This creates an "internal_job" object. The job is added to the job manager and processed threaded.
-    #   once a request is send, this is known also and the job state changes.
-    @ServiceClientAPI.job
-    def swap_one_from_file(self, source_img: str, target_img: str, job_progress) -> img:
-        source_img = cv2.imread(source_img)
-        target_img = cv2.imread(target_img)
-        job_progress.message = "started"
-
-        # here the wrapper must be so smart, that it will not create a second job instance
-        # but it must pass the job_progress object to the already existing job instance
-        return self.swap_one(source_img, target_img)
-
-    @ServiceClientAPI.job
-    def swap_one(self, source_img: np.array, target_img: np.array, job_progress) -> np.array:
-        # method to call it "sync"
-        request_result = srvc_face2face.swap_one(source_img, target_img)
-        # method to call it "async_jobs"
-        web_service_async_io_task = srvc_face2face.swap_one_async(source_img, target_img)
-        # use async_jobs way to for example make status updates
-        while not web_service_async_io_task.is_finished():
-            job_progress.message = web_service_async_io_task.get_status()
-        request_result = web_service_async_io_task.get_result()
-
-        audio = img_from_bytes(request_result)
-        return result
-
-
-###
-## Ich kann es so machen wie oben beschrieben und die @syntax auch ffür die Klasse nehmen.
-## Das ist klug, da dann die request modifiziert wird und ich so weiß was abgeht.
-## Es ist negativ, da ich dadurch das syntax highlighting verliere..
-## Oder: es wird ein ServiceClientAPI(service_name) initiert und dann die methoden gewrapped.
-## Im Client wird dann auch nur serviceclientapi.request("methodname") gerufen.
-## Das sollte den selben effekt haben.
-socaity_job_manager = JobManager()
-
-
-class newFace2Face(ServiceClientAPI):
-
-    def __init__(self, service_url: str = "localhost"):
-        super().__init__(service_nanme="", service_url=service_url)
-
-    @socaity_job_manager.job
-    def swap_one(self, source_img: np.array, target_img: np.array) -> np.array:
-        return self.request("swap_one", source_img, target_img)
+    job = f2f.swap_one(img_1, target_img=img2)
+    job.run()
+    result = job.wait_for_finished()
+    print(result.result)

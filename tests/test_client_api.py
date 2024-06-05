@@ -1,5 +1,5 @@
 from socaity import create_client, ClientAPI, await_result
-from socaity.core import EndPoint
+from socaity.socaity_client import EndPoint
 from socaity.registry import add_socaity_endpoint
 #### CLIENT API  ####
 from socaity import Bark, await_results
