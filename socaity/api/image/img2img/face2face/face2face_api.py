@@ -62,8 +62,8 @@ class Face2Face:
 
 if __name__ == "__main__":
     f2f = Face2Face()
-    img_1 = "A:\\projects\\_face2face\\face2face\\test\\test_imgs\\test_face_1.jpg"
-    img2 = "A:\\projects\\_face2face\\face2face\\test\\test_imgs\\test_face_2.jpg"
+    img_1 = "A:\\projects\\_face2face\\face2face\\test\\test_media\\test_face_1.jpg"
+    img2 = "A:\\projects\\_face2face\\face2face\\test\\test_media\\test_face_2.jpg"
 
     job = f2f.swap_one(img_1, target_img=img2)
     job.run()

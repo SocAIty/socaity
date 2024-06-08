@@ -5,10 +5,10 @@ from typing import Union, Tuple
 
 from socaity.socaity_client.web.definitions.endpoint import EndPoint
 from socaity.socaity_client.definitions.enums import EndpointSpecification, ModelTag, ModelDomainTag
-from socaity.socaity_client.definitions.ai_model import AIModel
-from socaity.socaity_client.web.requests.endpoint_request import EndPointRequest
+from socaity.socaity_client.definitions.ai_model import AIModelDescription
+from socaity.socaity_client.web.req.endpoint_request import EndPointRequest
 
-from socaity.socaity_client.web.requests.request_handler import RequestHandler
+from socaity.socaity_client.web.req.request_handler import RequestHandler
 
 
 class ServiceClient:
@@ -24,9 +24,7 @@ class ServiceClient:
             service_url: str = None,
             service_specification: Union[EndpointSpecification, str] = EndpointSpecification.SOCAITY,
             # optional information for documentation and services
-            model_name: str = "new_model",
-            model_domain_tags: Union[ModelDomainTag, str, list] = ModelDomainTag.OTHER,
-            model_tags: Union[ModelTag, str, list] = ModelTag.OTHER,
+            model_description: AIModelDescription = None,
             *args,
             **kwargs
     ):
@@ -40,7 +38,7 @@ class ServiceClient:
         :param model_tags: find the model easier in the registry
         """
         # definitions and registry
-        self.model = AIModel(model_name=model_name, model_domain_tags=model_domain_tags, model_tags=model_tags)
+        self.model = model_description
         self.endpoint_specification = service_specification  # the default value - used in the endpoint_decorator
 
         # service_url add http:// if not present and remove trailing slash

@@ -3,8 +3,8 @@ from httpx import ConnectError, HTTPStatusError
 from socaity.socaity_client.jobs.async_jobs.async_job import AsyncJob
 from socaity.socaity_client.web.definitions.endpoint import EndPoint
 from socaity.socaity_client.web.definitions.socaity_server_response import SocaityServerResponse, SocaityServerJobStatus
-from socaity.socaity_client.web.requests.request_handler import RequestHandler
-from socaity.socaity_client.web.requests.server_response_parser import parse_response, has_request_status_code_error
+from socaity.socaity_client.web.req.request_handler import RequestHandler
+from socaity.socaity_client.web.req.server_response_parser import parse_response, has_request_status_code_error
 import time
 
 class EndPointRequest:
@@ -15,8 +15,8 @@ class EndPointRequest:
     In case of a sync job endpoint, the result is returned directly.
     In case of an async_jobs job endpoint like the ones that implement the socaity protocol:
         1. The class automatically refreshes the job until it's finished.
-        -  The class sends requests to the refresh status url until the job is finished.
-        -  To do so, it submits more async_jobs requests with callbacks with the request handler.
+        -  The class sends req to the refresh status url until the job is finished.
+        -  To do so, it submits more async_jobs req with callbacks with the request handler.
     """
     def __init__(
             self,

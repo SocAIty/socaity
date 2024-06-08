@@ -1,5 +1,13 @@
 import inspect
 from typing import Union, Any
+import os
+
+def is_valid_file_path(path: str):
+    try:
+        is_file = os.path.isfile(path)
+        return is_file
+    except:
+        return False
 
 def get_function_parameters_as_dict(
         func: callable,

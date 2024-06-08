@@ -15,8 +15,8 @@ def is_socaity_server_response(json: dict) -> bool:
 def parse_response(response: httpx.Response) -> Union[SocaityServerResponse, bytes, dict, object]:
     """
     Parses the response of a request.
-    :param response: The response of the request either formatted as json or the raw content
-    :return: The parsed response as SocaityServerResponse or the raw content.
+    :param response: The response of the request either formatted as json or the raw _content_buffer
+    :return: The parsed response as SocaityServerResponse or the raw _content_buffer.
     """
     if response is None:
         return None

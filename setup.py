@@ -9,9 +9,9 @@ setup(
     author='SocAIty',
     packages=find_packages(),
     install_requires=[
-        'requests',
+        'req',
         'tqdm',
-        'requests',
+        'req',
         'librosa',
         'soundfile'
     ]

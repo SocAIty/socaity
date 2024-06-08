@@ -1,4 +1,9 @@
+from io import BufferedReader, BytesIO
+
 import httpx
+
+from socaity.socaity_client import UploadFile
+from socaity.socaity_client.utils import is_valid_file_path
 from socaity.socaity_client.web.definitions.endpoint import EndPoint
 from socaity.socaity_client.jobs.async_jobs.async_job import AsyncJob
 from socaity.socaity_client.jobs.async_jobs.async_job_manager import AsyncJobManager
@@ -6,7 +11,7 @@ from socaity.socaity_client.jobs.async_jobs.async_job_manager import AsyncJobMan
 
 class RequestHandler:
     """
-    The request handler is an interface between async jobs and web requests.
+    The request handler is an interface between async jobs and web req.
     1. Requests to endpoints are implemented as coroutines.
     2. It submits those request coroutines to the AsyncJobManager; where they are executed asynchronously.
     It also implements the logic to prepare the parameters for the request.
@@ -70,6 +75,33 @@ class RequestHandler:
         return async_job
 
     @staticmethod
+    def convert_to_send_able_file(file, target_type=None):
+        """
+        Converts a file to a sendable format.
+        :param file: The file to convert.
+        :param target_type: The target type to convert to. If not specified will be converted to bytes.
+        :return: The send able file.
+        """
+        target_class = UploadFile
+        if target_type is not None and issubclass(target_type, UploadFile):
+            target_class = target_type
+
+        upload_file_instance = target_class()
+        # load from file cases
+        if type(file) in [BufferedReader, BytesIO]:
+            upload_file_instance.from_file(file)
+        elif isinstance(file, str):
+            if is_valid_file_path(file):
+                upload_file_instance.from_file(open(file, 'rb'))
+            else:
+                upload_file_instance.from_base64(file)
+        elif type(file).__name__ == 'ndarray':
+            upload_file_instance.from_np_array(file)
+
+        # convert the file
+        return upload_file_instance
+
+    @staticmethod
     def _prepare_endpoint_params_for_request(endpoint: EndPoint, *args, **kwargs):
         # make dict from args and kwargs
         _named_args = {k: v for k, v in locals().items() if k in endpoint.params()}
@@ -80,6 +112,12 @@ class RequestHandler:
         post_params = {k: v for k, v in _named_args.items() if k in endpoint.post_params}
         file_params = {k: v for k, v in _named_args.items() if k in endpoint.file_params}
         header_params = {k: v for k, v in _named_args.items() if k in endpoint.headers}
+
+        # convert files to send able format
+        file_params = {
+            k: RequestHandler.convert_to_send_able_file(v, endpoint.file_params.get(k, None))
+            for k, v in file_params.items()
+        }
 
         return get_params, post_params, file_params, header_params
 
@@ -120,6 +158,8 @@ class RequestHandler:
         """
         url = RequestHandler.add_get_params_to_url(url, get_params)
 
+        read_files = {k: v.read() for k, v in files.items()}
+
         async with httpx.AsyncClient() as client:
-            return await client.post(url, params=post_params, files=files, headers=headers, timeout=timeout)
+            return await client.post(url, params=post_params, files=read_files, headers=headers, timeout=timeout)
 

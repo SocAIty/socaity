@@ -3,16 +3,19 @@ from typing import Union
 from socaity.socaity_client.definitions.enums import ModelDomainTag, ModelTag
 
 
-class AIModel:
+class AIModelDescription:
     def __init__(
             self,
-            model_name: str = "unknown",
+            model_name: str = None,
             model_domain_tags: Union[list[str], list[ModelDomainTag], str] = None,
-            model_tags: Union[list[str], list[ModelTag], str] = None,
-            model_version: str = None):
+            model_tags: Union[list[str], list[ModelTag], str, ModelTag] = None,
+            model_description: str = None,
+            model_version: str = None
+    ):
 
         self.model_name = model_name
         self.model_version = model_version
+        self.model_description = model_description
 
         # Model domain tags
         if model_domain_tags is None:

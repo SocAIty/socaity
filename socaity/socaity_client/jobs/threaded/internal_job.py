@@ -7,7 +7,7 @@ from uuid import uuid4
 from socaity.socaity_client.jobs.threaded.internal_job_manager import InternalJobManager
 from socaity.socaity_client.jobs.threaded.job_status import JOB_STATUS
 from socaity.socaity_client.jobs.threaded.job_progress import JobProgress
-from socaity.socaity_client.web.requests.endpoint_request import EndPointRequest
+from socaity.socaity_client.web.req.endpoint_request import EndPointRequest
 
 
 class InternalJob:
@@ -57,6 +57,9 @@ class InternalJob:
         return self.status in [JOB_STATUS.FINISHED, JOB_STATUS.FAILED]
 
     def wait_for_finished(self):
+        if not self.status == JOB_STATUS.QUEUED:
+            self.run()
+
         while not self.finished():
             time.sleep(0.1)
         return self

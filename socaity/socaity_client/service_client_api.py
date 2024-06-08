@@ -8,10 +8,10 @@ from socaity.socaity_client.web.service_client import ServiceClient
 class ServiceClientAPI:
     """
     The ServiceClient API uses the service client to perform various tasks.
-    1. It uses the service client to make requests to the service.
+    1. It uses the service client to make req to the service.
         - It understands the types of the response like socaity job results.
-        - In case of a socaity job subsequent requests are made to the service until the final result is retrieved.
-    2. It can batch requests.
+        - In case of a socaity job subsequent req are made to the service until the final result is retrieved.
+    2. It can batch req.
     3. It makes writing api classes easier.
     """
 
