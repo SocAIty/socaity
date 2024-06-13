@@ -82,6 +82,10 @@ class RequestHandler:
         :param target_type: The target type to convert to. If not specified will be converted to bytes.
         :return: The send able file.
         """
+        # it is already converted
+        if isinstance(file, UploadFile):
+            return file
+
         target_class = UploadFile
         if target_type is not None and issubclass(target_type, UploadFile):
             target_class = target_type

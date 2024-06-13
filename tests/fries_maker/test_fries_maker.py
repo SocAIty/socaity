@@ -16,7 +16,7 @@ fries_maker = FriesMaker()
 #file_jobs = fries_maker.make_file_fries(img_potato_one, img_potato_two)
 #result = file_jobs.wait_for_finished()
 
-image_jobs = fries_maker.make_image_fries(img_potato_one, img_potato_two)
+image_jobs = fries_maker.make_image_fries(img_potato_one)
 image_results = gather_results(image_jobs)
 
 audio_job = fries_maker.make_audio_fries(audio_potato, audio_potato).run_sync()

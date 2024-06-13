@@ -18,7 +18,7 @@ srvc_fries_maker.add_endpoint(
     endpoint_route="make_file_fries",
     file_params={"potato_one": UploadFile, "potato_two": UploadFile, "potato_three": UploadFile}
 )
-srvc_fries_maker.add_endpoint(endpoint_route="make_image_fries", file_params={"potato_one": ImageFile, "potato_two": ImageFile})
+srvc_fries_maker.add_endpoint(endpoint_route="make_image_fries", file_params={"potato_one": ImageFile})
 srvc_fries_maker.add_endpoint(endpoint_route="make_audio_fries", file_params={"potato_one": AudioFile, "potato_two": AudioFile})
 srvc_fries_maker.add_endpoint(endpoint_route="make_video_fries", file_params={"potato_one": VideoFile, "potato_two": VideoFile})
 
