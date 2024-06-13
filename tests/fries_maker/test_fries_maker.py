@@ -11,13 +11,16 @@ video_potato = test_file_folder + "video_potato.mp4"
 
 fries_maker = FriesMaker()
 # send to the server
-#easy_job = fries_maker.make_fries("super_chilli_fries", 10).run()
+# easy_job = fries_maker.make_fries("super_chilli_fries", 10).run()
 #a = 1
-file_jobs = fries_maker.make_file_fries(img_potato_one, img_potato_two)
-result = file_jobs.wait_for_finished()
-a = 1
-#audio_job = fries_maker.make_audio_fries(audio_potato, audio_potato).run_sync()
+#file_jobs = fries_maker.make_file_fries(img_potato_one, img_potato_two)
+#result = file_jobs.wait_for_finished()
+
+image_jobs = fries_maker.make_image_fries(img_potato_one, img_potato_two)
+image_results = gather_results(image_jobs)
+
+audio_job = fries_maker.make_audio_fries(audio_potato, audio_potato).run_sync()
 #video_jobs = fries_maker.make_video_fries(video_potato, video_potato)
 
 # gather results
-all_results = gather_results(easy_job, file_jobs, audio_job, video_jobs)
+all_results = gather_results([easy_job, file_jobs, audio_job, video_jobs])

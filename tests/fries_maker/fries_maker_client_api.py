@@ -90,10 +90,13 @@ class FriesMaker:
             potato_two = f.read()
 
         # read as b64
-        potato_four = base64.b64encode(potato_three)
-
+        potato_four = base64.b64encode(potato_two).decode('utf-8')
         job_files = self._make_image_fries(potato_one, potato_two)
         job_b64 = self._make_image_fries(potato_three, potato_four)
+
+        # debug_mode
+        job_files.debug_mode = True
+        job_b64.debug_mode = True
 
         return [job_files, job_b64]
 

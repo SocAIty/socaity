@@ -1,5 +1,6 @@
 import inspect
 import time
+import traceback
 from datetime import datetime
 from typing import Union
 from uuid import uuid4
@@ -41,6 +42,10 @@ class InternalJob:
         self.queued_at = None
         self.started_at = None
         self.finished_at = None
+
+        # If true, the try catch block is not used, what makes debugging easier.
+        self.debug_mode = False
+
 
     def request(self, endpoint_route: str, *args, **kwargs) -> EndPointRequest:
         self._ongoing_async_request = self._request_function(endpoint_route, True, *args, **kwargs)
@@ -99,7 +104,9 @@ class InternalJob:
         except Exception as e:
             self.status = JOB_STATUS.FAILED
             self.error = e
-        self.finished_at = datetime.utcnow()
+            self.finished_at = datetime.utcnow()
+            if self.debug_mode:
+                print(traceback.format_exc())
 
     def run_sync(self):
         return self.run(run_async=False)

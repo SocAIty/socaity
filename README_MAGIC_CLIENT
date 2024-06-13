@@ -1,0 +1,25 @@
+
+# PACKAGE IS UNDER DEVELOPMENT AND NOT YET READY TO USE
+## LEAVE A STAR TO GET NOTIFIED WHEN IT IS READY
+
+
+# Magic Client by SocAIty.ai
+
+Ever wanted to use web APIs as if they are any other python function?
+It was never easier to build an SDK for your hosted services, than it is with the magic client.
+
+Out of the box works with following services:
+- OpenAPI 3.0 / RestAPIs
+- Socaity Routers
+
+
+
+# Get started
+
+To integrate an webservice you need to follow two steps:
+1. Instantiate a service client with the base url of the service and the endpoint routes.
+2. Use the SDK maker with the service
+
+
+```python
+from magic_client import MagicClient

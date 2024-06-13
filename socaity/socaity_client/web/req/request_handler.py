@@ -97,6 +97,8 @@ class RequestHandler:
                 upload_file_instance.from_base64(file)
         elif type(file).__name__ == 'ndarray':
             upload_file_instance.from_np_array(file)
+        elif isinstance(file, bytes):
+            upload_file_instance.from_bytes(file)
 
         # convert the file
         return upload_file_instance
@@ -158,7 +160,9 @@ class RequestHandler:
         """
         url = RequestHandler.add_get_params_to_url(url, get_params)
 
-        read_files = {k: v.read() for k, v in files.items()}
+        read_files = None
+        if files is not None:
+            read_files = {k: v.to_httpx_send_able_tuple() for k, v in files.items()}
 
         async with httpx.AsyncClient() as client:
             return await client.post(url, params=post_params, files=read_files, headers=headers, timeout=timeout)

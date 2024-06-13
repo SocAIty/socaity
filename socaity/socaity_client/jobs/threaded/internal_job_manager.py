@@ -6,7 +6,6 @@ if TYPE_CHECKING:
 from socaity.socaity_client.jobs.threaded.job_status import JOB_STATUS
 import threading
 import time
-from datetime import datetime
 from typing import Union
 
 from singleton_decorator import singleton
