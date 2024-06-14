@@ -7,13 +7,13 @@ from socaity.socaity_client.jobs.threaded.internal_job import InternalJob
 from socaity.socaity_client.service_client_api import ServiceClientAPI
 from tests.fries_maker.service_fries_maker import srvc_fries_maker
 import cv2
-import base64
 import librosa
 import numpy as np
 
 
 fries_maker_client_api = ServiceClientAPI(srvc_fries_maker)
 
+@fries_maker_client_api.client_api()
 class FriesMaker:
 
     @fries_maker_client_api.job()
@@ -90,7 +90,6 @@ class FriesMaker:
         Tests upload of standard file types.
         """
         job = self._make_image_fries(potato_one)
-        job.debug_mode = True
         return job
 
 

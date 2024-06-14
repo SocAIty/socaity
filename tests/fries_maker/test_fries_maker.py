@@ -18,13 +18,14 @@ video_potato = test_file_folder + "video_potato.mp4"
 
 
 fries_maker = FriesMaker()
+fries_maker.start_jobs_immediately = True
+
 count = 0
 def test_simple_rpc():
     global count
     count += 1
     easy_job = fries_maker.make_fries(f"super_chilli_fries {count}", count)
     easy_job.debug_mode = True
-    easy_job.run()
     return easy_job
 
 def test_upload_file():
@@ -39,31 +40,25 @@ def test_image_upload():
     # standard python file handle
     potato_handle = open(img_potato_one, "rb")
     job_handle = fries_maker.make_image_fries(potato_handle)
-    job_handle.run()
     # read file
     with open(img_potato_one, "rb") as f:
         potato_bytes = f.read()
 
     job_bytes = fries_maker.make_image_fries(potato_bytes)
-    job_bytes.run()
     # read with cv2
     potato_cv2 = cv2.imread(img_potato_one)
     job_cv2 = fries_maker.make_image_fries(potato_cv2)
-    job_cv2.run()
     # as file instance
     upload_file_instance = UploadFile()
     upload_file_instance.from_file(img_potato_two)
     job_upload_file_instance = fries_maker.make_image_fries(upload_file_instance)
-    job_upload_file_instance.run()
     # as image file instance
     img_file_instance = ImageFile()
     img_file_instance.from_bytes(potato_bytes)
     job_img_file_instance = fries_maker.make_image_fries(img_file_instance)
-    job_img_file_instance.run()
     # as b64
     potato_b64 = base64.b64encode(potato_bytes).decode('utf-8')
     job_b64 = fries_maker.make_image_fries(potato_b64)
-    job_b64.run()
     # test one by one
     # res_handle = job_handle.wait_for_finished()
     # res_bytes = job_bytes.wait_for_finished()

@@ -1,4 +1,5 @@
 import functools
+import inspect
 
 from socaity.socaity_client.jobs.threaded.internal_job import InternalJob
 from socaity.socaity_client.utils import get_function_parameters_as_dict
@@ -17,6 +18,20 @@ class ServiceClientAPI:
 
     def __init__(self, service_client: ServiceClient):
         self.service_client = service_client  # #registry.get_service(service_name_or_service_client)
+        self.debug_mode = False  # can be overwritten by using the client_api decorator
+        self.start_jobs_immediately = True  # can be overwritten by using the client_api decorator
+
+    def client_api(self):
+        """
+        The wrapped class gets attributes:
+        - start_jobs_immediately: if True, all job will start immediately
+        - debug_mode: if True, the job will print debug information
+        """
+        def decorator(cls):
+            cls.start_jobs_immediately = True   # if True, all job will start immediately
+            cls.debug_mode = False  # if True, the job will print debug information
+            return cls
+        return decorator
 
     def request(self, endpoint_route: str, call_async=True, *args, **kwargs):
         return self.service_client(endpoint_route, call_async, *args, **kwargs)
@@ -47,6 +62,19 @@ class ServiceClientAPI:
                     job_params=params,
                     request_function=self.request
                 )
+
+                # Set the debug mode and start_jobs_immediately
+                debug_mode = self.debug_mode
+                start_jobs_immediately = self.start_jobs_immediately
+                # check if the first element of func_args is the class instance (self)
+                if len(func_args) > 0 and hasattr(func_args[0], "start_jobs_immediately"):
+                    debug_mode = func_args[0].debug_mode
+                    start_jobs_immediately = func_args[0].start_jobs_immediately
+
+                job.debug_mode = debug_mode
+                if start_jobs_immediately:
+                    job.run()
+
                 return job
             return wrapper
 

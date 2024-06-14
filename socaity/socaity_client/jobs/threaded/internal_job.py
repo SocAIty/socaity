@@ -51,8 +51,9 @@ class InternalJob:
         return self._ongoing_async_request
 
     def request_sync(self, endpoint_route: str, *args, **kwargs) -> EndPointRequest:
-        self._ongoing_async_request = self._request_function(endpoint_route, False, *args, **kwargs)
-        return self._ongoing_async_request
+        endpoint_request = self.request(endpoint_route, *args, **kwargs)
+        endpoint_request.wait_until_finished()
+        return endpoint_request
 
     def finished(self):
         """
