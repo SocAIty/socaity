@@ -16,7 +16,7 @@ class AsyncJobManager:
         """
         Initializes the AsyncJobManager.
         """
-        self.loop: Union[asyncio.ProactorEventLoop, None] = None
+        self.loop: Union[asyncio.BaseEventLoop, None] = None
         self.lock = threading.Lock()
         self.thread = None
 
@@ -39,7 +39,7 @@ class AsyncJobManager:
 
             # wait until thread is running
             while self.loop is None or not self.loop.is_running():
-                time.sleep(0.1)
+                time.sleep(0.05)
 
     def submit(self, coro, callback: callable = None, delay: float = None) -> AsyncJob:
         """

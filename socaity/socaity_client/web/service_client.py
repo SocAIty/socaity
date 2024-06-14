@@ -66,7 +66,7 @@ class ServiceClient:
                 the refresh interval is used to check for updates
         :return: the wrapped function
         """
-        def endpoint_async_job_wrapper(*args, **kwargs) -> EndPointRequest:
+        def endpoint_job_wrapper(*args, **kwargs) -> EndPointRequest:
             """
             This function is called when the endpoint is called.
             It submits a request to the given endpoint and receives an AsyncJob from the request handler.
@@ -96,7 +96,7 @@ class ServiceClient:
 
         # Create a partial function with default values as None
         func_name = f"{endpoint.endpoint_route}" if not is_async else f"{endpoint.endpoint_route}_async"
-        partial_func = functools.partial(endpoint_async_job_wrapper, **{name: None for name in ep_args.keys()})
+        partial_func = functools.partial(endpoint_job_wrapper, **{name: None for name in ep_args.keys()})
         # Set the function name
         partial_func.__name__ = func_name
         sig_params = [inspect.Parameter(name, inspect.Parameter.POSITIONAL_OR_KEYWORD, annotation=ptype) for name, ptype

@@ -46,7 +46,6 @@ class InternalJob:
         # If true, the try catch block is not used, what makes debugging easier.
         self.debug_mode = False
 
-
     def request(self, endpoint_route: str, *args, **kwargs) -> EndPointRequest:
         self._ongoing_async_request = self._request_function(endpoint_route, True, *args, **kwargs)
         return self._ongoing_async_request
@@ -61,8 +60,11 @@ class InternalJob:
         """
         return self.status in [JOB_STATUS.FINISHED, JOB_STATUS.FAILED]
 
+    def has_started(self):
+        return self.status in [JOB_STATUS.QUEUED, JOB_STATUS.PROCESSING]
+
     def wait_for_finished(self):
-        if not self.status == JOB_STATUS.QUEUED:
+        if not self.has_started() and not self.finished():
             self.run()
 
         while not self.finished():
@@ -94,6 +96,7 @@ class InternalJob:
         """
         function is called by internal job manager when job is executed
         """
+        # run job
         self.started_at = datetime.utcnow()
         self.status = JOB_STATUS.PROCESSING
         try:

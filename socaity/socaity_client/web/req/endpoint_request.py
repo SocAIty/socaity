@@ -70,12 +70,18 @@ class EndPointRequest:
         )
         self.first_request_send_at = self._ongoing_async_request.coroutine_executed_at
 
+    def is_finished(self):
+        """
+        Returns True if the job is finished.
+        """
+        return self.result is not None or self.error is not None
+
     def wait_until_finished(self):
         """
         This function waits until the job is finished and returns the result.
         :return:
         """
-        while self.result is None and self.error is None:
+        while not self.is_finished():
             time.sleep(0.1)
         return self
 
@@ -90,6 +96,10 @@ class EndPointRequest:
         """
 
         if async_job_result is None:
+            return self
+
+        # if previously we finished the callback -> it's not the newest result
+        if self.is_finished():
             return self
 
         # deal with status errors like Not Found 404 or internal server errors

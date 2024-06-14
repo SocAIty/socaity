@@ -1,21 +1,25 @@
+import time
 from typing import Union, List
 from socaity.socaity_client.jobs.threaded.internal_job import InternalJob
+from socaity.socaity_client.utils import flatten_list
 
 
-def gather_results(jobs: Union[List[InternalJob], List[InternalJob], InternalJob, list]):
-
+def gather_generator(jobs: Union[List[InternalJob], List[InternalJob], InternalJob, list]):
     if not isinstance(jobs, list):
         jobs = [jobs]
 
-    results = []
-    for job in jobs:
-        # support nested jobs
-        if isinstance(job, list):
-            results.extend(gather_results(job))
-            continue
+    # flatten array
+    jobs: List[InternalJob] = list(flatten_list(jobs))
 
-        # wait for job result
-        result = job.wait_for_finished()
-        results.append(result)
+    finished_jobs = []
+    while len(jobs) > len(finished_jobs):
+        for job in jobs:
+            if job.finished():
+                finished_jobs.append(job)
+                yield job
 
-    return results
+        time.sleep(0.1)
+
+
+def gather_results(jobs: Union[List[InternalJob], List[InternalJob], InternalJob, list]):
+    return list(gather_generator(jobs))

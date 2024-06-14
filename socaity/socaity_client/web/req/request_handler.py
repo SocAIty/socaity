@@ -1,6 +1,9 @@
+import asyncio
+import datetime
 from io import BufferedReader, BytesIO
 
 import httpx
+import requests
 
 from socaity.socaity_client import UploadFile
 from socaity.socaity_client.utils import is_valid_file_path
@@ -21,10 +24,7 @@ class RequestHandler:
         self.service_url = service_url
         # add the async_jobs job manager or create a new one
         self.async_job_manager = async_job_manager if async_job_manager is not None else AsyncJobManager()
-
-    def request_endpoint_sync(self, endpoint: EndPoint, *args, **kwargs):
-        job = self.request_endpoint_async(endpoint, *args, **kwargs)
-        return job.result()
+        self.httpx_client = httpx.Client()
 
     def request_endpoint_async(self, endpoint: EndPoint, callback: callable = None, *args, **kwargs) -> AsyncJob:
         """
@@ -143,8 +143,8 @@ class RequestHandler:
             url = url[:-1]
         return url
 
-    @staticmethod
     async def request(
+            self,
             url: str = None,
             get_params: dict = None,
             post_params: dict = None,
@@ -168,6 +168,12 @@ class RequestHandler:
         if files is not None:
             read_files = {k: v.to_httpx_send_able_tuple() for k, v in files.items()}
 
-        async with httpx.AsyncClient() as client:
-            return await client.post(url, params=post_params, files=read_files, headers=headers, timeout=timeout)
+        print(f"Requesting {url} with post_params: {post_params} at time {datetime.datetime.utcnow()}")
+
+        #return requests.post(url, params=post_params, files=read_files, headers=headers, timeout=timeout)
+        return self.httpx_client.post(url, params=post_params, files=read_files, headers=headers, timeout=timeout)
+
+        # Todo: Find out why async httpx is so much slower than requests at the moment
+        #async with httpx.AsyncClient() as client:
+        #    return await client.post(url, params=post_params, files=read_files, headers=headers, timeout=timeout)
 

@@ -1,4 +1,6 @@
-from typing import List
+import random
+import time
+from typing import List, Union
 
 from socaity.socaity_client import ImageFile, UploadFile
 from socaity.socaity_client.jobs.threaded.internal_job import InternalJob
@@ -7,6 +9,8 @@ from tests.fries_maker.service_fries_maker import srvc_fries_maker
 import cv2
 import base64
 import librosa
+import numpy as np
+
 
 fries_maker_client_api = ServiceClientAPI(srvc_fries_maker)
 
@@ -14,7 +18,13 @@ class FriesMaker:
 
     @fries_maker_client_api.job()
     def _make_fries(self, job: InternalJob, fries_name: str, amount: int = 1):
-        endpoint_request = job.request_sync(endpoint_route="make_fries", fries_name=fries_name, amount=amount)
+        endpoint_request = job.request(endpoint_route="make_fries", fries_name=fries_name, amount=amount)
+
+        # emulating workload
+        time.sleep(random.randint(0, 3))
+
+        # get result
+        endpoint_request.wait_until_finished()
 
         if endpoint_request.error is not None:
             raise Exception(f"Error in making fries: {endpoint_request.error}")
@@ -34,7 +44,8 @@ class FriesMaker:
 
     @fries_maker_client_api.job()
     def _make_image_fries(self, job: InternalJob, potato_one: bytes):
-        endpoint_request = job.request_sync(endpoint_route="make_image_fries", potato_one=potato_one)
+        endpoint_request = job.request(endpoint_route="make_image_fries", potato_one=potato_one)
+        endpoint_request.wait_until_finished()
 
         if endpoint_request.error is not None:
             raise Exception(f"Error in making fries: {endpoint_request.error}")
@@ -74,50 +85,13 @@ class FriesMaker:
         potato_two = cv2.imread(potato_two)
         return self._make_file_fries(potato_one, potato_two, potato_three)
 
-    def make_image_fries(self, potato_one: str) -> List[InternalJob]:
+    def make_image_fries(self, potato_one: Union[str, bytes, np.array, ImageFile, UploadFile]) -> InternalJob:
         """
         Tests upload of standard file types.
         """
-        # standard python file handle
-        potato_handle = open(potato_one, "rb")
-        job_handle = self._make_image_fries(potato_handle)
-
-        # read file
-        with open(potato_one, "rb") as f:
-            potato_bytes = f.read()
-
-        job_bytes = self._make_image_fries(potato_bytes)
-
-        # read with cv2
-        potato_cv2 = cv2.imread(potato_one)
-        job_cv2 = self._make_image_fries(potato_cv2)
-        job_cv2.debug_mode = True
-
-        # as file instance
-        upload_file_instance = UploadFile()
-        upload_file_instance.from_file(potato_one)
-        job_upload_file_instance = self._make_image_fries(upload_file_instance)
-        job_upload_file_instance.debug_mode = True
-
-        # as image file instance
-        img_file_instance = ImageFile()
-        img_file_instance.from_bytes(potato_bytes)
-        job_img_file_instance = self._make_image_fries(img_file_instance)
-        job_img_file_instance.debug_mode = True
-
-        # as b64
-        potato_b64 = base64.b64encode(potato_bytes).decode('utf-8')
-        job_b64 = self._make_image_fries(potato_b64)
-        job_b64.debug_mode = True
-
-        # test one by one
-        #res_handle = job_handle.wait_for_finished()
-        #res_bytes = job_bytes.wait_for_finished()
-        res_cv2 = job_cv2.wait_for_finished()
-        res_uf = job_upload_file_instance.wait_for_finished()
-        res_if = job_img_file_instance.wait_for_finished()
-
-        return [job_handle, job_bytes, job_cv2, job_upload_file_instance, job_img_file_instance, job_b64]
+        job = self._make_image_fries(potato_one)
+        job.debug_mode = True
+        return job
 
 
     def make_audio_fries(self, potato_one: str, potato_two: str) -> InternalJob:

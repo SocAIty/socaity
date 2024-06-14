@@ -1,6 +1,8 @@
 import inspect
 from typing import Union, Any
 import os
+from collections.abc import Iterable
+
 
 def is_valid_file_path(path: str):
     try:
@@ -45,3 +47,9 @@ def get_function_parameters_as_dict(
     return params
 
 
+def flatten_list(xs):
+    for x in xs:
+        if isinstance(x, Iterable) and not isinstance(x, (str, bytes)):
+            yield from flatten_list(x)
+        else:
+            yield x
