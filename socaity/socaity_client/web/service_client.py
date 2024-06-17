@@ -4,7 +4,7 @@ import types
 from typing import Union, Tuple
 
 from socaity.socaity_client.web.definitions.endpoint import EndPoint
-from socaity.socaity_client.definitions.enums import EndpointSpecification, ModelTag, ModelDomainTag
+from socaity.socaity_client.definitions.enums import EndpointSpecification
 from socaity.socaity_client.definitions.ai_model import AIModelDescription
 from socaity.socaity_client.web.req.endpoint_request import EndPointRequest
 

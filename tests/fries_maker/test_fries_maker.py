@@ -1,9 +1,5 @@
-import random
-from collections import Counter
-
 from socaity.socaity_client import UploadFile, ImageFile
-from socaity.socaity_client.jobs.job_utils import gather_results, gather_generator
-from socaity.socaity_client.jobs.threaded.job_status import JOB_STATUS
+from socaity.socaity_client.jobs.job_utils import  gather_generator
 from tests.fries_maker.fries_maker_client_api import FriesMaker
 
 import cv2
@@ -13,7 +9,7 @@ import base64
 test_file_folder = "./test_media/"
 img_potato_one = test_file_folder + "potato_one.jpeg"
 img_potato_two = test_file_folder + "potato_two.png"
-audio_potato = test_file_folder + "audio_potato.m4a"
+audio_potato = test_file_folder + "audio_potato.mp3"
 video_potato = test_file_folder + "video_potato.mp4"
 
 
@@ -76,12 +72,8 @@ def test_image_upload():
 
 
 def test_audio_upload():
-
-    audio_job = fries_maker.make_audio_fries(audio_potato, audio_potato).run_sync()
-    #video_jobs = fries_maker.make_video_fries(video_potato, video_potato)
-
-    # gather results
-    all_results = gather_results([easy_job, file_jobs, audio_job, video_jobs])
+    audio_job = fries_maker.make_audio_fries(audio_potato).run_sync()
+    return audio_job
 
 
 
@@ -89,7 +81,7 @@ if __name__ == "__main__":
 
     #test_simple_rpc()
     #test_image_upload()
-    # test_audio_upload()
+    test_audio_upload()
 
     # mini stress test
     def stress_test(func, num_iters=10):

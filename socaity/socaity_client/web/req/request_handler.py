@@ -1,11 +1,9 @@
-import asyncio
 import datetime
 from io import BufferedReader, BytesIO
 
 import httpx
-import requests
 
-from socaity.socaity_client import UploadFile
+from multimodal_files import UploadFile
 from socaity.socaity_client.utils import is_valid_file_path
 from socaity.socaity_client.web.definitions.endpoint import EndPoint
 from socaity.socaity_client.jobs.async_jobs.async_job import AsyncJob

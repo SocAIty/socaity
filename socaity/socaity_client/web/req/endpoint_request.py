@@ -121,6 +121,9 @@ class EndPointRequest:
             return self
         elif job_result.status == SocaityServerJobStatus.FAILED:
             self.error = job_result.message
+            if job_result.message is None:
+                self.error = "Job failed without error message."
+
             return self
 
         # In this case it was a refresh call

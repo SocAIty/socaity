@@ -2,7 +2,7 @@ import random
 import time
 from typing import List, Union
 
-from socaity.socaity_client import ImageFile, UploadFile
+from socaity.socaity_client import ImageFile, UploadFile, AudioFile
 from socaity.socaity_client.jobs.threaded.internal_job import InternalJob
 from socaity.socaity_client.service_client_api import ServiceClientAPI
 from tests.fries_maker.service_fries_maker import srvc_fries_maker
@@ -53,11 +53,11 @@ class FriesMaker:
         return endpoint_request.result
 
     @fries_maker_client_api.job()
-    def _make_audio_fries(self, job: InternalJob, potato_one: bytes, potato_two: bytes):
-        endpoint_request = job.request_sync(
+    def _make_audio_fries(self, job: InternalJob, potato_one: bytes, potato_two: AudioFile):
+        endpoint_request = job.request(
             endpoint_route="make_audio_fries", potato_one=potato_one, potato_two=potato_two
         )
-
+        endpoint_request.wait_until_finished()
         if endpoint_request.error is not None:
             raise Exception(f"Error in making fries: {endpoint_request.error}")
 
@@ -93,14 +93,14 @@ class FriesMaker:
         return job
 
 
-    def make_audio_fries(self, potato_one: str, potato_two: str) -> InternalJob:
+    def make_audio_fries(self, potato_one: str) -> InternalJob:
         """
         Tests upload of standard file types.
         """
         # standard python file handle
         potato_one = open(potato_one, "rb")
         # read with librosa
-        potato_two = librosa.load(potato_two)
+        potato_two, _sampling_rate = librosa.load(potato_one)
 
         return self._make_audio_fries(potato_one, potato_two)
 

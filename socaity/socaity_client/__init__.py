@@ -1,1 +1,1 @@
-from .web import UploadFile, ImageFile, AudioFile, VideoFile
+from multimodal_files import UploadFile, AudioFile, ImageFile, VideoFile
