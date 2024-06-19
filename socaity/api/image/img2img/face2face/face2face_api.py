@@ -1,10 +1,11 @@
 from typing import Union
 import numpy as np
-from socaity.socaity_client.jobs.threaded.internal_job import InternalJob
-from socaity.socaity_client.service_client_api import ServiceClientAPI
-from face2face_service_client import srvc_face2face
+from socaity_client.jobs.threaded.internal_job import InternalJob
+from socaity_client.service_client_api import ServiceClientAPI
+from .face2face_service_client import srvc_face2face
 
 face2face_service_client = ServiceClientAPI(srvc_face2face)
+
 
 class Face2Face:
     @staticmethod
@@ -35,19 +36,19 @@ class Face2Face:
         return self._add_reference_face(face_name=face_name, source_img=source_img, save=save)
 
     @face2face_service_client.job()
-    def _swap_one(self, job: InternalJob, source_img: bytes, target_img: bytes) -> np.array:
+    def _swap_one(self, job: InternalJob, source_img: Union[np.array, bytes, str], target_img: Union[np.array, bytes, str]) -> np.array:
         """
         Swaps a face from source_img to target_img;
         in the manner that the face from source_img is placed on the face from target_img.
         :param source_img: The image containing the face to be swapped. Read with open() -> f.read()
         :param target_img: The image containing the face to be swapped to. Read with open() -> f.read()
         """
-        endpoint_request = job.request_sync(endpoint_route="swap_one", source_img=source_img, target_img=target_img)
+        endpoint_request = job.request(endpoint_route="swap_one", source_img=source_img, target_img=target_img)
 
         if endpoint_request.error is not None:
             raise Exception(f"Error in swap_one: {endpoint_request.error}")
 
-        return endpoint_request.result
+        return endpoint_request.get_result()
 
     @face2face_service_client.job()
     def _swap_from_reference_face(self, job, face_name: str, target_img: bytes):
@@ -68,4 +69,4 @@ if __name__ == "__main__":
     job = f2f.swap_one(img_1, target_img=img2)
     job.run()
     result = job.wait_for_finished()
-    print(result.result)
+    print(result.server_response)

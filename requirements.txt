@@ -1,9 +1,4 @@
+socaity-client
 httpx
-requests
-singleton_decorator
 tqdm
-
-# for audio processing
-librosa
-soundfile
 

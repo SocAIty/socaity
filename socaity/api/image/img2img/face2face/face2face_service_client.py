@@ -1,5 +1,6 @@
-from socaity.socaity_client.definitions.enums import ModelDomainTag, ModelTag
-from socaity.socaity_client.web.service_client import ServiceClient
+from multimodal_files import ImageFile
+from socaity_client.definitions.enums import ModelDomainTag, ModelTag
+from socaity_client.web.service_client import ServiceClient
 
 
 srvc_face2face = ServiceClient(
@@ -10,15 +11,15 @@ srvc_face2face = ServiceClient(
 )
 
 srvc_face2face.add_endpoint(endpoint_route="swap_from_reference_face",
-                            file_params={"source_img": bytes, "target_img": bytes})
+                            file_params={"source_img": ImageFile, "target_img": ImageFile})
 srvc_face2face.add_endpoint(
     endpoint_route="add_reference_face",
     post_params={"face_name": str},
-    file_params={"source_img": bytes}
+    file_params={"source_img": ImageFile}
 )
 srvc_face2face.add_endpoint(
     endpoint_route="/swap_one",
-    file_params={"source_img": bytes, "target_img": bytes}
+    file_params={"source_img": ImageFile, "target_img": ImageFile}
 
 )
 srvc_face2face.add_endpoint(endpoint_route="status", get_params={"job_id": str})
