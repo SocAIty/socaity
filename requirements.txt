@@ -1,4 +1,5 @@
-socaity-client
+fastsdk
 httpx
 tqdm
+
 

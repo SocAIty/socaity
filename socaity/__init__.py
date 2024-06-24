@@ -1,2 +1,2 @@
 from .api import Face2Face
-from socaity_client import gather_generator, gather_results
+from fastsdk import gather_generator, gather_results
