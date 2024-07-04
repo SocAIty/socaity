@@ -1,4 +1,4 @@
-from multimodal_files import ImageFile, VideoFile
+from fastsdk import ImageFile, VideoFile
 from fastsdk.definitions.enums import ModelDomainTag, ModelTag
 from fastsdk.web.service_client import ServiceClient
 
@@ -24,9 +24,10 @@ srvc_face2face.add_endpoint(
     file_params={"source_img": ImageFile}
 )
 srvc_face2face.add_endpoint(
-    endpoint_route="/swap_video_from_reference_face",
-    post_params={"face_name": str},
-    file_params={"target_video": VideoFile}
+    endpoint_route="/swap_video",
+    post_params={"face_name": str, "include_audio": bool},
+    file_params={"target_video": VideoFile},
+    refresh_interval=3  # check every 3 seconds for progress
 )
 
 srvc_face2face.add_endpoint(endpoint_route="status", get_params={"job_id": str})

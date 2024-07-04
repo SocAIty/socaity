@@ -28,8 +28,8 @@ class Face2Face:
     def add_reference_face(self, face_name: str, source_img: Union[str, bytes], save: bool = True) -> InternalJob:
         return self._add_reference_face(face_name=face_name, source_img=source_img, save=save)
 
-    def swap_video_from_reference_face(self, face_name: str, target_video: Union[str, bytes]) -> InternalJob:
-        return self._swap_video_from_reference_face(face_name=face_name, target_video=target_video)
+    def swap_video(self, face_name: str, target_video: Union[str, bytes], include_audio: bool = True) -> InternalJob:
+        return self._swap_video(face_name=face_name, target_video=target_video, include_audio=include_audio)
 
     @face2face_service_client.job()
     def _swap_one(self, job: InternalJob, source_img: Union[np.array, bytes, str], target_img: Union[np.array, bytes, str]) -> np.array:
@@ -65,8 +65,10 @@ class Face2Face:
         return result
 
     @face2face_service_client.job()
-    def _swap_video_from_reference_face(self, job, face_name: str, target_video: str):
-        request_result = job.request("swap_video_from_reference_face", face_name, target_video)
+    def _swap_video(self, job, face_name: str, target_video: str, include_audio: bool = True):
+        request_result = job.request(
+            "swap_video", face_name=face_name, target_video=target_video, include_audio=include_audio
+            )
 
         # update progress bar
         while not request_result.is_finished():
@@ -75,7 +77,7 @@ class Face2Face:
             time.sleep(0)
 
         if request_result.error is not None:
-            raise Exception(f"Error in swap_video_from_reference_face: {request_result.error}")
+            raise Exception(f"Error in swap_video: {request_result.error}")
 
         return request_result.get_result()
 
