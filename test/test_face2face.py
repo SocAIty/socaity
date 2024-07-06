@@ -3,7 +3,7 @@ from socaity import Face2Face, gather_results
 test_face_1 = "test_files/test_face_1.jpg"
 test_face_2 = "test_files/test_face_2.jpg"
 test_face_3 = "test_files/test_face_3.jpg"
-test_video = "test_files/smithy.mp4"
+test_video = "test_files/test_video_ultra_short.mp4"
 
 f2f = Face2Face()
 
