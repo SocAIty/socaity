@@ -3,7 +3,6 @@ from typing import Union
 import numpy as np
 from fastsdk.jobs.threaded.internal_job import InternalJob
 from fastsdk import FastSDK
-from fastsdk.jobs.threaded.job_progress import JobProgress
 from .face2face_service_client import srvc_face2face
 
 face2face_service_client = FastSDK(srvc_face2face)

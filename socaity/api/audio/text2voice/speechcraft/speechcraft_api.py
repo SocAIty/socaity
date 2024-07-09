@@ -3,10 +3,9 @@ from typing import Union
 import numpy as np
 from fastsdk.jobs.threaded.internal_job import InternalJob
 from fastsdk import FastSDK
-from fastsdk.jobs.threaded.job_progress import JobProgress
-from .face2face_service_client import srvc_face2face
+from .speech_craft_service_client import srvc_speechcraft
 
-face2face_service_client = FastSDK(srvc_face2face)
+face2face_service_client = FastSDK(srvc_speechcraft)
 
 @face2face_service_client.sdk()
 class SpeechCraft:
@@ -41,9 +40,8 @@ class SpeechCraft:
     def voice2voice(self, voice_name: str, audio_file: Union[str, bytes], save: bool = False) -> InternalJob:
         return self._voice2voice(voice_name=voice_name, audio_file=audio_file, save=save)
 
-    def voice2embedding(self, face_name: str, source_img: Union[str, bytes], save: bool = True) -> InternalJob:
-        return self._add_reference_face(face_name=face_name, source_img=source_img, save=save)
-
+    def voice2embedding(self, voice_name: str, audio_file: Union[str, bytes], save: bool = False) -> InternalJob:
+        return self._voice2embedding(voice_name=voice_name, audio_file=audio_file, save=save)
 
     @face2face_service_client.job()
     def _text2voice(
@@ -77,37 +75,41 @@ class SpeechCraft:
             coarse_top_p=coarse_top_p,
             fine_temp=fine_temp
         )
-        result = endpoint_request.get_result()
+        while not endpoint_request.is_finished():
+            progress, message = endpoint_request.progress
+            job.set_progress(progress, message)
+            time.sleep(0)
+
         if endpoint_request.error is not None:
             raise Exception(f"Error in text2voice: {endpoint_request.error}")
 
-        return result
+        return endpoint_request.get_result()
 
     @face2face_service_client.job()
-    def _voice2voice(self, job, voice_name: str, audio_file: Union[str, bytes]):
+    def _voice2voice(self, job: InternalJob, voice_name: str, audio_file: Union[str, bytes]):
         endpoint_request = job.request("voice2voice", voice_name=voice_name, audio_file=audio_file)
-        result = endpoint_request.get_result()
+        while not endpoint_request.is_finished():
+            progress, message = endpoint_request.progress
+            job.set_progress(progress, message)
+            time.sleep(0)
+
         if endpoint_request.error is not None:
             raise Exception(f"Error in voice2voice: {endpoint_request.error}")
 
-        return result
+        return endpoint_request.get_result()
 
     @face2face_service_client.job()
-    def _voice2embedding(self, job, voice_name: str, audio_file: Union[str, bytes], save: bool = False):
+    def _voice2embedding(self, job: InternalJob, voice_name: str, audio_file: Union[str, bytes], save: bool = False):
         endpoint_request = job.request("voice2embedding", voice_name=voice_name, audio_file=audio_file, save=save)
-        result = endpoint_request.get_result()
+
+        # update progress bar
+        while not endpoint_request.is_finished():
+            progress, message = endpoint_request.progress
+            job.set_progress(progress, message)
+            time.sleep(0)
+
         if endpoint_request.error is not None:
             raise Exception(f"Error in voice2embedding: {endpoint_request.error}")
 
-        return result
+        return endpoint_request.get_result()
 
-
-if __name__ == "__main__":
-    f2f = Face2Face()
-    img_1 = "A:\\projects\\_face2face\\face2face\\test\\test_media\\test_face_1.jpg"
-    img2 = "A:\\projects\\_face2face\\face2face\\test\\test_media\\test_face_2.jpg"
-
-    job = f2f.swap_one(img_1, target_img=img2)
-    job.run()
-    result = job.wait_for_finished()
-    print(result.server_response)

@@ -21,17 +21,20 @@ srvc_speechcraft.add_endpoint(
         "coarse_top_k": int,
         "coarse_top_p": float,
         "fine_temp": float
-     }
+     },
+    refresh_interval=1
 )
 srvc_speechcraft.add_endpoint(
     endpoint_route="voice2embedding",
     post_params={"voice_name": str, "save": bool},
-    file_params={"audio_file": AudioFile}
+    file_params={"audio_file": AudioFile},
+    refresh_interval=1
 )
 srvc_speechcraft.add_endpoint(
     endpoint_route="voice2voice",
     post_params={"voice_name": str},
-    file_params={"audio_file": AudioFile}
+    file_params={"audio_file": AudioFile},
+    refresh_interval=1
 )
 
 srvc_speechcraft.add_endpoint(endpoint_route="status", get_params={"job_id": str})
