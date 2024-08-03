@@ -13,7 +13,6 @@ class SpeechCraft:
     SpeechCraft offers Text2Speech, Voice-Cloning and Voice2Voice conversion with the generative audio model bark
     SDK for the SpeechCraft https://github.com/SocAIty/SpeechCraft fast-task-api service.
     """
-
     def text2voice(
             self,
             text: str,

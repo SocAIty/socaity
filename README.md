@@ -2,13 +2,13 @@
 <p align="center">
   <img align="center" src="docs/socaity_icon.png" height="200" />
 </p>
-  <h2 align="center" style="margin-top:-10px">Your model zoo and SDK for generative AI. </h2>
+  <h2 align="center" style="margin-top:-10px">Your SDK and model zoo for generative AI. </h2>
 
 
 The SDK provides generative models and AI tools across all domains including text, audio, and image. 
 Think of it as open-CV for generative AI. 
-It allows you to run the models as simple python functions either locally, on your own servers, or on Socaity's servers, 
-with all complex backend operations handled automatically.
+It allows you to run the models as simple python functions either locally, on your own servers, on SocAIty's servers,
+or on a hybrid setup. All complex backend operations handled automatically.
 
 Run models (and services) as if they were python functions:
 - deployed on your localhost / your own server
@@ -23,8 +23,15 @@ Get started: Install the package from PyPi:
 ```python
 pip install socaity
 ```
+If you are a Game Developer, Artist, Content Creator, or you want to automate with AI this SDK is for you.
 
-If you are a Game Developer, Artist or Content Creator, this SDK is for you.
+# Overview
+
+1. How it works: Explains the concept of the SDK
+2. Generative AI - model zoo: Overview of the models and services provided
+3. Setup: How to install the SDK
+5. Usage: How to use the SDK
+
 
 # Examples and Use-Cases
 
@@ -43,11 +50,6 @@ Automated video content - How to:
 2. Swap the faces in the video with `face2face`
 3. Generate a voice-over for the video with `text2voice`
 
-Look into the UseCases.md for more examples like this.
-
-# Overview
-
-
 
 ## How it works
  
@@ -60,11 +62,11 @@ On this way, you can focus on your business logic and use AI natively like any o
 
 Run models (and services) as if they were python functions:
 
-Model deployment type    | Description                                    | Pros | Cons
-------------- |-----------------------------------------------------------| ------------- | ------------
-Locally | Install genAI packages on your machine and use it with AnyGEN | Free, Open-Source | GPU needed, more effort
-Hosted  | Use the AIs hosted on socaity services.                     | Runs everywhere, Ultra-easy | None
-Hybrid | Deploy some services on your servers and use others from     | pyAudio2Face | audio2face
+Model deployment type    | Description                                                    | Pros                        | Cons
+-------------            |----------------------------------------------------------------|-----------------------------| ------------
+Locally         | Install genAI packages on your machine and use it with socaity | Free, Open-Source           | GPU needed, more effort
+Hosted  | Use the AIs hosted on socaity servers.                         | Runs everywhere, Ultra-easy | None
+Hybrid | Deploy some services on your servers and use others from       | Full flexibility            | More effort
 
 
 

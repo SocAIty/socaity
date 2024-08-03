@@ -2,15 +2,12 @@ import time
 from typing import Union
 import numpy as np
 from fastsdk.jobs.threaded.internal_job import InternalJob
-from fastsdk import FastSDK
-from .face2face_service_client import srvc_face2face
-
-face2face_service_client = FastSDK(srvc_face2face)
+from fastsdk.fast_sdk2 import fastSDK, fastJob
+from socaity.api.image.img2img.face2face.face2face_service_client import srvc_face2face
 
 
-@face2face_service_client.sdk()
+@fastSDK(service_client=srvc_face2face)
 class Face2Face:
-
     def swap_img_to_img(
             self,
             source_img: Union[str, bytes],
@@ -31,10 +28,10 @@ class Face2Face:
         )
 
     def swap(
-        self,
-        faces: Union[str, dict, list],
-        media: Union[str, bytes],
-        enhance_face_model: Union[str, None] = 'gpen_bfr_512'
+            self,
+            faces: Union[str, dict, list],
+            media: Union[str, bytes],
+            enhance_face_model: Union[str, None] = 'gpen_bfr_512'
     ) -> InternalJob:
         return self._swap(faces=faces, media=media, enhance_face_model=enhance_face_model)
 
@@ -44,9 +41,10 @@ class Face2Face:
     def swap_video(self, face_name: str, target_video: Union[str, bytes], include_audio: bool = True) -> InternalJob:
         return self._swap_video(face_name=face_name, target_video=target_video, include_audio=include_audio)
 
-    @face2face_service_client.job()
+    @fastJob
     def _swap_img_to_img(
-            self, job: InternalJob,
+            self,
+            job: InternalJob,
             source_img: Union[np.array, bytes, str],
             target_img: Union[np.array, bytes, str],
             enhance_face_model: Union[str, None] = 'gpen_bfr_512'
@@ -67,7 +65,7 @@ class Face2Face:
 
         return result
 
-    @face2face_service_client.job()
+    @fastJob
     def _swap(self, job, faces: Union[str, dict, list], media: bytes, enhance_face_model: str = 'gpen_bfr_512'):
         endpoint_request = job.request("swap", faces=faces, media=media, enhance_face_model=enhance_face_model)
         result = endpoint_request.get_result()
@@ -76,7 +74,7 @@ class Face2Face:
 
         return result
 
-    @face2face_service_client.job()
+    @fastJob
     def _add_face(self, job, face_name: str, source_img: bytes, save: bool = True):
         endpoint_request = job.request("add_reference_face", face_name, source_img, save)
         result = endpoint_request.get_result()
@@ -85,7 +83,7 @@ class Face2Face:
 
         return result
 
-    @face2face_service_client.job()
+    @fastJob
     def _swap_video(
             self, job, face_name: str, target_video: str, include_audio: bool = True,
             enhance_face_model: str = 'gpen_bfr_512'
@@ -108,11 +106,11 @@ class Face2Face:
 
 
 if __name__ == "__main__":
-    f2f = Face2Face()
+    f2f = Face2Face(service="runpod")
     img_1 = "A:\\projects\\_face2face\\face2face\\test\\test_media\\test_face_1.jpg"
     img2 = "A:\\projects\\_face2face\\face2face\\test\\test_media\\test_face_2.jpg"
 
-    job = f2f.swap_one(img_1, target_img=img2)
+    job = f2f.swap_img_to_img(img_1, target_img=img2)
     job.run()
-    result = job.wait_for_finished()
-    print(result.server_response)
+    result = job.get_result()
+    print(result)

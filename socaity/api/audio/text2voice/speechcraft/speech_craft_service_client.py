@@ -4,7 +4,7 @@ from fastsdk.web.service_client import ServiceClient
 
 
 srvc_speechcraft = ServiceClient(
-    service_url="localhost:8009/api",
+    service_urls= {"localhost": "localhost:8009/api"},
     model_name="bark",
     model_domain_tags=[ModelDomainTag.IMAGE, ModelDomainTag.AUDIO],
     model_tags=[ModelTag.FACE2FACE, ModelTag.IMAGE2IMAGE]
