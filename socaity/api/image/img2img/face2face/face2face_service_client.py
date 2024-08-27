@@ -1,8 +1,10 @@
 from fastsdk import ImageFile, VideoFile
 from fastsdk.definitions.ai_model import AIModelDescription
 from fastsdk.definitions.enums import ModelDomainTag, ModelTag
+from fastsdk.web.req.cloud_storage.cloud_storage_factory import create_cloud_storage
 from fastsdk.web.service_client import ServiceClient
-from socaity.settings import DEFAULT_SOCAITY_URL
+from socaity.settings import (DEFAULT_SOCAITY_URL, AZURE_SAS_ACCESS_TOKEN,
+                              AZURE_SAS_CONNECTION_STRING, S3_ENDPOINT_URL, S3_ACCESS_KEY_ID, S3_ACCESS_KEY_SECRET)
 
 srvc_face2face = ServiceClient(
     service_name="face2face",
@@ -16,6 +18,13 @@ srvc_face2face = ServiceClient(
         model_name="face2face",
         model_domain_tags=[ModelDomainTag.IMAGE, ModelDomainTag.AUDIO],
         model_tags=[ModelTag.FACE2FACE, ModelTag.IMAGE2IMAGE]
+    ),
+    cloud_storage=create_cloud_storage(
+        azure_sas_access_token=AZURE_SAS_ACCESS_TOKEN,
+        azure_connection_string=AZURE_SAS_CONNECTION_STRING,
+        s3_endpoint_url=S3_ENDPOINT_URL,
+        s3_access_key_id=S3_ACCESS_KEY_ID,
+        s3_access_key_secret=S3_ACCESS_KEY_SECRET
     )
 )
 srvc_face2face.add_endpoint(

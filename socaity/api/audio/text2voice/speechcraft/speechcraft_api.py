@@ -2,12 +2,10 @@ import time
 from typing import Union
 import numpy as np
 from fastsdk.jobs.threaded.internal_job import InternalJob
-from fastsdk import FastSDK
+from fastsdk import fastSDK, fastJob
 from .speech_craft_service_client import srvc_speechcraft
 
-face2face_service_client = FastSDK(srvc_speechcraft)
-
-@face2face_service_client.sdk()
+@fastSDK(service_client=srvc_speechcraft)
 class SpeechCraft:
     """
     SpeechCraft offers Text2Speech, Voice-Cloning and Voice2Voice conversion with the generative audio model bark
@@ -42,7 +40,7 @@ class SpeechCraft:
     def voice2embedding(self, voice_name: str, audio_file: Union[str, bytes], save: bool = False) -> InternalJob:
         return self._voice2embedding(voice_name=voice_name, audio_file=audio_file, save=save)
 
-    @face2face_service_client.job()
+    @fastJob
     def _text2voice(
             self,
             job: InternalJob,
@@ -84,7 +82,7 @@ class SpeechCraft:
 
         return endpoint_request.get_result()
 
-    @face2face_service_client.job()
+    @fastJob
     def _voice2voice(self, job: InternalJob, voice_name: str, audio_file: Union[str, bytes]):
         endpoint_request = job.request("voice2voice", voice_name=voice_name, audio_file=audio_file)
         while not endpoint_request.is_finished():
@@ -97,7 +95,7 @@ class SpeechCraft:
 
         return endpoint_request.get_result()
 
-    @face2face_service_client.job()
+    @fastJob
     def _voice2embedding(self, job: InternalJob, voice_name: str, audio_file: Union[str, bytes], save: bool = False):
         endpoint_request = job.request("voice2embedding", voice_name=voice_name, audio_file=audio_file, save=save)
 
