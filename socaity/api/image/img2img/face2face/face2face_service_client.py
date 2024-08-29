@@ -11,7 +11,7 @@ srvc_face2face = ServiceClient(
     service_description="Instantly swap faces in images and videos. Face restoration and recognition.",
     service_urls={
         "localhost": "localhost:8020/api",
-        "runpod": "localhost:8020",
+        "runpod": "https://api.runpod.ai/v2/5vuwqrpymiueqr",
         "socaity": f"{DEFAULT_SOCAITY_URL}/face2face/api"
     },
     model_description=AIModelDescription(
