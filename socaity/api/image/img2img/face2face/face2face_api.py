@@ -39,8 +39,13 @@ class Face2Face:
     def add_face(self, face_name: str, source_img: Union[str, bytes], save: bool = True) -> InternalJob:
         return self._add_face(face_name=face_name, source_img=source_img, save=save)
 
-    def swap_video(self, face_name: str, target_video: Union[str, bytes], include_audio: bool = True) -> InternalJob:
-        return self._swap_video(face_name=face_name, target_video=target_video, include_audio=include_audio)
+    def swap_video(
+            self,
+            face_name: str, target_video: Union[str, bytes], include_audio: bool = True,
+            enhance_face_model: Union[str, None] = None #'gpen_bfr_512'
+        ) -> InternalJob:
+        return self._swap_video(face_name=face_name, target_video=target_video, include_audio=include_audio,
+                                enhance_face_model=enhance_face_model)
 
     @fastJob
     def _swap_img_to_img(
@@ -77,7 +82,7 @@ class Face2Face:
 
     @fastJob
     def _add_face(self, job, face_name: str, source_img: bytes, save: bool = True):
-        endpoint_request = job.request("add_reference_face", face_name, source_img, save)
+        endpoint_request = job.request("add_face", face_name, source_img, save)
         result = endpoint_request.get_result()
         if endpoint_request.error is not None:
             raise Exception(f"Error in add_reference_face: {endpoint_request.error}")

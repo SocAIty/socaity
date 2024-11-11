@@ -34,8 +34,8 @@ class SpeechCraft:
             coarse_top_p=coarse_top_p, fine_temp=fine_temp
         )
 
-    def voice2voice(self, voice_name: str, audio_file: Union[str, bytes], save: bool = False) -> InternalJob:
-        return self._voice2voice(voice_name=voice_name, audio_file=audio_file, save=save)
+    def voice2voice(self, voice_name: str, audio_file: Union[str, bytes]) -> InternalJob:
+        return self._voice2voice(voice_name=voice_name, audio_file=audio_file)
 
     def voice2embedding(self, voice_name: str, audio_file: Union[str, bytes], save: bool = False) -> InternalJob:
         return self._voice2embedding(voice_name=voice_name, audio_file=audio_file, save=save)

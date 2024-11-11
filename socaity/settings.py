@@ -3,7 +3,7 @@ from fastsdk.settings import API_KEYS
 
 # The basis URL of all SOCAITY services.
 # If not specified differently when a class is instantiated requests are sent to this URL.
-DEFAULT_SOCAITY_URL = 'http://socaity.ai/api'
+DEFAULT_SOCAITY_URL = 'http://socaity.ai/api/v0'
 # For services hosted on runpod, an API key is required.
 # If a service client calls an endpoint on runpod, the API key is added to the request in the header.
 API_KEYS["socaity"] = os.getenv("SOCAITY_API_KEY", None)

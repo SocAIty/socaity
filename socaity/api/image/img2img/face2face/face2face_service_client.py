@@ -1,7 +1,7 @@
 from fastsdk import ImageFile, VideoFile
 from fastsdk.definitions.ai_model import AIModelDescription
 from fastsdk.definitions.enums import ModelDomainTag, ModelTag
-from fastsdk.web.req.cloud_storage.cloud_storage_factory import create_cloud_storage
+from fastCloud import create_cloud_storage
 from fastsdk.web.service_client import ServiceClient
 from socaity.settings import (DEFAULT_SOCAITY_URL, AZURE_SAS_ACCESS_TOKEN,
                               AZURE_SAS_CONNECTION_STRING, S3_ENDPOINT_URL, S3_ACCESS_KEY_ID, S3_ACCESS_KEY_SECRET)
@@ -12,6 +12,8 @@ srvc_face2face = ServiceClient(
     service_urls={
         "localhost": "localhost:8020/api",
         "runpod": "https://api.runpod.ai/v2/5vuwqrpymiueqr",
+        "runpod2": "https://api.runpod.ai/v2/wq0ui1v4b9j81u",
+        "runpod_localhost": "http://localhost:8020/",
         "socaity": f"{DEFAULT_SOCAITY_URL}/face2face/api"
     },
     model_description=AIModelDescription(

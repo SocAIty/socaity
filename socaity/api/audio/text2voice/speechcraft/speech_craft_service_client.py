@@ -1,13 +1,17 @@
 from fastsdk import AudioFile
+from fastsdk.definitions.ai_model import AIModelDescription
 from fastsdk.definitions.enums import ModelDomainTag, ModelTag
 from fastsdk.web.service_client import ServiceClient
 
 
 srvc_speechcraft = ServiceClient(
-    service_urls= {"localhost": "localhost:8009/api"},
-    model_name="bark",
-    model_domain_tags=[ModelDomainTag.IMAGE, ModelDomainTag.AUDIO],
-    model_tags=[ModelTag.FACE2FACE, ModelTag.IMAGE2IMAGE]
+    service_name="speechcraft",
+    service_urls={"localhost": "localhost:8009/api"},
+    model_description=AIModelDescription(
+        model_name="bark",
+        model_domain_tags=[ModelDomainTag.IMAGE, ModelDomainTag.AUDIO],
+        model_tags=[ModelTag.FACE2FACE, ModelTag.IMAGE2IMAGE]
+    )
 )
 srvc_speechcraft.add_endpoint(
     endpoint_route="/text2voice",
@@ -22,19 +26,19 @@ srvc_speechcraft.add_endpoint(
         "coarse_top_p": float,
         "fine_temp": float
      },
-    refresh_interval=1
+    refresh_interval=2
 )
 srvc_speechcraft.add_endpoint(
     endpoint_route="voice2embedding",
     post_params={"voice_name": str, "save": bool},
     file_params={"audio_file": AudioFile},
-    refresh_interval=1
+    refresh_interval=2
 )
 srvc_speechcraft.add_endpoint(
     endpoint_route="voice2voice",
     post_params={"voice_name": str},
     file_params={"audio_file": AudioFile},
-    refresh_interval=1
+    refresh_interval=2
 )
 
 srvc_speechcraft.add_endpoint(endpoint_route="status", get_params={"job_id": str})
