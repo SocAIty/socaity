@@ -8,7 +8,7 @@ from .speech_craft_service_client import srvc_speechcraft
 @fastSDK(service_client=srvc_speechcraft)
 class SpeechCraft:
     """
-    SpeechCraft offers Text2Speech, Voice-Cloning and Voice2Voice conversion with the generative audio model bark
+    SpeechCraft offers Text2Speech, Voice-Cloning and Voice2Voice conversion with the generative audio model_description bark
     SDK for the SpeechCraft https://github.com/SocAIty/SpeechCraft fast-task-api service.
     """
     def text2voice(
@@ -26,7 +26,7 @@ class SpeechCraft:
         """
         :param text: the text to be converted to speech
         :param voice: the name of the voice to be used. Uses the pretrained voices of SpeechCraft
-        :param semantic_temp: the temperature for the semantic model
+        :param semantic_temp: the temperature for the semantic model_description
         """
         return self._text2voice(
             text=text, voice=voice, semantic_temp=semantic_temp, semantic_top_k=semantic_top_k,

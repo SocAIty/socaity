@@ -22,7 +22,7 @@ class Face2Face:
             Or the image itself as bytes (with open(f): f.read()) .
         :param target_img: Path to the image containing the face to be swapped to.
             Or the image itself as bytes (with open(f): f.read()) .
-        :param enhance_face_model: The face enhancement model to use. Use None for no enhancement.
+        :param enhance_face_model: The face enhancement model_description to use. Use None for no enhancement.
         """
         return self._swap_img_to_img(
             source_img=source_img, target_img=target_img, enhance_face_model=enhance_face_model

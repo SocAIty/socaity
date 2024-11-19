@@ -14,7 +14,8 @@ srvc_face2face = ServiceClient(
         "runpod": "https://api.runpod.ai/v2/5vuwqrpymiueqr",
         "runpod2": "https://api.runpod.ai/v2/wq0ui1v4b9j81u",
         "runpod_localhost": "http://localhost:8020/",
-        "socaity": f"{DEFAULT_SOCAITY_URL}/face2face/api"
+        "socaity": f"{DEFAULT_SOCAITY_URL}/face2face/api",
+        "socaity_local": "http://localhost:8001/api/v0/face2face"
     },
     model_description=AIModelDescription(
         model_name="face2face",
@@ -51,5 +52,5 @@ srvc_face2face.add_endpoint(
     refresh_interval=3  # check every 3 seconds for progress
 )
 
-srvc_face2face.add_endpoint(endpoint_route="status", get_params={"job_id": str})
+# srvc_face2face.add_endpoint(endpoint_route="status", get_params={"job_id": str})
 
