@@ -14,7 +14,7 @@ f2f = Face2Face(service="socaity_local", api_key=os.getenv("SOCAITY_API_KEY", No
 def test_single_face_swap():
     job_swapped = f2f.swap_img_to_img(test_face_1, test_face_2, enhance_face_model=None)
     swapped = job_swapped.get_result()
-    swapped.save("test_files/face2face/test_face_1_swapped.jpg")
+    swapped.save("test_files/output/face2face/test_face_1_swapped.jpg")
     return swapped
 
 

@@ -18,7 +18,7 @@ def test_text2img():
     )
     imgs = fj.get_result()
     for i, img in enumerate(imgs):
-        img.save(f"test_files/text2img/test_fluxs_text2img_{i}.png")
+        img.save(f"test_files/output/text2img/test_fluxs_text2img_{i}.png")
 
 if __name__ == "__main__":
     test_text2img()
