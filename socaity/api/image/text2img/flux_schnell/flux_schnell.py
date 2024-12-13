@@ -1,40 +1,41 @@
+import random
+from functools import wraps
+
 import media_toolkit as mt
-from typing import Union
+from typing import Union, Tuple, List
 
 from fastsdk import fastSDK, fastJob
 from fastsdk.jobs.threaded.internal_job import InternalJob
+from media_toolkit import ImageFile
 from socaity.api.image.text2img.flux_schnell.flux_schnell_service_client import srvc_flux_schnell
-from socaity.api.image.text2img.text2image import Text2Image
+from socaity.api.image.text2img.text2image import _BaseText2Image
 
 
 @fastSDK(service_client=srvc_flux_schnell)
-class FluxSchnell(Text2Image):
+class FluxSchnell(_BaseText2Image):
     @fastJob
-    def text2img(
-            self,
-            text: str,
-            aspect_ratio: Union[str, (int, int)],
-            num_outputs: int = 1,
-            seed: int = None
-    ) -> mt.ImageFile:
-        """
-        Converts text to an image.
-        :param text: The text to be converted to an image.
-        """
-        return self._text2img(text=text, aspect_ratio=aspect_ratio, num_outputs=num_outputs, seed=seed)
-
-
     def _text2img(
             self,
             job: InternalJob,
             text: str,
-            aspect_ratio: Union[str, (int, int)],
+            aspect_ratio: Union[str, Tuple[int, int]] = "1:1",
             num_outputs: int = 1,
-            seed: int = None
-    ):
+            num_inference_steps: int = 4,
+            seed: int = None,
+            output_format: str = 'png',
+            disable_safety_checker: bool = True,
+            go_fast: bool = False
+    ) -> Union[mt.ImageFile, List[mt.ImageFile], None]:
+        if seed is None:
+            seed = random.Random().randint(0, 1000000)
+
+        if isinstance(aspect_ratio, tuple):
+            aspect_ratio = f"{aspect_ratio[0]}:{aspect_ratio[1]}"
+
         endpoint_request = job.request(
             endpoint_route="text2img",
-            text=text, aspect_ratio=aspect_ratio, num_outputs=num_outputs, seed=seed
+            prompt=text, aspect_ratio=aspect_ratio, num_outputs=num_outputs, num_inference_steps=num_inference_steps,
+            seed=seed, output_format=output_format, disable_safety_checker=disable_safety_checker, go_fast=go_fast
         )
 
         while not endpoint_request.is_finished():
@@ -43,4 +44,30 @@ class FluxSchnell(Text2Image):
         if endpoint_request.error is not None:
             raise Exception(f"Error in text2image with flux_schnell: {endpoint_request.error}")
 
-        return endpoint_request.get_result()
+        res = endpoint_request.get_result()
+        if isinstance(res, list):
+            if len(res) == 1:
+                return ImageFile().from_any(res[0])
+            return [ImageFile().from_any(img) for img in res]
+
+        return ImageFile().from_any(res)
+
+    def text2img(
+            self,
+            text: str,
+            aspect_ratio: Union[str, Tuple[int, int]],
+            num_outputs: int = 1,
+            num_inference_steps: int = 4,
+            seed: int = None,
+            output_format: str = 'png',
+            disable_safety_checker: bool = True,
+            go_fast: bool = False
+    ) -> InternalJob:
+        """
+        Converts text to an image.
+        :param text: The prompt to be converted to an image.
+        """
+        return self._text2img(
+            text=text, aspect_ratio=aspect_ratio, num_outputs=num_outputs, num_inference_steps=num_inference_steps,
+            seed=seed, output_format=output_format, disable_safety_checker=disable_safety_checker, go_fast=go_fast
+        )

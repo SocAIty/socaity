@@ -9,10 +9,10 @@ test_face_3 = "test_files/face2face/test_face_3.jpg"
 test_video = "test_files/face2face/test_video_ultra_short_short.mp4"
 
 #f2f = Face2Face(service="runpod_localhost", api_key=os.getenv("RUNPOD_API_KEY"))
-f2f = Face2Face(service="socaity_local", api_key="vY-pKQwm2fn4CQOhH3xP3xqrGBM4mT2SOqzOwffCisqKJUXMdceQQS39xTfim6Op")
+f2f = Face2Face(service="socaity_local", api_key=os.getenv("SOCAITY_API_KEY", None))
 
 def test_single_face_swap():
-    job_swapped = f2f.swap_img_to_img(test_face_1, test_face_2)
+    job_swapped = f2f.swap_img_to_img(test_face_1, test_face_2, enhance_face_model=None)
     swapped = job_swapped.get_result()
     swapped.save("test_files/face2face/test_face_1_swapped.jpg")
     return swapped
