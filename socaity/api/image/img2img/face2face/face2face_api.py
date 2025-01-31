@@ -3,7 +3,7 @@ from typing import Union
 import numpy as np
 from fastsdk.jobs.threaded.internal_job import InternalJob
 from fastsdk.fast_sdk import fastSDK, fastJob
-from media_toolkit import ImageFile
+from media_toolkit import ImageFile, VideoFile
 from socaity.api.image.img2img.face2face.face2face_service_client import srvc_face2face
 
 
@@ -11,8 +11,8 @@ from socaity.api.image.img2img.face2face.face2face_service_client import srvc_fa
 class Face2Face:
     def swap_img_to_img(
             self,
-            source_img: Union[str, bytes],
-            target_img: Union[str, bytes],
+            source_img: Union[str, bytes, ImageFile],
+            target_img: Union[str, bytes, ImageFile],
             enhance_face_model: Union[str, None] = 'gpen_bfr_512'
     ) -> InternalJob:
         """
@@ -36,12 +36,12 @@ class Face2Face:
     ) -> InternalJob:
         return self._swap(faces=faces, media=media, enhance_face_model=enhance_face_model)
 
-    def add_face(self, face_name: str, source_img: Union[str, bytes], save: bool = True) -> InternalJob:
-        return self._add_face(face_name=face_name, source_img=source_img, save=save)
+    def add_face(self, face_name: str, image: Union[str, bytes, ImageFile], save: bool = True) -> InternalJob:
+        return self._add_face(face_name=face_name, image=image, save=save)
 
     def swap_video(
             self,
-            face_name: str, target_video: Union[str, bytes], include_audio: bool = True,
+            face_name: str, target_video: Union[str, bytes, VideoFile], include_audio: bool = True,
             enhance_face_model: Union[str, None] = None #'gpen_bfr_512'
         ) -> InternalJob:
         return self._swap_video(face_name=face_name, target_video=target_video, include_audio=include_audio,
@@ -81,8 +81,8 @@ class Face2Face:
         return result
 
     @fastJob
-    def _add_face(self, job, face_name: str, source_img: bytes, save: bool = True):
-        endpoint_request = job.request("add_face", face_name, source_img, save)
+    def _add_face(self, job, face_name: str, image: bytes, save: bool = True):
+        endpoint_request = job.request("add_face", face_name=face_name, image=image, save=save)
         result = endpoint_request.get_result()
         if endpoint_request.error is not None:
             raise Exception(f"Error in add_reference_face: {endpoint_request.error}")

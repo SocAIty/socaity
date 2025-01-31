@@ -1,6 +1,6 @@
 import os
 
-from socaity import Face2Face, gather_results
+from socaity import Face2Face
 
 
 test_face_1 = "test_files/face2face/test_face_1.jpg"
@@ -8,8 +8,12 @@ test_face_2 = "test_files/face2face/test_face_2.jpg"
 test_face_3 = "test_files/face2face/test_face_3.jpg"
 test_video = "test_files/face2face/test_video_ultra_short_short.mp4"
 
-#f2f = Face2Face(service="runpod_localhost", api_key=os.getenv("RUNPOD_API_KEY"))
+
+#f2f = Face2Face(service="runpod", api_key=os.getenv("RUNPOD_API_KEY"))
 f2f = Face2Face(service="socaity_local", api_key=os.getenv("SOCAITY_API_KEY", None))
+# f2f = Face2Face(service="runpod", api_key=os.getenv("RUNPOD_API_KEY", None))
+#f2f = Face2Face(service="localhost")
+# f2f = Face2Face(service="runpod_localhost")
 
 def test_single_face_swap():
     job_swapped = f2f.swap_img_to_img(test_face_1, test_face_2, enhance_face_model=None)
@@ -31,12 +35,13 @@ def test_embedding_face_swap():
 
 
 def test_video_swap():
-    ref_face_v_job = f2f.add_face(face_name="black_woman", source_img=test_face_3, save=True)
+    #ref_face_v_job = f2f.add_face(face_name="black_woman", image=test_face_3, save=True)
+    #ref_face_vector = ref_face_v_job.get_result()
     swapped_video_job = f2f.swap_video(face_name="black_woman", target_video=test_video, include_audio=True, enhance_face_model="")
     swapped_video = swapped_video_job.get_result()
     return swapped_video
 
-test_single_face_swap()
-# test_video_swap()
+# test_single_face_swap()
+test_video_swap()
 # test_embedding_face_swap()
 a = 1

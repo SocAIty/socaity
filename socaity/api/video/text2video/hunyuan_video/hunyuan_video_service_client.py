@@ -1,28 +1,22 @@
-from fastCloud import create_cloud_storage
+from fastCloud import create_fast_cloud
 from fastsdk.definitions.ai_model import AIModelDescription
-from fastsdk.definitions.enums import ModelDomainTag, ModelTag
+from fastsdk.definitions.enums import ModelDomainTag
 from fastsdk.web.service_client import ServiceClient
-from socaity import DEFAULT_SOCAITY_URL, AZURE_SAS_ACCESS_TOKEN, AZURE_SAS_CONNECTION_STRING, S3_ENDPOINT_URL, \
-    S3_ACCESS_KEY_ID, S3_ACCESS_KEY_SECRET
+from socaity import DEFAULT_SOCAITY_URL
+
 
 srvc_hunyuan_video = ServiceClient(
     service_urls={
         "socaity": f"{DEFAULT_SOCAITY_URL}/hunyuan_video",
-        "socaity_local": "http://localhost:8001/api/v0/hunyuan_video",
-        "replicate": "https://api.replicate.com/v1/models/tencent/hunyuan-video/predictions"
+        "socaity_local": "http://localhost:8000/api/v0/hunyuan_video",
+        "replicate": {
+            "version": "847dfa8b01e739637fc76f480ede0c1d76408e1d694b830b5dfb8e547bf98405"
+        }
     },
     service_name="hunyuan-video",
     model_description=AIModelDescription(
         model_name="hunyuan-video",
-        model_domain_tags=[ModelDomainTag.VIDEO, ModelDomainTag.TEXT],
-        model_tags=[ModelTag.TEXT2VIDEO]
-    ),
-    cloud_storage=create_cloud_storage(
-        azure_sas_access_token=AZURE_SAS_ACCESS_TOKEN,
-        azure_connection_string=AZURE_SAS_CONNECTION_STRING,
-        s3_endpoint_url=S3_ENDPOINT_URL,
-        s3_access_key_id=S3_ACCESS_KEY_ID,
-        s3_access_key_secret=S3_ACCESS_KEY_SECRET
+        model_domain_tags=[ModelDomainTag.VIDEO, ModelDomainTag.TEXT]
     )
 )
 
@@ -46,6 +40,6 @@ class HunyuanVideoText2ImgPostParams(BaseModel):
 # ToDo: support pydantic schemas for default values..
 srvc_hunyuan_video.add_endpoint(
     endpoint_route="/text2video",
-    post_params=HunyuanVideoText2ImgPostParams(),
-    refresh_interval=5
+    body_params=HunyuanVideoText2ImgPostParams(),
+    refresh_interval_s=5
 )

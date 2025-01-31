@@ -1,4 +1,5 @@
 from socaity import SpeechCraft
+import os
 
 test_file_1 = 'test_files/text2speech/voice_clone_test_voice_1.wav'
 test_file_2 = 'test_files/text2speech/voice_clone_test_voice_2.wav'
@@ -6,7 +7,11 @@ test_file_2 = 'test_files/text2speech/voice_clone_test_voice_2.wav'
 sample_text = "I love society [laughs]! [happy] What a day to make voice overs with artificial intelligence."
 out_dir = "test_files/output/text2speech"
 
-sc = SpeechCraft()
+# sc = SpeechCraft(service="runpod", api_key=os.getenv("RUNPOD_API_KEY"))
+# sc = SpeechCraft(service="localhost_runpod", api_key=os.getenv("RUNPOD_API_KEY"))
+# sc = SpeechCraft(service="localhost", api_key=os.getenv("RUNPOD_API_KEY"))
+sc = SpeechCraft(service="socaity_local", api_key=os.getenv("SOCAITY_API_KEY"))
+# sc = SpeechCraft(service="socaity", api_key=os.getenv("SOCAITY_API_KEY"))
 
 def test_text2voice():
     t2v_job = sc.text2voice(sample_text)
@@ -16,9 +21,9 @@ def test_text2voice():
 
 ## test voice cloning
 def test_voice2embedding():
-    v2e_job = sc.voice2embedding(audio_file=test_file_1, voice_name="hermine2", save=True)
+    v2e_job = sc.voice2embedding(audio_file=test_file_1, voice_name="hermine", save=True)
     embedding = v2e_job.get_result()
-    audio_with_cloned_voice = sc.text2voice(sample_text, voice="hermine2").get_result()
+    audio_with_cloned_voice = sc.text2voice(sample_text, voice=embedding).get_result()
     audio_with_cloned_voice.save(f"{out_dir}/hermine_i_love_socaity.wav")
 
 def test_voice2voice():
@@ -33,5 +38,5 @@ def test_voice2voice():
 
 if __name__ == "__main__":
     test_text2voice()
-    #test_voice2embedding()
+    test_voice2embedding()
     test_voice2voice()

@@ -2,7 +2,7 @@ import time
 from typing import Union
 import numpy as np
 from fastsdk.jobs.threaded.internal_job import InternalJob
-from fastsdk import fastSDK, fastJob
+from fastsdk import fastSDK, fastJob, MediaFile
 from .speech_craft_service_client import srvc_speechcraft
 
 @fastSDK(service_client=srvc_speechcraft)
@@ -14,7 +14,7 @@ class SpeechCraft:
     def text2voice(
             self,
             text: str,
-            voice: str = "en_speaker_3",
+            voice: Union[str, bytes, MediaFile] = "en_speaker_3",
             semantic_temp: float = 0.7,
             semantic_top_k: int = 50,
             semantic_top_p: float = 0.95,
@@ -25,7 +25,7 @@ class SpeechCraft:
     ) -> InternalJob:
         """
         :param text: the text to be converted to speech
-        :param voice: the name of the voice to be used. Uses the pretrained voices of SpeechCraft
+        :param voice: the name of the voice to be used. Or an embedding file. Uses the pretrained voices of SpeechCraft
         :param semantic_temp: the temperature for the semantic model_description
         """
         return self._text2voice(
@@ -34,8 +34,8 @@ class SpeechCraft:
             coarse_top_p=coarse_top_p, fine_temp=fine_temp
         )
 
-    def voice2voice(self, voice_name: str, audio_file: Union[str, bytes]) -> InternalJob:
-        return self._voice2voice(voice_name=voice_name, audio_file=audio_file)
+    def voice2voice(self, voice_name: str, audio_file: Union[str, bytes], temp: float = 0.7) -> InternalJob:
+        return self._voice2voice(voice_name=voice_name, audio_file=audio_file, temp=temp)
 
     def voice2embedding(self, voice_name: str, audio_file: Union[str, bytes], save: bool = False) -> InternalJob:
         return self._voice2embedding(voice_name=voice_name, audio_file=audio_file, save=save)
@@ -60,8 +60,13 @@ class SpeechCraft:
         :param source_img: The image containing the face to be swapped. Read with open() -> f.read()
         :param target_img: The image containing the face to be swapped to. Read with open() -> f.read()
         """
+
+        endpoint_route = "text2voice"
+        if not isinstance(voice, str):
+            endpoint_route = "text2voice_with_embedding"
+
         endpoint_request = job.request(
-            endpoint_route="text2voice",
+            endpoint_route=endpoint_route,
             text=text,
             voice=voice,
             semantic_temp=semantic_temp,
@@ -83,8 +88,8 @@ class SpeechCraft:
         return endpoint_request.get_result()
 
     @fastJob
-    def _voice2voice(self, job: InternalJob, voice_name: str, audio_file: Union[str, bytes]):
-        endpoint_request = job.request("voice2voice", voice_name=voice_name, audio_file=audio_file)
+    def _voice2voice(self, job: InternalJob, voice_name: str, audio_file: Union[str, bytes], temp: float = 0.7):
+        endpoint_request = job.request("voice2voice", voice_name=voice_name, audio_file=audio_file, temp=temp)
         while not endpoint_request.is_finished():
             progress, message = endpoint_request.progress
             job.set_progress(progress, message)
