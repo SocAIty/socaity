@@ -4,9 +4,12 @@ import numpy as np
 from fastsdk.jobs.threaded.internal_job import InternalJob
 from fastsdk import fastSDK, fastJob, MediaFile
 from .speech_craft_service_client import srvc_speechcraft
+from socaity.api.audio.text2voice.i_text2voice import _BaseText2Voice
+from socaity.api.audio.voice2voice.i_voice2voice import _BaseVoice2Voice
+
 
 @fastSDK(service_client=srvc_speechcraft)
-class SpeechCraft:
+class SpeechCraft(_BaseText2Voice, _BaseVoice2Voice):
     """
     SpeechCraft offers Text2Speech, Voice-Cloning and Voice2Voice conversion with the generative audio model_description bark
     SDK for the SpeechCraft https://github.com/SocAIty/SpeechCraft fast-task-api service.

@@ -12,8 +12,8 @@ test_video = "test_files/face2face/test_video_ultra_short_short.mp4"
 #f2f = Face2Face(service="runpod", api_key=os.getenv("RUNPOD_API_KEY"))
 f2f = Face2Face(service="socaity_local", api_key=os.getenv("SOCAITY_API_KEY", None))
 # f2f = Face2Face(service="runpod", api_key=os.getenv("RUNPOD_API_KEY", None))
-#f2f = Face2Face(service="localhost")
-# f2f = Face2Face(service="runpod_localhost")
+# f2f = Face2Face(service="localhost")
+#f2f = Face2Face(service="runpod_localhost")
 
 def test_single_face_swap():
     job_swapped = f2f.swap_img_to_img(test_face_1, test_face_2, enhance_face_model=None)
@@ -41,7 +41,7 @@ def test_video_swap():
     swapped_video = swapped_video_job.get_result()
     return swapped_video
 
-# test_single_face_swap()
-test_video_swap()
+test_single_face_swap()
+# test_video_swap()
 # test_embedding_face_swap()
 a = 1
