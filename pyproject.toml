@@ -16,7 +16,7 @@ dependencies = [
     "tqdm",
     "httpx",
     "fastsdk>=0.0.7",
-    "media-toolkit>=0.1.6",
+    "media-toolkit>=0.1.8",
     "singleton_decorator==1.0.0"
 ]
 

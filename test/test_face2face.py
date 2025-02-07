@@ -8,9 +8,9 @@ test_face_2 = "test_files/face2face/test_face_2.jpg"
 test_face_3 = "test_files/face2face/test_face_3.jpg"
 test_video = "test_files/face2face/test_video_ultra_short_short.mp4"
 
-
+#f2f = Face2Face(service="socaity", api_key=os.getenv("SOCAITY_API_KEY", None))
 #f2f = Face2Face(service="runpod", api_key=os.getenv("RUNPOD_API_KEY"))
-f2f = Face2Face(service="socaity_local", api_key=os.getenv("SOCAITY_API_KEY", None))
+f2f = Face2Face(service="socaity")
 # f2f = Face2Face(service="runpod", api_key=os.getenv("RUNPOD_API_KEY", None))
 # f2f = Face2Face(service="localhost")
 #f2f = Face2Face(service="runpod_localhost")
