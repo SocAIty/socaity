@@ -4,18 +4,18 @@ from fastsdk.web.service_client import ServiceClient
 from pydantic import BaseModel, Field
 
 from media_toolkit import ImageFile
-from socaity import DEFAULT_SOCAITY_URL, DEFAULT_REPLICATE_URL
+from socaity.settings import DEFAULT_SOCAITY_URL
 
 # Service Client for SAM 2
 srvc_sam2 = ServiceClient(
     service_urls={
         "socaity": f"{DEFAULT_SOCAITY_URL}/sam2",
-        "replicate": { "version": "fe97b453a6455861e3bac769b441ca1f1086110da7466dbb65cf1eecfd60dc83" },
+        "replicate": {"version": "fe97b453a6455861e3bac769b441ca1f1086110da7466dbb65cf1eecfd60dc83" },
     },
     service_name="sam2",
     model_description=AIModelDescription(
         model_name="SAM 2",
-        model_domain_tags=[ModelDomainTag.IMAGE],
+        model_domain_tags=[ModelDomainTag.IMAGE, ModelDomainTag.MISC],
     ),
     upload_to_cloud_threshold_mb=0
 )

@@ -2,9 +2,10 @@ from typing import Union
 
 from fastsdk.jobs.threaded.internal_job import InternalJob
 from fastsdk.fast_sdk import fastSDK, fastJob
+from fastsdk.utils import get_function_parameters_as_dict
 from media_toolkit import ImageFile
 from .sam2_service_client import srvc_sam2
-from ..i_image_segmentation import _BaseSegmentation
+from socaity.api.image.img2img.image_segmentation.i_image_segmentation import _BaseSegmentation
 
 
 @fastSDK(service_client=srvc_sam2)
@@ -63,5 +64,11 @@ class Sam2(_BaseSegmentation):
         Perform image segmentation using SAM 2.
         :param image: URL or path to the input image.
         """
-        return self._segment(image=image, **kwargs)
+        pams = get_function_parameters_as_dict(
+            self._segment,
+            exclude_param_names="job",
+            func_kwargs=locals()
+        )
+
+        return self._segment(**pams)
 

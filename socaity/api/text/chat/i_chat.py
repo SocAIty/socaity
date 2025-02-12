@@ -12,5 +12,18 @@ class _BaseChat:
 
 
 # Factory method for generalized model_hosting_info calling
-def chat(prompt: str, model="meta-llama-3", service="socaity", *args, **kwargs) -> str:
-    return None
+def chat(prompt: str, model="meta-llama-3-13b", service="socaity", *args, **kwargs) -> str:
+    from .llama3 import MetaLLama3_70b, MetaLLama3_8b, MetaLLama3_70b_code, MetaLLama3_13b_code, MetaLLama3_70b_instruct
+    from .deepseek import DeepSeekR1
+    names_cl = {
+        "meta-llama-3-8b": MetaLLama3_8b,
+        "meta-llama-3-70b": MetaLLama3_70b,
+        "meta-llama-3-70b-code": MetaLLama3_70b_code,
+        "meta-llama-3-13b-code": MetaLLama3_13b_code,
+        "meta-llama-3-70b-instruct": MetaLLama3_70b_instruct,
+        "deepseek-r1": DeepSeekR1
+    }
+    names_cl = {k.lower().replace("-", ""): v for k, v in names_cl.items()}
+    mdlcl = names_cl.get(model.lower().replace("-", ""), MetaLLama3_8b)
+
+    return mdlcl(service=service).chat(prompt=prompt, *args, **kwargs)

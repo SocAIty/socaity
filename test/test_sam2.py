@@ -1,6 +1,6 @@
 import os
 
-from socaity.api.image.img2img.sam2.sam2_api import Sam2
+from socaity import Sam2
 
 genai = Sam2(service="replicate", api_key=os.getenv("REPLICATE_API_KEY", None))
 # fluxs = FluxSchnell(service="socaity_local", api_key=os.getenv("SOCAITY_API_KEY", None))

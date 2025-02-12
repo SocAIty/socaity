@@ -51,7 +51,7 @@ class HunyuanVideo(_BaseText2Video):
         if isinstance(res, list) and not isinstance(res, str):
             if len(res) == 1:
                 return VideoFile().from_any(res[0])
-            return [VideoFile().from_any(img) for img in res]
+            return [VideoFile().from_any(vid) for vid in res]
 
         return VideoFile().from_any(res)
 
