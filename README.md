@@ -5,25 +5,48 @@
   <h2 align="center" style="margin-top:-10px">Your SDK and model zoo for generative AI. </h2>
 
 
-The SDK provides generative models and AI tools across all domains including text, audio, and image. 
+The SDK provides generative models and AI tools across all domains including text, audio, image and more. 
 Think of it as open-CV for generative AI. 
-It allows you to run the models as simple python functions either locally, on your own servers, on SocAIty's servers,
-or on a hybrid setup. All complex backend operations handled automatically.
+It allows you to run models as simple python functions.
 
-Run models (and services) as if they were python functions:
+For an overview of all models and to obtain an API key visit [socaity.ai](https://socaity.ai)
+
+If you are a Game Developer, Artist, Content Creator, or you want to automate with AI this SDK is for you.
+
+Run models as if they were python functions nomatter where they are deployed:
+- hosted on socaity servers (default)
 - deployed on your localhost / your own server
 - hybrid deployment
-- hosted on socaity servers
 
-The package then provides simplified API calls and AI service inference - also for long running tasks.
+You can focus on your app, while we handle all the complicated stuff under the hood.
 
 <hr />
 
-Get started: Install the package from PyPi:
+Quicklinks:
+
+
+<hr />
+
+# Getting started
+
+## Installation
+Install the package from PyPi
 ```python
 pip install socaity
 ```
-If you are a Game Developer, Artist, Content Creator, or you want to automate with AI this SDK is for you.
+
+## Authentication
+
+For using socaity.ai services you need to set the environment variable `SOCAITY_API_KEY`.
+You can obtain an API key from [socaity.ai](https://socaity.ai) after signing up.
+```bash
+export SOCAITY_API_KEY=your_api_key
+```
+Now you are ready to use the SDK.
+
+If you instead want to directly communicate with your runpod services or replicate you can set 
+the environment variable `RUNPOD_API_KEY` or `REPLICATE_API_KEY`.
+When initializing your ModelClient you can additionally pass which provider you want to use.
 
 # Overview
 
@@ -143,20 +166,6 @@ The clientAPI also provides the possibility to:
 - specify an exact endpoint type like "localhost"
 - the provider
 
-## sync usage
-```python
-from socaity import Bark
-audio, sample_rate = Bark("localhost").run_sync("Hello", affe=2)
-```
-# Setup:
-Install the package from pip:
-```python
-pip install socaity
-```
-or install from source if you want to work with the newest version:
-```python
-pip install git+git://github.com/SocAIty/socaity
-```
 
 
 
@@ -184,6 +193,6 @@ Feel free to add your own endpoints or use the predefined ones.
 
 
 # Important Note
-- PACKAGE IS UNDER DEVELOPMENT AND FAR AWAY FROM BEING PRODUCTION READY
+- PACKAGE IS IN ALPHA RELEASE. RAPID CHANGES TO SYNTAX AND FUNCTIONALITY NEED TO Be EXPECTED
 - LEAVE A STAR TO SUPPORT THIS WORK AND FOR MORE MODELS BEING ADDED TO THE LIBRARY
 

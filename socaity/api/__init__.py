@@ -3,5 +3,5 @@ from socaity.api.image.img2img import Face2Face, image_segmentation, Sam2, Tence
 from socaity.api.video.text2video import HunyuanVideo
 from socaity.api.text import (chat,
     MetaLLama3_8b, MetaLLama3_70b_instruct, MetaLLama3_70b, MetaLLama3_13b_code, MetaLLama3_70b_code,
-    DeepSeekR1
+    DeepSeekR1, Blip
 )

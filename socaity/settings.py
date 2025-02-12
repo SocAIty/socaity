@@ -3,7 +3,7 @@ from fastsdk.settings import API_KEYS
 
 # The basis URL of all SOCAITY services.
 # If not specified differently when a class is instantiated requests are sent to this URL.
-DEFAULT_SOCAITY_URL = os.environ.get("SOCAITY_API_URL", "https://socaity-inference-backend.agreeablestone-9a113b0b.northeurope.azurecontainerapps.io/api/v0") # 'http://socaity.ai/api/v0')
+DEFAULT_SOCAITY_URL = os.environ.get("SOCAITY_API_URL", "https://api.socaity.ai/v0")
 DEFAULT_REPLICATE_URL = os.environ.get("REPLICATE_API_URL", "https://api.replicate.com/v1/models")
 
 
