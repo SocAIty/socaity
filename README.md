@@ -90,6 +90,10 @@ image.get_result().save("sdk_poem.png")
 ```
 This results in something like this:
 
+
+https://github.com/user-attachments/assets/3cb84ca1-6af6-4649-82f7-59706eab1046
+
+
 ### Jobs vs. Results
 
 When you invoke an service, internally we use threading and asyncio to check the socaity endpoints for the result.
