@@ -4,14 +4,10 @@ import os
 test_file_1 = 'test_files/text2speech/voice_clone_test_voice_1.wav'
 test_file_2 = 'test_files/text2speech/voice_clone_test_voice_2.wav'
 
-sample_text = "I love society [laughs]! [happy] What a day to make voice overs with artificial intelligence."
+sample_text = "I love socaity [laughs]. What a time to be alive"
 out_dir = "test_files/output/text2speech"
 
-# sc = SpeechCraft(service="runpod", api_key=os.getenv("RUNPOD_API_KEY"))
-# sc = SpeechCraft(service="localhost_runpod", api_key=os.getenv("RUNPOD_API_KEY"))
-# sc = SpeechCraft(service="localhost", api_key=os.getenv("RUNPOD_API_KEY"))
-sc = SpeechCraft(service="socaity_local", api_key=os.getenv("SOCAITY_API_KEY"))
-# sc = SpeechCraft(service="socaity", api_key=os.getenv("SOCAITY_API_KEY"))
+sc = SpeechCraft()
 
 def test_text2voice():
     t2v_job = sc.text2voice(sample_text)
@@ -33,7 +29,8 @@ def test_voice2voice():
         voice_name="hermine"
     )
     v2v_audio = v2v_job.get_result()
-    v2v_audio.save(f"{out_dir}/hermine_to_potter.wav")
+    v2v_audio.save(f"{out_dir}/benni.wav")
+
 
 
 if __name__ == "__main__":

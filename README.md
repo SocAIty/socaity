@@ -181,6 +181,12 @@ f2f.swap_img_to_img("path/to/image1.jpg", "path/to/image2.jpg")
 
 
 # Important Note
-- PACKAGE IS IN ALPHA RELEASE. RAPID CHANGES TO SYNTAX AND FUNCTIONALITY NEED TO BE EXPECTED
-- LEAVE A STAR TO SUPPORT THIS WORK AND FOR MORE MODELS BEING ADDED TO THE LIBRARY
+PACKAGE IS IN ALPHA RELEASE. 
+EXPECT RAPID CHANGES TO SYNTAX AND FUNCTIONALITY.
 
+# Contribute
+
+Any help with maintaining and extending the package is welcome. 
+Feel free to open an issue or a pull request.
+
+## PLEASE LEAVE A :star: TO SUPPORT THIS WORK
