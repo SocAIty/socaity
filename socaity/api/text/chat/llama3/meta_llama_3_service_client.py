@@ -18,12 +18,13 @@ srvc_meta_llama_3_8b = ServiceClient(
     )
 )
 
-srvc_meta_llama_3_8b.add_endpoint(endpoint_route="/chat", body_params=MetaLlama3_Input(), refresh_interval_s=0.5)
+srvc_meta_llama_3_8b.add_endpoint(endpoint_route="/chat", query_params=MetaLlama3_Input(), refresh_interval_s=0.5)
 
 srvc_meta_llama_3_70b = ServiceClient(
     service_urls={
         "socaity": f"{DEFAULT_SOCAITY_URL}/meta-llama-3-70b",
-        "replicate": f"{DEFAULT_REPLICATE_URL}/meta/meta-llama-3-8b",
+        "replicate": f"{DEFAULT_REPLICATE_URL}/meta/meta-llama-3-70b",
+        "socaity_local": f"http://localhost:8000/v0/meta-llama-3-70b",
     },
     service_name="meta-llama-3-70b",
     model_description=AIModelDescription(
@@ -33,4 +34,4 @@ srvc_meta_llama_3_70b = ServiceClient(
     )
 )
 
-srvc_meta_llama_3_70b.add_endpoint(endpoint_route="/chat", body_params=MetaLlama3_Input(), refresh_interval_s=0.5)
+srvc_meta_llama_3_70b.add_endpoint(endpoint_route="/chat", query_params=MetaLlama3_Input(), refresh_interval_s=0.5)

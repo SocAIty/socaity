@@ -18,7 +18,7 @@ srvc_meta_llama_3_8b_instruct = ServiceClient(
 
 srvc_meta_llama_3_8b_instruct.add_endpoint(
     endpoint_route="/chat",
-    body_params=MetaLlama3_InstructInput(),
+    query_params=MetaLlama3_InstructInput(),
     refresh_interval_s=5,
 )
 
@@ -38,6 +38,6 @@ srvc_meta_llama_3_70b_instruct = ServiceClient(
 
 srvc_meta_llama_3_70b_instruct.add_endpoint(
     endpoint_route="/chat",
-    body_params=MetaLlama3_InstructInput(),
+    query_params=MetaLlama3_InstructInput(),
     refresh_interval_s=5,
 )

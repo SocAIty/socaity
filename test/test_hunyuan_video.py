@@ -1,9 +1,8 @@
-import os
-
 from socaity.api.video import HunyuanVideo
 
+genai = HunyuanVideo()
 # genai = HunyuanVideo(service="replicate", api_key=os.getenv("REPLICATE_API_KEY", None))
-genai = HunyuanVideo(service="socaity_local", api_key=os.getenv("SOCAITY_API_KEY", None))
+# genai = HunyuanVideo(service="socaity_local", api_key=os.getenv("SOCAITY_API_KEY", None))
 
 
 def test_text2video():

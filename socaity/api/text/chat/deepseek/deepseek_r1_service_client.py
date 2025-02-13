@@ -18,4 +18,4 @@ srvc_deep_seek_r1 = ServiceClient(
     )
 )
 
-srvc_deep_seek_r1.add_endpoint(endpoint_route="/chat", body_params=DeepSeekR1_Input(), refresh_interval_s=0.5)
+srvc_deep_seek_r1.add_endpoint(endpoint_route="/chat", query_params=DeepSeekR1_Input(), refresh_interval_s=0.5)

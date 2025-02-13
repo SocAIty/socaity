@@ -32,7 +32,7 @@ class WhisperTimeStamp(Enum):
 # Add endpoint to the service client
 srvc_whisper.add_endpoint(
     endpoint_route="/transcribe",
-    body_params= {
+    query_params= {
         "task": str,
         "language": str,
         "batch_size": int,

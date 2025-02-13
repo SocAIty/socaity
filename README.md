@@ -7,23 +7,22 @@
 
 The SDK provides generative models and AI tools across all domains including text, audio, image and more. 
 Think of it as open-CV for generative AI. 
-It allows you to run models as simple python functions.
+It allows you to run models as simple python functions. No GPU or AI knowledge required.
 
-For an overview of all models and to obtain an API key visit [socaity.ai](https://socaity.ai)
+If you are a Software Engineer, Game Developer, Artist, Content Creator and you want to automate with AI this SDK is for you.
 
-If you are a Game Developer, Artist, Content Creator, or you want to automate with AI this SDK is for you.
+For an overview of all models and to obtain an API key visit [socaity.ai](https://www.socaity.ai)
 
 Run models as if they were python functions nomatter where they are deployed:
 - hosted on socaity servers (default)
-- deployed on your localhost / your own server
-- hybrid deployment
+- deployed on your localhost / your own server- hybrid deployment
 
 You can focus on your app, while we handle all the complicated stuff under the hood.
 
 <hr />
 
 Quicklinks:
-
+- Model Zoo
 
 <hr />
 
@@ -38,15 +37,21 @@ pip install socaity
 ## Authentication
 
 For using socaity.ai services you need to set the environment variable `SOCAITY_API_KEY`.
-You can obtain an API key from [socaity.ai](https://socaity.ai) after signing up.
-```bash
-export SOCAITY_API_KEY=your_api_key
-```
+You can obtain an API key from [socaity.ai](https://www.socaity.ai) after signing up.
 Now you are ready to use the SDK.
 
-If you instead want to directly communicate with your runpod services or replicate you can set 
+**Alternatively** you can set the API key in your code when using the SDK. 
+We don't recommend this, as it a common mistake to push your code including your API key to a public repository.
+```python
+from socaity import FluxSchnell
+flux_schnell = FluxSchnell(service="socaity", api_key="sai..your_api_key")
+flux_schnell.text2img("A beautiful sunset in the mountains")
+```
+
+If you **instead** want to directly communicate with your runpod services or replicate you can set 
 the environment variable `RUNPOD_API_KEY` or `REPLICATE_API_KEY`.
-When initializing your ModelClient you can additionally pass which provider you want to use.
+When initializing your ModelClient you can additionally pass which provider you want to use by using "service" parameter.
+
 
 # Overview
 
@@ -56,32 +61,53 @@ When initializing your ModelClient you can additionally pass which provider you 
 5. Usage: How to use the SDK
 
 
-# Examples and Use-Cases
+## Quick start
 
-The future of the Internet and the economy is generative. However, there's not one model that fits all.
-For real world applications, you need to chain different models together combine them with other services.
+Import a model from the model-zoo or just use the simple API (text2img, text2speech etc.)
+```python
+from socaity import FluxSchnell, text2speech, text2img
+```
+Then you can use it as a function
+```python
+flux_schnell = FluxSchnell().text2img("A beautiful sunset in the mountains")
+my_image = text2img("A beautiful sunset in the mountains").get_result()
+```
 
-AI NPC Agents - How to:
-Here's a common example of a game developer who wants to have AI NPC agents in his game. His workflow:
-1. Generate the text the NPC should say.
-2. use a `text2speech` model to synthesize speech for the NPC.
-3. uses the `voice2voice` model to change the voice of the NPC to one of his artists. 
-4. uses `audio2face` model to generate facial animations for the NPC.
+### Example 1: Combine llm, text2img and text2speech
 
-Automated video content - How to:
-1. Create a thumbnail for a video with `text2image`
-2. Swap the faces in the video with `face2face`
-3. Generate a voice-over for the video with `text2voice`
+We will use different models to showcase how to create for example a perfect combination for a blog.
+```python
+from socaity import DeepSeekR1, text2voice, text2img
+
+deepseek = DeepSeekR1()
+poem = deepseek.chat("Write a poem with 3 sentences why a SDK is so much better than plain web requests.").get_result()
+poem = deepseek.pretty(poem)
+
+audio = text2voice(poem, model="speechcraft", voice="hermine")
+
+my_image_prompt = """
+A robot enjoying a stunning sunset in the alps. In the clouds is written in big letters "SOCAITY SDK".
+The sky is lit with deep purple and lime colors. It is a wide-shot.
+The artwork is striking and cinematic, showcasing a vibrant neon-green lime palette, rendered in an anime-style illustration with 4k detail. 
+Influenced by the artistic styles of Simon Kenny, Giorgetto Giugiaro, Brian Stelfreeze, and Laura Iverson.
+"""
+
+image = text2img(text=my_image_prompt, model="flux-schnell", num_outputs=1)
+audio.get_result().save("sdk_poem.mp3")
+image.get_result().save("sdk_poem.png")
+```
+This results in something like this:
+![sdk_poem](docs/sdk_poem.png)
 
 
-## How it works
- 
+
+
 The package sends web requests to models hosted behind REST APIs.
-Any REST interface that is [fastSDK](https://github.com/SocAIty/fastsdk) compatible  (openAPI / [fastTaskAPI](https://github.com/SocAIty/FastTaskAPI)) 
-can be used with this package.
+All the networking, speed optimization, and error handling is done in the package._
 
-The troublesome implementation of threading, sync, async, error handlings and job creation is done under the hood for you.
-On this way, you can focus on your business logic and use AI natively like any other python function.
+
+
+
 
 Run models (and services) as if they were python functions:
 
@@ -149,6 +175,11 @@ text2speech("Hello World")
 This code internally initializes an API client from the ClientAPI and uses it.
 
 
+# Working locally or with other providers
+
+Any service that is [fastSDK](https://github.com/SocAIty/fastsdk) compatible  (openAPI / [fastTaskAPI](https://github.com/SocAIty/FastTaskAPI), replicate and [runpod](https://www.runpod.io/)) 
+can be used with this package. 
+
 ## Client API
 
 The ClientAPI comes with predefined classes for the most used models.
@@ -167,8 +198,6 @@ The clientAPI also provides the possibility to:
 - the provider
 
 
-
-
 ## How does the ClientAPI work?
 Internally a ClientAPI:
 1. creates a client with predefined endpoint parameters
@@ -176,23 +205,7 @@ Internally a ClientAPI:
 3. returns the result of the job
 
 
-## Advanced usage
-
-Subclass the ClientAPI to define your own models and use them with the same interface.
-
-
-# Endpoints
-
-The endpoints for the models are defined in the `socaity.endpoints` module.
-An endpoint contains the information to connect to an API like service_url, endpoint_name, endpoint_type, and provider.
-Feel free to add your own endpoints or use the predefined ones.
-
-# Common Questions:
-
-- What is SocAIty?
-
-
 # Important Note
-- PACKAGE IS IN ALPHA RELEASE. RAPID CHANGES TO SYNTAX AND FUNCTIONALITY NEED TO Be EXPECTED
+- PACKAGE IS IN ALPHA RELEASE. RAPID CHANGES TO SYNTAX AND FUNCTIONALITY NEED TO BE EXPECTED
 - LEAVE A STAR TO SUPPORT THIS WORK AND FOR MORE MODELS BEING ADDED TO THE LIBRARY
 

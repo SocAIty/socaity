@@ -3,7 +3,8 @@ import os
 from socaity import Blip
 
 test_img = "https://socaityfiles.blob.core.windows.net/backend-model-meta/llama3.png"
-genai = Blip(service="replicate", api_key=os.getenv("REPLICATE_API_KEY", None))
+genai = Blip()
+#genai = Blip(service="replicate", api_key=os.getenv("REPLICATE_API_KEY", None))
 # fluxs = FluxSchnell(service="socaity_local", api_key=os.getenv("SOCAITY_API_KEY", None))
 
 def test_image_captioning():

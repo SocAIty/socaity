@@ -30,7 +30,7 @@ class BlipInput(BaseModel):
 # Add endpoint to the service client
 srvc_blip.add_endpoint(
     endpoint_route="/capture",
-    body_params=BlipInput(),
+    query_params=BlipInput(),
     file_params={"image": ImageFile},
     refresh_interval_s=0.3
 )

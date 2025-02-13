@@ -37,7 +37,7 @@ class PhotoMakerInput(BaseModel):
 # Add endpoint to the service client
 srvc_photomaker.add_endpoint(
     endpoint_route="/generate",
-    body_params=PhotoMakerInput(),
+    query_params=PhotoMakerInput(),
     file_params={
         "input_image": ImageFile,
         "input_image2": ImageFile,

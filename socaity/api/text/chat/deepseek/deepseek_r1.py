@@ -55,10 +55,20 @@ class _BaseDeepSeekR1(_BaseChat):
             **kwargs
         )
 
+    def pretty(self, answer: str, exclude_thoughts: bool = True):
+        if exclude_thoughts:
+            pos_think = answer.find("<think>")
+            end_think = answer.rfind("</think>")
+            if pos_think > -1:
+                pos_think += len("<think>")
+                answer = answer[:pos_think] + answer[end_think:]
+                #thoughts = answer[pos_think+len("<think>"):end_think]
+
+        return answer
+
 
 @fastSDK(service_client=srvc_deep_seek_r1)
 class DeepSeekR1(_BaseDeepSeekR1):
     """
     Llama 3, an 8 billion parameter language model from Meta.
     """
-    pass

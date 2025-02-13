@@ -2,7 +2,8 @@ import os
 
 from socaity import DeepSeekR1
 
-chat_model = DeepSeekR1(service="replicate", api_key=os.getenv("REPLICATE_API_KEY", None))
+chat_model = DeepSeekR1()
+#chat_model = DeepSeekR1(service="replicate", api_key=os.getenv("REPLICATE_API_KEY", None))
 # fluxs = FluxSchnell(service="socaity_local", api_key=os.getenv("SOCAITY_API_KEY", None))
 
 def test_chat():

@@ -16,7 +16,7 @@ srvc_codellama_13b = ServiceClient(
     ),
 )
 
-srvc_codellama_13b.add_endpoint(endpoint_route="/chat", body_params=MetaCodeLlama3_Input(), refresh_interval_s=5)
+srvc_codellama_13b.add_endpoint(endpoint_route="/chat", query_params=MetaCodeLlama3_Input(), refresh_interval_s=5)
 
 
 srvc_codellama_70b = ServiceClient(
@@ -31,4 +31,4 @@ srvc_codellama_70b = ServiceClient(
     ),
 )
 
-srvc_codellama_70b.add_endpoint(endpoint_route="/chat", body_params=MetaCodeLlama3_Input(), refresh_interval_s=5)
+srvc_codellama_70b.add_endpoint(endpoint_route="/chat", query_params=MetaCodeLlama3_Input(), refresh_interval_s=5)
