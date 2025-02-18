@@ -2,12 +2,12 @@ from socaity import MetaLLama3_70b, MetaLLama3_8b, MetaLLama3_8b_instruct, MetaL
 
 cl_test = [
     MetaLLama3_8b,
-    MetaLLama3_70b
-    #MetaLLama3_8b_instruct,
-    #MetaLLama3_70b_instruct
+    MetaLLama3_70b,
+    MetaLLama3_8b_instruct,
+    MetaLLama3_70b_instruct
 ]
 
-providers = ["socaity_local"]
+providers = ["socaity"]
 prompt = "Write a poem with 3 sentences why an SDK is so much better than plain web requests."
 
 jobs = {}

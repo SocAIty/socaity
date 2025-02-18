@@ -4,7 +4,7 @@ import os
 test_file_1 = 'test_files/text2speech/voice_clone_test_voice_1.wav'
 test_file_2 = 'test_files/text2speech/voice_clone_test_voice_2.wav'
 
-sample_text = "I love socaity [laughs]. What a time to be alive"
+sample_text = "I love Jacobo. He is the best man in the world and has big eggs."
 out_dir = "test_files/output/text2speech"
 
 sc = SpeechCraft()
