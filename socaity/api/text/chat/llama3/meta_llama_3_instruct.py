@@ -1,3 +1,5 @@
+import random
+
 from fastsdk.jobs.threaded.internal_job import InternalJob
 from fastsdk.fast_sdk import fastSDK, fastJob
 from socaity.api.text.chat.i_chat import _BaseChat
@@ -12,14 +14,25 @@ class _BaseMetaLlama3_Instruct(_BaseChat):
     @fastJob
     def _chat(self, job,
               prompt: str,
-              system_prompt: str,
+              system_prompt: str = "You are a helpful assistant",
               max_new_tokens: int = 512,
               temperature: float = 0.5,
-              top_p: float =0.9,
+              top_p: float = 0.9,
               length_penalty: float = 1.15,
               stop_sequences: str = "<|end_of_text|>,<|eot_id|>",
               presence_penalty: float = 0.0,
-              frequency_penalty: float = 0.2, **kwargs) -> str:
+              frequency_penalty: float = 0.2,
+              prompt_template: str = """
+                <|begin_of_text|><|start_header_id|>system<|end_header_id|>
+                You are a helpful assistant<|eot_id|><|start_header_id|>user<|end_header_id|>
+                {prompt}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+              """,
+              seed: int = None,
+              **kwargs) -> str:
+
+        if seed is None or not isinstance(seed, int):
+            seed = random.randint(0, 1000000)
+
         response = job.request(
             endpoint_route="/chat",
             prompt=prompt,
@@ -31,6 +44,8 @@ class _BaseMetaLlama3_Instruct(_BaseChat):
             stop_sequences=stop_sequences,
             presence_penalty=presence_penalty,
             frequency_penalty=frequency_penalty,
+            prompt_template=prompt_template,
+            seed=seed,
             **kwargs,
         )
         result = response.get_result()
@@ -53,7 +68,7 @@ class _BaseMetaLlama3_Instruct(_BaseChat):
 
 
 @fastSDK(service_client=srvc_meta_llama_3_8b_instruct)
-class MetaLLama3_70b_instruct(_BaseMetaLlama3_Instruct):
+class MetaLLama3_8b_instruct(_BaseMetaLlama3_Instruct):
     """
     Llama 3, an 8 billion parameter language model from Meta.
     """

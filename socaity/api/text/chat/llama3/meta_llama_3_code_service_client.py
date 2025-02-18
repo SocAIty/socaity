@@ -8,6 +8,7 @@ srvc_codellama_13b = ServiceClient(
     service_urls={
         "socaity": f"{DEFAULT_SOCAITY_URL}/codellama-13b",
         "replicate": f"{DEFAULT_REPLICATE_URL}/meta/codellama-13b",
+        "socaity_local": f"http://localhost:8000/v0/codellama-70b-python",
     },
     service_name="codellama-13b",
     model_description=AIModelDescription(
@@ -19,16 +20,16 @@ srvc_codellama_13b = ServiceClient(
 srvc_codellama_13b.add_endpoint(endpoint_route="/chat", query_params=MetaCodeLlama3_Input(), refresh_interval_s=5)
 
 
-srvc_codellama_70b = ServiceClient(
+srvc_codellama_70b_python = ServiceClient(
     service_urls={
-        "socaity": f"{DEFAULT_SOCAITY_URL}/codellama-70b",
-        "replicate": "https://replicate.com/meta/codellama-70b",
+        "socaity": f"{DEFAULT_SOCAITY_URL}/codellama-70b-python",
+        "replicate": "https://replicate.com/meta/codellama-70b-python",
     },
-    service_name="codellama-70b",
+    service_name="codellama-70b-python",
     model_description=AIModelDescription(
-        model_name="codellama-70b",
+        model_name="codellama-70b-python",
         model_domain_tags=[ModelDomainTag.TEXT],
     ),
 )
 
-srvc_codellama_70b.add_endpoint(endpoint_route="/chat", query_params=MetaCodeLlama3_Input(), refresh_interval_s=5)
+srvc_codellama_70b_python.add_endpoint(endpoint_route="/chat", query_params=MetaCodeLlama3_Input(), refresh_interval_s=5)

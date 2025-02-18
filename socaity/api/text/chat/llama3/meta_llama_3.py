@@ -1,3 +1,5 @@
+import random
+
 from fastsdk.jobs.threaded.internal_job import InternalJob
 from fastsdk.fast_sdk import fastSDK, fastJob
 from socaity.api.text.chat.i_chat import _BaseChat
@@ -11,7 +13,14 @@ class _BaseMetaLlama3(_BaseChat):
     @fastJob
     def _chat(self, job,
               prompt: str, max_tokens: int = 512, temperature: float = 0.5, top_p: float =0.9,
-              presence_penalty: float = 1.15, frequency_penalty: float = 0.2, **kwargs) -> str:
+              presence_penalty: float = 1.15, frequency_penalty: float = 0.2,
+              prompt_template: str = "{prompt}",
+              seed: int = None,
+              **kwargs) -> str:
+
+        if seed is None or not isinstance(seed, int):
+            seed = random.randint(0, 1000000)
+
         response = job.request(
             endpoint_route="/chat",
             prompt=prompt,
@@ -20,6 +29,8 @@ class _BaseMetaLlama3(_BaseChat):
             top_p=top_p,
             presence_penalty=presence_penalty,
             frequency_penalty=frequency_penalty,
+            seed=seed,
+            prompt_template=prompt_template,
             **kwargs,
         )
         result = response.get_result()

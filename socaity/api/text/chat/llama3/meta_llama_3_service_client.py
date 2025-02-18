@@ -9,6 +9,7 @@ srvc_meta_llama_3_8b = ServiceClient(
     service_urls={
         "socaity": f"{DEFAULT_SOCAITY_URL}/meta-llama-3-8b",
         "replicate": f"{DEFAULT_REPLICATE_URL}/meta/meta-llama-3-8b",
+        "socaity_local": f"http://localhost:8000/v0/meta-llama-3-8b",
     },
     service_name="meta-llama-3-8b",
     model_description=AIModelDescription(

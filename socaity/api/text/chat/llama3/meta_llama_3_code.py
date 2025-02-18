@@ -1,7 +1,9 @@
+import random
+
 from fastsdk.jobs.threaded.internal_job import InternalJob
 from fastsdk.fast_sdk import fastSDK, fastJob
 from socaity.api.text.chat.i_chat import _BaseChat
-from socaity.api.text.chat.llama3.meta_llama_3_code_service_client import srvc_codellama_13b, srvc_codellama_70b
+from socaity.api.text.chat.llama3.meta_llama_3_code_service_client import srvc_codellama_13b, srvc_codellama_70b_python
 
 
 class _BaseMetaLlama3_Code(_BaseChat):
@@ -20,7 +22,12 @@ class _BaseMetaLlama3_Code(_BaseChat):
               presence_penalty: float = 0.0,
               frequency_penalty: float = 0.2,
               repeat_penalty: float = 1.1,
+              seed: int = None,
               **kwargs) -> str:
+
+        if seed is None or not isinstance(seed, int):
+            seed = random.randint(0, 1000000)
+
         response = job.request(
             endpoint_route="/chat",
             prompt=prompt,
@@ -33,6 +40,7 @@ class _BaseMetaLlama3_Code(_BaseChat):
             presence_penalty=presence_penalty,
             frequency_penalty=frequency_penalty,
             repeat_penalty=repeat_penalty,
+            seed=seed,
             **kwargs,
         )
         result = response.get_result()
@@ -61,8 +69,8 @@ class MetaLLama3_13b_code(_BaseMetaLlama3_Code):
     """
     pass
 
-@fastSDK(service_client=srvc_codellama_70b)
-class MetaLLama3_70b_code(_BaseMetaLlama3_Code):
+@fastSDK(service_client=srvc_codellama_70b_python)
+class MetaLLama3_70b_code_python(_BaseMetaLlama3_Code):
     """
     Llama 3, a language model from Meta.
     """
