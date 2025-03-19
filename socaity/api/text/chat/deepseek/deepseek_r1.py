@@ -61,8 +61,8 @@ class _BaseDeepSeekR1(_BaseChat):
             end_think = answer.rfind("</think>")
             if pos_think > -1:
                 pos_think += len("<think>")
-                answer = answer[:pos_think] + answer[end_think:]
                 #thoughts = answer[pos_think+len("<think>"):end_think]
+                answer = answer[end_think+len("</think>"):]
 
         return answer
 

@@ -39,9 +39,7 @@ class FluxSchnell(_BaseText2Image):
             prompt=text, aspect_ratio=aspect_ratio, num_outputs=num_outputs, num_inference_steps=num_inference_steps,
             seed=seed, output_format=output_format, disable_safety_checker=disable_safety_checker, go_fast=go_fast
         )
-
-        while not endpoint_request.is_finished():
-            pass
+        endpoint_request.wait_until_finished()
 
         if endpoint_request.error is not None:
             raise Exception(f"Error in text2image with flux_schnell: {endpoint_request.error}")

@@ -80,10 +80,7 @@ class SpeechCraft(_BaseText2Voice, _BaseVoice2Voice):
             coarse_top_p=coarse_top_p,
             fine_temp=fine_temp
         )
-        while not endpoint_request.is_finished():
-            progress, message = endpoint_request.progress
-            job.set_progress(progress, message)
-            time.sleep(0)
+        endpoint_request.wait_until_finished()
 
         if endpoint_request.error is not None:
             raise Exception(f"Error in text2voice: {endpoint_request.error}")
@@ -93,10 +90,7 @@ class SpeechCraft(_BaseText2Voice, _BaseVoice2Voice):
     @fastJob
     def _voice2voice(self, job: InternalJob, voice_name: str, audio_file: Union[str, bytes], temp: float = 0.7):
         endpoint_request = job.request("voice2voice", voice_name=voice_name, audio_file=audio_file, temp=temp)
-        while not endpoint_request.is_finished():
-            progress, message = endpoint_request.progress
-            job.set_progress(progress, message)
-            time.sleep(0)
+        endpoint_request.wait_until_finished()
 
         if endpoint_request.error is not None:
             raise Exception(f"Error in voice2voice: {endpoint_request.error}")
@@ -106,12 +100,7 @@ class SpeechCraft(_BaseText2Voice, _BaseVoice2Voice):
     @fastJob
     def _voice2embedding(self, job: InternalJob, voice_name: str, audio_file: Union[str, bytes], save: bool = False):
         endpoint_request = job.request("voice2embedding", voice_name=voice_name, audio_file=audio_file, save=save)
-
-        # update progress bar
-        while not endpoint_request.is_finished():
-            progress, message = endpoint_request.progress
-            job.set_progress(progress, message)
-            time.sleep(0)
+        endpoint_request.wait_until_finished()
 
         if endpoint_request.error is not None:
             raise Exception(f"Error in voice2embedding: {endpoint_request.error}")

@@ -41,9 +41,7 @@ class HunyuanVideo(_BaseText2Video):
             embedded_guidance_scale=embedded_guidance_scale
         )
 
-        while not endpoint_request.is_finished():
-            pass
-
+        endpoint_request.wait_until_finished()
         if endpoint_request.error is not None:
             raise Exception(f"Error in text2video with huanyan_video: {endpoint_request.error}")
 

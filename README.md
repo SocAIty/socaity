@@ -126,7 +126,7 @@ Just import them with ```from socaity import ...``` to use them.
 
 ### Image domain
 - FluxSchnell (Text2Image)
-- SAM2 (Image segmentation)
+- SAM2 (Image and video segmentation)
 - TencentArc Photomaker
 
 ### Audio domain
