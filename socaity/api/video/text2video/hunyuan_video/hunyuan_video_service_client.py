@@ -1,13 +1,13 @@
 from fastsdk.definitions.ai_model import AIModelDescription
 from fastsdk.definitions.enums import ModelDomainTag
-from fastsdk.web.service_client import ServiceClient
+from fastsdk.web.api_client import APIClient
 from socaity.settings import DEFAULT_SOCAITY_URL
 
 
-srvc_hunyuan_video = ServiceClient(
+srvc_hunyuan_video = APIClient(
     service_urls={
         "socaity": f"{DEFAULT_SOCAITY_URL}/hunyuan-video",
-        "socaity_local": "http://localhost:8000/api/v0/hunyuan-video",
+        "socaity_local": "http://localhost:8000/v0/hunyuan-video",
         "replicate": {
             "version": "6c9132aee14409cd6568d030453f1ba50f5f3412b844fe67f78a9eb62d55664f"
         }

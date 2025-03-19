@@ -15,7 +15,7 @@ class BlipTasks(Enum):
     IMAGE_TEXT_MATCHING = "image_text_matching"
 
 
-@fastSDK(service_client=srvc_blip)
+@fastSDK(api_client=srvc_blip)
 class Blip:
     """
     Base implementation for SAM 2, the Segment Anything v2 model from Meta.

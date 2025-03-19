@@ -2,11 +2,11 @@ from fastsdk import ImageFile, VideoFile
 from fastsdk.definitions.ai_model import AIModelDescription
 from fastsdk.definitions.enums import ModelDomainTag
 from fastsdk.web.definitions.service_adress import SocaityServiceAddress
-from fastsdk.web.service_client import ServiceClient
+from fastsdk.web.api_client import APIClient
 from socaity.settings import DEFAULT_SOCAITY_URL
 
 
-srvc_face2face = ServiceClient(
+srvc_face2face = APIClient(
     service_name="face2face",
     service_description="Instantly swap faces in images and videos. Face restoration and recognition.",
     service_urls={
@@ -14,8 +14,8 @@ srvc_face2face = ServiceClient(
         "runpod": "https://api.runpod.ai/v2/v1n4b07cwp2mbo",
         "runpod_localhost": "http://localhost:8020/",
         "socaity": f"{DEFAULT_SOCAITY_URL}/face2face",
-        "socaity_local1": SocaityServiceAddress("http://localhost:8000/api/v0/face2face"),
-        "socaity_local": "http://localhost:8000/api/v0/face2face"
+        "socaity_local1": SocaityServiceAddress("http://localhost:8000/v0/face2face"),
+        "socaity_local": "http://localhost:8000/v0/face2face"
     },
     model_description=AIModelDescription(
         model_name="face2face",

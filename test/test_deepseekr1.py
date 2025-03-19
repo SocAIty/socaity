@@ -8,9 +8,7 @@ chat_model = DeepSeekR1()
 
 def test_chat():
     prompt = "Write a poem with 3 sentences why an SDK is so much better than plain web requests."
-    fj = chat_model.chat(
-        prompt=prompt
-    )
+    fj = chat_model.chat(prompt=prompt)
     generated_text = fj.get_result()
     print(generated_text)
 

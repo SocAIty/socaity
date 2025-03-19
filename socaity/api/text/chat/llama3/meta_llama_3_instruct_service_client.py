@@ -1,10 +1,10 @@
 from fastsdk.definitions.ai_model import AIModelDescription
 from fastsdk.definitions.enums import ModelDomainTag
-from fastsdk.web.service_client import ServiceClient
+from fastsdk.web.api_client import APIClient
 from socaity.settings import DEFAULT_SOCAITY_URL, DEFAULT_REPLICATE_URL
 from socaity.api.text.chat.llama3.meta_llama3_schema import MetaLlama3_InstructInput
 
-srvc_meta_llama_3_8b_instruct = ServiceClient(
+srvc_meta_llama_3_8b_instruct = APIClient(
     service_urls={
         "socaity": f"{DEFAULT_SOCAITY_URL}/meta-llama-3-8b-instruct",
         "replicate": f"{DEFAULT_REPLICATE_URL}/meta/meta-llama-3-8b-instruct",
@@ -25,7 +25,7 @@ srvc_meta_llama_3_8b_instruct.add_endpoint(
 
 
 
-srvc_meta_llama_3_70b_instruct = ServiceClient(
+srvc_meta_llama_3_70b_instruct = APIClient(
     service_urls={
         "socaity": f"{DEFAULT_SOCAITY_URL}/meta-llama-3-70b-instruct",
         "replicate": f"{DEFAULT_REPLICATE_URL}/meta/meta-llama-3-70b-instruct",

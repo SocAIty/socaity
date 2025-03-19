@@ -10,7 +10,7 @@ from socaity.api.video.text2video.hunyuan_video.hunyuan_video_service_client imp
 from socaity.api.video.text2video.text2video import _BaseText2Video
 
 
-@fastSDK(service_client=srvc_hunyuan_video)
+@fastSDK(api_client=srvc_hunyuan_video)
 class HunyuanVideo(_BaseText2Video):
     @fastJob
     def _text2video(

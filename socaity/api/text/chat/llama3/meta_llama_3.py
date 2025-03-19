@@ -52,14 +52,14 @@ class _BaseMetaLlama3(_BaseChat):
         return self._chat(prompt=prompt, max_tokens=max_tokens, temperature=temperature, **kwargs)
 
 
-@fastSDK(service_client=srvc_meta_llama_3_8b)
+@fastSDK(api_client=srvc_meta_llama_3_8b)
 class MetaLLama3_8b(_BaseMetaLlama3):
     """
     Llama 3, an 8 billion parameter language model from Meta.
     """
     pass
 
-@fastSDK(service_client=srvc_meta_llama_3_70b)
+@fastSDK(api_client=srvc_meta_llama_3_70b)
 class MetaLLama3_70b(_BaseMetaLlama3):
     """
     Llama 3, an 8 billion parameter language model from Meta.

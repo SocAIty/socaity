@@ -1,12 +1,12 @@
 from fastsdk.definitions.ai_model import AIModelDescription
 from fastsdk.definitions.enums import ModelDomainTag
-from fastsdk.web.service_client import ServiceClient
+from fastsdk.web.api_client import APIClient
 from socaity.settings import DEFAULT_SOCAITY_URL, DEFAULT_REPLICATE_URL
 
-srvc_flux_schnell = ServiceClient(
+srvc_flux_schnell = APIClient(
     service_urls={
         "socaity": f"{DEFAULT_SOCAITY_URL}/flux-schnell",
-        "socaity_local": "http://localhost:8000/api/v0/flux-schnell",
+        "socaity_local": "http://localhost:8000/v0/flux-schnell",
         "replicate": f"{DEFAULT_REPLICATE_URL}/black-forest-labs/flux-schnell/predictions",
     },
     service_name="flux-schnell",

@@ -7,7 +7,7 @@ from socaity.api.text.audio2text.audio2text import _BaseAudio2Text
 from socaity.api.text.audio2text.whisper.whisper_service_client import srvc_whisper, WhisperTasks, WhisperTimeStamp
 
 
-@fastSDK(service_client=srvc_whisper)
+@fastSDK(api_client=srvc_whisper)
 class InsanelyFastWhisper(_BaseAudio2Text):
     """
     Base implementation for SAM 2, the Segment Anything v2 model from Meta.

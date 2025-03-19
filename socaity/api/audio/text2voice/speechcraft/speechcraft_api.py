@@ -8,7 +8,7 @@ from socaity.api.audio.text2voice.i_text2voice import _BaseText2Voice
 from socaity.api.audio.voice2voice.i_voice2voice import _BaseVoice2Voice
 
 
-@fastSDK(service_client=srvc_speechcraft)
+@fastSDK(api_client=srvc_speechcraft)
 class SpeechCraft(_BaseText2Voice, _BaseVoice2Voice):
     """
     SpeechCraft offers Text2Speech, Voice-Cloning and Voice2Voice conversion with the generative audio model_description bark

@@ -3,9 +3,9 @@ from fastsdk.fast_sdk import fastSDK, fastJob
 from socaity.api.text.chat.i_chat import _BaseChat
 from .deepseek_r1_service_client import srvc_deep_seek_r1
 
+
 class _BaseDeepSeekR1(_BaseChat):
     """
-    Base version of Llama 3, an 8 billion parameter language model from Meta.
     """
     @fastJob
     def _chat(self, job,
@@ -67,8 +67,8 @@ class _BaseDeepSeekR1(_BaseChat):
         return answer
 
 
-@fastSDK(service_client=srvc_deep_seek_r1)
+@fastSDK(api_client=srvc_deep_seek_r1)
 class DeepSeekR1(_BaseDeepSeekR1):
     """
-    Llama 3, an 8 billion parameter language model from Meta.
+    DeepSeekR1 is the SOTA thinking model of DeepSeek
     """

@@ -1,11 +1,11 @@
 from fastsdk.definitions.ai_model import AIModelDescription
 from fastsdk.definitions.enums import ModelDomainTag
-from fastsdk.web.service_client import ServiceClient
+from fastsdk.web.api_client import APIClient
 from socaity.settings import DEFAULT_SOCAITY_URL, DEFAULT_REPLICATE_URL
 from socaity.api.text.chat.deepseek.deepseek_r1_schema import DeepSeekR1_Input
 
 
-srvc_deep_seek_r1 = ServiceClient(
+srvc_deep_seek_r1 = APIClient(
     service_urls={
         "socaity": f"{DEFAULT_SOCAITY_URL}/deepseek-r1",
         "replicate": f"{DEFAULT_REPLICATE_URL}/deepseek-ai/deepseek-r1",

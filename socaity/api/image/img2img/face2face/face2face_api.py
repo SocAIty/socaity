@@ -7,7 +7,7 @@ from media_toolkit import ImageFile, VideoFile
 from socaity.api.image.img2img.face2face.face2face_service_client import srvc_face2face
 
 
-@fastSDK(service_client=srvc_face2face)
+@fastSDK(api_client=srvc_face2face)
 class Face2Face:
     def swap_img_to_img(
             self,

@@ -2,14 +2,14 @@ from enum import Enum
 
 from fastsdk.definitions.ai_model import AIModelDescription
 from fastsdk.definitions.enums import ModelDomainTag
-from fastsdk.web.service_client import ServiceClient
+from fastsdk.web.api_client import APIClient
 from media_toolkit import AudioFile
 from socaity.settings import DEFAULT_SOCAITY_URL, DEFAULT_REPLICATE_URL
 
-srvc_whisper = ServiceClient(
+srvc_whisper = APIClient(
     service_urls={
         "socaity": f"{DEFAULT_SOCAITY_URL}/insanely-fast-whisper",
-        "socaity_local": "http://localhost:8000/api/v0/insanely-fast-whisper",
+        "socaity_local": "http://localhost:8000/v0/insanely-fast-whisper",
         "replicate": { "version": "3ab86df6c8f54c11309d4d1f930ac292bad43ace52d10c80d87eb258b3c9f79c"},
     },
     service_name="insanely-fast-whisper",

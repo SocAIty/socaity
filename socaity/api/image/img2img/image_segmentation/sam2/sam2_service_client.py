@@ -1,13 +1,13 @@
 from fastsdk.definitions.ai_model import AIModelDescription
 from fastsdk.definitions.enums import ModelDomainTag
-from fastsdk.web.service_client import ServiceClient
+from fastsdk.web.api_client import APIClient
 from pydantic import BaseModel, Field
 
 from media_toolkit import ImageFile
 from socaity.settings import DEFAULT_SOCAITY_URL
 
 # Service Client for SAM 2
-srvc_sam2 = ServiceClient(
+srvc_sam2 = APIClient(
     service_urls={
         "socaity": f"{DEFAULT_SOCAITY_URL}/sam2",
         "replicate": {"version": "fe97b453a6455861e3bac769b441ca1f1086110da7466dbb65cf1eecfd60dc83" },

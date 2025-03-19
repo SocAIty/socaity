@@ -8,7 +8,7 @@ from .sam2_service_client import srvc_sam2
 from socaity.api.image.img2img.image_segmentation.i_image_segmentation import _BaseSegmentation
 
 
-@fastSDK(service_client=srvc_sam2)
+@fastSDK(api_client=srvc_sam2)
 class Sam2(_BaseSegmentation):
     """
     Base implementation for SAM 2, the Segment Anything v2 model from Meta.

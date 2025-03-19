@@ -11,7 +11,7 @@ from socaity.api.image.text2img.text2image import _BaseText2Image
 from socaity.api.utils import execute_job_function
 
 
-@fastSDK(service_client=srvc_flux_schnell)
+@fastSDK(api_client=srvc_flux_schnell)
 class FluxSchnell(_BaseText2Image):
     @fastJob
     def _text2img(

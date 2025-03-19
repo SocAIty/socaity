@@ -2,12 +2,12 @@
 <p align="center">
   <img align="center" src="docs/socaity_icon.png" height="200" />
 </p>
-  <h2 align="center" style="margin-top:-10px">Your SDK and model zoo for generative AI. </h2>
+  <h2 align="center" style="margin-top:-10px">Build AI-powered applications with ease </h2>
 
 
 The SDK provides generative models and AI tools across all domains including text, audio, image and more. 
-Think of it as open-CV for generative AI. 
-It allows you to run models as simple python functions. No GPU or AI knowledge required.
+Our APIs and SDK allows you to run models as simple python functions. No GPU or AI knowledge required.
+Build your dream application by composing different models together.
 
 If you are a Software Engineer, Game Developer, Artist, Content Creator and you want to automate with AI this SDK is for you.
 

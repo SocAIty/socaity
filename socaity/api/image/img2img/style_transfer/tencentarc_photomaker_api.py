@@ -22,7 +22,7 @@ class TencentPhotoMakerStyleTemplate(Enum):
     LOWPOLY = "Lowpoly"
     LINEART = "Lineart"
 
-@fastSDK(service_client=srvc_photomaker)
+@fastSDK(api_client=srvc_photomaker)
 class TencentPhotoMaker:
     """
     Base implementation for SAM 2, the Segment Anything v2 model from Meta.

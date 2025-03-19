@@ -2,15 +2,15 @@ from fastsdk import AudioFile, MediaFile
 from fastsdk.definitions.ai_model import AIModelDescription
 from fastsdk.definitions.enums import ModelDomainTag
 from fastsdk.web.definitions.service_adress import RunpodServiceAddress
-from fastsdk.web.service_client import ServiceClient
+from fastsdk.web.api_client import APIClient
 from socaity.settings import DEFAULT_SOCAITY_URL
 
-srvc_speechcraft = ServiceClient(
+srvc_speechcraft = APIClient(
     service_name="speechcraft",
     service_urls={
         "socaity": f"{DEFAULT_SOCAITY_URL}/speechcraft",
         "runpod": "https://api.runpod.ai/v2/esgd0bzgrxtwn1/run",
-        "socaity_local": "http://localhost:8000/api/v0/speechcraft",
+        "socaity_local": "http://localhost:8000/v0/speechcraft",
         "localhost": "localhost:8009/api",
         "localhost_runpod": RunpodServiceAddress("localhost:8009")
     },

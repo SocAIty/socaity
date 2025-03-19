@@ -1,13 +1,13 @@
 from fastsdk.definitions.ai_model import AIModelDescription
 from fastsdk.definitions.enums import ModelDomainTag
-from fastsdk.web.service_client import ServiceClient
+from fastsdk.web.api_client import APIClient
 from media_toolkit import ImageFile
 from socaity.settings import DEFAULT_SOCAITY_URL, DEFAULT_REPLICATE_URL
 
-srvc_blip = ServiceClient(
+srvc_blip = APIClient(
     service_urls={
         "socaity": f"{DEFAULT_SOCAITY_URL}/blip",
-        "socaity_local": "http://localhost:8000/api/v0/blip",
+        "socaity_local": "http://localhost:8000/v0/blip",
         "replicate": { "version": "2e1dddc8621f72155f24cf2e0adbde548458d3cab9f00c0139eea840d0ac4746"},
     },
     service_name="blip",
