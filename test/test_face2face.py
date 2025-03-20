@@ -1,20 +1,15 @@
-import os
-
 from socaity import Face2Face
-
-
+f2f = Face2Face()
 
 test_face_1 = "test_files/face2face/test_face_1.jpg"
 test_face_2 = "test_files/face2face/test_face_2.jpg"
 test_face_3 = "test_files/face2face/test_face_3.jpg"
 test_video = "test_files/face2face/test_video_ultra_short_short.mp4"
 
-f2f = Face2Face(service="socaity", api_key=os.getenv("SOCAITY_API_KEY", None))
-
 def test_single_face_swap():
     job_swapped = f2f.swap_img_to_img(test_face_1, test_face_2, enhance_face_model=None)
     swapped = job_swapped.get_result()
-    swapped.save("test_files/output/face2face/test_face_3_swapped.jpg")
+    swapped.save("test_files/output/face2face/test_face_31_swapped.jpg")
     return swapped
 
 
@@ -40,4 +35,3 @@ def test_video_swap():
 test_single_face_swap()
 # test_video_swap()
 # test_embedding_face_swap()
-a = 1

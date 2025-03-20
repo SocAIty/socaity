@@ -10,10 +10,10 @@ srvc_face2face = APIClient(
     service_name="face2face",
     service_description="Instantly swap faces in images and videos. Face restoration and recognition.",
     service_urls={
+        "socaity": f"{DEFAULT_SOCAITY_URL}/face2face",
         "localhost": "localhost:8020/api",
         "runpod": "https://api.runpod.ai/v2/v1n4b07cwp2mbo",
         "runpod_localhost": "http://localhost:8020/",
-        "socaity": f"{DEFAULT_SOCAITY_URL}/face2face",
         "socaity_local1": SocaityServiceAddress("http://localhost:8000/v0/face2face"),
         "socaity_local": "http://localhost:8000/v0/face2face"
     },
