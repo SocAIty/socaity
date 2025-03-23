@@ -4,19 +4,19 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "socaity"
-version = "0.0.8"
+version = "0.0.11"
 description = "Your SDK and model zoo for generative AI. Build AI-powered applications with ease."
 requires-python = ">=3.8"
 authors = [
     { name = "SocAIty" }
 ]
-license = { text = "GPLv3" }
+license = {file = "LICENSE"}
 readme = "README.md"
 dependencies = [
     "tqdm",
     "httpx",
-    "fastsdk>=00.01.02",
-    "media-toolkit[VideoFile]>=00.02.01",
+    "fastsdk>=00.01.03",
+    "media-toolkit[VideoFile]>=00.02.02",
     "singleton_decorator==1.0.0"
 ]
 
