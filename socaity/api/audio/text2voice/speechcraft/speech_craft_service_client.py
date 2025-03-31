@@ -21,7 +21,7 @@ srvc_speechcraft = APIClient(
 )
 srvc_speechcraft.add_endpoint(
     endpoint_route="/text2voice",
-    query_params={
+    body_params={
         "text": str,
         "voice": str,
         "semantic_temp": float,
@@ -31,34 +31,21 @@ srvc_speechcraft.add_endpoint(
         "coarse_top_k": int,
         "coarse_top_p": float,
         "fine_temp": float
-     },
-    refresh_interval_s=2
-)
-srvc_speechcraft.add_endpoint(
-    endpoint_route="/text2voice_with_embedding",
-    query_params={
-        "text": str,
-        "semantic_temp": float,
-        "semantic_top_k": int,
-        "semantic_top_p": float,
-        "coarse_temp": float,
-        "coarse_top_k": int,
-        "coarse_top_p": float,
-        "fine_temp": float
-     },
+    },
     file_params={"voice": MediaFile},
     refresh_interval_s=2
 )
 
 srvc_speechcraft.add_endpoint(
     endpoint_route="voice2embedding",
-    query_params={"voice_name": str, "save": bool},
+    body_params={"voice_name": str, "save": bool},
     file_params={"audio_file": AudioFile},
     refresh_interval_s=2
 )
+
 srvc_speechcraft.add_endpoint(
     endpoint_route="voice2voice",
-    query_params={
+    body_params={
         "voice_name": str,
         "temp": float
     },

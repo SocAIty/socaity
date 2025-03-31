@@ -3,9 +3,9 @@ import os
 from socaity import FluxSchnell
 
 
-#fluxs = FluxSchnell(service="replicate", api_key=os.getenv("REPLICATE_API_KEY", None))
-#fluxs = FluxSchnell(service="socaity_local", api_key=os.getenv("SOCAITY_API_KEY", None))
-fluxs = FluxSchnell()
+fluxs = FluxSchnell(service="replicate", api_key=os.getenv("REPLICATE_API_KEY", None))
+# fluxs = FluxSchnell(service="socaity_local", api_key=os.getenv("SOCAITY_API_KEY", None))
+# fluxs = FluxSchnell()
 
 #from socaity import text2img
 #my_generated_image = text2img("An elephant swimming in a lake")
@@ -37,6 +37,7 @@ Influenced by the artistic styles of Simon Kenny, Giorgetto Giugiaro, Brian Stel
 
     for i, img in enumerate(imgs):
         img.save(f"test_files/output/text2img/test_fluxs_text2img_{i}.png")
+
 
 if __name__ == "__main__":
     test_text2img()

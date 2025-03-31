@@ -20,9 +20,6 @@ def test_embedding_face_swap():
     job_swapped = f2f.swap(media=test_face_2, faces="hagrid", enhance_face_model="")
     swapped = job_swapped.get_result()
     return swapped
-#swap_job = f2f.swap_from_reference_face("hagrid", test_face_2)
-#swapped = swap_job.get_result()
-# test video swap
 
 
 def test_video_swap():
@@ -31,6 +28,7 @@ def test_video_swap():
     swapped_video_job = f2f.swap_video(face_name="black_woman", target_video=test_video, include_audio=True, enhance_face_model="")
     swapped_video = swapped_video_job.get_result()
     return swapped_video
+
 
 test_single_face_swap()
 # test_video_swap()

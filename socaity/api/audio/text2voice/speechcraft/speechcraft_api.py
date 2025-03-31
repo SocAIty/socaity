@@ -1,4 +1,3 @@
-import time
 from typing import Union
 import numpy as np
 from fastsdk.jobs.threaded.internal_job import InternalJob
@@ -48,7 +47,7 @@ class SpeechCraft(_BaseText2Voice, _BaseVoice2Voice):
             self,
             job: InternalJob,
             text: str,
-            voice: str = "en_speaker_3",
+            voice: Union[str, MediaFile, bytes] = "en_speaker_3",
             semantic_temp: float = 0.7,
             semantic_top_k: int = 50,
             semantic_top_p: float = 0.95,
@@ -56,20 +55,15 @@ class SpeechCraft(_BaseText2Voice, _BaseVoice2Voice):
             coarse_top_k: int = 50,
             coarse_top_p: float = 0.95,
             fine_temp: float = 0.5
-         ) -> np.array:
+    ) -> np.array:
         """
         Swaps a face from source_img to target_img;
         in the manner that the face from source_img is placed on the face from target_img.
         :param source_img: The image containing the face to be swapped. Read with open() -> f.read()
         :param target_img: The image containing the face to be swapped to. Read with open() -> f.read()
         """
-
-        endpoint_route = "text2voice"
-        if not isinstance(voice, str):
-            endpoint_route = "text2voice_with_embedding"
-
         endpoint_request = job.request(
-            endpoint_route=endpoint_route,
+            endpoint_route="text2voice",
             text=text,
             voice=voice,
             semantic_temp=semantic_temp,

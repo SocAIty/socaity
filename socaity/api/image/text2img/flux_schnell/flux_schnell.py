@@ -26,6 +26,7 @@ class FluxSchnell(_BaseText2Image):
             disable_safety_checker: bool = True,
             go_fast: bool = False
     ) -> Union[mt.ImageFile, List[mt.ImageFile], None]:
+
         if seed is None:
             seed = random.Random().randint(0, 1000000)
 
@@ -68,4 +69,3 @@ class FluxSchnell(_BaseText2Image):
         :param text: The prompt to be converted to an image.
         """
         return execute_job_function(self._text2img, pam_locals=locals())
-

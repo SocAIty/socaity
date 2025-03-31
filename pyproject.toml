@@ -20,6 +20,11 @@ dependencies = [
     "singleton_decorator==1.0.0"
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest"
+]
+
 [project.urls]
 Repository = "https://github.com/SocAIty/socaity"
 Homepage = "https://www.socaity.ai"

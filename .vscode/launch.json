@@ -1,0 +1,60 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Fries Maker Client API",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/test/fries_maker/fries_maker_client_api.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk"
+            }
+        },
+        {
+            "name": "Python: FastSDK",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/fastsdk",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk"
+            }
+        },
+        {
+            "name": "Python: Tests",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/test",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk"
+            }
+        },
+        {
+            "name": "Python: Test Flux Schnell",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/test/test_flux_schnell.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk"
+            }
+        },
+        {
+            "name": "Python: Test SpeechCraft",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/test/test_spechcraft.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk"
+            }
+        }
+    ]
+} 

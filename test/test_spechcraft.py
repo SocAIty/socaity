@@ -1,39 +1,57 @@
-from socaity import SpeechCraft
+from socaity import SpeechCraft, MediaFile
 import os
 
-test_file_1 = 'test_files/text2speech/voice_clone_test_voice_1.wav'
-test_file_2 = 'test_files/text2speech/voice_clone_test_voice_2.wav'
 
-sample_text = "I love Jacobo. He is the best man in the world and has big eggs."
-out_dir = "test_files/output/text2speech"
+# Global directory paths for use in both pytest and direct execution
+BASE_DIR = os.path.dirname(__file__)
+INPUT_DIR = os.path.join(BASE_DIR, "test_files", "text2speech")
+OUTPUT_DIR = os.path.join(BASE_DIR, "output")
+SAMPLE_TEXT = "I love society [laughs]! [happy] What a day to make voice overs with artificial intelligence."
+TEST_FILE_1 = f'{INPUT_DIR}/voice_clone_test_voice_1.wav'
+TEST_FILE_2 = f'{INPUT_DIR}/voice_clone_test_voice_2.wav'
 
-sc = SpeechCraft()
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+speechcraft = SpeechCraft(service="localhost")
+
 
 def test_text2voice():
-    t2v_job = sc.text2voice(sample_text)
+    t2v_job = speechcraft.text2voice(SAMPLE_TEXT)
     audio = t2v_job.get_result()
-    audio.save(f"{out_dir}/en_speaker_3_i_love_socaity.wav")
+    output_path = f"{OUTPUT_DIR}/en_speaker_3_i_love_socaity.wav"
+    audio.save(output_path)
+    assert os.path.exists(output_path), f"Output file {output_path} was not created"
 
 
-## test voice cloning
 def test_voice2embedding():
-    v2e_job = sc.voice2embedding(audio_file=test_file_1, voice_name="hermine", save=True)
+    v2e_job = speechcraft.voice2embedding(audio_file=TEST_FILE_1, voice_name="hermine", save=False)
     embedding = v2e_job.get_result()
-    audio_with_cloned_voice = sc.text2voice(sample_text, voice=embedding).get_result()
-    audio_with_cloned_voice.save(f"{out_dir}/hermine_i_love_socaity.wav")
+    assert embedding is not None, "Voice embedding should not be None"
+    embedding.save(f"{OUTPUT_DIR}/hermine_embedding.wav")
+
+
+def test_test2voice_with_embedding():
+    if not os.path.exists(f"{OUTPUT_DIR}/hermine_embedding.wav"):
+        test_voice2embedding()
+
+    assert os.path.exists(f"{OUTPUT_DIR}/hermine_embedding.wav"), "Voice embedding file should exist"
+    voice = MediaFile().from_file(f"{OUTPUT_DIR}/hermine_embedding.wav")
+    audio_with_cloned_voice = speechcraft.text2voice(SAMPLE_TEXT, voice=voice).get_result()
+    output_path = f"{OUTPUT_DIR}/hermine_i_love_socaity.wav"
+    audio_with_cloned_voice.save(output_path)
+    assert os.path.exists(output_path), f"Output file {output_path} was not created"
+
 
 def test_voice2voice():
-    # test voice2voice
-    v2v_job = sc.voice2voice(
-        audio_file=test_file_2,
-        voice_name="hermine"
-    )
+    v2v_job = speechcraft.voice2voice(audio_file=TEST_FILE_2, voice_name="hermine")
     v2v_audio = v2v_job.get_result()
-    v2v_audio.save(f"{out_dir}/benni.wav")
-
+    assert v2v_audio is not None, "Voice2Voice result should not be None"
+    
+    output_path = f"{OUTPUT_DIR}/benni.wav"
+    v2v_audio.save(output_path)
+    assert os.path.exists(output_path), f"Output file {output_path} was not created"
 
 
 if __name__ == "__main__":
-    test_text2voice()
-    test_voice2embedding()
-    test_voice2voice()
+    # When running directly, fixtures are just regular functions
+    # test_voice2embedding()
+    test_test2voice_with_embedding()
