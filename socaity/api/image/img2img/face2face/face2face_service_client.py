@@ -1,8 +1,9 @@
-from fastsdk import ImageFile, VideoFile
+from typing import Union
+from fastsdk import ImageFile, VideoFile, MediaList, MediaFile
 from fastsdk.definitions.ai_model import AIModelDescription
 from fastsdk.definitions.enums import ModelDomainTag
-from fastsdk.web.definitions.service_adress import SocaityServiceAddress
-from fastsdk.web.api_client import APIClient
+from fastsdk.client.definitions.service_adress import SocaityServiceAddress
+from fastsdk.client.api_client import APIClient
 from socaity.settings import DEFAULT_SOCAITY_URL
 
 
@@ -24,22 +25,22 @@ srvc_face2face = APIClient(
 )
 srvc_face2face.add_endpoint(
     endpoint_route="/swap_img_to_img",
-    query_params={"enhance_face_model": str},
+    body_params={"enhance_face_model": str},
     file_params={"source_img": ImageFile, "target_img": ImageFile}
 )
 srvc_face2face.add_endpoint(
     endpoint_route="/swap",
-    query_params={"faces": str, "enhance_face_model": str},
+    body_params={"faces": str, "enhance_face_model": str},
     file_params={"media": ImageFile}
 )
 srvc_face2face.add_endpoint(
     endpoint_route="/add_face",
-    query_params={"face_name": str, "save": bool},
+    body_params={"face_name": str, "save": bool},
     file_params={"image": ImageFile}
 )
 srvc_face2face.add_endpoint(
     endpoint_route="/swap_video",
-    query_params={"face_name": str, "include_audio": bool, "enhance_face_model": str},
-    file_params={"target_video": VideoFile},
+    body_params={"faces": str, "include_audio": bool, "enhance_face_model": str},
+    file_params={"target_video": VideoFile, "faces": MediaFile},
     refresh_interval_s=3  # check every 3 seconds for progress
 )

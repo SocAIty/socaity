@@ -1,4 +1,5 @@
 test/test_files/output/
+test/output/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

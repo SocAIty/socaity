@@ -1,6 +1,6 @@
 from fastsdk.definitions.ai_model import AIModelDescription
 from fastsdk.definitions.enums import ModelDomainTag
-from fastsdk.web.api_client import APIClient
+from fastsdk.client.api_client import APIClient
 from socaity.settings import DEFAULT_SOCAITY_URL, DEFAULT_REPLICATE_URL
 from socaity.api.text.chat.llama3.meta_llama3_schema import MetaLlama3_Input
 

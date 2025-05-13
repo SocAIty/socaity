@@ -28,3 +28,6 @@ dev = [
 [project.urls]
 Repository = "https://github.com/SocAIty/socaity"
 Homepage = "https://www.socaity.ai"
+
+[tool.setuptools.package-data]
+socaity = ["sdk/**/*.json"]

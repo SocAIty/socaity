@@ -2,25 +2,23 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Fries Maker Client API",
+            "name": "Python: Create Socaity SDK",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/test/fries_maker/fries_maker_client_api.py",
+            "program": "${workspaceFolder}/socaity/socaity_service_manager.py",
             "console": "integratedTerminal",
-            "justMyCode": true,
             "env": {
-                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk"
+                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
             }
         },
         {
             "name": "Python: FastSDK",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/fastsdk",
+            "program": "${workspaceFolder}/fastsdk/test/test_manual_sdk.py",
             "console": "integratedTerminal",
-            "justMyCode": true,
             "env": {
-                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk"
+                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk,${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
             }
         },
         {
@@ -29,9 +27,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/test",
             "console": "integratedTerminal",
-            "justMyCode": true,
             "env": {
-                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk"
+                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk,${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
             }
         },
         {
@@ -40,9 +37,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/test/test_flux_schnell.py",
             "console": "integratedTerminal",
-            "justMyCode": true,
             "env": {
-                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk"
+                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk,${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
             }
         },
         {
@@ -51,9 +47,18 @@
             "request": "launch",
             "program": "${workspaceFolder}/test/test_spechcraft.py",
             "console": "integratedTerminal",
-            "justMyCode": true,
             "env": {
-                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk"
+                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk,${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
+            }
+        },
+        {
+            "name": "Python: Test Face2Face"
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/test/test_face2face.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
             }
         }
     ]

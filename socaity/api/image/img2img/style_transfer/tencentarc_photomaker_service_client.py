@@ -1,6 +1,6 @@
 from fastsdk.definitions.ai_model import AIModelDescription
 from fastsdk.definitions.enums import ModelDomainTag
-from fastsdk.web.api_client import APIClient
+from fastsdk.client.api_client import APIClient
 from pydantic import BaseModel, Field
 
 from media_toolkit import ImageFile

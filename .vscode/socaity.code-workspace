@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../fastsdk"
+		},
+		{
+			"path": "../../media-toolkit"
+		},
+		{
+			"path": "../../fastCloud"
+		},
+		{
+			"path": "../../meseex"
+		}
+	],
+	"settings": {}
+}

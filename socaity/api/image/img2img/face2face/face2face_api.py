@@ -1,10 +1,14 @@
 import time
-from typing import Union
+from tkinter import Image
+from typing import Union, Literal
 import numpy as np
+from fastsdk import MediaDict
 from fastsdk.jobs.threaded.internal_job import InternalJob
 from fastsdk.fast_sdk import fastSDK, fastJob
-from media_toolkit import ImageFile, VideoFile
+from media_toolkit import ImageFile, VideoFile, MediaFile, MediaList
 from socaity.api.image.img2img.face2face.face2face_service_client import srvc_face2face
+
+FACE_ENHANCE_MODELS = Literal['', 'gpen_bfr_512', 'gpen_bfr_1024', 'gpen_bfr_2048']
 
 
 @fastSDK(api_client=srvc_face2face)
@@ -13,7 +17,7 @@ class Face2Face:
             self,
             source_img: Union[str, bytes, ImageFile],
             target_img: Union[str, bytes, ImageFile],
-            enhance_face_model: Union[str, None] = 'gpen_bfr_512'
+            enhance_face_model: FACE_ENHANCE_MODELS = 'gpen_bfr_512'
     ) -> InternalJob:
         """
         Swaps a face from source_img to target_img;
@@ -30,9 +34,9 @@ class Face2Face:
 
     def swap(
             self,
-            faces: Union[str, dict, list],
-            media: Union[str, bytes],
-            enhance_face_model: Union[str, None] = 'gpen_bfr_512'
+            faces: Union[MediaFile, MediaList, MediaDict, str, dict, list],
+            media: Union[MediaFile, ImageFile, VideoFile, str, bytes],
+            enhance_face_model: FACE_ENHANCE_MODELS = 'gpen_bfr_512'
     ) -> InternalJob:
         return self._swap(faces=faces, media=media, enhance_face_model=enhance_face_model)
 
@@ -41,19 +45,22 @@ class Face2Face:
 
     def swap_video(
             self,
-            face_name: str, target_video: Union[str, bytes, VideoFile], include_audio: bool = True,
-            enhance_face_model: Union[str, None] = None #'gpen_bfr_512'
-        ) -> InternalJob:
-        return self._swap_video(face_name=face_name, target_video=target_video, include_audio=include_audio,
-                                enhance_face_model=enhance_face_model)
+            faces: Union[str, dict, list, MediaFile, MediaList, MediaDict], 
+            target_video: Union[str, bytes, VideoFile], include_audio: bool = True,
+            enhance_face_model: FACE_ENHANCE_MODELS = 'gpen_bfr_512'
+    ) -> InternalJob:
+        return self._swap_video(
+            faces=faces, target_video=target_video, include_audio=include_audio,
+            enhance_face_model=enhance_face_model
+        )
 
     @fastJob
     def _swap_img_to_img(
-            self,
-            job: InternalJob,
-            source_img: Union[np.array, bytes, str],
-            target_img: Union[np.array, bytes, str],
-            enhance_face_model: Union[str, None] = 'gpen_bfr_512'
+        self,
+        job: InternalJob,
+        source_img: Union[ImageFile, np.array, bytes, str],
+        target_img: Union[ImageFile, np.array, bytes, str],
+        enhance_face_model: FACE_ENHANCE_MODELS = 'gpen_bfr_512'
     ) -> Union[ImageFile, None]:
         """
         Swaps a face from source_img to target_img;
@@ -91,18 +98,20 @@ class Face2Face:
 
     @fastJob
     def _swap_video(
-            self, job, face_name: str, target_video: str, include_audio: bool = True,
+            self, job, 
+            faces: Union[str, dict, list, MediaFile, MediaList, MediaDict], 
+            target_video: Union[str, VideoFile], 
+            include_audio: bool = True,
             enhance_face_model: str = 'gpen_bfr_512'
     ):
         request_result = job.request(
-            "swap_video", face_name=face_name, target_video=target_video, include_audio=include_audio,
+            "swap_video", faces=faces, target_video=target_video, include_audio=include_audio,
             enhance_face_model=enhance_face_model
         )
 
         # update progress bar
         while not request_result.is_finished():
-            progress, message = request_result.progress
-            job.set_progress(progress, message)
+            job.set_progress(request_result.progress.progress, request_result.progress.message)
             time.sleep(0)
 
         if request_result.error is not None:
@@ -112,7 +121,7 @@ class Face2Face:
 
 
 if __name__ == "__main__":
-    f2f = Face2Face(service="runpod")
+    f2f = Face2Face(service="localhost")
     img_1 = "A:\\projects\\_face2face\\face2face\\test\\test_media\\test_face_1.jpg"
     img2 = "A:\\projects\\_face2face\\face2face\\test\\test_media\\test_face_2.jpg"
 

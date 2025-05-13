@@ -1,6 +1,6 @@
 from fastsdk.definitions.ai_model import AIModelDescription
 from fastsdk.definitions.enums import ModelDomainTag
-from fastsdk.web.api_client import APIClient
+from fastsdk.client.api_client import APIClient
 from pydantic import BaseModel, Field
 
 from media_toolkit import ImageFile
@@ -19,6 +19,7 @@ srvc_sam2 = APIClient(
     ),
     upload_to_cloud_threshold_mb=0
 )
+
 
 # Input schema for the SAM 2 endpoint
 class SAM2Input(BaseModel):

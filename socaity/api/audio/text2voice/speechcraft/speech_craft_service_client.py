@@ -1,8 +1,8 @@
 from fastsdk import AudioFile, MediaFile
 from fastsdk.definitions.ai_model import AIModelDescription
 from fastsdk.definitions.enums import ModelDomainTag
-from fastsdk.web.definitions.service_adress import RunpodServiceAddress
-from fastsdk.web.api_client import APIClient
+from fastsdk.client.definitions.service_adress import RunpodServiceAddress
+from fastsdk.client.api_client import APIClient
 from socaity.settings import DEFAULT_SOCAITY_URL
 
 srvc_speechcraft = APIClient(

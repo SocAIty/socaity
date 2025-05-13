@@ -1,6 +1,6 @@
 from fastsdk.definitions.ai_model import AIModelDescription
 from fastsdk.definitions.enums import ModelDomainTag
-from fastsdk.web.api_client import APIClient
+from fastsdk.client.api_client import APIClient
 from socaity.settings import DEFAULT_SOCAITY_URL, DEFAULT_REPLICATE_URL
 from socaity.api.text.chat.deepseek.deepseek_r1_schema import DeepSeekR1_Input
 
