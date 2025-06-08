@@ -1,4 +1,5 @@
-from socaity.api.video import HunyuanVideo
+from socaity import SocaityServiceManager  # imported to create update first run
+from socaity.sdk.replicate import HunyuanVideo
 
 genai = HunyuanVideo()
 # genai = HunyuanVideo(service="replicate", api_key=os.getenv("REPLICATE_API_KEY", None))

@@ -1,5 +1,5 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Union, Any
+from typing import Any, Union
 
 from media_toolkit import AudioFile, MediaFile
 
@@ -21,7 +21,7 @@ class speechcraft(FastSDK):
         """
         return self.submit_job("/text2voice", text=text, voice=voice, semantic_temp=semantic_temp, semantic_top_k=semantic_top_k, semantic_top_p=semantic_top_p, coarse_temp=coarse_temp, coarse_top_k=coarse_top_k, coarse_top_p=coarse_top_p, fine_temp=fine_temp, **kwargs)
     
-    def voice2embedding(self, audio_file: Union[MediaFile, AudioFile, str, Any, bytes], voice_name: str = "new_speaker", save: bool = False, **kwargs):
+    def voice2embedding(self, audio_file: Union[MediaFile, str, Any, AudioFile, bytes], voice_name: str = "new_speaker", save: bool = False, **kwargs):
         """
         :param audio_file: the audio file as bytes 5-20s is good length
         :param voice_name: how the new voice / embedding is named
@@ -32,7 +32,7 @@ class speechcraft(FastSDK):
         """
         return self.submit_job("/voice2embedding", audio_file=audio_file, voice_name=voice_name, save=save, **kwargs)
     
-    def voice2voice(self, audio_file: Union[MediaFile, AudioFile, str, Any, bytes], voice_name: Union[MediaFile, str, Any, bytes], temp: float = 0.7, **kwargs):
+    def voice2voice(self, audio_file: Union[MediaFile, str, Any, AudioFile, bytes], voice_name: Union[MediaFile, str, Any, bytes], temp: float = 0.7, **kwargs):
         """
         :param audio_file: the audio file as bytes 5-20s is good length
         :param voice_name: the new of the voice to convert to; or the voice embedding. String or MediaFile.

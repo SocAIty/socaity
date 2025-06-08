@@ -1,1 +1,0 @@
-from .insanely_fast_whisper import InsanelyFastWhisper

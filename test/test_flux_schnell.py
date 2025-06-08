@@ -1,5 +1,6 @@
 import os
 
+from socaity import service_manager  # imported to create update first run
 from socaity import FluxSchnell
 
 

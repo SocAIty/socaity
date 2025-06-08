@@ -1,7 +1,7 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Dict, Union, Any
+from typing import Any, Union, List, Dict
 
-from media_toolkit import ImageFile, VideoFile, MediaFile
+from media_toolkit import VideoFile, ImageFile, MediaFile
 
 
 class face2face(FastSDK):
@@ -11,7 +11,7 @@ class face2face(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="0d69b27a-f893-4582-b3e8-a18c1f588e90", api_key=api_key)
     
-    def swap_img_to_img(self, source_img: Union[ImageFile, MediaFile, str, Any, bytes], target_img: Union[ImageFile, MediaFile, str, Any, bytes], enhance_face_model: str = "gpen_bfr_512", **kwargs):
+    def swap_img_to_img(self, source_img: Union[MediaFile, str, Any, ImageFile, bytes], target_img: Union[MediaFile, str, Any, ImageFile, bytes], enhance_face_model: str = "gpen_bfr_512", **kwargs):
         """
         Swap faces between two images.
         
@@ -26,7 +26,7 @@ class face2face(FastSDK):
         """
         return self.submit_job("/swap-img-to-img", source_img=source_img, target_img=target_img, enhance_face_model=enhance_face_model, **kwargs)
     
-    def add_face(self, face_name: Dict[str, Any], image: Union[ImageFile, MediaFile, str, Any, bytes], save: bool = False, **kwargs):
+    def add_face(self, face_name: Union[str, List[Any]], image: Union[MediaFile, str, Any, ImageFile, bytes], save: bool = False, **kwargs):
         """
         Add one or multiple reference face(s) to the face swapper.
         
@@ -50,7 +50,7 @@ class face2face(FastSDK):
         """
         return self.submit_job("/add-face", face_name=face_name, image=image, save=save, **kwargs)
     
-    def swap(self, faces: Dict[str, Any], media: Union[ImageFile, MediaFile, str, Any, bytes], enhance_face_model: str = "gpen_bfr_512", **kwargs):
+    def swap(self, faces: Union[List[Any], str, Dict[str, Any], MediaFile, Any, bytes], media: Union[MediaFile, str, Any, ImageFile, bytes], enhance_face_model: str = "gpen_bfr_512", **kwargs):
         """
         Swap faces in an image or video.
         
@@ -73,7 +73,7 @@ class face2face(FastSDK):
         """
         return self.submit_job("/swap", faces=faces, media=media, enhance_face_model=enhance_face_model, **kwargs)
     
-    def swap_video(self, faces: Dict[str, Any], target_video: Union[VideoFile, MediaFile, str, Any, bytes], include_audio: bool = True, enhance_face_model: str = "gpen_bfr_512", **kwargs):
+    def swap_video(self, faces: Union[List[Any], str, Dict[str, Any], MediaFile, Any, bytes], target_video: Union[MediaFile, str, Any, VideoFile, bytes], include_audio: bool = True, enhance_face_model: str = "gpen_bfr_512", **kwargs):
         """
         Swap faces in a video file.
         

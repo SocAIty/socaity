@@ -18,7 +18,7 @@
             "program": "${workspaceFolder}/fastsdk/test/test_manual_sdk.py",
             "console": "integratedTerminal",
             "env": {
-                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk,${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
+                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
             }
         },
         {
@@ -28,7 +28,7 @@
             "program": "${workspaceFolder}/test",
             "console": "integratedTerminal",
             "env": {
-                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk,${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
+                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
             }
         },
         {
@@ -38,7 +38,7 @@
             "program": "${workspaceFolder}/test/test_flux_schnell.py",
             "console": "integratedTerminal",
             "env": {
-                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk,${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
+                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
             }
         },
         {
@@ -48,17 +48,17 @@
             "program": "${workspaceFolder}/test/test_spechcraft.py",
             "console": "integratedTerminal",
             "env": {
-                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk,${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
+                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
             }
         },
         {
-            "name": "Python: Test Face2Face"
+            "name": "Python: Test Face2Face",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/test/test_face2face.py",
             "console": "integratedTerminal",
             "env": {
-                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
+                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
             }
         }
     ]
