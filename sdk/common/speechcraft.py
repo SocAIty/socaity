@@ -1,7 +1,7 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Any, Union
+from typing import Union, Any
 
-from media_toolkit import MediaFile, AudioFile
+from media_toolkit import AudioFile, MediaFile
 
 
 class speechcraft(FastSDK):

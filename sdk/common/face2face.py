@@ -1,7 +1,7 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Any, Union, List, Dict
+from typing import Dict, List, Union, Any
 
-from media_toolkit import ImageFile, VideoFile, MediaFile
+from media_toolkit import ImageFile, MediaFile, VideoFile
 
 
 class face2face(FastSDK):
