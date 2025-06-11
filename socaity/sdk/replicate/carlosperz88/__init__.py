@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.carlosperz88.teslacyberbeast import teslacyberbeast

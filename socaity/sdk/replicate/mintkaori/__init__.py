@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.mintkaori.seoulgi import seoulgi

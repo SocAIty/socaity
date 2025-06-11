@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.ckizer.ckizer_64 import ckizer_64

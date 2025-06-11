@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.genericdeag.comic_style import comic_style

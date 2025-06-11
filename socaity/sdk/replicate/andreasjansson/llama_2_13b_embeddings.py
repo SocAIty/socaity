@@ -1,0 +1,22 @@
+from fastsdk.fastSDK import FastSDK
+
+class llama_2_13b_embeddings(FastSDK):
+    """
+    Generated client for llama_2_13b_embeddings
+    """
+    def __init__(self, api_key: str = None):
+        super().__init__(service_name_or_id="d1a69971-74a2-44e9-91c9-6086edf84dc3", api_key=api_key)
+    
+    def predict(self, prompts: str, prompt_separator: str = '\n\n', **kwargs):
+        """
+        Run a single prediction on the model
+        
+        
+        Args:
+            prompts: List of prompts, separated by prompt_separator. Maximum 100 prompts per prediction.
+            
+            prompt_separator: Separator between prompts Defaults to '\n\n'.
+            
+        """
+        return self.submit_job("/predict", prompts=prompts, prompt_separator=prompt_separator, **kwargs)
+     

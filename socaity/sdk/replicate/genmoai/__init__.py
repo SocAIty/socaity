@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.genmoai.mochi_1 import mochi_1

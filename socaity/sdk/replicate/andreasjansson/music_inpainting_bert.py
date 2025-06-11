@@ -1,0 +1,30 @@
+from fastsdk.fastSDK import FastSDK
+
+class music_inpainting_bert(FastSDK):
+    """
+    Generated client for music_inpainting_bert
+    """
+    def __init__(self, api_key: str = None):
+        super().__init__(service_name_or_id="7cb0c75f-7a5b-4b06-bd76-eeb2ab3006ab", api_key=api_key)
+    
+    def predict(self, notes: str, chords: str, seed: int = -1, tempo: int = 120, sample_width: int = 10, time_signature: int = 4, **kwargs):
+        """
+        Run a single prediction on the model
+        
+        
+        Args:
+            notes: Notes in tinynotation, with each bar separated by '|'. Use '?' for bars you want in-painted.
+            
+            chords: Chords (one chord per bar), with each bar separated by '|'. Use '?' for bars you want in-painted.
+            
+            seed: Random seed, -1 for random Defaults to -1.
+            
+            tempo: Tempo (beats per minute) Defaults to 120.
+            
+            sample_width: Number of potential predictions to sample from. The higher, the more chaotic the output. Defaults to 10.
+            
+            time_signature: Time signature Defaults to 4.
+            
+        """
+        return self.submit_job("/predict", notes=notes, chords=chords, seed=seed, tempo=tempo, sample_width=sample_width, time_signature=time_signature, **kwargs)
+     

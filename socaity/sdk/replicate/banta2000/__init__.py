@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.banta2000.mytestmodel import mytestmodel

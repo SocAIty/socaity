@@ -1,4 +1,4 @@
-from socaity.socaity_service_manager import SocaityServiceManager
+from socaity.core.socaity_service_manager import SocaityServiceManager
 from fastsdk import Global
 service_manager = Global.service_manager = SocaityServiceManager()
 

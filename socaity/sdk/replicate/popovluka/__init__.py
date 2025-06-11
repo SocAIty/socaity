@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.popovluka.luka_flux_lora_model import luka_flux_lora_model

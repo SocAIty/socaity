@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.fewjative.ultimate_sd_upscale import ultimate_sd_upscale

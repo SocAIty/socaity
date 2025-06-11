@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.okturan.flux_yesilcam import flux_yesilcam

@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.openai.whisper import whisper

@@ -1,0 +1,44 @@
+from fastsdk.fastSDK import FastSDK
+from typing import Optional
+
+
+class kandinsky_2(FastSDK):
+    """
+    Generated client for kandinsky_2
+    """
+    def __init__(self, api_key: str = None):
+        super().__init__(service_name_or_id="d06a8d8e-24e3-43e7-b4da-e8dff6b457bc", api_key=api_key)
+    
+    def predict(self, width: int = 512, height: int = 512, prompt: str = 'red cat, 4k photo', scheduler: str = 'p_sampler', batch_size: int = 1, prior_steps: str = '5', output_format: str = 'webp', guidance_scale: float = 4.0, output_quality: int = 80, prior_cf_scale: int = 4, num_inference_steps: int = 50, seed: Optional[int] = None, **kwargs):
+        """
+        Run a single prediction on the model
+        
+        
+        Args:
+            width: Choose width. Lower the setting if out of memory. Defaults to 512.
+            
+            height: Choose height. Lower the setting if out of memory. Defaults to 512.
+            
+            prompt: Input Prompt Defaults to 'red cat, 4k photo'.
+            
+            scheduler: Choose a scheduler Defaults to 'p_sampler'.
+            
+            batch_size: Choose batch size. Lower the setting if out of memory. Defaults to 1.
+            
+            prior_steps: prior_steps Defaults to '5'.
+            
+            output_format: Format of the output images Defaults to 'webp'.
+            
+            guidance_scale: Scale for classifier-free guidance Defaults to 4.0.
+            
+            output_quality: Quality of the output images, from 0 to 100. 100 is best quality, 0 is lowest quality. Defaults to 80.
+            
+            prior_cf_scale: prior_cf_scale Defaults to 4.
+            
+            num_inference_steps: Number of denoising steps Defaults to 50.
+            
+            seed: Random seed. Leave blank to randomize the seed Optional.
+            
+        """
+        return self.submit_job("/predict", width=width, height=height, prompt=prompt, scheduler=scheduler, batch_size=batch_size, prior_steps=prior_steps, output_format=output_format, guidance_scale=guidance_scale, output_quality=output_quality, prior_cf_scale=prior_cf_scale, num_inference_steps=num_inference_steps, seed=seed, **kwargs)
+     

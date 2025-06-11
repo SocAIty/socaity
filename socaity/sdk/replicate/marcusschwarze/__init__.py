@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.marcusschwarze.paul_mittelrheintaler import paul_mittelrheintaler

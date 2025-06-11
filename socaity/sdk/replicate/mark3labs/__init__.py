@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.mark3labs.embeddings_gte_base import embeddings_gte_base

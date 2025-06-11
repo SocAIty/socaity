@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.raulduke9119.flux_realism import flux_realism

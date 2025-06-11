@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.fesilva196.lipex import lipex

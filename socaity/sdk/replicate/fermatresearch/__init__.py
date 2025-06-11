@@ -1,0 +1,5 @@
+from socaity.sdk.replicate.fermatresearch.dpo_sdxl_controlnet_lora import dpo_sdxl_controlnet_lora
+from socaity.sdk.replicate.fermatresearch.high_resolution_controlnet_tile import high_resolution_controlnet_tile
+from socaity.sdk.replicate.fermatresearch.magic_image_refiner import magic_image_refiner
+from socaity.sdk.replicate.fermatresearch.sdxl_controlnet_lora import sdxl_controlnet_lora
+from socaity.sdk.replicate.fermatresearch.spanish_f5_tts import spanish_f5_tts

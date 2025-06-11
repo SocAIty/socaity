@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.mandelavybe.jungkook import jungkook

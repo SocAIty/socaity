@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.aj1357.ai_tshirt_mockup import ai_tshirt_mockup

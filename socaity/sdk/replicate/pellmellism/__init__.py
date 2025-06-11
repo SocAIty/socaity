@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.pellmellism.xkcd import xkcd

@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.linoytsaban.flux_yarn_art import flux_yarn_art

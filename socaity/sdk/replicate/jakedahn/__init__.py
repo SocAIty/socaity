@@ -1,0 +1,2 @@
+from socaity.sdk.replicate.jakedahn.flux_latentpop import flux_latentpop
+from socaity.sdk.replicate.jakedahn.flux_soviet_controlrooms import flux_soviet_controlrooms

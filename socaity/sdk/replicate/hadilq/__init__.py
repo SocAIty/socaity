@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.hadilq.hair_segment import hair_segment

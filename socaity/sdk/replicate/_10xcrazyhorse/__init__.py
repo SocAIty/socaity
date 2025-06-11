@@ -1,0 +1,1 @@
+from socaity.sdk.replicate._10xcrazyhorse.bonkfa import bonkfa

@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.m1guelpf.whisper_subtitles import whisper_subtitles

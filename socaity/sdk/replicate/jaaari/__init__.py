@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.jaaari.kokoro_82m import kokoro_82m

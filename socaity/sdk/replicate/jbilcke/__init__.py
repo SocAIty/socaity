@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.jbilcke.flux_dev_panorama_lora import flux_dev_panorama_lora

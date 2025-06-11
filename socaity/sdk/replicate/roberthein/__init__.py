@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.roberthein.modelname_new import modelname_new

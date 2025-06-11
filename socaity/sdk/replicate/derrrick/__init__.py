@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.derrrick.flux_70s_bands import flux_70s_bands

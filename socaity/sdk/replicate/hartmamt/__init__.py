@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.hartmamt.flux_chicago_firesidebowl import flux_chicago_firesidebowl

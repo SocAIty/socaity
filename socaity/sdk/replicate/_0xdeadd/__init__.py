@@ -1,0 +1,1 @@
+from socaity.sdk.replicate._0xdeadd.flux_your_model_name import flux_your_model_name

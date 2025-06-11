@@ -5,7 +5,7 @@
             "name": "Python: Create Socaity SDK",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/socaity/socaity_service_manager.py",
+            "program": "${workspaceFolder}/socaity/core/socaity_service_manager.py",
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
@@ -55,7 +55,7 @@
             "name": "Python: Test Face2Face",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/test/test_face2face.py",
+            "program": "${workspaceFolder}/test/test_socaity/test_face2face.py",
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"

@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.marckohlbrugge.flux_wojak_v2 import flux_wojak_v2

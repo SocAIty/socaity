@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.xinntao.esrgan import esrgan

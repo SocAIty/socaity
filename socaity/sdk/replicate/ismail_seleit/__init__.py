@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.ismail_seleit.formfinder_flux import formfinder_flux

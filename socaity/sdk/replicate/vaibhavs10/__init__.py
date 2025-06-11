@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.vaibhavs10.incredibly_fast_whisper import incredibly_fast_whisper

@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.tstramer.material_diffusion import material_diffusion

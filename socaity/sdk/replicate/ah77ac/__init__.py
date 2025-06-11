@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.ah77ac.majestyrabbit_flux_lora import majestyrabbit_flux_lora

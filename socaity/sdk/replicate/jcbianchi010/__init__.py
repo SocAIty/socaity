@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.jcbianchi010.jeancbianchi import jeancbianchi

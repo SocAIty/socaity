@@ -1,0 +1,48 @@
+from fastsdk.fastSDK import FastSDK
+from typing import Optional, Union
+
+from media_toolkit import MediaFile
+
+
+class magic_image_refiner(FastSDK):
+    """
+    Generated client for magic_image_refiner
+    """
+    def __init__(self, api_key: str = None):
+        super().__init__(service_name_or_id="886af005-fd7b-43e7-aa5c-40d1eb631344", api_key=api_key)
+    
+    def predict(self, hdr: float = 0.0, steps: int = 20, scheduler: str = 'DDIM', creativity: float = 0.25, guess_mode: bool = False, resolution: str = 'original', resemblance: float = 0.75, guidance_scale: float = 7.0, negative_prompt: str = 'teeth, tooth, open mouth, longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, mutant', mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, prompt: Optional[str] = None, **kwargs):
+        """
+        Run a single prediction on the model
+        
+        
+        Args:
+            hdr: HDR improvement over the original image Defaults to 0.0.
+            
+            steps: Steps Defaults to 20.
+            
+            scheduler: Choose a scheduler. Defaults to 'DDIM'.
+            
+            creativity: Denoising strength. 1 means total destruction of the original image Defaults to 0.25.
+            
+            guess_mode: In this mode, the ControlNet encoder will try best to recognize the content of the input image even if you remove all prompts. The `guidance_scale` between 3.0 and 5.0 is recommended. Defaults to False.
+            
+            resolution: Image resolution Defaults to 'original'.
+            
+            resemblance: Conditioning scale for controlnet Defaults to 0.75.
+            
+            guidance_scale: Scale for classifier-free guidance Defaults to 7.0.
+            
+            negative_prompt: Negative prompt Defaults to 'teeth, tooth, open mouth, longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, mutant'.
+            
+            mask: When provided, refines some section of the image. Must be the same size as the image Optional.
+            
+            seed: Seed Optional.
+            
+            image: Image to refine Optional.
+            
+            prompt: Prompt for the model Optional.
+            
+        """
+        return self.submit_job("/predict", hdr=hdr, steps=steps, scheduler=scheduler, creativity=creativity, guess_mode=guess_mode, resolution=resolution, resemblance=resemblance, guidance_scale=guidance_scale, negative_prompt=negative_prompt, mask=mask, seed=seed, image=image, prompt=prompt, **kwargs)
+     

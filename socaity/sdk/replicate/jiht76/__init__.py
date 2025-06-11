@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.jiht76.mindyflux import mindyflux

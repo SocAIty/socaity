@@ -1,5 +1,5 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -9,9 +9,9 @@ class wan_1_3b_inpaint(FastSDK):
     Generated client for wan_1_3b_inpaint
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="d29cac82-ac0f-423e-8e0c-01b016c8bb09", api_key=api_key)
+        super().__init__(service_name_or_id="7b39999e-3f28-413c-9eaf-9c2d2f4cf3c5", api_key=api_key)
     
-    def predict(self, prompt: str, input_video: Union[MediaFile, str, bytes], seed: int = -1, strength: float = 0.9, expand_mask: int = 10, guide_scale: float = 5.0, sampling_steps: int = 50, negative_prompt: str = "", frames_per_second: int = 16, keep_aspect_ratio: bool = False, inpaint_fixup_steps: int = 0, mask_video: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
+    def predict(self, prompt: str, input_video: Union[MediaFile, str, bytes], seed: int = -1, strength: float = 0.9, expand_mask: int = 10, guide_scale: float = 5.0, sampling_steps: int = 50, negative_prompt: str = '', frames_per_second: int = 16, keep_aspect_ratio: bool = False, inpaint_fixup_steps: int = 0, mask_video: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
         """
         Run a single prediction on the model
         
@@ -31,7 +31,7 @@ class wan_1_3b_inpaint(FastSDK):
             
             sampling_steps: Number of sampling steps Defaults to 50.
             
-            negative_prompt: Negative prompt Defaults to "".
+            negative_prompt: Negative prompt Defaults to ''.
             
             frames_per_second: Output video FPS Defaults to 16.
             

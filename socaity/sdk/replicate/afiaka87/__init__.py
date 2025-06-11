@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.afiaka87.tortoise_tts import tortoise_tts

@@ -1,5 +1,5 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -9,9 +9,9 @@ class wan_2_1_1_3b_vid2vid(FastSDK):
     Generated client for wan_2_1_1_3b_vid2vid
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="b08ada69-bc48-41ca-8056-752d702cc42a", api_key=api_key)
+        super().__init__(service_name_or_id="fb5aabc8-01bc-4010-b651-0abdb6d56b32", api_key=api_key)
     
-    def predict(self, prompt: str, tiled: bool = True, cfg_scale: float = 6.0, num_frames: int = 81, aspect_ratio: str = "832x480", negative_prompt: str = "low quality, blurry, distorted, disfigured, text, watermark", frames_per_second: int = 16, denoising_strength: float = 0.7, num_inference_steps: int = 40, seed: Optional[int] = None, input_video: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
+    def predict(self, prompt: str, tiled: bool = True, cfg_scale: float = 6.0, num_frames: int = 81, aspect_ratio: str = '832x480', negative_prompt: str = 'low quality, blurry, distorted, disfigured, text, watermark', frames_per_second: int = 16, denoising_strength: float = 0.7, num_inference_steps: int = 40, seed: Optional[int] = None, input_video: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
         """
         Run a single prediction on the model
         
@@ -25,9 +25,9 @@ class wan_2_1_1_3b_vid2vid(FastSDK):
             
             num_frames: Number of frames to generate in the output video Defaults to 81.
             
-            aspect_ratio: Aspect ratio for the output video Defaults to "832x480".
+            aspect_ratio: Aspect ratio for the output video Defaults to '832x480'.
             
-            negative_prompt: Negative prompt to specify what to avoid in the generation Defaults to "low quality, blurry, distorted, disfigured, text, watermark".
+            negative_prompt: Negative prompt to specify what to avoid in the generation Defaults to 'low quality, blurry, distorted, disfigured, text, watermark'.
             
             frames_per_second: Number of frames per second in the output video Defaults to 16.
             

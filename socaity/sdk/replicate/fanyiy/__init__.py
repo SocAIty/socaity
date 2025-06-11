@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.fanyiy.flux_notion_illustration import flux_notion_illustration

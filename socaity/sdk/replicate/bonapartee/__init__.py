@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.bonapartee.thumbnail_generator import thumbnail_generator

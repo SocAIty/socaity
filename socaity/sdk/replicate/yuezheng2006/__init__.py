@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.yuezheng2006.flux_lora_gyy import flux_lora_gyy

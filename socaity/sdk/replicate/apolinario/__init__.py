@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.apolinario.flux_tarot_v1 import flux_tarot_v1

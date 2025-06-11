@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.zylim0702.qr_code_controlnet import qr_code_controlnet

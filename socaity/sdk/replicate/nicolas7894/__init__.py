@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.nicolas7894.flux_undraw import flux_undraw

@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.playgroundai.playground_v2_5_1024px_aesthetic import playground_v2_5_1024px_aesthetic

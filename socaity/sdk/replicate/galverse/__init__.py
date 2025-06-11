@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.galverse.mama_flux_v1 import mama_flux_v1

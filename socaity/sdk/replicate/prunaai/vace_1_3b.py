@@ -1,5 +1,5 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional, Any, List
+from typing import List, Optional, Union, Any
 
 from media_toolkit import MediaFile
 
@@ -9,9 +9,9 @@ class vace_1_3b(FastSDK):
     Generated client for vace_1_3b
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="b586189a-d687-4759-bb72-c9d493e1a4e2", api_key=api_key)
+        super().__init__(service_name_or_id="da3265e1-cb45-4859-80c4-783658bff87d", api_key=api_key)
     
-    def predict(self, prompt: str, seed: int = -1, size: str = "480*832", frame_num: int = 81, speed_mode: str = "Lightly Juiced 🍊 (more consistent)", sample_shift: int = 16, sample_steps: int = 50, sample_solver: str = "unipc", sample_guide_scale: float = 5.0, src_mask: Optional[Union[MediaFile, str, bytes]] = None, src_video: Optional[Union[MediaFile, str, bytes]] = None, src_ref_images: Optional[Union[List[Any], MediaFile, str, bytes]] = None, **kwargs):
+    def predict(self, prompt: str, seed: int = -1, size: str = '480*832', frame_num: int = 81, speed_mode: str = 'Lightly Juiced 🍊 (more consistent)', sample_shift: int = 16, sample_steps: int = 50, sample_solver: str = 'unipc', sample_guide_scale: float = 5.0, src_mask: Optional[Union[MediaFile, str, bytes]] = None, src_video: Optional[Union[MediaFile, str, bytes]] = None, src_ref_images: Optional[Union[List[Any], MediaFile, str, bytes]] = None, **kwargs):
         """
         Run a single prediction on the model
         
@@ -21,17 +21,17 @@ class vace_1_3b(FastSDK):
             
             seed: Random seed (-1 for random) Defaults to -1.
             
-            size: Output resolution Defaults to "480*832".
+            size: Output resolution Defaults to '480*832'.
             
             frame_num: Number of frames to generate. Defaults to 81.
             
-            speed_mode: Speed optimization level Defaults to "Lightly Juiced 🍊 (more consistent)".
+            speed_mode: Speed optimization level Defaults to 'Lightly Juiced 🍊 (more consistent)'.
             
             sample_shift: Sample shift Defaults to 16.
             
             sample_steps: Sample steps Defaults to 50.
             
-            sample_solver: Sample solver Defaults to "unipc".
+            sample_solver: Sample solver Defaults to 'unipc'.
             
             sample_guide_scale: Sample guide scale Defaults to 5.0.
             

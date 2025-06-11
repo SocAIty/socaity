@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.titouv.test_model3 import test_model3

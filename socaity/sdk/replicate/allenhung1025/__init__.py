@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.allenhung1025.looptest import looptest

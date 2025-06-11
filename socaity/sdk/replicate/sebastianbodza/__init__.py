@@ -1,0 +1,2 @@
+from socaity.sdk.replicate.sebastianbodza.flux_aquarell_watercolor_style import flux_aquarell_watercolor_style
+from socaity.sdk.replicate.sebastianbodza.flux_lora_retro_linedrawing_style_v1 import flux_lora_retro_linedrawing_style_v1

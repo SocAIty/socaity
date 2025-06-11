@@ -1,0 +1,32 @@
+from fastsdk.fastSDK import FastSDK
+from typing import Optional
+
+
+class riffusion(FastSDK):
+    """
+    Generated client for riffusion
+    """
+    def __init__(self, api_key: str = None):
+        super().__init__(service_name_or_id="54e9f4d7-c415-46e3-a7ea-7693d0f766ee", api_key=api_key)
+    
+    def predict(self, alpha: float = 0.5, prompt_a: str = 'funky synth solo', denoising: float = 0.75, seed_image_id: str = 'vibes', num_inference_steps: int = 50, prompt_b: Optional[str] = None, **kwargs):
+        """
+        Run a single prediction on the model
+        
+        
+        Args:
+            alpha: Interpolation alpha if using two prompts. A value of 0 uses prompt_a fully, a value of 1 uses prompt_b fully Defaults to 0.5.
+            
+            prompt_a: The prompt for your audio Defaults to 'funky synth solo'.
+            
+            denoising: How much to transform input spectrogram Defaults to 0.75.
+            
+            seed_image_id: Seed spectrogram to use Defaults to 'vibes'.
+            
+            num_inference_steps: Number of steps to run the diffusion model Defaults to 50.
+            
+            prompt_b: The second prompt to interpolate with the first, leave blank if no interpolation Optional.
+            
+        """
+        return self.submit_job("/predict", alpha=alpha, prompt_a=prompt_a, denoising=denoising, seed_image_id=seed_image_id, num_inference_steps=num_inference_steps, prompt_b=prompt_b, **kwargs)
+     
