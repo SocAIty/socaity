@@ -4,6 +4,7 @@ from socaity.sdk.replicate._01_ai.yi_6b_chat import yi_6b_chat
 from socaity.sdk.replicate._0xdeadd.flux_your_model_name import flux_your_model_name
 from socaity.sdk.replicate._0xtuba.archillect_lora import archillect_lora
 from socaity.sdk.replicate._10xcrazyhorse.bonkfa import bonkfa
+from socaity.sdk.replicate._851_labs.background_remover import background_remover
 from socaity.sdk.replicate.abyssalsoul.cyberdad import cyberdad
 from socaity.sdk.replicate.adidoes.whisperx_video_transcribe import whisperx_video_transcribe
 from socaity.sdk.replicate.adirik.e5_mistral_7b_instruct import e5_mistral_7b_instruct
@@ -68,11 +69,11 @@ from socaity.sdk.replicate.arcanite24.animation2k_flux import animation2k_flux
 from socaity.sdk.replicate.arielreplicate.deoldify_video import deoldify_video
 from socaity.sdk.replicate.arielreplicate.robust_video_matting import robust_video_matting
 from socaity.sdk.replicate.arielreplicate.stable_diffusion_infinite_zoom import stable_diffusion_infinite_zoom
-from socaity.sdk.replicate.awerks.neon_tts import neon_tts
 from socaity.sdk.replicate.banta2000.mytestmodel import mytestmodel
 from socaity.sdk.replicate.beautyyuyanli.multilingual_e5_large import multilingual_e5_large
 from socaity.sdk.replicate.benj_edwards.dads_uppercase_2500_steps import dads_uppercase_2500_steps
 from socaity.sdk.replicate.bingbangboom_lab.flux_dreamscape import flux_dreamscape
+from socaity.sdk.replicate.black_forest_labs.flux_schnell import flux_schnell
 from socaity.sdk.replicate.bonapartee.thumbnail_generator import thumbnail_generator
 from socaity.sdk.replicate.brunnolou.flux_texture_abstract_painting import flux_texture_abstract_painting
 from socaity.sdk.replicate.buildingwithai.ai_jo import ai_jo
@@ -105,7 +106,6 @@ from socaity.sdk.replicate.cjwbw.text2video_zero import text2video_zero
 from socaity.sdk.replicate.cjwbw.videocrafter import videocrafter
 from socaity.sdk.replicate.cjwbw.voicecraft import voicecraft
 from socaity.sdk.replicate.ckizer.ckizer_64 import ckizer_64
-from socaity.sdk.replicate.codeplugtech.background_remover import background_remover
 from socaity.sdk.replicate.codingfu.bayc import bayc
 from socaity.sdk.replicate.cristobalascencio.florentino import florentino
 from socaity.sdk.replicate.cristobalascencio.wirra import wirra
@@ -313,6 +313,11 @@ from socaity.sdk.replicate.markredito._90sbadtrip import _90sbadtrip
 from socaity.sdk.replicate.maybasmanphotographer.bmayb import bmayb
 from socaity.sdk.replicate.melaesse.ginevra import ginevra
 from socaity.sdk.replicate.men1scus.birefnet import birefnet
+from socaity.sdk.replicate.meta.llama_4_maverick_instruct import llama_4_maverick_instruct
+from socaity.sdk.replicate.meta.meta_llama_3_1_405b_instruct import meta_llama_3_1_405b_instruct
+from socaity.sdk.replicate.meta.meta_llama_3_70b_instruct import meta_llama_3_70b_instruct
+from socaity.sdk.replicate.meta.meta_llama_3_8b import meta_llama_3_8b
+from socaity.sdk.replicate.meta.meta_llama_3_8b_instruct import meta_llama_3_8b_instruct
 from socaity.sdk.replicate.meta.musicgen import musicgen
 from socaity.sdk.replicate.meta.sam_2 import sam_2
 from socaity.sdk.replicate.meta.sam_2_video import sam_2_video
@@ -337,6 +342,13 @@ from socaity.sdk.replicate.nvidia.sana import sana
 from socaity.sdk.replicate.okostadsjunior.ninicollyloli import ninicollyloli
 from socaity.sdk.replicate.okturan.flux_yesilcam import flux_yesilcam
 from socaity.sdk.replicate.open_mmlab.pia import pia
+from socaity.sdk.replicate.openai.gpt_4_1 import gpt_4_1
+from socaity.sdk.replicate.openai.gpt_4_1_mini import gpt_4_1_mini
+from socaity.sdk.replicate.openai.gpt_4_1_nano import gpt_4_1_nano
+from socaity.sdk.replicate.openai.gpt_4o import gpt_4o
+from socaity.sdk.replicate.openai.gpt_4o_mini import gpt_4o_mini
+from socaity.sdk.replicate.openai.o1 import o1
+from socaity.sdk.replicate.openai.o1_mini import o1_mini
 from socaity.sdk.replicate.openai.whisper import whisper
 from socaity.sdk.replicate.ori299.mc_thumbnails_v1 import mc_thumbnails_v1
 from socaity.sdk.replicate.oshtz.flux_celpast import flux_celpast

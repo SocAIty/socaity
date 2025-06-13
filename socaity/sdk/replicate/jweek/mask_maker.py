@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class mask_maker(FastSDK):
     """
-    Generated client for mask_maker
+    Generated client for jweek/mask-maker
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="12233df1-2b13-4e12-a44b-3bd0038928f7", api_key=api_key)
+        super().__init__(service_name_or_id="d1b3584b-c64d-4a9d-9a4a-539921f667e4", api_key=api_key)
     
     def predict(self, image: Union[MediaFile, str, bytes], threshold: float = 0.2, mask_format: str = 'coco_rle', mask_output: str = '', mask_prompt: Optional[str] = None, **kwargs):
         """
@@ -28,5 +28,5 @@ class mask_maker(FastSDK):
             mask_prompt: Comma-separated names of the objects to be detected Optional.
             
         """
-        return self.submit_job("/predict", image=image, threshold=threshold, mask_format=mask_format, mask_output=mask_output, mask_prompt=mask_prompt, **kwargs)
+        return self.submit_job("/predictions", image=image, threshold=threshold, mask_format=mask_format, mask_output=mask_output, mask_prompt=mask_prompt, **kwargs)
      

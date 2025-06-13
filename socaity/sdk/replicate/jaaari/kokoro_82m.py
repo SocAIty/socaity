@@ -2,10 +2,10 @@ from fastsdk.fastSDK import FastSDK
 
 class kokoro_82m(FastSDK):
     """
-    Generated client for kokoro_82m
+    Generated client for jaaari/kokoro-82m
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="da504038-4412-41e4-ad1f-aa07bb8bf1e1", api_key=api_key)
+        super().__init__(service_name_or_id="40170a05-bca7-49a3-b285-c34c28aba8ec", api_key=api_key)
     
     def predict(self, text: str, speed: float = 1.0, voice: str = 'af_bella', **kwargs):
         """
@@ -20,5 +20,5 @@ class kokoro_82m(FastSDK):
             voice: Voice to use for synthesis Defaults to 'af_bella'.
             
         """
-        return self.submit_job("/predict", text=text, speed=speed, voice=voice, **kwargs)
+        return self.submit_job("/predictions", text=text, speed=speed, voice=voice, **kwargs)
      

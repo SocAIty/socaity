@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class rembg_video(FastSDK):
     """
-    Generated client for rembg_video
+    Generated client for lucataco/rembg-video
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="d16ea450-727e-4fae-8fd1-d3f8fecf7b23", api_key=api_key)
+        super().__init__(service_name_or_id="26f1e220-7c28-4bd5-aef1-9ca64b2fe2e2", api_key=api_key)
     
     def predict(self, video: Union[MediaFile, str, bytes], mode: str = 'Normal', background_color: str = '#FFFFFF', **kwargs):
         """
@@ -24,5 +24,5 @@ class rembg_video(FastSDK):
             background_color: Background color in hex format (e.g., '#FFFFFF' for white) Defaults to '#FFFFFF'.
             
         """
-        return self.submit_job("/predict", video=video, mode=mode, background_color=background_color, **kwargs)
+        return self.submit_job("/predictions", video=video, mode=mode, background_color=background_color, **kwargs)
      

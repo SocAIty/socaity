@@ -2,10 +2,10 @@ from fastsdk.fastSDK import FastSDK
 
 class dance_diffusion(FastSDK):
     """
-    Generated client for dance_diffusion
+    Generated client for harmonai/dance-diffusion
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="edcbf0c6-f6a3-4ee6-9fcc-aab313b56bb5", api_key=api_key)
+        super().__init__(service_name_or_id="63b878a3-2f74-4d25-9782-08e6254869dc", api_key=api_key)
     
     def predict(self, steps: int = 100, length: float = 8.0, batch_size: int = 1, model_name: str = 'maestro-150k', **kwargs):
         """
@@ -22,5 +22,5 @@ class dance_diffusion(FastSDK):
             model_name: Model Defaults to 'maestro-150k'.
             
         """
-        return self.submit_job("/predict", steps=steps, length=length, batch_size=batch_size, model_name=model_name, **kwargs)
+        return self.submit_job("/predictions", steps=steps, length=length, batch_size=batch_size, model_name=model_name, **kwargs)
      

@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class mask2former(FastSDK):
     """
-    Generated client for mask2former
+    Generated client for hassamdevsy/mask2former
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="6a65c454-cbfd-41d3-a746-a6d9dba39f28", api_key=api_key)
+        super().__init__(service_name_or_id="820f5706-634a-47e0-8412-011655f93527", api_key=api_key)
     
     def predict(self, image: Union[MediaFile, str, bytes], **kwargs):
         """
@@ -20,5 +20,5 @@ class mask2former(FastSDK):
             image: image
             
         """
-        return self.submit_job("/predict", image=image, **kwargs)
+        return self.submit_job("/predictions", image=image, **kwargs)
      

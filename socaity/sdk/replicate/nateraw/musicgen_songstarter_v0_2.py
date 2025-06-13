@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class musicgen_songstarter_v0_2(FastSDK):
     """
-    Generated client for musicgen_songstarter_v0_2
+    Generated client for nateraw/musicgen-songstarter-v0-2
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="47326f2b-31c8-405c-8a50-a8779f442f4d", api_key=api_key)
+        super().__init__(service_name_or_id="80ce2df6-ac1d-48a3-a3f2-b164022a211f", api_key=api_key)
     
     def predict(self, top_k: int = 250, top_p: float = 0.0, duration: int = 8, temperature: float = 1.0, continuation: bool = False, output_format: str = 'wav', continuation_start: int = 0, normalization_strategy: str = 'loudness', classifier_free_guidance: int = 3, seed: Optional[int] = None, prompt: Optional[str] = None, input_audio: Optional[Union[MediaFile, str, bytes]] = None, continuation_end: Optional[int] = None, **kwargs):
         """
@@ -44,5 +44,5 @@ class musicgen_songstarter_v0_2(FastSDK):
             continuation_end: End time of the audio file to use for continuation. If -1 or None, will default to the end of the audio clip. Optional.
             
         """
-        return self.submit_job("/predict", top_k=top_k, top_p=top_p, duration=duration, temperature=temperature, continuation=continuation, output_format=output_format, continuation_start=continuation_start, normalization_strategy=normalization_strategy, classifier_free_guidance=classifier_free_guidance, seed=seed, prompt=prompt, input_audio=input_audio, continuation_end=continuation_end, **kwargs)
+        return self.submit_job("/predictions", top_k=top_k, top_p=top_p, duration=duration, temperature=temperature, continuation=continuation, output_format=output_format, continuation_start=continuation_start, normalization_strategy=normalization_strategy, classifier_free_guidance=classifier_free_guidance, seed=seed, prompt=prompt, input_audio=input_audio, continuation_end=continuation_end, **kwargs)
      

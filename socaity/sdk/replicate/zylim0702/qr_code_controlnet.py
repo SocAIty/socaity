@@ -4,10 +4,10 @@ from typing import Optional
 
 class qr_code_controlnet(FastSDK):
     """
-    Generated client for qr_code_controlnet
+    Generated client for zylim0702/qr-code-controlnet
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="d0532f92-cfdf-42ea-a2ca-7bbf836dcf92", api_key=api_key)
+        super().__init__(service_name_or_id="c0eedcb3-e8ef-4107-81b8-78c7e4e92e02", api_key=api_key)
     
     def predict(self, url: str, prompt: str, eta: float = 0.0, scheduler: str = 'DDIM', guess_mode: bool = False, num_outputs: int = 1, guidance_scale: float = 9.0, negative_prompt: str = 'Longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality', image_resolution: int = 768, num_inference_steps: int = 20, disable_safety_check: bool = False, qr_conditioning_scale: float = 1.0, seed: Optional[int] = None, **kwargs):
         """
@@ -42,5 +42,5 @@ class qr_code_controlnet(FastSDK):
             seed: Seed Optional.
             
         """
-        return self.submit_job("/predict", url=url, prompt=prompt, eta=eta, scheduler=scheduler, guess_mode=guess_mode, num_outputs=num_outputs, guidance_scale=guidance_scale, negative_prompt=negative_prompt, image_resolution=image_resolution, num_inference_steps=num_inference_steps, disable_safety_check=disable_safety_check, qr_conditioning_scale=qr_conditioning_scale, seed=seed, **kwargs)
+        return self.submit_job("/predictions", url=url, prompt=prompt, eta=eta, scheduler=scheduler, guess_mode=guess_mode, num_outputs=num_outputs, guidance_scale=guidance_scale, negative_prompt=negative_prompt, image_resolution=image_resolution, num_inference_steps=num_inference_steps, disable_safety_check=disable_safety_check, qr_conditioning_scale=qr_conditioning_scale, seed=seed, **kwargs)
      

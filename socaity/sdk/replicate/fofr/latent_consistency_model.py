@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class latent_consistency_model(FastSDK):
     """
-    Generated client for latent_consistency_model
+    Generated client for fofr/latent-consistency-model
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="a49ef02e-747b-47d2-8a25-f259304489a7", api_key=api_key)
+        super().__init__(service_name_or_id="257ba909-831f-4c7c-990e-7aee51b68eb1", api_key=api_key)
     
     def predict(self, width: int = 768, height: int = 768, prompt: str = 'Self-portrait oil painting, a beautiful cyborg with golden hair, 8k', num_images: int = 1, guidance_scale: float = 8.0, archive_outputs: bool = False, prompt_strength: float = 0.8, sizing_strategy: str = 'width/height', lcm_origin_steps: int = 50, canny_low_threshold: float = 100.0, num_inference_steps: int = 8, canny_high_threshold: float = 200.0, control_guidance_end: float = 1.0, control_guidance_start: float = 0.0, disable_safety_checker: bool = False, controlnet_conditioning_scale: float = 2.0, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, control_image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
         """
@@ -56,5 +56,5 @@ class latent_consistency_model(FastSDK):
             control_image: Image for controlnet conditioning Optional.
             
         """
-        return self.submit_job("/predict", width=width, height=height, prompt=prompt, num_images=num_images, guidance_scale=guidance_scale, archive_outputs=archive_outputs, prompt_strength=prompt_strength, sizing_strategy=sizing_strategy, lcm_origin_steps=lcm_origin_steps, canny_low_threshold=canny_low_threshold, num_inference_steps=num_inference_steps, canny_high_threshold=canny_high_threshold, control_guidance_end=control_guidance_end, control_guidance_start=control_guidance_start, disable_safety_checker=disable_safety_checker, controlnet_conditioning_scale=controlnet_conditioning_scale, seed=seed, image=image, control_image=control_image, **kwargs)
+        return self.submit_job("/predictions", width=width, height=height, prompt=prompt, num_images=num_images, guidance_scale=guidance_scale, archive_outputs=archive_outputs, prompt_strength=prompt_strength, sizing_strategy=sizing_strategy, lcm_origin_steps=lcm_origin_steps, canny_low_threshold=canny_low_threshold, num_inference_steps=num_inference_steps, canny_high_threshold=canny_high_threshold, control_guidance_end=control_guidance_end, control_guidance_start=control_guidance_start, disable_safety_checker=disable_safety_checker, controlnet_conditioning_scale=controlnet_conditioning_scale, seed=seed, image=image, control_image=control_image, **kwargs)
      

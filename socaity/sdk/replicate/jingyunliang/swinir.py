@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class swinir(FastSDK):
     """
-    Generated client for swinir
+    Generated client for jingyunliang/swinir
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="30382029-d4d8-4ffe-acdd-d2b1b747194d", api_key=api_key)
+        super().__init__(service_name_or_id="a38caf79-16b9-494d-a212-5191e6e72799", api_key=api_key)
     
     def predict(self, image: Union[MediaFile, str, bytes], jpeg: int = 40, noise: int = 15, task_type: str = 'Real-World Image Super-Resolution-Large', **kwargs):
         """
@@ -26,5 +26,5 @@ class swinir(FastSDK):
             task_type: Choose a task Defaults to 'Real-World Image Super-Resolution-Large'.
             
         """
-        return self.submit_job("/predict", image=image, jpeg=jpeg, noise=noise, task_type=task_type, **kwargs)
+        return self.submit_job("/predictions", image=image, jpeg=jpeg, noise=noise, task_type=task_type, **kwargs)
      

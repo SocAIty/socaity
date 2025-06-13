@@ -4,10 +4,10 @@ from typing import Optional
 
 class dreamshaper_xl_turbo(FastSDK):
     """
-    Generated client for dreamshaper_xl_turbo
+    Generated client for lucataco/dreamshaper-xl-turbo
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="10625688-461b-436e-8b5b-5420d5486b0a", api_key=api_key)
+        super().__init__(service_name_or_id="378d5112-177a-4bfe-858f-598bda4c8f57", api_key=api_key)
     
     def predict(self, width: int = 1024, height: int = 1024, prompt: str = 'An astronaut riding a rainbow unicorn', scheduler: str = 'K_EULER', num_outputs: int = 1, guidance_scale: float = 2.0, apply_watermark: bool = True, negative_prompt: str = '', num_inference_steps: int = 6, disable_safety_checker: bool = False, seed: Optional[int] = None, **kwargs):
         """
@@ -38,5 +38,5 @@ class dreamshaper_xl_turbo(FastSDK):
             seed: Random seed. Leave blank to randomize the seed Optional.
             
         """
-        return self.submit_job("/predict", width=width, height=height, prompt=prompt, scheduler=scheduler, num_outputs=num_outputs, guidance_scale=guidance_scale, apply_watermark=apply_watermark, negative_prompt=negative_prompt, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, seed=seed, **kwargs)
+        return self.submit_job("/predictions", width=width, height=height, prompt=prompt, scheduler=scheduler, num_outputs=num_outputs, guidance_scale=guidance_scale, apply_watermark=apply_watermark, negative_prompt=negative_prompt, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, seed=seed, **kwargs)
      

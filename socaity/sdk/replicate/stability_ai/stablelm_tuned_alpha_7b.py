@@ -2,10 +2,10 @@ from fastsdk.fastSDK import FastSDK
 
 class stablelm_tuned_alpha_7b(FastSDK):
     """
-    Generated client for stablelm_tuned_alpha_7b
+    Generated client for stability-ai/stablelm-tuned-alpha-7b
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="2308b4f5-9c5a-4ce6-b947-f4bb5138f7fb", api_key=api_key)
+        super().__init__(service_name_or_id="c89dcbf6-be34-479b-8aa5-d5d6486bec1a", api_key=api_key)
     
     def predict(self, top_p: float = 1.0, prompt: str = "What's your mood today?", temperature: float = 0.75, max_new_tokens: int = 100, repetition_penalty: float = 1.2, **kwargs):
         """
@@ -24,5 +24,5 @@ class stablelm_tuned_alpha_7b(FastSDK):
             repetition_penalty: Penalty for repeated words in generated text; 1 is no penalty, values greater than 1 discourage repetition, less than 1 encourage it. Defaults to 1.2.
             
         """
-        return self.submit_job("/predict", top_p=top_p, prompt=prompt, temperature=temperature, max_new_tokens=max_new_tokens, repetition_penalty=repetition_penalty, **kwargs)
+        return self.submit_job("/predictions", top_p=top_p, prompt=prompt, temperature=temperature, max_new_tokens=max_new_tokens, repetition_penalty=repetition_penalty, **kwargs)
      

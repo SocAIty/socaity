@@ -2,10 +2,10 @@ from fastsdk.fastSDK import FastSDK
 
 class stable_diffusion_infinite_zoom(FastSDK):
     """
-    Generated client for stable_diffusion_infinite_zoom
+    Generated client for arielreplicate/stable-diffusion-infinite-zoom
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="49e33acb-2097-4601-943c-03527c94282d", api_key=api_key)
+        super().__init__(service_name_or_id="94ff68a1-11b2-4672-94ba-30572855ba8a", api_key=api_key)
     
     def predict(self, prompt: str, inpaint_iter: int = 2, output_format: str = 'mp4', **kwargs):
         """
@@ -20,5 +20,5 @@ class stable_diffusion_infinite_zoom(FastSDK):
             output_format: infinite loop gif or mp4 video Defaults to 'mp4'.
             
         """
-        return self.submit_job("/predict", prompt=prompt, inpaint_iter=inpaint_iter, output_format=output_format, **kwargs)
+        return self.submit_job("/predictions", prompt=prompt, inpaint_iter=inpaint_iter, output_format=output_format, **kwargs)
      

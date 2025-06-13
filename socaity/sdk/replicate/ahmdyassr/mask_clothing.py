@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class mask_clothing(FastSDK):
     """
-    Generated client for mask_clothing
+    Generated client for ahmdyassr/mask-clothing
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="0bc54aae-e507-4695-bd92-d53780b79d13", api_key=api_key)
+        super().__init__(service_name_or_id="09115fc3-0100-42e0-b034-3480586c9990", api_key=api_key)
     
     def predict(self, face_mask: bool = False, adjustment: int = 0, face_adjustment: int = 0, image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
         """
@@ -26,5 +26,5 @@ class mask_clothing(FastSDK):
             image: Mask clothing found in this image Optional.
             
         """
-        return self.submit_job("/predict", face_mask=face_mask, adjustment=adjustment, face_adjustment=face_adjustment, image=image, **kwargs)
+        return self.submit_job("/predictions", face_mask=face_mask, adjustment=adjustment, face_adjustment=face_adjustment, image=image, **kwargs)
      

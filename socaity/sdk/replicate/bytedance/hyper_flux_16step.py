@@ -4,10 +4,10 @@ from typing import Optional
 
 class hyper_flux_16step(FastSDK):
     """
-    Generated client for hyper_flux_16step
+    Generated client for bytedance/hyper-flux-16step
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="ba53b683-8f0a-4cf9-9fec-0d26f1b2fcde", api_key=api_key)
+        super().__init__(service_name_or_id="9b042e2c-660d-4be1-868a-4a22f0cf1378", api_key=api_key)
     
     def predict(self, prompt: str, num_outputs: int = 1, aspect_ratio: str = '1:1', output_format: str = 'webp', guidance_scale: float = 3.5, output_quality: int = 80, num_inference_steps: int = 16, disable_safety_checker: bool = False, seed: Optional[int] = None, width: Optional[int] = None, height: Optional[int] = None, **kwargs):
         """
@@ -38,5 +38,5 @@ class hyper_flux_16step(FastSDK):
             height: Height of the generated image. Optional, only used when aspect_ratio=custom. Must be a multiple of 16 (if it's not, it will be rounded to nearest multiple of 16) Optional.
             
         """
-        return self.submit_job("/predict", prompt=prompt, num_outputs=num_outputs, aspect_ratio=aspect_ratio, output_format=output_format, guidance_scale=guidance_scale, output_quality=output_quality, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, seed=seed, width=width, height=height, **kwargs)
+        return self.submit_job("/predictions", prompt=prompt, num_outputs=num_outputs, aspect_ratio=aspect_ratio, output_format=output_format, guidance_scale=guidance_scale, output_quality=output_quality, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, seed=seed, width=width, height=height, **kwargs)
      

@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class film_frame_interpolation_for_large_motion(FastSDK):
     """
-    Generated client for film_frame_interpolation_for_large_motion
+    Generated client for zsxkib/film-frame-interpolation-for-large-motion
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="7cf49219-24ad-43e8-983c-25a9b180c81a", api_key=api_key)
+        super().__init__(service_name_or_id="138d2e16-0804-4e2e-916b-ea0f9b732cea", api_key=api_key)
     
     def predict(self, mp4: Union[MediaFile, str, bytes], num_interpolation_steps: int = 3, playback_frames_per_second: int = 24, **kwargs):
         """
@@ -24,5 +24,5 @@ class film_frame_interpolation_for_large_motion(FastSDK):
             playback_frames_per_second: Specify the playback speed in frames per second. Defaults to 24.
             
         """
-        return self.submit_job("/predict", mp4=mp4, num_interpolation_steps=num_interpolation_steps, playback_frames_per_second=playback_frames_per_second, **kwargs)
+        return self.submit_job("/predictions", mp4=mp4, num_interpolation_steps=num_interpolation_steps, playback_frames_per_second=playback_frames_per_second, **kwargs)
      

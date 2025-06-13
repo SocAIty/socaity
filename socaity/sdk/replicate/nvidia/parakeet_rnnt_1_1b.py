@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class parakeet_rnnt_1_1b(FastSDK):
     """
-    Generated client for parakeet_rnnt_1_1b
+    Generated client for nvidia/parakeet-rnnt-1-1b
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="24c3582c-c233-429f-94b2-f27fb9de9e53", api_key=api_key)
+        super().__init__(service_name_or_id="5a2f2250-0001-4849-b676-828f107dfc70", api_key=api_key)
     
     def predict(self, audio_file: Union[MediaFile, str, bytes], **kwargs):
         """
@@ -20,5 +20,5 @@ class parakeet_rnnt_1_1b(FastSDK):
             audio_file: Input audio file to be transcribed by the ASR model
             
         """
-        return self.submit_job("/predict", audio_file=audio_file, **kwargs)
+        return self.submit_job("/predictions", audio_file=audio_file, **kwargs)
      

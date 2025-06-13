@@ -35,7 +35,7 @@
             "name": "Python: Test Flux Schnell",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/test/test_flux_schnell.py",
+            "program": "${workspaceFolder}/test/test_replicate/test_flux_schnell.py",
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"

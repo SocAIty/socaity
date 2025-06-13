@@ -4,10 +4,10 @@ from typing import Optional
 
 class tile_morph(FastSDK):
     """
-    Generated client for tile_morph
+    Generated client for andreasjansson/tile-morph
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="bb6877ff-6226-4f6b-8778-2388a166d2a3", api_key=api_key)
+        super().__init__(service_name_or_id="6234b606-4f64-4f6c-b87d-cd9d6be23f19", api_key=api_key)
     
     def predict(self, prompt_end: str, prompt_start: str, width: int = 512, height: int = 512, guidance_scale: float = 7.5, frames_per_second: int = 20, intermediate_output: bool = False, num_inference_steps: int = 50, num_animation_frames: int = 10, num_interpolation_steps: int = 20, seed_end: Optional[int] = None, seed_start: Optional[int] = None, **kwargs):
         """
@@ -40,5 +40,5 @@ class tile_morph(FastSDK):
             seed_start: Random seed for first prompt. Leave blank to randomize the seed Optional.
             
         """
-        return self.submit_job("/predict", prompt_end=prompt_end, prompt_start=prompt_start, width=width, height=height, guidance_scale=guidance_scale, frames_per_second=frames_per_second, intermediate_output=intermediate_output, num_inference_steps=num_inference_steps, num_animation_frames=num_animation_frames, num_interpolation_steps=num_interpolation_steps, seed_end=seed_end, seed_start=seed_start, **kwargs)
+        return self.submit_job("/predictions", prompt_end=prompt_end, prompt_start=prompt_start, width=width, height=height, guidance_scale=guidance_scale, frames_per_second=frames_per_second, intermediate_output=intermediate_output, num_inference_steps=num_inference_steps, num_animation_frames=num_animation_frames, num_interpolation_steps=num_interpolation_steps, seed_end=seed_end, seed_start=seed_start, **kwargs)
      

@@ -1,10 +1,8 @@
-from typing import Dict, Set, Optional
+from typing import Dict, Set
 from pathlib import Path
-from fastsdk.service_management import ServiceManager, FileSystemStore
+from fastsdk.service_management import ServiceManager, FileSystemStore, ServiceDefinition
 from fastsdk.sdk_factory import create_sdk
 from fastsdk.utils import normalize_name_for_py
-import json
-import time
 from socaity.core.socaity_backend_client import SocaityBackendClient
 
 
@@ -14,11 +12,9 @@ class SocaityServiceManager(ServiceManager):
     COMMUNITY_SDK_DIR = SDK_ROOT / "community"
     REPLICATE_SDK_DIR = SDK_ROOT / "replicate"
     CACHE_DIR = SDK_ROOT / "cache"
-    MODEL_DESCRIPTORS_TTL = 60 * 60 * 24  # 1 day
 
     def __init__(self):
         super().__init__(service_store=FileSystemStore(self.CACHE_DIR))
-        self._model_descriptors: Optional[Dict] = None
         self.socaity_backend_client = SocaityBackendClient()
         self._created_sdks: Dict[str, Path] = {}  # class_name -> save_path
         self._deleted_sdks: Dict[str, Path] = {}  # model_name -> save_path
@@ -44,30 +40,33 @@ class SocaityServiceManager(ServiceManager):
 
     def update_package(self) -> None:
         """Update the package with latest model changes"""
-        updates = self.socaity_backend_client.check_model_update(self.service_store.get_version_index())
-        if not updates:
+        package_updates = self.socaity_backend_client.update_package(self.service_store.get_version_index())
+        if not package_updates or not package_updates.get("updates"):
             return
 
         print("Updating package...")
-        for mhi in updates:
-            if mhi.get("version", "") == "DELETE":
-                self._handle_model_deletion(mhi)
+        for update_item in package_updates["updates"]:
+            if update_item.get("action") == "delete":
+                self._handle_model_deletion(update_item)
             else:
-                self._handle_model_update(mhi)
+                self._handle_model_update(update_item)
 
         self._update_init_files()
 
-    def _handle_model_deletion(self, mhi: Dict) -> None:
+    def _handle_model_deletion(self, update_item: Dict) -> None:
         """Handle deletion of a model"""
-        print(f"Deleting {mhi['id']}...")
-        # Get provider from model hosting information (mhi)
+        mhi = update_item.get("model_hosting_info", {})
+        hosted_model_id = mhi.get("id")
+        print(f"Deleting {hosted_model_id}...")
+        
         try:
-            provider = mhi.get("provider", "socaity")
-            display_name = mhi.get("display_name", "")
+            # Get provider and display name for path calculation
+            provider = update_item.get("provider", "socaity")
+            display_name = update_item.get("display_name", "")
             username, model_name = self._parse_display_name(display_name)
             
             # For socaity models, we need to check both official and community dirs
-            if provider.lower() != "replicate":
+            if provider and provider.lower() != "replicate":
                 official_path = self.OFFICIAL_SDK_DIR / f"{model_name}.py"
                 community_path = self.COMMUNITY_SDK_DIR / f"{model_name}.py"
                 
@@ -84,57 +83,62 @@ class SocaityServiceManager(ServiceManager):
                 self._deleted_sdks[model_name] = save_path
                 save_path.unlink()
         except Exception as e:
-            print(f"Error deleting file {mhi.get('id')}: {e}")
+            print(f"Error deleting file {hosted_model_id}: {e}")
 
         try:
-            self.service_store.delete_service(mhi.get("id"))
+            self.service_store.delete_service(hosted_model_id)
         except Exception as e:
-            print(f"Error deleting service {mhi['id']}: {e}")
+            print(f"Error deleting service {hosted_model_id}: {e}")
 
-    def _handle_model_update(self, mhi: Dict) -> None:
+    def _handle_model_update(self, update_item: Dict) -> None:
         """Handle update of a model"""
-        print(f"Updating {mhi['id']}...")
-        if not mhi.get("openapi_json"):
-            print(f"No openapi_json for {mhi['id']}. Skipping it.")
+        mhi = update_item.get("model_hosting_info", {})
+        service_def_data = update_item.get("service_definition")
+        hosted_model_id = mhi.get("id")
+        
+        print(f"Updating {hosted_model_id}...")
+        
+        if not service_def_data:
+            print(f"No service definition for {hosted_model_id}. Skipping it.")
             return
 
-        # Get model descriptor for additional information
-        model_descriptor = self.socaity_backend_client.get_model_descriptors(mhi.get("model_id"))
-        if not model_descriptor:
-            print(f"No model descriptor for {mhi['id']}. Skipping it.")
-            return
+        # Convert the dictionary to a ServiceDefinition object if needed
+        if isinstance(service_def_data, dict):
+            service_def = ServiceDefinition(**service_def_data)
+        else:
+            service_def = service_def_data
 
-        # Extract information from correct sources
-        provider = mhi.get("provider", "socaity")  # Provider from hosting info
-        display_name = model_descriptor.get("display_name", "")  # Display name from descriptor
+        # Store the service definition in the service store for caching
+        try:
+            self.service_store.save_service(service_def)
+        except Exception as e:
+            print(f"Warning: Failed to save service definition for {hosted_model_id}: {e}")
+
+        # Extract information from the update item
+        provider = update_item.get("provider", "socaity")
+        display_name = update_item.get("display_name", "")
+        is_official = update_item.get("is_official", False)
+        
         username, model_name = self._parse_display_name(display_name)
         
-        # Determine if model is official (only for socaity models)
-        is_official = model_descriptor.get("is_official", False) if provider.lower() != "replicate" else False
+        # Determine if model is official (only for socaity models)  
+        is_official = is_official if provider.lower() != "replicate" else False
         
         save_path = self._get_save_path(provider, username, model_name, is_official)
-        service_def = self._create_service_definition(mhi, model_descriptor, model_name)
         
-        file_path, class_name, _ = create_sdk(
-            service_definition=service_def,
-            save_path=str(save_path)
-        )
-        self._created_sdks[class_name] = Path(file_path)
-
-    def _create_service_definition(self, mhi: Dict, model_descriptor: Dict, model_name: str):
-        """Create service definition for a model"""
-        # Category from model descriptor, other service info from hosting info
-        descriptor_category = model_descriptor.get("model_category", "")
-        service_address = f"{self.socaity_backend_client.infer_backend_url}{model_name}"
+        # Normalize the model name for use as a Python class name
+        class_name = normalize_name_for_py(model_name)
         
-        return self.add_service(
-            mhi["openapi_json"],
-            service_id=mhi.get("id"),
-            service_address=service_address,
-            category=descriptor_category,
-            service_name=model_name,
-            family_id=mhi.get("model_id")
-        )
+        # Use the service definition directly (already contains all needed information)
+        try:
+            file_path, actual_class_name, _ = create_sdk(
+                service_definition=service_def,
+                save_path=str(save_path),
+                class_name=class_name  # Use just the model name for the class name
+            )
+            self._created_sdks[actual_class_name] = Path(file_path)
+        except Exception as e:
+            print(f"Error creating SDK for {hosted_model_id}: {e}")
 
     def _update_init_files(self) -> None:
         """Update all __init__.py files with current imports"""
@@ -288,46 +292,6 @@ class SocaityServiceManager(ServiceManager):
             if str(del_path) in imp
         }
         imports.difference_update(imports_to_remove)
-
-    @property
-    def model_descriptors(self) -> Dict:
-        """Get model descriptors with caching"""
-        if self._model_descriptors:
-            return self._model_descriptors
-
-        cache_file = self.CACHE_DIR / "model_descriptors.json"
-        
-        if self._is_cache_valid(cache_file):
-            try:
-                return self._load_cache(cache_file)
-            except (json.JSONDecodeError, OSError):
-                pass
-
-        return self._fetch_and_cache_descriptors(cache_file)
-
-    def _is_cache_valid(self, cache_file: Path) -> bool:
-        """Check if cache file is valid and not expired"""
-        if not cache_file.exists():
-            return False
-        return (time.time() - cache_file.stat().st_mtime) < self.MODEL_DESCRIPTORS_TTL
-
-    def _load_cache(self, cache_file: Path) -> Dict:
-        """Load model descriptors from cache"""
-        self._model_descriptors = json.loads(cache_file.read_text())
-        return self._model_descriptors
-
-    def _fetch_and_cache_descriptors(self, cache_file: Path) -> Dict:
-        """Fetch new model descriptors and cache them"""
-        self._model_descriptors = self.socaity_backend_client.get_model_descriptors()
-        cache_file.parent.mkdir(exist_ok=True)
-        cache_file.write_text(json.dumps(self._model_descriptors))
-        return self._model_descriptors
-
-    def get_model_descriptor(self, model_id: str) -> Optional[Dict]:
-        """Get a specific model descriptor by ID"""
-        if not model_id:
-            return None
-        return next((md for md in self.model_descriptors if md["id"] == model_id), None)
 
 
 if __name__ == "__main__":

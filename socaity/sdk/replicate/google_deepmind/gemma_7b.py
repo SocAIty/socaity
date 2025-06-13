@@ -2,10 +2,10 @@ from fastsdk.fastSDK import FastSDK
 
 class gemma_7b(FastSDK):
     """
-    Generated client for gemma_7b
+    Generated client for google-deepmind/gemma-7b
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="d04d9dcc-1c54-44c8-9d75-deccb78954a1", api_key=api_key)
+        super().__init__(service_name_or_id="1e182738-41b6-443d-bcd1-bdb00c9219ed", api_key=api_key)
     
     def predict(self, top_k: int = 50, top_p: float = 0.95, prompt: str = 'Write me a poem about Machine Learning.', temperature: float = 0.7, max_new_tokens: int = 256, min_new_tokens: int = -1, repetition_penalty: float = 1.0, **kwargs):
         """
@@ -28,5 +28,5 @@ class gemma_7b(FastSDK):
             repetition_penalty: A parameter that controls how repetitive text can be. Lower means more repetitive, while higher means less repetitive. Set to 1.0 to disable. Defaults to 1.0.
             
         """
-        return self.submit_job("/predict", top_k=top_k, top_p=top_p, prompt=prompt, temperature=temperature, max_new_tokens=max_new_tokens, min_new_tokens=min_new_tokens, repetition_penalty=repetition_penalty, **kwargs)
+        return self.submit_job("/predictions", top_k=top_k, top_p=top_p, prompt=prompt, temperature=temperature, max_new_tokens=max_new_tokens, min_new_tokens=min_new_tokens, repetition_penalty=repetition_penalty, **kwargs)
      

@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Dict, Optional, List, Union, Any
+from typing import Any, Union, Dict, List, Optional
 
 from media_toolkit import MediaFile
 
 
 class hunyuan_video2video(FastSDK):
     """
-    Generated client for hunyuan_video2video
+    Generated client for zsxkib/hunyuan-video2video
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="2c84416d-d5ad-4c68-899b-0610ed3e619a", api_key=api_key)
+        super().__init__(service_name_or_id="e1e6a6c2-9f32-45a0-94c4-077b5880602e", api_key=api_key)
     
     def trainings(self, webhook_events_filter: Union[List[Any], str] = ['start', 'output', 'logs', 'completed'], id: Optional[str] = None, input: Optional[Dict[str, Any]] = None, webhook: Optional[Union[MediaFile, str, bytes]] = None, created_at: Optional[str] = None, output_file_prefix: Optional[str] = None, **kwargs):
         """
@@ -77,7 +77,7 @@ class hunyuan_video2video(FastSDK):
             seed: Set a seed for reproducibility. Random by default. Optional.
             
         """
-        return self.submit_job("/predict", video=video, crf=crf, steps=steps, width=width, height=height, prompt=prompt, flow_shift=flow_shift, force_rate=force_rate, force_size=force_size, frame_rate=frame_rate, custom_width=custom_width, custom_height=custom_height, frame_load_cap=frame_load_cap, guidance_scale=guidance_scale, keep_proportion=keep_proportion, denoise_strength=denoise_strength, select_every_nth=select_every_nth, skip_first_frames=skip_first_frames, seed=seed, **kwargs)
+        return self.submit_job("/predictions", video=video, crf=crf, steps=steps, width=width, height=height, prompt=prompt, flow_shift=flow_shift, force_rate=force_rate, force_size=force_size, frame_rate=frame_rate, custom_width=custom_width, custom_height=custom_height, frame_load_cap=frame_load_cap, guidance_scale=guidance_scale, keep_proportion=keep_proportion, denoise_strength=denoise_strength, select_every_nth=select_every_nth, skip_first_frames=skip_first_frames, seed=seed, **kwargs)
     
     def trainings_training_id(self, raining_equest: Dict[str, Any], **kwargs):
         """

@@ -2,10 +2,10 @@ from fastsdk.fastSDK import FastSDK
 
 class yi_6b(FastSDK):
     """
-    Generated client for yi_6b
+    Generated client for -01-ai/yi-6b
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="f34601b5-9ba9-428d-90fc-6327e35d1793", api_key=api_key)
+        super().__init__(service_name_or_id="4ec85b79-41ce-4693-8201-4b29261927ab", api_key=api_key)
     
     def predict(self, prompt: str, top_k: int = 50, top_p: float = 0.95, temperature: float = 0.8, max_new_tokens: int = 512, prompt_template: str = '{prompt}', presence_penalty: float = 0.0, frequency_penalty: float = 0.0, **kwargs):
         """
@@ -30,5 +30,5 @@ class yi_6b(FastSDK):
             frequency_penalty: Frequency penalty Defaults to 0.0.
             
         """
-        return self.submit_job("/predict", prompt=prompt, top_k=top_k, top_p=top_p, temperature=temperature, max_new_tokens=max_new_tokens, prompt_template=prompt_template, presence_penalty=presence_penalty, frequency_penalty=frequency_penalty, **kwargs)
+        return self.submit_job("/predictions", prompt=prompt, top_k=top_k, top_p=top_p, temperature=temperature, max_new_tokens=max_new_tokens, prompt_template=prompt_template, presence_penalty=presence_penalty, frequency_penalty=frequency_penalty, **kwargs)
      

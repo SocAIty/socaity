@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class wan_1_3b_inpaint(FastSDK):
     """
-    Generated client for wan_1_3b_inpaint
+    Generated client for andreasjansson/wan-1-3b-inpaint
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="7b39999e-3f28-413c-9eaf-9c2d2f4cf3c5", api_key=api_key)
+        super().__init__(service_name_or_id="8c6671c9-d902-4c4e-9ec8-3d5e5844034b", api_key=api_key)
     
     def predict(self, prompt: str, input_video: Union[MediaFile, str, bytes], seed: int = -1, strength: float = 0.9, expand_mask: int = 10, guide_scale: float = 5.0, sampling_steps: int = 50, negative_prompt: str = '', frames_per_second: int = 16, keep_aspect_ratio: bool = False, inpaint_fixup_steps: int = 0, mask_video: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
         """
@@ -42,5 +42,5 @@ class wan_1_3b_inpaint(FastSDK):
             mask_video: Mask video (white areas will be inpainted). Leave blank for video-to-video Optional.
             
         """
-        return self.submit_job("/predict", prompt=prompt, input_video=input_video, seed=seed, strength=strength, expand_mask=expand_mask, guide_scale=guide_scale, sampling_steps=sampling_steps, negative_prompt=negative_prompt, frames_per_second=frames_per_second, keep_aspect_ratio=keep_aspect_ratio, inpaint_fixup_steps=inpaint_fixup_steps, mask_video=mask_video, **kwargs)
+        return self.submit_job("/predictions", prompt=prompt, input_video=input_video, seed=seed, strength=strength, expand_mask=expand_mask, guide_scale=guide_scale, sampling_steps=sampling_steps, negative_prompt=negative_prompt, frames_per_second=frames_per_second, keep_aspect_ratio=keep_aspect_ratio, inpaint_fixup_steps=inpaint_fixup_steps, mask_video=mask_video, **kwargs)
      

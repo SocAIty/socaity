@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class miyazaki_watercolor(FastSDK):
     """
-    Generated client for miyazaki_watercolor
+    Generated client for koratkar/miyazaki-watercolor
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="c7e622b8-8d94-4374-b12c-9f62c2a57bfb", api_key=api_key)
+        super().__init__(service_name_or_id="92805dd1-6e61-4298-a59b-bb89456ea12d", api_key=api_key)
     
     def predict(self, prompt: str, model: str = 'dev', go_fast: bool = False, lora_scale: float = 1.0, megapixels: str = '1', num_outputs: int = 1, aspect_ratio: str = '1:1', output_format: str = 'webp', guidance_scale: float = 3.0, output_quality: int = 80, prompt_strength: float = 0.8, extra_lora_scale: float = 1.0, num_inference_steps: int = 28, disable_safety_checker: bool = False, mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, width: Optional[int] = None, height: Optional[int] = None, extra_lora: Optional[str] = None, replicate_weights: Optional[str] = None, **kwargs):
         """
@@ -60,5 +60,5 @@ class miyazaki_watercolor(FastSDK):
             replicate_weights: Load LoRA weights. Supports Replicate models in the format <owner>/<username> or <owner>/<username>/<version>, HuggingFace URLs in the format huggingface.co/<owner>/<model-name>, CivitAI URLs in the format civitai.com/models/<id>[/<model-name>], or arbitrary .safetensors URLs from the Internet. For example, 'fofr/flux-pixar-cars' Optional.
             
         """
-        return self.submit_job("/predict", prompt=prompt, model=model, go_fast=go_fast, lora_scale=lora_scale, megapixels=megapixels, num_outputs=num_outputs, aspect_ratio=aspect_ratio, output_format=output_format, guidance_scale=guidance_scale, output_quality=output_quality, prompt_strength=prompt_strength, extra_lora_scale=extra_lora_scale, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, mask=mask, seed=seed, image=image, width=width, height=height, extra_lora=extra_lora, replicate_weights=replicate_weights, **kwargs)
+        return self.submit_job("/predictions", prompt=prompt, model=model, go_fast=go_fast, lora_scale=lora_scale, megapixels=megapixels, num_outputs=num_outputs, aspect_ratio=aspect_ratio, output_format=output_format, guidance_scale=guidance_scale, output_quality=output_quality, prompt_strength=prompt_strength, extra_lora_scale=extra_lora_scale, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, mask=mask, seed=seed, image=image, width=width, height=height, extra_lora=extra_lora, replicate_weights=replicate_weights, **kwargs)
      

@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class jina_clip_v2(FastSDK):
     """
-    Generated client for jina_clip_v2
+    Generated client for zsxkib/jina-clip-v2
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="851689ba-0864-4184-8f23-0b79904e21a2", api_key=api_key)
+        super().__init__(service_name_or_id="2978d47d-bd47-41d1-8d9e-e77e35fc0153", api_key=api_key)
     
     def predict(self, embedding_dim: int = 64, output_format: str = 'base64', text: Optional[str] = None, image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
         """
@@ -26,5 +26,5 @@ class jina_clip_v2(FastSDK):
             image: Image file to embed (optimal size: 512x512). If both text and image provided, image embedding will be second in returned list. Optional.
             
         """
-        return self.submit_job("/predict", embedding_dim=embedding_dim, output_format=output_format, text=text, image=image, **kwargs)
+        return self.submit_job("/predictions", embedding_dim=embedding_dim, output_format=output_format, text=text, image=image, **kwargs)
      

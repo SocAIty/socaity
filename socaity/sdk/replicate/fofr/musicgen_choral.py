@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class musicgen_choral(FastSDK):
     """
-    Generated client for musicgen_choral
+    Generated client for fofr/musicgen-choral
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="55bcd00e-53ef-4ecc-9268-da7174e94af5", api_key=api_key)
+        super().__init__(service_name_or_id="f8aae157-3c1f-41f5-b6e4-62669e3f370c", api_key=api_key)
     
     def predict(self, top_k: int = 250, top_p: float = 0.0, duration: int = 8, temperature: float = 1.0, continuation: bool = False, output_format: str = 'wav', continuation_start: int = 0, multi_band_diffusion: bool = False, normalization_strategy: str = 'loudness', classifier_free_guidance: int = 3, seed: Optional[int] = None, prompt: Optional[str] = None, input_audio: Optional[Union[MediaFile, str, bytes]] = None, continuation_end: Optional[int] = None, replicate_weights: Optional[str] = None, **kwargs):
         """
@@ -48,5 +48,5 @@ class musicgen_choral(FastSDK):
             replicate_weights: Replicate MusicGen weights to use. Leave blank to use the default weights. Optional.
             
         """
-        return self.submit_job("/predict", top_k=top_k, top_p=top_p, duration=duration, temperature=temperature, continuation=continuation, output_format=output_format, continuation_start=continuation_start, multi_band_diffusion=multi_band_diffusion, normalization_strategy=normalization_strategy, classifier_free_guidance=classifier_free_guidance, seed=seed, prompt=prompt, input_audio=input_audio, continuation_end=continuation_end, replicate_weights=replicate_weights, **kwargs)
+        return self.submit_job("/predictions", top_k=top_k, top_p=top_p, duration=duration, temperature=temperature, continuation=continuation, output_format=output_format, continuation_start=continuation_start, multi_band_diffusion=multi_band_diffusion, normalization_strategy=normalization_strategy, classifier_free_guidance=classifier_free_guidance, seed=seed, prompt=prompt, input_audio=input_audio, continuation_end=continuation_end, replicate_weights=replicate_weights, **kwargs)
      

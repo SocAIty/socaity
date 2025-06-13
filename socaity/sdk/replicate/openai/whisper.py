@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class whisper(FastSDK):
     """
-    Generated client for whisper
+    Generated client for openai/whisper
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="89fa28ad-2853-4867-a180-710ec60cd351", api_key=api_key)
+        super().__init__(service_name_or_id="6cc28a27-46eb-490e-be58-ce948c221273", api_key=api_key)
     
     def ready(self, **kwargs):
         """
@@ -51,5 +51,5 @@ class whisper(FastSDK):
             initial_prompt: optional text to provide as a prompt for the first window. Optional.
             
         """
-        return self.submit_job("/predict", audio=audio, language=language, translate=translate, temperature=temperature, transcription=transcription, suppress_tokens=suppress_tokens, logprob_threshold=logprob_threshold, no_speech_threshold=no_speech_threshold, condition_on_previous_text=condition_on_previous_text, compression_ratio_threshold=compression_ratio_threshold, temperature_increment_on_fallback=temperature_increment_on_fallback, patience=patience, initial_prompt=initial_prompt, **kwargs)
+        return self.submit_job("/predictions", audio=audio, language=language, translate=translate, temperature=temperature, transcription=transcription, suppress_tokens=suppress_tokens, logprob_threshold=logprob_threshold, no_speech_threshold=no_speech_threshold, condition_on_previous_text=condition_on_previous_text, compression_ratio_threshold=compression_ratio_threshold, temperature_increment_on_fallback=temperature_increment_on_fallback, patience=patience, initial_prompt=initial_prompt, **kwargs)
      

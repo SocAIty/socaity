@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class musicgen_stereo_chord(FastSDK):
     """
-    Generated client for musicgen_stereo_chord
+    Generated client for sakemin/musicgen-stereo-chord
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="ef9e71a4-0674-469d-a210-664a52596364", api_key=api_key)
+        super().__init__(service_name_or_id="4d80c2dc-a76b-447f-bf79-e677161b6d6c", api_key=api_key)
     
     def predict(self, top_k: int = 250, top_p: float = 0.0, duration: int = 8, time_sig: str = '4/4', audio_start: int = 0, temperature: float = 1.0, continuation: bool = False, model_version: str = 'stereo-chord-large', output_format: str = 'wav', chroma_coefficient: float = 1.0, multi_band_diffusion: bool = False, normalization_strategy: str = 'loudness', classifier_free_guidance: int = 3, bpm: Optional[float] = None, seed: Optional[int] = None, prompt: Optional[str] = None, audio_end: Optional[int] = None, text_chords: Optional[str] = None, audio_chords: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
         """
@@ -56,5 +56,5 @@ class musicgen_stereo_chord(FastSDK):
             audio_chords: An audio file that will condition the chord progression. You must choose only one among `audio_chords` or `text_chords` above. Optional.
             
         """
-        return self.submit_job("/predict", top_k=top_k, top_p=top_p, duration=duration, time_sig=time_sig, audio_start=audio_start, temperature=temperature, continuation=continuation, model_version=model_version, output_format=output_format, chroma_coefficient=chroma_coefficient, multi_band_diffusion=multi_band_diffusion, normalization_strategy=normalization_strategy, classifier_free_guidance=classifier_free_guidance, bpm=bpm, seed=seed, prompt=prompt, audio_end=audio_end, text_chords=text_chords, audio_chords=audio_chords, **kwargs)
+        return self.submit_job("/predictions", top_k=top_k, top_p=top_p, duration=duration, time_sig=time_sig, audio_start=audio_start, temperature=temperature, continuation=continuation, model_version=model_version, output_format=output_format, chroma_coefficient=chroma_coefficient, multi_band_diffusion=multi_band_diffusion, normalization_strategy=normalization_strategy, classifier_free_guidance=classifier_free_guidance, bpm=bpm, seed=seed, prompt=prompt, audio_end=audio_end, text_chords=text_chords, audio_chords=audio_chords, **kwargs)
      

@@ -4,10 +4,10 @@ from typing import Optional
 
 class e5_mistral_7b_instruct(FastSDK):
     """
-    Generated client for e5_mistral_7b_instruct
+    Generated client for adirik/e5-mistral-7b-instruct
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="84b839e4-7ab0-4331-8fc3-a697b317b3ce", api_key=api_key)
+        super().__init__(service_name_or_id="f57685da-80aa-4e92-914a-c3e8faeae92d", api_key=api_key)
     
     def predict(self, document: str, normalize: bool = False, task: Optional[str] = None, query: Optional[str] = None, **kwargs):
         """
@@ -24,5 +24,5 @@ class e5_mistral_7b_instruct(FastSDK):
             query: The query to be used. Optional.
             
         """
-        return self.submit_job("/predict", document=document, normalize=normalize, task=task, query=query, **kwargs)
+        return self.submit_job("/predictions", document=document, normalize=normalize, task=task, query=query, **kwargs)
      

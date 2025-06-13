@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class controlnet_preprocessors(FastSDK):
     """
-    Generated client for controlnet_preprocessors
+    Generated client for fofr/controlnet-preprocessors
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="62dc9aa2-870b-4803-9671-e734981a2486", api_key=api_key)
+        super().__init__(service_name_or_id="09029b7d-3fcc-42b6-b142-6839f9745612", api_key=api_key)
     
     def predict(self, image: Union[MediaFile, str, bytes], hed: bool = True, sam: bool = True, mlsd: bool = True, pidi: bool = True, canny: bool = True, leres: bool = True, midas: bool = True, content: bool = True, lineart: bool = True, open_pose: bool = True, normal_bae: bool = True, face_detector: bool = True, lineart_anime: bool = True, **kwargs):
         """
@@ -46,5 +46,5 @@ class controlnet_preprocessors(FastSDK):
             lineart_anime: Run LineartAnime detection Defaults to True.
             
         """
-        return self.submit_job("/predict", image=image, hed=hed, sam=sam, mlsd=mlsd, pidi=pidi, canny=canny, leres=leres, midas=midas, content=content, lineart=lineart, open_pose=open_pose, normal_bae=normal_bae, face_detector=face_detector, lineart_anime=lineart_anime, **kwargs)
+        return self.submit_job("/predictions", image=image, hed=hed, sam=sam, mlsd=mlsd, pidi=pidi, canny=canny, leres=leres, midas=midas, content=content, lineart=lineart, open_pose=open_pose, normal_bae=normal_bae, face_detector=face_detector, lineart_anime=lineart_anime, **kwargs)
      

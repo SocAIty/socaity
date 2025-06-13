@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class clothing_segmentation(FastSDK):
     """
-    Generated client for clothing_segmentation
+    Generated client for naklecha/clothing-segmentation
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="fa272a57-1781-41ed-9cd9-0a4ca46426a7", api_key=api_key)
+        super().__init__(service_name_or_id="bb3f71e6-4cfa-4d75-a39c-ad86f5816ef2", api_key=api_key)
     
     def predict(self, image: Union[MediaFile, str, bytes], clothing: str = 'topwear', **kwargs):
         """
@@ -22,5 +22,5 @@ class clothing_segmentation(FastSDK):
             clothing: This value should be one of the following - [topwear, bottomwear] Defaults to 'topwear'.
             
         """
-        return self.submit_job("/predict", image=image, clothing=clothing, **kwargs)
+        return self.submit_job("/predictions", image=image, clothing=clothing, **kwargs)
      

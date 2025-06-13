@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Dict, Optional, List, Union, Any
+from typing import Any, Union, Dict, List, Optional
 
 from media_toolkit import MediaFile
 
 
 class sdxl(FastSDK):
     """
-    Generated client for sdxl
+    Generated client for stability-ai/sdxl
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="a73b07d3-d1e8-400c-9226-d509d4e4d6ea", api_key=api_key)
+        super().__init__(service_name_or_id="c6f62ea6-7a73-45b7-96fa-d992742b17c3", api_key=api_key)
     
     def trainings(self, webhook_events_filter: Union[List[Any], str] = ['start', 'output', 'logs', 'completed'], id: Optional[str] = None, input: Optional[Dict[str, Any]] = None, webhook: Optional[Union[MediaFile, str, bytes]] = None, created_at: Optional[str] = None, output_file_prefix: Optional[str] = None, **kwargs):
         """
@@ -77,7 +77,7 @@ class sdxl(FastSDK):
             replicate_weights: Replicate LoRA weights to use. Leave blank to use the default weights. Optional.
             
         """
-        return self.submit_job("/predict", width=width, height=height, prompt=prompt, refine=refine, scheduler=scheduler, lora_scale=lora_scale, num_outputs=num_outputs, guidance_scale=guidance_scale, apply_watermark=apply_watermark, high_noise_frac=high_noise_frac, negative_prompt=negative_prompt, prompt_strength=prompt_strength, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, mask=mask, seed=seed, image=image, refine_steps=refine_steps, replicate_weights=replicate_weights, **kwargs)
+        return self.submit_job("/predictions", width=width, height=height, prompt=prompt, refine=refine, scheduler=scheduler, lora_scale=lora_scale, num_outputs=num_outputs, guidance_scale=guidance_scale, apply_watermark=apply_watermark, high_noise_frac=high_noise_frac, negative_prompt=negative_prompt, prompt_strength=prompt_strength, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, mask=mask, seed=seed, image=image, refine_steps=refine_steps, replicate_weights=replicate_weights, **kwargs)
     
     def trainings_training_id(self, raining_equest: Dict[str, Any], **kwargs):
         """

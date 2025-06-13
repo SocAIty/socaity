@@ -1,9 +1,10 @@
 import os
 
-from socaity.sdk.replicate.andreasjansson import Blip2
+from socaity.sdk.replicate.andreasjansson import blip_2
 
 test_img = "https://socaityfiles.blob.core.windows.net/backend-model-meta/llama3.png"
-genai = Blip()
+genai = blip2()
+
 #genai = Blip(service="replicate", api_key=os.getenv("REPLICATE_API_KEY", None))
 # fluxs = FluxSchnell(service="socaity_local", api_key=os.getenv("SOCAITY_API_KEY", None))
 

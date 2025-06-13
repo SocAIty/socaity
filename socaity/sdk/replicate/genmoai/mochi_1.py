@@ -4,10 +4,10 @@ from typing import Optional
 
 class mochi_1(FastSDK):
     """
-    Generated client for mochi_1
+    Generated client for genmoai/mochi-1
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="3d2a4a38-c683-4ecb-833b-fcd1320ecba8", api_key=api_key)
+        super().__init__(service_name_or_id="9da90610-f223-424d-abbb-2ad6c1d4b1ca", api_key=api_key)
     
     def predict(self, fps: int = 30, prompt: str = "Close-up of a chameleon's eye, with its scaly skin changing color. Ultra high resolution 4k.", num_frames: int = 163, guidance_scale: float = 6.0, num_inference_steps: int = 64, seed: Optional[int] = None, **kwargs):
         """
@@ -28,5 +28,5 @@ class mochi_1(FastSDK):
             seed: Random seed Optional.
             
         """
-        return self.submit_job("/predict", fps=fps, prompt=prompt, num_frames=num_frames, guidance_scale=guidance_scale, num_inference_steps=num_inference_steps, seed=seed, **kwargs)
+        return self.submit_job("/predictions", fps=fps, prompt=prompt, num_frames=num_frames, guidance_scale=guidance_scale, num_inference_steps=num_inference_steps, seed=seed, **kwargs)
      

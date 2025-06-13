@@ -1,7 +1,7 @@
 from fastsdk.fastSDK import FastSDK
-from typing import List, Dict, Union, Any
+from typing import Dict, Union, List, Any
 
-from media_toolkit import VideoFile, MediaFile, ImageFile
+from media_toolkit import MediaFile, ImageFile, VideoFile
 
 
 class face2face(FastSDK):
@@ -10,6 +10,31 @@ class face2face(FastSDK):
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="0d69b27a-f893-4582-b3e8-a18c1f588e90", api_key=api_key)
+    
+    def status(self, job_id: str, return_format: str = 'json', keep_alive: bool = False, **kwargs):
+        """
+        Get the status and result of a job.
+        
+        Args:
+            job_id: The ID of the job
+            return_format: Response format ('json' or 'gzipped')
+            keep_alive: If True, job result is kept in memory/disk
+        
+        Returns:
+            JobResult with status and results
+        
+        """
+        return self.submit_job("/status", job_id=job_id, return_format=return_format, keep_alive=keep_alive, **kwargs)
+    
+    def health(self, **kwargs):
+        """
+        Get server health status.
+        
+        Returns:
+            HTTP response with health status
+        
+        """
+        return self.submit_job("/health", **kwargs)
     
     def swap_img_to_img(self, source_img: Union[MediaFile, str, Any, ImageFile, bytes], target_img: Union[MediaFile, str, Any, ImageFile, bytes], enhance_face_model: str = 'gpen_bfr_512', **kwargs):
         """

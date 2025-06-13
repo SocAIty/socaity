@@ -4,10 +4,10 @@ from typing import Optional
 
 class mamba_790m(FastSDK):
     """
-    Generated client for mamba_790m
+    Generated client for adirik/mamba-790m
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="177995ba-13de-49ef-846f-423fe6ba53b3", api_key=api_key)
+        super().__init__(service_name_or_id="7eeb2eb9-4fe1-4636-96e6-8b043aefba5e", api_key=api_key)
     
     def predict(self, prompt: str, top_k: int = 1, top_p: float = 1.0, max_length: int = 100, temperature: float = 1.0, repetition_penalty: float = 1.2, seed: Optional[int] = None, **kwargs):
         """
@@ -30,5 +30,5 @@ class mamba_790m(FastSDK):
             seed: The seed for the random number generator Optional.
             
         """
-        return self.submit_job("/predict", prompt=prompt, top_k=top_k, top_p=top_p, max_length=max_length, temperature=temperature, repetition_penalty=repetition_penalty, seed=seed, **kwargs)
+        return self.submit_job("/predictions", prompt=prompt, top_k=top_k, top_p=top_p, max_length=max_length, temperature=temperature, repetition_penalty=repetition_penalty, seed=seed, **kwargs)
      

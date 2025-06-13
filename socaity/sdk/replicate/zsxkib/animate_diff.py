@@ -2,10 +2,10 @@ from fastsdk.fastSDK import FastSDK
 
 class animate_diff(FastSDK):
     """
-    Generated client for animate_diff
+    Generated client for zsxkib/animate-diff
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="3b9d7a0c-c046-4f65-b326-4516c702a78d", api_key=api_key)
+        super().__init__(service_name_or_id="c5a85c36-0d23-47e1-b8d9-ab13ce68f709", api_key=api_key)
     
     def predict(self, seed: int = -1, steps: int = 25, width: int = 512, frames: int = 16, height: int = 512, prompt: str = 'photo of vocano, rocks, storm weather, wind, lava waves, lightning, 8k uhd, dslr, soft lighting, high quality, film grain, Fujifilm XT3', base_model: str = 'realisticVisionV20_v20', output_format: str = 'mp4', guidance_scale: float = 7.5, negative_prompt: str = 'blur, haze, deformed iris, deformed pupils, semi-realistic, cgi, 3d, render, sketch, cartoon, drawing, anime, mutated hands and fingers, deformed, distorted, disfigured, poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, disconnected limbs, mutation, mutated, ugly, disgusting, amputation', pan_up_motion_strength: float = 0.0, zoom_in_motion_strength: float = 0.0, pan_down_motion_strength: float = 0.0, pan_left_motion_strength: float = 0.0, zoom_out_motion_strength: float = 0.0, pan_right_motion_strength: float = 0.0, rolling_clockwise_motion_strength: float = 0.0, rolling_anticlockwise_motion_strength: float = 0.0, **kwargs):
         """
@@ -50,5 +50,5 @@ class animate_diff(FastSDK):
             rolling_anticlockwise_motion_strength: Strength of Rolling Anticlockwise Motion LoRA. 0 disables the LoRA Defaults to 0.0.
             
         """
-        return self.submit_job("/predict", seed=seed, steps=steps, width=width, frames=frames, height=height, prompt=prompt, base_model=base_model, output_format=output_format, guidance_scale=guidance_scale, negative_prompt=negative_prompt, pan_up_motion_strength=pan_up_motion_strength, zoom_in_motion_strength=zoom_in_motion_strength, pan_down_motion_strength=pan_down_motion_strength, pan_left_motion_strength=pan_left_motion_strength, zoom_out_motion_strength=zoom_out_motion_strength, pan_right_motion_strength=pan_right_motion_strength, rolling_clockwise_motion_strength=rolling_clockwise_motion_strength, rolling_anticlockwise_motion_strength=rolling_anticlockwise_motion_strength, **kwargs)
+        return self.submit_job("/predictions", seed=seed, steps=steps, width=width, frames=frames, height=height, prompt=prompt, base_model=base_model, output_format=output_format, guidance_scale=guidance_scale, negative_prompt=negative_prompt, pan_up_motion_strength=pan_up_motion_strength, zoom_in_motion_strength=zoom_in_motion_strength, pan_down_motion_strength=pan_down_motion_strength, pan_left_motion_strength=pan_left_motion_strength, zoom_out_motion_strength=zoom_out_motion_strength, pan_right_motion_strength=pan_right_motion_strength, rolling_clockwise_motion_strength=rolling_clockwise_motion_strength, rolling_anticlockwise_motion_strength=rolling_anticlockwise_motion_strength, **kwargs)
      

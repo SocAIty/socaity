@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class codeformer(FastSDK):
     """
-    Generated client for codeformer
+    Generated client for sczhou/codeformer
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="49c22f82-8a7c-4f06-ad4e-1e2b13b8cf18", api_key=api_key)
+        super().__init__(service_name_or_id="3c7452a1-b283-46c8-ac17-64d7335e7782", api_key=api_key)
     
     def predict(self, image: Union[MediaFile, str, bytes], upscale: int = 2, face_upsample: bool = True, background_enhance: bool = True, codeformer_fidelity: float = 0.5, **kwargs):
         """
@@ -28,5 +28,5 @@ class codeformer(FastSDK):
             codeformer_fidelity: Balance the quality (lower number) and fidelity (higher number). Defaults to 0.5.
             
         """
-        return self.submit_job("/predict", image=image, upscale=upscale, face_upsample=face_upsample, background_enhance=background_enhance, codeformer_fidelity=codeformer_fidelity, **kwargs)
+        return self.submit_job("/predictions", image=image, upscale=upscale, face_upsample=face_upsample, background_enhance=background_enhance, codeformer_fidelity=codeformer_fidelity, **kwargs)
      

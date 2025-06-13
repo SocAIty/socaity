@@ -2,10 +2,10 @@ from fastsdk.fastSDK import FastSDK
 
 class nomic_embed_text_v1(FastSDK):
     """
-    Generated client for nomic_embed_text_v1
+    Generated client for lucataco/nomic-embed-text-v1
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="1821ed8d-6c7e-43f7-9dc0-8fbecf14bc5e", api_key=api_key)
+        super().__init__(service_name_or_id="98467a14-427e-4efb-8ffb-4a10cc89a4fc", api_key=api_key)
     
     def predict(self, sentences: str, **kwargs):
         """
@@ -16,5 +16,5 @@ class nomic_embed_text_v1(FastSDK):
             sentences: Input Sentence list - Each sentence should be split by a newline
             
         """
-        return self.submit_job("/predict", sentences=sentences, **kwargs)
+        return self.submit_job("/predictions", sentences=sentences, **kwargs)
      

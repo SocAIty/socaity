@@ -2,10 +2,10 @@ from fastsdk.fastSDK import FastSDK
 
 class flan_t5_xl(FastSDK):
     """
-    Generated client for flan_t5_xl
+    Generated client for replicate/flan-t5-xl
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="f4d1afdd-d636-4b3c-94ec-d079b0bf9fa5", api_key=api_key)
+        super().__init__(service_name_or_id="505dcfd9-4852-4a03-a1d5-7dbbc4367f90", api_key=api_key)
     
     def predict(self, prompt: str, debug: bool = False, top_p: float = 1.0, max_length: int = 50, temperature: float = 0.75, repetition_penalty: float = 1.0, **kwargs):
         """
@@ -26,5 +26,5 @@ class flan_t5_xl(FastSDK):
             repetition_penalty: Penalty for repeated words in generated text; 1 is no penalty, values greater than 1 discourage repetition, less than 1 encourage it. Defaults to 1.0.
             
         """
-        return self.submit_job("/predict", prompt=prompt, debug=debug, top_p=top_p, max_length=max_length, temperature=temperature, repetition_penalty=repetition_penalty, **kwargs)
+        return self.submit_job("/predictions", prompt=prompt, debug=debug, top_p=top_p, max_length=max_length, temperature=temperature, repetition_penalty=repetition_penalty, **kwargs)
      

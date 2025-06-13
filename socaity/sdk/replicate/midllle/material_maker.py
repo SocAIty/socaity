@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class material_maker(FastSDK):
     """
-    Generated client for material_maker
+    Generated client for midllle/material-maker
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="cdf5c461-321a-45a3-a6ed-7a1fc336448b", api_key=api_key)
+        super().__init__(service_name_or_id="2b381d5e-1ef0-4efb-9876-a68d692f2e0f", api_key=api_key)
     
     def predict(self, input_image: Union[MediaFile, str, bytes], mirror: bool = False, seamless: bool = False, ishiiruka: bool = False, replicate: bool = False, tile_size: int = 512, ishiiruka_texture_encoder: bool = False, **kwargs):
         """
@@ -32,5 +32,5 @@ class material_maker(FastSDK):
             ishiiruka_texture_encoder: Save textures in Ishiiruka Dolphin's Texture Encoder format Defaults to False.
             
         """
-        return self.submit_job("/predict", input_image=input_image, mirror=mirror, seamless=seamless, ishiiruka=ishiiruka, replicate=replicate, tile_size=tile_size, ishiiruka_texture_encoder=ishiiruka_texture_encoder, **kwargs)
+        return self.submit_job("/predictions", input_image=input_image, mirror=mirror, seamless=seamless, ishiiruka=ishiiruka, replicate=replicate, tile_size=tile_size, ishiiruka_texture_encoder=ishiiruka_texture_encoder, **kwargs)
      

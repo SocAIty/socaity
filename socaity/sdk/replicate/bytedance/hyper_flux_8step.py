@@ -2,10 +2,10 @@ from fastsdk.fastSDK import FastSDK
 
 class hyper_flux_8step(FastSDK):
     """
-    Generated client for hyper_flux_8step
+    Generated client for bytedance/hyper-flux-8step
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="e86056a3-1b76-4b63-a690-56e1955cf7e1", api_key=api_key)
+        super().__init__(service_name_or_id="4014c2a2-a4fc-4cc4-a2e9-b6ff08d5a618", api_key=api_key)
     
     def predict(self, prompt: str, seed: int = 0, width: int = 848, height: int = 848, num_outputs: int = 1, aspect_ratio: str = '1:1', output_format: str = 'webp', guidance_scale: float = 3.5, output_quality: int = 80, num_inference_steps: int = 8, disable_safety_checker: bool = False, **kwargs):
         """
@@ -36,5 +36,5 @@ class hyper_flux_8step(FastSDK):
             disable_safety_checker: Disable safety checker for generated images. This feature is only available through the API. See [https://replicate.com/docs/how-does-replicate-work#safety](https://replicate.com/docs/how-does-replicate-work#safety) Defaults to False.
             
         """
-        return self.submit_job("/predict", prompt=prompt, seed=seed, width=width, height=height, num_outputs=num_outputs, aspect_ratio=aspect_ratio, output_format=output_format, guidance_scale=guidance_scale, output_quality=output_quality, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, **kwargs)
+        return self.submit_job("/predictions", prompt=prompt, seed=seed, width=width, height=height, num_outputs=num_outputs, aspect_ratio=aspect_ratio, output_format=output_format, guidance_scale=guidance_scale, output_quality=output_quality, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, **kwargs)
      

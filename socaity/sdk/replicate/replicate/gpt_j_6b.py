@@ -2,10 +2,10 @@ from fastsdk.fastSDK import FastSDK
 
 class gpt_j_6b(FastSDK):
     """
-    Generated client for gpt_j_6b
+    Generated client for replicate/gpt-j-6b
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="72874099-2722-4982-8cde-208fb6527ec2", api_key=api_key)
+        super().__init__(service_name_or_id="7bc71c35-504b-473a-bd3d-e62f0d526bf8", api_key=api_key)
     
     def predict(self, prompt: str, top_k: int = 50, top_p: float = 1.0, decoding: str = 'top_p', max_length: int = 500, temperature: float = 0.75, repetition_penalty: float = 1.2, **kwargs):
         """
@@ -28,5 +28,5 @@ class gpt_j_6b(FastSDK):
             repetition_penalty: Penalty for repeated words in generated text; 1 is no penalty, values greater than 1 discourage repetition, less than 1 encourage it. Defaults to 1.2.
             
         """
-        return self.submit_job("/predict", prompt=prompt, top_k=top_k, top_p=top_p, decoding=decoding, max_length=max_length, temperature=temperature, repetition_penalty=repetition_penalty, **kwargs)
+        return self.submit_job("/predictions", prompt=prompt, top_k=top_k, top_p=top_p, decoding=decoding, max_length=max_length, temperature=temperature, repetition_penalty=repetition_penalty, **kwargs)
      

@@ -4,10 +4,10 @@ from typing import Optional
 
 class stable_diffusion_videos(FastSDK):
     """
-    Generated client for stable_diffusion_videos
+    Generated client for nateraw/stable-diffusion-videos
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="38e4414f-20c4-413f-90ea-244c751e6969", api_key=api_key)
+        super().__init__(service_name_or_id="bfe0fe2b-a359-449c-8ae4-acc8fb4bb82c", api_key=api_key)
     
     def predict(self, fps: int = 15, prompts: str = 'a cat | a dog | a horse', num_steps: int = 50, scheduler: str = 'klms', guidance_scale: float = 7.5, num_inference_steps: int = 50, seeds: Optional[str] = None, **kwargs):
         """
@@ -30,5 +30,5 @@ class stable_diffusion_videos(FastSDK):
             seeds: Random seed, separated with '|' to use different seeds for each of the prompt provided above. Leave blank to randomize the seed. Optional.
             
         """
-        return self.submit_job("/predict", fps=fps, prompts=prompts, num_steps=num_steps, scheduler=scheduler, guidance_scale=guidance_scale, num_inference_steps=num_inference_steps, seeds=seeds, **kwargs)
+        return self.submit_job("/predictions", fps=fps, prompts=prompts, num_steps=num_steps, scheduler=scheduler, guidance_scale=guidance_scale, num_inference_steps=num_inference_steps, seeds=seeds, **kwargs)
      

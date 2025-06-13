@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class high_resolution_controlnet_tile(FastSDK):
     """
-    Generated client for high_resolution_controlnet_tile
+    Generated client for fermatresearch/high-resolution-controlnet-tile
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="f85f2141-de44-46fe-bad0-2897d5be01eb", api_key=api_key)
+        super().__init__(service_name_or_id="a3986265-ccf1-47d4-ac2e-80edc0d0ebe4", api_key=api_key)
     
     def predict(self, hdr: float = 0.0, steps: int = 8, format: str = 'jpg', scheduler: str = 'DDIM', creativity: float = 0.35, guess_mode: bool = False, resolution: int = 2560, resemblance: float = 0.85, guidance_scale: float = 0.0, negative_prompt: str = 'teeth, tooth, open mouth, longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, mutant', lora_details_strength: float = 1.0, lora_sharpness_strength: float = 1.25, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, prompt: Optional[str] = None, **kwargs):
         """
@@ -48,5 +48,5 @@ class high_resolution_controlnet_tile(FastSDK):
             prompt: Prompt for the model Optional.
             
         """
-        return self.submit_job("/predict", hdr=hdr, steps=steps, format=format, scheduler=scheduler, creativity=creativity, guess_mode=guess_mode, resolution=resolution, resemblance=resemblance, guidance_scale=guidance_scale, negative_prompt=negative_prompt, lora_details_strength=lora_details_strength, lora_sharpness_strength=lora_sharpness_strength, seed=seed, image=image, prompt=prompt, **kwargs)
+        return self.submit_job("/predictions", hdr=hdr, steps=steps, format=format, scheduler=scheduler, creativity=creativity, guess_mode=guess_mode, resolution=resolution, resemblance=resemblance, guidance_scale=guidance_scale, negative_prompt=negative_prompt, lora_details_strength=lora_details_strength, lora_sharpness_strength=lora_sharpness_strength, seed=seed, image=image, prompt=prompt, **kwargs)
      

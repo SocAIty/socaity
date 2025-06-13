@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class depth_anything_video(FastSDK):
     """
-    Generated client for depth_anything_video
+    Generated client for lucataco/depth-anything-video
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="d63ab11a-a4a2-4359-adcc-47dec778c151", api_key=api_key)
+        super().__init__(service_name_or_id="6b9644e4-0161-4dc8-bda5-aa76bf67233b", api_key=api_key)
     
     def predict(self, video: Union[MediaFile, str, bytes], encoder: str = 'vits', **kwargs):
         """
@@ -22,5 +22,5 @@ class depth_anything_video(FastSDK):
             encoder: Model type Defaults to 'vits'.
             
         """
-        return self.submit_job("/predict", video=video, encoder=encoder, **kwargs)
+        return self.submit_job("/predictions", video=video, encoder=encoder, **kwargs)
      

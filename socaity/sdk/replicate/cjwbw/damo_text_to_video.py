@@ -4,10 +4,10 @@ from typing import Optional
 
 class damo_text_to_video(FastSDK):
     """
-    Generated client for damo_text_to_video
+    Generated client for cjwbw/damo-text-to-video
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="7652412a-8276-4454-b119-4de56d377eda", api_key=api_key)
+        super().__init__(service_name_or_id="6ab55669-b0df-4a2f-be3a-8f641973eb50", api_key=api_key)
     
     def predict(self, fps: int = 8, prompt: str = 'An astronaut riding a horse', num_frames: int = 16, num_inference_steps: int = 50, seed: Optional[int] = None, **kwargs):
         """
@@ -26,5 +26,5 @@ class damo_text_to_video(FastSDK):
             seed: Random seed. Leave blank to randomize the seed Optional.
             
         """
-        return self.submit_job("/predict", fps=fps, prompt=prompt, num_frames=num_frames, num_inference_steps=num_inference_steps, seed=seed, **kwargs)
+        return self.submit_job("/predictions", fps=fps, prompt=prompt, num_frames=num_frames, num_inference_steps=num_inference_steps, seed=seed, **kwargs)
      

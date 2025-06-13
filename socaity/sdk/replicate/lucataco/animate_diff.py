@@ -4,10 +4,10 @@ from typing import Optional
 
 class animate_diff(FastSDK):
     """
-    Generated client for animate_diff
+    Generated client for lucataco/animate-diff
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="b4ccee51-c8fa-47ea-a8ca-13eb397e59b8", api_key=api_key)
+        super().__init__(service_name_or_id="701a8b9d-7d39-433d-bde2-8bcc483e09a3", api_key=api_key)
     
     def predict(self, path: str = 'toonyou_beta3.safetensors', steps: int = 25, prompt: str = 'masterpiece, best quality, 1girl, solo, cherry blossoms, hanami, pink flower, white flower, spring season, wisteria, petals, flower, plum blossoms, outdoors, falling petals, white hair, black eyes', n_prompt: str = '', motion_module: str = 'mm_sd_v14', guidance_scale: float = 7.5, seed: Optional[int] = None, **kwargs):
         """
@@ -30,5 +30,5 @@ class animate_diff(FastSDK):
             seed: Seed (0 = random, maximum: 2147483647) Optional.
             
         """
-        return self.submit_job("/predict", path=path, steps=steps, prompt=prompt, n_prompt=n_prompt, motion_module=motion_module, guidance_scale=guidance_scale, seed=seed, **kwargs)
+        return self.submit_job("/predictions", path=path, steps=steps, prompt=prompt, n_prompt=n_prompt, motion_module=motion_module, guidance_scale=guidance_scale, seed=seed, **kwargs)
      

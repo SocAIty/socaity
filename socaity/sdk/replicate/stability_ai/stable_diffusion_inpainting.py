@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class stable_diffusion_inpainting(FastSDK):
     """
-    Generated client for stable_diffusion_inpainting
+    Generated client for stability-ai/stable-diffusion-inpainting
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="1b52858a-5ca1-40f4-9715-b97914ee78bc", api_key=api_key)
+        super().__init__(service_name_or_id="d5e66f27-1249-4db2-9f73-651c156399ad", api_key=api_key)
     
     def predict(self, mask: Union[MediaFile, str, bytes], image: Union[MediaFile, str, bytes], width: int = 512, height: int = 512, prompt: str = 'a vision of paradise. unreal engine', scheduler: str = 'DPMSolverMultistep', num_outputs: int = 1, guidance_scale: float = 7.5, num_inference_steps: int = 50, disable_safety_checker: bool = False, seed: Optional[int] = None, negative_prompt: Optional[str] = None, **kwargs):
         """
@@ -42,5 +42,5 @@ class stable_diffusion_inpainting(FastSDK):
             negative_prompt: Specify things to not see in the output Optional.
             
         """
-        return self.submit_job("/predict", mask=mask, image=image, width=width, height=height, prompt=prompt, scheduler=scheduler, num_outputs=num_outputs, guidance_scale=guidance_scale, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, seed=seed, negative_prompt=negative_prompt, **kwargs)
+        return self.submit_job("/predictions", mask=mask, image=image, width=width, height=height, prompt=prompt, scheduler=scheduler, num_outputs=num_outputs, guidance_scale=guidance_scale, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, seed=seed, negative_prompt=negative_prompt, **kwargs)
      

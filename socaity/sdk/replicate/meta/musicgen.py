@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class musicgen(FastSDK):
     """
-    Generated client for musicgen
+    Generated client for meta/musicgen
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="c4e5a261-212d-45f5-baa9-42a6833be339", api_key=api_key)
+        super().__init__(service_name_or_id="8ea8cdc0-4517-4d15-802e-b8dd55407337", api_key=api_key)
     
     def predict(self, top_k: int = 250, top_p: float = 0.0, duration: int = 8, temperature: float = 1.0, continuation: bool = False, model_version: str = 'stereo-melody-large', output_format: str = 'wav', continuation_start: int = 0, multi_band_diffusion: bool = False, normalization_strategy: str = 'loudness', classifier_free_guidance: int = 3, seed: Optional[int] = None, prompt: Optional[str] = None, input_audio: Optional[Union[MediaFile, str, bytes]] = None, continuation_end: Optional[int] = None, **kwargs):
         """
@@ -48,5 +48,5 @@ class musicgen(FastSDK):
             continuation_end: End time of the audio file to use for continuation. If -1 or None, will default to the end of the audio clip. Optional.
             
         """
-        return self.submit_job("/predict", top_k=top_k, top_p=top_p, duration=duration, temperature=temperature, continuation=continuation, model_version=model_version, output_format=output_format, continuation_start=continuation_start, multi_band_diffusion=multi_band_diffusion, normalization_strategy=normalization_strategy, classifier_free_guidance=classifier_free_guidance, seed=seed, prompt=prompt, input_audio=input_audio, continuation_end=continuation_end, **kwargs)
+        return self.submit_job("/predictions", top_k=top_k, top_p=top_p, duration=duration, temperature=temperature, continuation=continuation, model_version=model_version, output_format=output_format, continuation_start=continuation_start, multi_band_diffusion=multi_band_diffusion, normalization_strategy=normalization_strategy, classifier_free_guidance=classifier_free_guidance, seed=seed, prompt=prompt, input_audio=input_audio, continuation_end=continuation_end, **kwargs)
      

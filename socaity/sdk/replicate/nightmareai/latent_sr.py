@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class latent_sr(FastSDK):
     """
-    Generated client for latent_sr
+    Generated client for nightmareai/latent-sr
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="da7f014d-265e-4a32-8d3f-66022df896d5", api_key=api_key)
+        super().__init__(service_name_or_id="3b68cf50-06e3-4b1c-b2bb-aa285d9663b1", api_key=api_key)
     
     def predict(self, image: Union[MediaFile, str, bytes], up_f: int = 4, steps: int = 100, **kwargs):
         """
@@ -24,5 +24,5 @@ class latent_sr(FastSDK):
             steps: Sampling steps Defaults to 100.
             
         """
-        return self.submit_job("/predict", image=image, up_f=up_f, steps=steps, **kwargs)
+        return self.submit_job("/predictions", image=image, up_f=up_f, steps=steps, **kwargs)
      

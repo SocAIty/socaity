@@ -4,10 +4,10 @@ from typing import Optional
 
 class ace_step(FastSDK):
     """
-    Generated client for ace_step
+    Generated client for lucataco/ace-step
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="54669824-2a2b-41ea-828e-82e3c4a2682f", api_key=api_key)
+        super().__init__(service_name_or_id="1b23e5cb-194e-40d6-9adc-b422788de890", api_key=api_key)
     
     def predict(self, tags: str, seed: int = -1, duration: float = 60.0, scheduler: str = 'euler', guidance_type: str = 'apg', guidance_scale: float = 15.0, number_of_steps: int = 60, granularity_scale: float = 10.0, guidance_interval: float = 0.5, min_guidance_scale: float = 3.0, tag_guidance_scale: float = 0.0, lyric_guidance_scale: float = 0.0, guidance_interval_decay: float = 0.0, lyrics: Optional[str] = None, **kwargs):
         """
@@ -44,5 +44,5 @@ class ace_step(FastSDK):
             lyrics: Lyrics for the music. Use [verse], [chorus], and [bridge] to separate different parts of the lyrics. Use [instrumental] or [inst] to generate instrumental music Optional.
             
         """
-        return self.submit_job("/predict", tags=tags, seed=seed, duration=duration, scheduler=scheduler, guidance_type=guidance_type, guidance_scale=guidance_scale, number_of_steps=number_of_steps, granularity_scale=granularity_scale, guidance_interval=guidance_interval, min_guidance_scale=min_guidance_scale, tag_guidance_scale=tag_guidance_scale, lyric_guidance_scale=lyric_guidance_scale, guidance_interval_decay=guidance_interval_decay, lyrics=lyrics, **kwargs)
+        return self.submit_job("/predictions", tags=tags, seed=seed, duration=duration, scheduler=scheduler, guidance_type=guidance_type, guidance_scale=guidance_scale, number_of_steps=number_of_steps, granularity_scale=granularity_scale, guidance_interval=guidance_interval, min_guidance_scale=min_guidance_scale, tag_guidance_scale=tag_guidance_scale, lyric_guidance_scale=lyric_guidance_scale, guidance_interval_decay=guidance_interval_decay, lyrics=lyrics, **kwargs)
      

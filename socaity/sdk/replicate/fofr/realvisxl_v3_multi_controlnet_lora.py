@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class realvisxl_v3_multi_controlnet_lora(FastSDK):
     """
-    Generated client for realvisxl_v3_multi_controlnet_lora
+    Generated client for fofr/realvisxl-v3-multi-controlnet-lora
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="e607dce6-374f-468b-8048-266f67adb21d", api_key=api_key)
+        super().__init__(service_name_or_id="bbe719d7-e19e-4f33-b04b-870615ae2534", api_key=api_key)
     
     def predict(self, width: int = 768, height: int = 768, prompt: str = 'An astronaut riding a rainbow unicorn', refine: str = 'no_refiner', scheduler: str = 'K_EULER', lora_scale: float = 0.6, num_outputs: int = 1, controlnet_1: str = 'none', controlnet_2: str = 'none', controlnet_3: str = 'none', guidance_scale: float = 7.5, apply_watermark: bool = False, negative_prompt: str = '', prompt_strength: float = 0.8, sizing_strategy: str = 'width_height', controlnet_1_end: float = 1.0, controlnet_2_end: float = 1.0, controlnet_3_end: float = 1.0, controlnet_1_start: float = 0.0, controlnet_2_start: float = 0.0, controlnet_3_start: float = 0.0, num_inference_steps: int = 30, disable_safety_checker: bool = False, controlnet_1_conditioning_scale: float = 0.75, controlnet_2_conditioning_scale: float = 0.75, controlnet_3_conditioning_scale: float = 0.75, mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, lora_weights: Optional[str] = None, refine_steps: Optional[int] = None, controlnet_1_image: Optional[Union[MediaFile, str, bytes]] = None, controlnet_2_image: Optional[Union[MediaFile, str, bytes]] = None, controlnet_3_image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
         """
@@ -86,5 +86,5 @@ class realvisxl_v3_multi_controlnet_lora(FastSDK):
             controlnet_3_image: Input image for third controlnet Optional.
             
         """
-        return self.submit_job("/predict", width=width, height=height, prompt=prompt, refine=refine, scheduler=scheduler, lora_scale=lora_scale, num_outputs=num_outputs, controlnet_1=controlnet_1, controlnet_2=controlnet_2, controlnet_3=controlnet_3, guidance_scale=guidance_scale, apply_watermark=apply_watermark, negative_prompt=negative_prompt, prompt_strength=prompt_strength, sizing_strategy=sizing_strategy, controlnet_1_end=controlnet_1_end, controlnet_2_end=controlnet_2_end, controlnet_3_end=controlnet_3_end, controlnet_1_start=controlnet_1_start, controlnet_2_start=controlnet_2_start, controlnet_3_start=controlnet_3_start, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, controlnet_1_conditioning_scale=controlnet_1_conditioning_scale, controlnet_2_conditioning_scale=controlnet_2_conditioning_scale, controlnet_3_conditioning_scale=controlnet_3_conditioning_scale, mask=mask, seed=seed, image=image, lora_weights=lora_weights, refine_steps=refine_steps, controlnet_1_image=controlnet_1_image, controlnet_2_image=controlnet_2_image, controlnet_3_image=controlnet_3_image, **kwargs)
+        return self.submit_job("/predictions", width=width, height=height, prompt=prompt, refine=refine, scheduler=scheduler, lora_scale=lora_scale, num_outputs=num_outputs, controlnet_1=controlnet_1, controlnet_2=controlnet_2, controlnet_3=controlnet_3, guidance_scale=guidance_scale, apply_watermark=apply_watermark, negative_prompt=negative_prompt, prompt_strength=prompt_strength, sizing_strategy=sizing_strategy, controlnet_1_end=controlnet_1_end, controlnet_2_end=controlnet_2_end, controlnet_3_end=controlnet_3_end, controlnet_1_start=controlnet_1_start, controlnet_2_start=controlnet_2_start, controlnet_3_start=controlnet_3_start, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, controlnet_1_conditioning_scale=controlnet_1_conditioning_scale, controlnet_2_conditioning_scale=controlnet_2_conditioning_scale, controlnet_3_conditioning_scale=controlnet_3_conditioning_scale, mask=mask, seed=seed, image=image, lora_weights=lora_weights, refine_steps=refine_steps, controlnet_1_image=controlnet_1_image, controlnet_2_image=controlnet_2_image, controlnet_3_image=controlnet_3_image, **kwargs)
      

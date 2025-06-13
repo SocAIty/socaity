@@ -4,10 +4,10 @@ from typing import Optional
 
 class flux_music(FastSDK):
     """
-    Generated client for flux_music
+    Generated client for zsxkib/flux-music
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="2d02637e-e0a0-41a2-ae73-676a9fe115e6", api_key=api_key)
+        super().__init__(service_name_or_id="dc789e86-6ab2-4f69-8406-b7754b3a6775", api_key=api_key)
     
     def predict(self, steps: int = 50, prompt: str = 'The song is an epic blend of space-rock, rock, and post-rock genres.', model_version: str = 'base', guidance_scale: float = 7.0, negative_prompt: str = 'low quality, gentle', save_spectrogram: bool = False, seed: Optional[int] = None, **kwargs):
         """
@@ -30,5 +30,5 @@ class flux_music(FastSDK):
             seed: Random seed. Leave blank to randomize the seed Optional.
             
         """
-        return self.submit_job("/predict", steps=steps, prompt=prompt, model_version=model_version, guidance_scale=guidance_scale, negative_prompt=negative_prompt, save_spectrogram=save_spectrogram, seed=seed, **kwargs)
+        return self.submit_job("/predictions", steps=steps, prompt=prompt, model_version=model_version, guidance_scale=guidance_scale, negative_prompt=negative_prompt, save_spectrogram=save_spectrogram, seed=seed, **kwargs)
      

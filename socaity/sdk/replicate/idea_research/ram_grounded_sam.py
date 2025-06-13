@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class ram_grounded_sam(FastSDK):
     """
-    Generated client for ram_grounded_sam
+    Generated client for idea-research/ram-grounded-sam
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="3206a605-e244-4e37-966b-1c46c1ef5473", api_key=api_key)
+        super().__init__(service_name_or_id="cdc115d5-e386-47a4-9b7f-8f447313f19c", api_key=api_key)
     
     def predict(self, input_image: Union[MediaFile, str, bytes], use_sam_hq: bool = False, show_visualisation: bool = False, **kwargs):
         """
@@ -24,5 +24,5 @@ class ram_grounded_sam(FastSDK):
             show_visualisation: Output rounding box and masks on the image Defaults to False.
             
         """
-        return self.submit_job("/predict", input_image=input_image, use_sam_hq=use_sam_hq, show_visualisation=show_visualisation, **kwargs)
+        return self.submit_job("/predictions", input_image=input_image, use_sam_hq=use_sam_hq, show_visualisation=show_visualisation, **kwargs)
      

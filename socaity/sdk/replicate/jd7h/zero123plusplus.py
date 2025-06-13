@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class zero123plusplus(FastSDK):
     """
-    Generated client for zero123plusplus
+    Generated client for jd7h/zero123plusplus
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="6168d70e-d42c-492d-ac01-ec08fd8ba14e", api_key=api_key)
+        super().__init__(service_name_or_id="e54c61c8-e627-4ef8-b561-7680d07b7635", api_key=api_key)
     
     def predict(self, image: Union[MediaFile, str, bytes], remove_background: bool = False, return_intermediate_images: bool = False, **kwargs):
         """
@@ -24,5 +24,5 @@ class zero123plusplus(FastSDK):
             return_intermediate_images: Return the intermediate images together with the output images Defaults to False.
             
         """
-        return self.submit_job("/predict", image=image, remove_background=remove_background, return_intermediate_images=return_intermediate_images, **kwargs)
+        return self.submit_job("/predictions", image=image, remove_background=remove_background, return_intermediate_images=return_intermediate_images, **kwargs)
      

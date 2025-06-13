@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class real_basicvsr_video_superresolution(FastSDK):
     """
-    Generated client for real_basicvsr_video_superresolution
+    Generated client for pollinations/real-basicvsr-video-superresolution
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="852c24f4-21f9-4830-9fd7-e75b3a720147", api_key=api_key)
+        super().__init__(service_name_or_id="b901d4ed-734c-4961-9873-121a55ff9ce1", api_key=api_key)
     
     def predict(self, video: Union[MediaFile, str, bytes], **kwargs):
         """
@@ -20,5 +20,5 @@ class real_basicvsr_video_superresolution(FastSDK):
             video: input video
             
         """
-        return self.submit_job("/predict", video=video, **kwargs)
+        return self.submit_job("/predictions", video=video, **kwargs)
      

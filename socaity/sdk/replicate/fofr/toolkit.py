@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class toolkit(FastSDK):
     """
-    Generated client for toolkit
+    Generated client for fofr/toolkit
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="7a54d069-0043-459a-ab7d-7654afe99013", api_key=api_key)
+        super().__init__(service_name_or_id="3420ed1d-4a77-445b-9974-df97b162c90d", api_key=api_key)
     
     def predict(self, task: str, input_file: Union[MediaFile, str, bytes], fps: int = 0, **kwargs):
         """
@@ -24,5 +24,5 @@ class toolkit(FastSDK):
             fps: frames per second, if relevant. Use 0 to keep original fps (or use default). Converting to GIF defaults to 12fps Defaults to 0.
             
         """
-        return self.submit_job("/predict", task=task, input_file=input_file, fps=fps, **kwargs)
+        return self.submit_job("/predictions", task=task, input_file=input_file, fps=fps, **kwargs)
      

@@ -4,10 +4,10 @@ from typing import Optional
 
 class hunyuan_video(FastSDK):
     """
-    Generated client for hunyuan_video
+    Generated client for tencent/hunyuan-video
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="de473a3a-a349-40e6-af9a-b6dd2241d083", api_key=api_key)
+        super().__init__(service_name_or_id="fadd9278-de64-4d38-bfab-dc987511fc0a", api_key=api_key)
     
     def predict(self, fps: int = 24, width: int = 864, height: int = 480, prompt: str = 'A cat walks on the grass, realistic style', infer_steps: int = 50, video_length: int = 129, embedded_guidance_scale: float = 6.0, seed: Optional[int] = None, **kwargs):
         """
@@ -32,5 +32,5 @@ class hunyuan_video(FastSDK):
             seed: Random seed (leave empty for random) Optional.
             
         """
-        return self.submit_job("/predict", fps=fps, width=width, height=height, prompt=prompt, infer_steps=infer_steps, video_length=video_length, embedded_guidance_scale=embedded_guidance_scale, seed=seed, **kwargs)
+        return self.submit_job("/predictions", fps=fps, width=width, height=height, prompt=prompt, infer_steps=infer_steps, video_length=video_length, embedded_guidance_scale=embedded_guidance_scale, seed=seed, **kwargs)
      

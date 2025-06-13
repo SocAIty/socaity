@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class rmgb(FastSDK):
     """
-    Generated client for rmgb
+    Generated client for cjwbw/rmgb
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="56ced991-c449-4341-9e7c-3cd5f7e4aac0", api_key=api_key)
+        super().__init__(service_name_or_id="2cde0481-d448-4332-a3c6-4759c60c2253", api_key=api_key)
     
     def predict(self, image: Union[MediaFile, str, bytes], **kwargs):
         """
@@ -20,5 +20,5 @@ class rmgb(FastSDK):
             image: Input image
             
         """
-        return self.submit_job("/predict", image=image, **kwargs)
+        return self.submit_job("/predictions", image=image, **kwargs)
      

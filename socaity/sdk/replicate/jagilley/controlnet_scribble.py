@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class controlnet_scribble(FastSDK):
     """
-    Generated client for controlnet_scribble
+    Generated client for jagilley/controlnet-scribble
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="772f6e7c-6797-44d1-b5a0-14bd02261906", api_key=api_key)
+        super().__init__(service_name_or_id="55b98292-232b-4331-b3b7-45d7ef5374ee", api_key=api_key)
     
     def predict(self, image: Union[MediaFile, str, bytes], prompt: str, eta: float = 0.0, scale: float = 9.0, a_prompt: str = 'best quality, extremely detailed', n_prompt: str = 'longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality', ddim_steps: int = 20, num_samples: str = '1', image_resolution: str = '512', seed: Optional[int] = None, **kwargs):
         """
@@ -38,5 +38,5 @@ class controlnet_scribble(FastSDK):
             seed: Seed Optional.
             
         """
-        return self.submit_job("/predict", image=image, prompt=prompt, eta=eta, scale=scale, a_prompt=a_prompt, n_prompt=n_prompt, ddim_steps=ddim_steps, num_samples=num_samples, image_resolution=image_resolution, seed=seed, **kwargs)
+        return self.submit_job("/predictions", image=image, prompt=prompt, eta=eta, scale=scale, a_prompt=a_prompt, n_prompt=n_prompt, ddim_steps=ddim_steps, num_samples=num_samples, image_resolution=image_resolution, seed=seed, **kwargs)
      

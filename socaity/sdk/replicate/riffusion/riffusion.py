@@ -4,10 +4,10 @@ from typing import Optional
 
 class riffusion(FastSDK):
     """
-    Generated client for riffusion
+    Generated client for riffusion/riffusion
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="54e9f4d7-c415-46e3-a7ea-7693d0f766ee", api_key=api_key)
+        super().__init__(service_name_or_id="043a836f-f6d6-4f1a-b0c1-18d68428b666", api_key=api_key)
     
     def predict(self, alpha: float = 0.5, prompt_a: str = 'funky synth solo', denoising: float = 0.75, seed_image_id: str = 'vibes', num_inference_steps: int = 50, prompt_b: Optional[str] = None, **kwargs):
         """
@@ -28,5 +28,5 @@ class riffusion(FastSDK):
             prompt_b: The second prompt to interpolate with the first, leave blank if no interpolation Optional.
             
         """
-        return self.submit_job("/predict", alpha=alpha, prompt_a=prompt_a, denoising=denoising, seed_image_id=seed_image_id, num_inference_steps=num_inference_steps, prompt_b=prompt_b, **kwargs)
+        return self.submit_job("/predictions", alpha=alpha, prompt_a=prompt_a, denoising=denoising, seed_image_id=seed_image_id, num_inference_steps=num_inference_steps, prompt_b=prompt_b, **kwargs)
      

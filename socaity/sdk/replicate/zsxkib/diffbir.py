@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class diffbir(FastSDK):
     """
-    Generated client for diffbir
+    Generated client for zsxkib/diffbir
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="dd56cc7b-b00a-4f56-ba78-80895bdb7a58", api_key=api_key)
+        super().__init__(service_name_or_id="bc7d5e09-7819-4faf-8576-0d637be0cd75", api_key=api_key)
     
     def predict(self, input: Union[MediaFile, str, bytes], seed: int = 231, steps: int = 50, tiled: bool = False, tile_size: int = 512, has_aligned: bool = False, tile_stride: int = 256, repeat_times: int = 1, use_guidance: bool = False, color_fix_type: str = 'wavelet', guidance_scale: float = 0.0, guidance_space: str = 'latent', guidance_repeat: int = 5, only_center_face: bool = False, guidance_time_stop: int = -1, guidance_time_start: int = 1001, background_upsampler: str = 'RealESRGAN', face_detection_model: str = 'retinaface_resnet50', upscaling_model_type: str = 'general_scenes', restoration_model_type: str = 'general_scenes', super_resolution_factor: int = 4, disable_preprocess_model: bool = False, reload_restoration_model: bool = False, background_upsampler_tile: int = 400, background_upsampler_tile_stride: int = 400, **kwargs):
         """
@@ -68,5 +68,5 @@ class diffbir(FastSDK):
             background_upsampler_tile_stride: For 'faces' mode: Distance between the start of each tile when the background is divided for upscaling. A smaller stride means more overlap between tiles. Defaults to 400.
             
         """
-        return self.submit_job("/predict", input=input, seed=seed, steps=steps, tiled=tiled, tile_size=tile_size, has_aligned=has_aligned, tile_stride=tile_stride, repeat_times=repeat_times, use_guidance=use_guidance, color_fix_type=color_fix_type, guidance_scale=guidance_scale, guidance_space=guidance_space, guidance_repeat=guidance_repeat, only_center_face=only_center_face, guidance_time_stop=guidance_time_stop, guidance_time_start=guidance_time_start, background_upsampler=background_upsampler, face_detection_model=face_detection_model, upscaling_model_type=upscaling_model_type, restoration_model_type=restoration_model_type, super_resolution_factor=super_resolution_factor, disable_preprocess_model=disable_preprocess_model, reload_restoration_model=reload_restoration_model, background_upsampler_tile=background_upsampler_tile, background_upsampler_tile_stride=background_upsampler_tile_stride, **kwargs)
+        return self.submit_job("/predictions", input=input, seed=seed, steps=steps, tiled=tiled, tile_size=tile_size, has_aligned=has_aligned, tile_stride=tile_stride, repeat_times=repeat_times, use_guidance=use_guidance, color_fix_type=color_fix_type, guidance_scale=guidance_scale, guidance_space=guidance_space, guidance_repeat=guidance_repeat, only_center_face=only_center_face, guidance_time_stop=guidance_time_stop, guidance_time_start=guidance_time_start, background_upsampler=background_upsampler, face_detection_model=face_detection_model, upscaling_model_type=upscaling_model_type, restoration_model_type=restoration_model_type, super_resolution_factor=super_resolution_factor, disable_preprocess_model=disable_preprocess_model, reload_restoration_model=reload_restoration_model, background_upsampler_tile=background_upsampler_tile, background_upsampler_tile_stride=background_upsampler_tile_stride, **kwargs)
      

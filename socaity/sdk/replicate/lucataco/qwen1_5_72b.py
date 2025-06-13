@@ -4,10 +4,10 @@ from typing import Optional
 
 class qwen1_5_72b(FastSDK):
     """
-    Generated client for qwen1_5_72b
+    Generated client for lucataco/qwen1-5-72b
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="71e2734f-352a-4ae9-b38f-373d7667cbd2", api_key=api_key)
+        super().__init__(service_name_or_id="8cc9762d-a6ee-4062-8283-089ef558bc06", api_key=api_key)
     
     def predict(self, top_k: int = 1, top_p: float = 1.0, prompt: str = 'Give me a short introduction to large language model.', temperature: float = 1.0, system_prompt: str = 'You are a helpful assistant.', max_new_tokens: int = 512, repetition_penalty: float = 1.0, seed: Optional[int] = None, **kwargs):
         """
@@ -32,5 +32,5 @@ class qwen1_5_72b(FastSDK):
             seed: The seed for the random number generator Optional.
             
         """
-        return self.submit_job("/predict", top_k=top_k, top_p=top_p, prompt=prompt, temperature=temperature, system_prompt=system_prompt, max_new_tokens=max_new_tokens, repetition_penalty=repetition_penalty, seed=seed, **kwargs)
+        return self.submit_job("/predictions", top_k=top_k, top_p=top_p, prompt=prompt, temperature=temperature, system_prompt=system_prompt, max_new_tokens=max_new_tokens, repetition_penalty=repetition_penalty, seed=seed, **kwargs)
      

@@ -2,10 +2,10 @@ from fastsdk.fastSDK import FastSDK
 
 class cogvideox_5b(FastSDK):
     """
-    Generated client for cogvideox_5b
+    Generated client for cuuupid/cogvideox-5b
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="9f845bc5-0fd1-45da-9f0a-bd1ff80c32ab", api_key=api_key)
+        super().__init__(service_name_or_id="579d6489-362b-4a37-b0fd-9ef14b7c8882", api_key=api_key)
     
     def ready(self, **kwargs):
         """
@@ -33,5 +33,5 @@ class cogvideox_5b(FastSDK):
             extend_prompt: If enabled, will use GLM-4 to make the prompt long (as intended for CogVideoX). Defaults to True.
             
         """
-        return self.submit_job("/predict", prompt=prompt, seed=seed, steps=steps, guidance=guidance, num_outputs=num_outputs, extend_prompt=extend_prompt, **kwargs)
+        return self.submit_job("/predictions", prompt=prompt, seed=seed, steps=steps, guidance=guidance, num_outputs=num_outputs, extend_prompt=extend_prompt, **kwargs)
      

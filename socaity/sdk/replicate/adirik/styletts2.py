@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class styletts2(FastSDK):
     """
-    Generated client for styletts2
+    Generated client for adirik/styletts2
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="81bbcc03-6aa0-426e-b289-07053d728208", api_key=api_key)
+        super().__init__(service_name_or_id="a57378f6-be90-4d56-a9c0-746dcc612450", api_key=api_key)
     
     def predict(self, text: str, beta: float = 0.7, seed: int = 0, alpha: float = 0.3, diffusion_steps: int = 10, embedding_scale: float = 1.0, weights: Optional[str] = None, reference: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
         """
@@ -34,5 +34,5 @@ class styletts2(FastSDK):
             reference: Reference speech to copy style from Optional.
             
         """
-        return self.submit_job("/predict", text=text, beta=beta, seed=seed, alpha=alpha, diffusion_steps=diffusion_steps, embedding_scale=embedding_scale, weights=weights, reference=reference, **kwargs)
+        return self.submit_job("/predictions", text=text, beta=beta, seed=seed, alpha=alpha, diffusion_steps=diffusion_steps, embedding_scale=embedding_scale, weights=weights, reference=reference, **kwargs)
      

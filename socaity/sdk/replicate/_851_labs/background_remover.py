@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class background_remover(FastSDK):
     """
-    Generated client for background_remover
+    Generated client for -851-labs/background-remover
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="eaba2700-2b22-4086-92af-ed4170313bb1", api_key=api_key)
+        super().__init__(service_name_or_id="41bbfe93-f999-4de3-b380-fabe0b960cb0", api_key=api_key)
     
     def predict(self, image: Union[MediaFile, str, bytes], format: str = 'png', reverse: bool = False, threshold: float = 0.0, background_type: str = 'rgba', **kwargs):
         """
@@ -28,5 +28,5 @@ class background_remover(FastSDK):
             background_type: Background type: 'rgba', 'map', 'green', 'white', [R,G,B] array, 'blur', 'overlay', or path to an image. Defaults to 'rgba'.
             
         """
-        return self.submit_job("/predict", image=image, format=format, reverse=reverse, threshold=threshold, background_type=background_type, **kwargs)
+        return self.submit_job("/predictions", image=image, format=format, reverse=reverse, threshold=threshold, background_type=background_type, **kwargs)
      

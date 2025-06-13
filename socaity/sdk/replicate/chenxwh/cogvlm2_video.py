@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class cogvlm2_video(FastSDK):
     """
-    Generated client for cogvlm2_video
+    Generated client for chenxwh/cogvlm2-video
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="4b9dfccc-25ae-40b8-9ce2-22a8aee092c3", api_key=api_key)
+        super().__init__(service_name_or_id="0290b9cc-95b5-4a7d-85ac-fecc261777e6", api_key=api_key)
     
     def predict(self, input_video: Union[MediaFile, str, bytes], top_p: float = 0.1, prompt: str = 'Describe this video.', temperature: float = 0.1, max_new_tokens: int = 2048, **kwargs):
         """
@@ -28,5 +28,5 @@ class cogvlm2_video(FastSDK):
             max_new_tokens: Maximum number of tokens to generate. A word is generally 2-3 tokens Defaults to 2048.
             
         """
-        return self.submit_job("/predict", input_video=input_video, top_p=top_p, prompt=prompt, temperature=temperature, max_new_tokens=max_new_tokens, **kwargs)
+        return self.submit_job("/predictions", input_video=input_video, top_p=top_p, prompt=prompt, temperature=temperature, max_new_tokens=max_new_tokens, **kwargs)
      

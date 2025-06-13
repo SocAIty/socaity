@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class xtts_v2(FastSDK):
     """
-    Generated client for xtts_v2
+    Generated client for lucataco/xtts-v2
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="f0f5d629-8db9-40bd-9b3e-a6372ce00b0f", api_key=api_key)
+        super().__init__(service_name_or_id="f31156fb-c378-43f0-86a4-3bec755a5347", api_key=api_key)
     
     def predict(self, speaker: Union[MediaFile, str, bytes], text: str = "Hi there, I'm your new voice clone. Try your best to upload quality audio", language: str = 'en', cleanup_voice: bool = False, **kwargs):
         """
@@ -26,5 +26,5 @@ class xtts_v2(FastSDK):
             cleanup_voice: Whether to apply denoising to the speaker audio (microphone recordings) Defaults to False.
             
         """
-        return self.submit_job("/predict", speaker=speaker, text=text, language=language, cleanup_voice=cleanup_voice, **kwargs)
+        return self.submit_job("/predictions", speaker=speaker, text=text, language=language, cleanup_voice=cleanup_voice, **kwargs)
      

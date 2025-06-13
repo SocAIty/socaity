@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class wonder3d(FastSDK):
     """
-    Generated client for wonder3d
+    Generated client for adirik/wonder3d
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="57139388-dfe2-40ba-b715-952690e0dbcb", api_key=api_key)
+        super().__init__(service_name_or_id="9120889d-ff19-44ed-bfa9-03414b7f71e2", api_key=api_key)
     
     def predict(self, num_steps: int = 3000, remove_bg: bool = True, image: Optional[Union[MediaFile, str, bytes]] = None, random_seed: Optional[int] = None, **kwargs):
         """
@@ -26,5 +26,5 @@ class wonder3d(FastSDK):
             random_seed: Random seed for reproducibility, leave blank to randomize output Optional.
             
         """
-        return self.submit_job("/predict", num_steps=num_steps, remove_bg=remove_bg, image=image, random_seed=random_seed, **kwargs)
+        return self.submit_job("/predictions", num_steps=num_steps, remove_bg=remove_bg, image=image, random_seed=random_seed, **kwargs)
      

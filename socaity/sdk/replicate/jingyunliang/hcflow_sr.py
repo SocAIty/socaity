@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class hcflow_sr(FastSDK):
     """
-    Generated client for hcflow_sr
+    Generated client for jingyunliang/hcflow-sr
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="1358e7ec-edad-4d06-82b5-e2a49ab88461", api_key=api_key)
+        super().__init__(service_name_or_id="df7f6d61-85a1-44a9-a3f6-4f997f3da1d5", api_key=api_key)
     
     def predict(self, image: Union[MediaFile, str, bytes], model_type: str = 'celeb', **kwargs):
         """
@@ -22,5 +22,5 @@ class hcflow_sr(FastSDK):
             model_type: celeb photo or general image Defaults to 'celeb'.
             
         """
-        return self.submit_job("/predict", image=image, model_type=model_type, **kwargs)
+        return self.submit_job("/predictions", image=image, model_type=model_type, **kwargs)
      

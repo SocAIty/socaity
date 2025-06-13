@@ -4,10 +4,10 @@ from typing import Optional
 
 class sticker_maker(FastSDK):
     """
-    Generated client for sticker_maker
+    Generated client for fofr/sticker-maker
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="b2086e03-aa11-46eb-a32e-f63ac866c27f", api_key=api_key)
+        super().__init__(service_name_or_id="3bd7cc24-4284-4b6b-bfe5-316473e6da6f", api_key=api_key)
     
     def predict(self, steps: int = 17, width: int = 1152, height: int = 1152, prompt: str = 'a cute cat', output_format: str = 'webp', output_quality: int = 90, negative_prompt: str = '', number_of_images: int = 1, seed: Optional[int] = None, **kwargs):
         """
@@ -34,5 +34,5 @@ class sticker_maker(FastSDK):
             seed: Fix the random seed for reproducibility Optional.
             
         """
-        return self.submit_job("/predict", steps=steps, width=width, height=height, prompt=prompt, output_format=output_format, output_quality=output_quality, negative_prompt=negative_prompt, number_of_images=number_of_images, seed=seed, **kwargs)
+        return self.submit_job("/predictions", steps=steps, width=width, height=height, prompt=prompt, output_format=output_format, output_quality=output_quality, negative_prompt=negative_prompt, number_of_images=number_of_images, seed=seed, **kwargs)
      

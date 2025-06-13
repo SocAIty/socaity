@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class mmaudio(FastSDK):
     """
-    Generated client for mmaudio
+    Generated client for zsxkib/mmaudio
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="410272b9-90c7-4df7-8e0c-a349b204a48f", api_key=api_key)
+        super().__init__(service_name_or_id="b3329e4f-e7a9-4e66-830b-0f1d14d133c1", api_key=api_key)
     
     def predict(self, prompt: str = '', duration: float = 8.0, num_steps: int = 25, cfg_strength: float = 4.5, negative_prompt: str = 'music', seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, video: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
         """
@@ -34,5 +34,5 @@ class mmaudio(FastSDK):
             video: Optional video file for video-to-audio generation Optional.
             
         """
-        return self.submit_job("/predict", prompt=prompt, duration=duration, num_steps=num_steps, cfg_strength=cfg_strength, negative_prompt=negative_prompt, seed=seed, image=image, video=video, **kwargs)
+        return self.submit_job("/predictions", prompt=prompt, duration=duration, num_steps=num_steps, cfg_strength=cfg_strength, negative_prompt=negative_prompt, seed=seed, image=image, video=video, **kwargs)
      

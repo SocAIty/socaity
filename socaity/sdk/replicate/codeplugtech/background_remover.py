@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class background_remover(FastSDK):
     """
-    Generated client for background_remover
+    Generated client for codeplugtech/background-remover
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="a69ebba9-516c-4401-b01f-5a42e8f8c041", api_key=api_key)
+        super().__init__(service_name_or_id="ac005f5c-17c4-4693-a642-24824565c896", api_key=api_key)
     
     def predict(self, image: Union[MediaFile, str, bytes], **kwargs):
         """
@@ -20,5 +20,5 @@ class background_remover(FastSDK):
             image: Input image
             
         """
-        return self.submit_job("/predict", image=image, **kwargs)
+        return self.submit_job("/predictions", image=image, **kwargs)
      

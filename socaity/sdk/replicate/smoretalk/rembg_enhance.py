@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class rembg_enhance(FastSDK):
     """
-    Generated client for rembg_enhance
+    Generated client for smoretalk/rembg-enhance
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="37d4c095-5d53-4de9-a39a-e28aec7858f4", api_key=api_key)
+        super().__init__(service_name_or_id="1c92d5ca-dab3-4bca-9a54-c361ff454fa0", api_key=api_key)
     
     def predict(self, image: Union[MediaFile, str, bytes], **kwargs):
         """
@@ -20,5 +20,5 @@ class rembg_enhance(FastSDK):
             image: Input image
             
         """
-        return self.submit_job("/predict", image=image, **kwargs)
+        return self.submit_job("/predictions", image=image, **kwargs)
      

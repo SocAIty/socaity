@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class voicecraft(FastSDK):
     """
-    Generated client for voicecraft
+    Generated client for cjwbw/voicecraft
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="5ce2662f-bd9a-4bda-a448-dddf4cc833ae", api_key=api_key)
+        super().__init__(service_name_or_id="93620bcc-7660-48a9-8c9e-0e59df84af65", api_key=api_key)
     
     def predict(self, orig_audio: Union[MediaFile, str, bytes], target_transcript: str, task: str = 'zero-shot text-to-speech', top_p: float = 0.9, kvcache: int = 1, cut_off_sec: float = 3.01, left_margin: float = 0.08, temperature: float = 1.0, right_margin: float = 0.08, whisperx_model: str = 'base.en', orig_transcript: str = '', stop_repetition: int = 3, voicecraft_model: str = 'giga330M_TTSEnhanced.pth', sample_batch_size: int = 4, seed: Optional[int] = None, **kwargs):
         """
@@ -48,5 +48,5 @@ class voicecraft(FastSDK):
             seed: Random seed. Leave blank to randomize the seed Optional.
             
         """
-        return self.submit_job("/predict", orig_audio=orig_audio, target_transcript=target_transcript, task=task, top_p=top_p, kvcache=kvcache, cut_off_sec=cut_off_sec, left_margin=left_margin, temperature=temperature, right_margin=right_margin, whisperx_model=whisperx_model, orig_transcript=orig_transcript, stop_repetition=stop_repetition, voicecraft_model=voicecraft_model, sample_batch_size=sample_batch_size, seed=seed, **kwargs)
+        return self.submit_job("/predictions", orig_audio=orig_audio, target_transcript=target_transcript, task=task, top_p=top_p, kvcache=kvcache, cut_off_sec=cut_off_sec, left_margin=left_margin, temperature=temperature, right_margin=right_margin, whisperx_model=whisperx_model, orig_transcript=orig_transcript, stop_repetition=stop_repetition, voicecraft_model=voicecraft_model, sample_batch_size=sample_batch_size, seed=seed, **kwargs)
      

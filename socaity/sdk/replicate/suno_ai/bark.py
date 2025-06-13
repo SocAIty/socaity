@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class bark(FastSDK):
     """
-    Generated client for bark
+    Generated client for suno-ai/bark
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="fe56b2ac-5e4c-4519-8d59-403c7ff64b1a", api_key=api_key)
+        super().__init__(service_name_or_id="7aeef358-94ec-4cc1-abd7-b238ac3a490a", api_key=api_key)
     
     def predict(self, prompt: str = 'Hello, my name is Suno. And, uh — and I like pizza. [laughs] But I also have other interests such as playing tic tac toe.', text_temp: float = 0.7, output_full: bool = False, waveform_temp: float = 0.7, history_prompt: Optional[str] = None, custom_history_prompt: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
         """
@@ -30,5 +30,5 @@ class bark(FastSDK):
             custom_history_prompt: Provide your own .npz file with history choice for audio cloning, this will override the previous history_prompt setting Optional.
             
         """
-        return self.submit_job("/predict", prompt=prompt, text_temp=text_temp, output_full=output_full, waveform_temp=waveform_temp, history_prompt=history_prompt, custom_history_prompt=custom_history_prompt, **kwargs)
+        return self.submit_job("/predictions", prompt=prompt, text_temp=text_temp, output_full=output_full, waveform_temp=waveform_temp, history_prompt=history_prompt, custom_history_prompt=custom_history_prompt, **kwargs)
      

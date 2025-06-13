@@ -2,10 +2,10 @@ from fastsdk.fastSDK import FastSDK
 
 class llama_2_13b_embeddings(FastSDK):
     """
-    Generated client for llama_2_13b_embeddings
+    Generated client for andreasjansson/llama-2-13b-embeddings
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="d1a69971-74a2-44e9-91c9-6086edf84dc3", api_key=api_key)
+        super().__init__(service_name_or_id="760818eb-ff3f-4cfa-9c7c-1156dc83e0b1", api_key=api_key)
     
     def predict(self, prompts: str, prompt_separator: str = '\n\n', **kwargs):
         """
@@ -18,5 +18,5 @@ class llama_2_13b_embeddings(FastSDK):
             prompt_separator: Separator between prompts Defaults to '\n\n'.
             
         """
-        return self.submit_job("/predict", prompts=prompts, prompt_separator=prompt_separator, **kwargs)
+        return self.submit_job("/predictions", prompts=prompts, prompt_separator=prompt_separator, **kwargs)
      

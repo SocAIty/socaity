@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class rvc_v2(FastSDK):
     """
-    Generated client for rvc_v2
+    Generated client for pseudoram/rvc-v2
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="e610f8a5-6588-4bf1-bcba-0872cc2269bb", api_key=api_key)
+        super().__init__(service_name_or_id="ceaa8915-7b34-4775-b445-bf769fe8c5a2", api_key=api_key)
     
     def predict(self, protect: float = 0.33, f0_method: str = 'rmvpe', rvc_model: str = 'Obama', index_rate: float = 0.5, pitch_change: float = 0.0, rms_mix_rate: float = 0.25, filter_radius: int = 3, output_format: str = 'mp3', crepe_hop_length: int = 128, input_audio: Optional[Union[MediaFile, str, bytes]] = None, custom_rvc_model_download_url: Optional[str] = None, **kwargs):
         """
@@ -40,5 +40,5 @@ class rvc_v2(FastSDK):
             custom_rvc_model_download_url: URL to download a custom RVC model. If provided, the model will be downloaded (if it doesn't already exist) and used for prediction, regardless of the 'rvc_model' value. Optional.
             
         """
-        return self.submit_job("/predict", protect=protect, f0_method=f0_method, rvc_model=rvc_model, index_rate=index_rate, pitch_change=pitch_change, rms_mix_rate=rms_mix_rate, filter_radius=filter_radius, output_format=output_format, crepe_hop_length=crepe_hop_length, input_audio=input_audio, custom_rvc_model_download_url=custom_rvc_model_download_url, **kwargs)
+        return self.submit_job("/predictions", protect=protect, f0_method=f0_method, rvc_model=rvc_model, index_rate=index_rate, pitch_change=pitch_change, rms_mix_rate=rms_mix_rate, filter_radius=filter_radius, output_format=output_format, crepe_hop_length=crepe_hop_length, input_audio=input_audio, custom_rvc_model_download_url=custom_rvc_model_download_url, **kwargs)
      

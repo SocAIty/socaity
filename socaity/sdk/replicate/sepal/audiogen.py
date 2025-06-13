@@ -2,10 +2,10 @@ from fastsdk.fastSDK import FastSDK
 
 class audiogen(FastSDK):
     """
-    Generated client for audiogen
+    Generated client for sepal/audiogen
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="6a13796a-1f9f-4910-bfbc-a1edebf9233b", api_key=api_key)
+        super().__init__(service_name_or_id="736b4266-8a63-49a8-a405-7d94c1a8444b", api_key=api_key)
     
     def predict(self, prompt: str, top_k: int = 250, top_p: float = 0.0, duration: float = 3.0, temperature: float = 1.0, output_format: str = 'wav', classifier_free_guidance: int = 3, **kwargs):
         """
@@ -28,5 +28,5 @@ class audiogen(FastSDK):
             classifier_free_guidance: Increases the influence of inputs on the output. Higher values produce lower-varience outputs that adhere more closely to inputs. Defaults to 3.
             
         """
-        return self.submit_job("/predict", prompt=prompt, top_k=top_k, top_p=top_p, duration=duration, temperature=temperature, output_format=output_format, classifier_free_guidance=classifier_free_guidance, **kwargs)
+        return self.submit_job("/predictions", prompt=prompt, top_k=top_k, top_p=top_p, duration=duration, temperature=temperature, output_format=output_format, classifier_free_guidance=classifier_free_guidance, **kwargs)
      

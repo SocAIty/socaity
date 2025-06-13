@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class edit_video_by_editing_text(FastSDK):
     """
-    Generated client for edit_video_by_editing_text
+    Generated client for jd7h/edit-video-by-editing-text
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="f3205738-27ae-42b6-9d13-8e68a1d051b9", api_key=api_key)
+        super().__init__(service_name_or_id="ed6f5d3e-761f-4f00-b342-1f7e55301c87", api_key=api_key)
     
     def predict(self, video_in: Union[MediaFile, str, bytes], mode: str = 'transcribe', split_at: str = 'word', transcription: Optional[str] = None, **kwargs):
         """
@@ -26,5 +26,5 @@ class edit_video_by_editing_text(FastSDK):
             transcription: When using mode 'edit', this should be the transcription of the desired output video. Use mode 'transcribe' to create a starting point. Optional.
             
         """
-        return self.submit_job("/predict", video_in=video_in, mode=mode, split_at=split_at, transcription=transcription, **kwargs)
+        return self.submit_job("/predictions", video_in=video_in, mode=mode, split_at=split_at, transcription=transcription, **kwargs)
      

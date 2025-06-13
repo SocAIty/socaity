@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class realvisxl2_lcm(FastSDK):
     """
-    Generated client for realvisxl2_lcm
+    Generated client for lucataco/realvisxl2-lcm
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="2fafadb8-883c-4345-b3f4-f87c407b0616", api_key=api_key)
+        super().__init__(service_name_or_id="f4ed9225-948a-488d-b722-4fa3855e130a", api_key=api_key)
     
     def predict(self, width: int = 1024, height: int = 1024, prompt: str = 'dark shot, front shot, closeup photo of a 25 y.o latino man, perfect eyes, natural skin, skin moles, looks at viewer, cinematic shot', scheduler: str = 'LCM', num_outputs: int = 1, guidance_scale: float = 2.0, apply_watermark: bool = True, negative_prompt: str = '(worst quality, low quality, illustration, 3d, 2d, painting, cartoons, sketch), open mouth', prompt_strength: float = 0.8, num_inference_steps: int = 6, disable_safety_checker: bool = False, mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
         """
@@ -46,5 +46,5 @@ class realvisxl2_lcm(FastSDK):
             image: Input image for img2img or inpaint mode Optional.
             
         """
-        return self.submit_job("/predict", width=width, height=height, prompt=prompt, scheduler=scheduler, num_outputs=num_outputs, guidance_scale=guidance_scale, apply_watermark=apply_watermark, negative_prompt=negative_prompt, prompt_strength=prompt_strength, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, mask=mask, seed=seed, image=image, **kwargs)
+        return self.submit_job("/predictions", width=width, height=height, prompt=prompt, scheduler=scheduler, num_outputs=num_outputs, guidance_scale=guidance_scale, apply_watermark=apply_watermark, negative_prompt=negative_prompt, prompt_strength=prompt_strength, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, mask=mask, seed=seed, image=image, **kwargs)
      

@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class stable_diffusion_dance(FastSDK):
     """
-    Generated client for stable_diffusion_dance
+    Generated client for pollinations/stable-diffusion-dance
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="49bc4071-d7d3-41c8-b822-1758dba2dda5", api_key=api_key)
+        super().__init__(service_name_or_id="35430f6b-5b5a-45c2-adf9-6830a2f707ac", api_key=api_key)
     
     def predict(self, width: int = 384, height: int = 512, prompts: str = 'a moth\na killer dragonfly\nTwo fishes talking to eachother in deep sea', batch_size: int = 24, frame_rate: float = 16.0, random_seed: int = 13, prompt_scale: float = 15.0, style_suffix: str = 'Painting by Paul Klee, intricate details', audio_smoothing: float = 0.8, diffusion_steps: int = 20, audio_noise_scale: float = 0.3, audio_loudness_type: str = 'peak', frame_interpolation: bool = True, audio_file: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
         """
@@ -46,5 +46,5 @@ class stable_diffusion_dance(FastSDK):
             audio_file: input audio file Optional.
             
         """
-        return self.submit_job("/predict", width=width, height=height, prompts=prompts, batch_size=batch_size, frame_rate=frame_rate, random_seed=random_seed, prompt_scale=prompt_scale, style_suffix=style_suffix, audio_smoothing=audio_smoothing, diffusion_steps=diffusion_steps, audio_noise_scale=audio_noise_scale, audio_loudness_type=audio_loudness_type, frame_interpolation=frame_interpolation, audio_file=audio_file, **kwargs)
+        return self.submit_job("/predictions", width=width, height=height, prompts=prompts, batch_size=batch_size, frame_rate=frame_rate, random_seed=random_seed, prompt_scale=prompt_scale, style_suffix=style_suffix, audio_smoothing=audio_smoothing, diffusion_steps=diffusion_steps, audio_noise_scale=audio_noise_scale, audio_loudness_type=audio_loudness_type, frame_interpolation=frame_interpolation, audio_file=audio_file, **kwargs)
      

@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class whisper_subtitles(FastSDK):
     """
-    Generated client for whisper_subtitles
+    Generated client for m1guelpf/whisper-subtitles
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="1da2fc53-7cb4-4f25-a4d6-40bf72269dde", api_key=api_key)
+        super().__init__(service_name_or_id="21324c71-1e66-46e0-84bd-659122a52fd2", api_key=api_key)
     
     def predict(self, audio_path: Union[MediaFile, str, bytes], format: str = 'vtt', model_name: str = 'base', **kwargs):
         """
@@ -24,5 +24,5 @@ class whisper_subtitles(FastSDK):
             model_name: Name of the Whisper model to use. Defaults to 'base'.
             
         """
-        return self.submit_job("/predict", audio_path=audio_path, format=format, model_name=model_name, **kwargs)
+        return self.submit_job("/predictions", audio_path=audio_path, format=format, model_name=model_name, **kwargs)
      

@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class sam_2_video(FastSDK):
     """
-    Generated client for sam_2_video
+    Generated client for meta/sam-2-video
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="48a12798-d215-49ad-b5df-37be2f1fae8f", api_key=api_key)
+        super().__init__(service_name_or_id="d02baeff-417a-4506-b151-8c40e5fa3ee3", api_key=api_key)
     
     def predict(self, input_video: Union[MediaFile, str, bytes], click_coordinates: str, mask_type: str = 'binary', video_fps: int = 30, click_frames: str = '0', click_labels: str = '1', output_video: bool = False, output_format: str = 'webp', output_quality: int = 80, annotation_type: str = 'mask', click_object_ids: str = '', output_frame_interval: int = 1, **kwargs):
         """
@@ -42,5 +42,5 @@ class sam_2_video(FastSDK):
             output_frame_interval: Output every Nth frame. 1=all frames, 2=every other, etc. Defaults to 1.
             
         """
-        return self.submit_job("/predict", input_video=input_video, click_coordinates=click_coordinates, mask_type=mask_type, video_fps=video_fps, click_frames=click_frames, click_labels=click_labels, output_video=output_video, output_format=output_format, output_quality=output_quality, annotation_type=annotation_type, click_object_ids=click_object_ids, output_frame_interval=output_frame_interval, **kwargs)
+        return self.submit_job("/predictions", input_video=input_video, click_coordinates=click_coordinates, mask_type=mask_type, video_fps=video_fps, click_frames=click_frames, click_labels=click_labels, output_video=output_video, output_format=output_format, output_quality=output_quality, annotation_type=annotation_type, click_object_ids=click_object_ids, output_frame_interval=output_frame_interval, **kwargs)
      

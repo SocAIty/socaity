@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class real_esrgan_video(FastSDK):
     """
-    Generated client for real_esrgan_video
+    Generated client for lucataco/real-esrgan-video
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="aac0fe73-e4f7-419a-b916-cf771b6d971c", api_key=api_key)
+        super().__init__(service_name_or_id="f7b0ed6f-3794-4b3f-a273-f2d96d2b699a", api_key=api_key)
     
     def predict(self, video_path: Union[MediaFile, str, bytes], model: str = 'RealESRGAN_x4plus', resolution: str = 'FHD', **kwargs):
         """
@@ -24,5 +24,5 @@ class real_esrgan_video(FastSDK):
             resolution: Output resolution Defaults to 'FHD'.
             
         """
-        return self.submit_job("/predict", video_path=video_path, model=model, resolution=resolution, **kwargs)
+        return self.submit_job("/predictions", video_path=video_path, model=model, resolution=resolution, **kwargs)
      

@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class video_morpher(FastSDK):
     """
-    Generated client for video_morpher
+    Generated client for fofr/video-morpher
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="e641d15f-fc54-4eef-8f2e-a20092e1b7eb", api_key=api_key)
+        super().__init__(service_name_or_id="0ce78050-64c8-4968-aa57-74b52618ac0e", api_key=api_key)
     
     def predict(self, subject_image_1: Union[MediaFile, str, bytes], subject_image_2: Union[MediaFile, str, bytes], subject_image_3: Union[MediaFile, str, bytes], subject_image_4: Union[MediaFile, str, bytes], mode: str = 'medium', prompt: str = '', checkpoint: str = 'realistic', aspect_ratio: str = '2:3', style_strength: float = 1.0, use_controlnet: bool = True, negative_prompt: str = '', seed: Optional[int] = None, style_image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
         """
@@ -44,5 +44,5 @@ class video_morpher(FastSDK):
             style_image: Apply the style from this image to the whole video Optional.
             
         """
-        return self.submit_job("/predict", subject_image_1=subject_image_1, subject_image_2=subject_image_2, subject_image_3=subject_image_3, subject_image_4=subject_image_4, mode=mode, prompt=prompt, checkpoint=checkpoint, aspect_ratio=aspect_ratio, style_strength=style_strength, use_controlnet=use_controlnet, negative_prompt=negative_prompt, seed=seed, style_image=style_image, **kwargs)
+        return self.submit_job("/predictions", subject_image_1=subject_image_1, subject_image_2=subject_image_2, subject_image_3=subject_image_3, subject_image_4=subject_image_4, mode=mode, prompt=prompt, checkpoint=checkpoint, aspect_ratio=aspect_ratio, style_strength=style_strength, use_controlnet=use_controlnet, negative_prompt=negative_prompt, seed=seed, style_image=style_image, **kwargs)
      

@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class robust_video_matting(FastSDK):
     """
-    Generated client for robust_video_matting
+    Generated client for arielreplicate/robust-video-matting
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="f9a423f8-c14d-4d5b-a1c7-7098abbb1e67", api_key=api_key)
+        super().__init__(service_name_or_id="708b7613-02bb-4077-becf-ff55eb4f2fb2", api_key=api_key)
     
     def predict(self, input_video: Union[MediaFile, str, bytes], output_type: str = 'green-screen', **kwargs):
         """
@@ -22,5 +22,5 @@ class robust_video_matting(FastSDK):
             output_type: output_type Defaults to 'green-screen'.
             
         """
-        return self.submit_job("/predict", input_video=input_video, output_type=output_type, **kwargs)
+        return self.submit_job("/predictions", input_video=input_video, output_type=output_type, **kwargs)
      

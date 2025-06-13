@@ -2,10 +2,10 @@ from fastsdk.fastSDK import FastSDK
 
 class embeddings_gte_base(FastSDK):
     """
-    Generated client for embeddings_gte_base
+    Generated client for mark3labs/embeddings-gte-base
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="789c6af5-6802-4644-9f0e-9c18048a6c85", api_key=api_key)
+        super().__init__(service_name_or_id="6ebaf097-a13d-45fb-a4f6-43212da635cd", api_key=api_key)
     
     def predict(self, text: str, **kwargs):
         """
@@ -16,5 +16,5 @@ class embeddings_gte_base(FastSDK):
             text: Text string to embed
             
         """
-        return self.submit_job("/predict", text=text, **kwargs)
+        return self.submit_job("/predictions", text=text, **kwargs)
      

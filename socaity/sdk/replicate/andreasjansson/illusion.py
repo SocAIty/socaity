@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class illusion(FastSDK):
     """
-    Generated client for illusion
+    Generated client for andreasjansson/illusion
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="93627c4e-174a-4f47-bcab-4477e0fa8707", api_key=api_key)
+        super().__init__(service_name_or_id="972ee562-9885-4195-a023-39b551715c6f", api_key=api_key)
     
     def predict(self, prompt: str, qr_code_content: str, seed: int = -1, width: int = 768, border: int = 1, height: int = 768, num_outputs: int = 1, guidance_scale: float = 7.5, negative_prompt: str = 'ugly, disfigured, low quality, blurry, nsfw', qrcode_background: str = 'gray', num_inference_steps: int = 40, controlnet_conditioning_scale: float = 2.2, image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
         """
@@ -44,5 +44,5 @@ class illusion(FastSDK):
             image: Input image. If none is provided, a QR code will be generated Optional.
             
         """
-        return self.submit_job("/predict", prompt=prompt, qr_code_content=qr_code_content, seed=seed, width=width, border=border, height=height, num_outputs=num_outputs, guidance_scale=guidance_scale, negative_prompt=negative_prompt, qrcode_background=qrcode_background, num_inference_steps=num_inference_steps, controlnet_conditioning_scale=controlnet_conditioning_scale, image=image, **kwargs)
+        return self.submit_job("/predictions", prompt=prompt, qr_code_content=qr_code_content, seed=seed, width=width, border=border, height=height, num_outputs=num_outputs, guidance_scale=guidance_scale, negative_prompt=negative_prompt, qrcode_background=qrcode_background, num_inference_steps=num_inference_steps, controlnet_conditioning_scale=controlnet_conditioning_scale, image=image, **kwargs)
      

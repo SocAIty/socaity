@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class texture(FastSDK):
     """
-    Generated client for texture
+    Generated client for adirik/texture
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="6dbfd54a-4dd5-4cc0-a7fb-49f746296a16", api_key=api_key)
+        super().__init__(service_name_or_id="95b3a073-a4da-4872-b8f9-104c433f72ae", api_key=api_key)
     
     def predict(self, shape_path: Union[MediaFile, str, bytes], seed: int = 0, prompt: str = 'A next gen nascar', shape_scale: float = 0.6, guidance_scale: float = 10.0, texture_resolution: int = 1024, texture_interpolation_mode: str = 'bilinear', **kwargs):
         """
@@ -32,5 +32,5 @@ class texture(FastSDK):
             texture_interpolation_mode: Texture mapping interpolation mode from texture image, options: 'nearest', 'bilinear', 'bicubic' Defaults to 'bilinear'.
             
         """
-        return self.submit_job("/predict", shape_path=shape_path, seed=seed, prompt=prompt, shape_scale=shape_scale, guidance_scale=guidance_scale, texture_resolution=texture_resolution, texture_interpolation_mode=texture_interpolation_mode, **kwargs)
+        return self.submit_job("/predictions", shape_path=shape_path, seed=seed, prompt=prompt, shape_scale=shape_scale, guidance_scale=guidance_scale, texture_resolution=texture_resolution, texture_interpolation_mode=texture_interpolation_mode, **kwargs)
      

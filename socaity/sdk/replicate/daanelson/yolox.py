@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class yolox(FastSDK):
     """
-    Generated client for yolox
+    Generated client for daanelson/yolox
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="51598443-fc7b-4983-babc-c14be418143d", api_key=api_key)
+        super().__init__(service_name_or_id="cd41e5da-0dd9-4893-872a-df2692fc91aa", api_key=api_key)
     
     def predict(self, input_image: Union[MediaFile, str, bytes], nms: float = 0.3, conf: float = 0.3, tsize: int = 640, model_name: str = 'yolox-s', return_json: bool = False, **kwargs):
         """
@@ -30,5 +30,5 @@ class yolox(FastSDK):
             return_json: Return results in json format Defaults to False.
             
         """
-        return self.submit_job("/predict", input_image=input_image, nms=nms, conf=conf, tsize=tsize, model_name=model_name, return_json=return_json, **kwargs)
+        return self.submit_job("/predictions", input_image=input_image, nms=nms, conf=conf, tsize=tsize, model_name=model_name, return_json=return_json, **kwargs)
      

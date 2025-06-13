@@ -1,15 +1,15 @@
 from fastsdk.fastSDK import FastSDK
-from typing import Optional, Union
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
 class mimic_motion(FastSDK):
     """
-    Generated client for mimic_motion
+    Generated client for zsxkib/mimic-motion
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="daa13086-1eda-4dfa-ade2-75b252b5ef71", api_key=api_key)
+        super().__init__(service_name_or_id="fafb0f0b-99d8-44cc-9a9a-da460afbae86", api_key=api_key)
     
     def predict(self, motion_video: Union[MediaFile, str, bytes], appearance_image: Union[MediaFile, str, bytes], chunk_size: int = 16, resolution: int = 576, sample_stride: int = 2, frames_overlap: int = 6, guidance_scale: float = 2.0, noise_strength: float = 0.0, denoising_steps: int = 25, checkpoint_version: str = 'v1-1', output_frames_per_second: int = 15, seed: Optional[int] = None, **kwargs):
         """
@@ -42,5 +42,5 @@ class mimic_motion(FastSDK):
             seed: Random seed. Leave blank to randomize the seed Optional.
             
         """
-        return self.submit_job("/predict", motion_video=motion_video, appearance_image=appearance_image, chunk_size=chunk_size, resolution=resolution, sample_stride=sample_stride, frames_overlap=frames_overlap, guidance_scale=guidance_scale, noise_strength=noise_strength, denoising_steps=denoising_steps, checkpoint_version=checkpoint_version, output_frames_per_second=output_frames_per_second, seed=seed, **kwargs)
+        return self.submit_job("/predictions", motion_video=motion_video, appearance_image=appearance_image, chunk_size=chunk_size, resolution=resolution, sample_stride=sample_stride, frames_overlap=frames_overlap, guidance_scale=guidance_scale, noise_strength=noise_strength, denoising_steps=denoising_steps, checkpoint_version=checkpoint_version, output_frames_per_second=output_frames_per_second, seed=seed, **kwargs)
      

@@ -6,10 +6,10 @@ from media_toolkit import MediaFile
 
 class real_esrgan(FastSDK):
     """
-    Generated client for real_esrgan
+    Generated client for nightmareai/real-esrgan
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="0e542d35-0014-45bb-925d-404b56f2b9d2", api_key=api_key)
+        super().__init__(service_name_or_id="f002d550-9af6-4fe1-99f9-26f2bccbad1f", api_key=api_key)
     
     def ready(self, **kwargs):
         """
@@ -31,5 +31,5 @@ class real_esrgan(FastSDK):
             face_enhance: Run GFPGAN face enhancement along with upscaling Defaults to False.
             
         """
-        return self.submit_job("/predict", image=image, scale=scale, face_enhance=face_enhance, **kwargs)
+        return self.submit_job("/predictions", image=image, scale=scale, face_enhance=face_enhance, **kwargs)
      
