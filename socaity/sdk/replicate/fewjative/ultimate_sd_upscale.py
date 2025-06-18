@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class ultimate_sd_upscale(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="3765c151-0f0c-440b-8bf4-f04c6190eaef", api_key=api_key)
     
-    def predict(self, image: Union[MediaFile, str, bytes], cfg: float = 8.0, steps: int = 20, denoise: float = 0.2, upscaler: str = '4x-UltraSharp', mask_blur: int = 8, mode_type: str = 'Linear', scheduler: str = 'normal', tile_width: int = 512, upscale_by: float = 2.0, tile_height: int = 512, sampler_name: str = 'euler', tile_padding: int = 32, seam_fix_mode: str = 'None', seam_fix_width: int = 64, negative_prompt: str = '', positive_prompt: str = 'Hey! Have a nice day :D', seam_fix_denoise: float = 1.0, seam_fix_padding: int = 16, seam_fix_mask_blur: int = 8, controlnet_strength: float = 1.0, force_uniform_tiles: bool = True, use_controlnet_tile: bool = True, seed: Optional[int] = None, **kwargs):
+    def predictions(self, image: Union[MediaFile, str, bytes], cfg: float = 8.0, steps: int = 20, denoise: float = 0.2, upscaler: str = '4x-UltraSharp', mask_blur: int = 8, mode_type: str = 'Linear', scheduler: str = 'normal', tile_width: int = 512, upscale_by: float = 2.0, tile_height: int = 512, sampler_name: str = 'euler', tile_padding: int = 32, seam_fix_mode: str = 'None', seam_fix_width: int = 64, negative_prompt: str = '', positive_prompt: str = 'Hey! Have a nice day :D', seam_fix_denoise: float = 1.0, seam_fix_padding: int = 16, seam_fix_mask_blur: int = 8, controlnet_strength: float = 1.0, force_uniform_tiles: bool = True, use_controlnet_tile: bool = True, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -67,4 +67,7 @@ class ultimate_sd_upscale(FastSDK):
             
         """
         return self.submit_job("/predictions", image=image, cfg=cfg, steps=steps, denoise=denoise, upscaler=upscaler, mask_blur=mask_blur, mode_type=mode_type, scheduler=scheduler, tile_width=tile_width, upscale_by=upscale_by, tile_height=tile_height, sampler_name=sampler_name, tile_padding=tile_padding, seam_fix_mode=seam_fix_mode, seam_fix_width=seam_fix_width, negative_prompt=negative_prompt, positive_prompt=positive_prompt, seam_fix_denoise=seam_fix_denoise, seam_fix_padding=seam_fix_padding, seam_fix_mask_blur=seam_fix_mask_blur, controlnet_strength=controlnet_strength, force_uniform_tiles=force_uniform_tiles, use_controlnet_tile=use_controlnet_tile, seed=seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

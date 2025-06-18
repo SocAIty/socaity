@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class xtts_v2(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="f31156fb-c378-43f0-86a4-3bec755a5347", api_key=api_key)
     
-    def predict(self, speaker: Union[MediaFile, str, bytes], text: str = "Hi there, I'm your new voice clone. Try your best to upload quality audio", language: str = 'en', cleanup_voice: bool = False, **kwargs):
+    def predictions(self, speaker: Union[MediaFile, str, bytes], text: str = "Hi there, I'm your new voice clone. Try your best to upload quality audio", language: str = 'en', cleanup_voice: bool = False, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -27,4 +27,7 @@ class xtts_v2(FastSDK):
             
         """
         return self.submit_job("/predictions", speaker=speaker, text=text, language=language, cleanup_voice=cleanup_voice, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

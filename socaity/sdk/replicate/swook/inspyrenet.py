@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class inspyrenet(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="53b61825-79f2-4503-bfd0-a5538c7d3610", api_key=api_key)
     
-    def predict(self, image_path: Union[MediaFile, str, bytes], **kwargs):
+    def predictions(self, image_path: Union[MediaFile, str, bytes], **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -21,4 +21,7 @@ class inspyrenet(FastSDK):
             
         """
         return self.submit_job("/predictions", image_path=image_path, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

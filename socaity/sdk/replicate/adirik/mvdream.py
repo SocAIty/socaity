@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Optional
 
 
@@ -9,7 +9,7 @@ class mvdream(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="fc5360af-e2bf-4353-a7b2-32b701bb0fda", api_key=api_key)
     
-    def predict(self, prompt: str = 'an astronaut riding a camel', max_steps: int = 10000, guidance_scale: float = 50.0, negative_prompt: str = 'ugly, bad anatomy, blurry, pixelated obscure, unnatural colors, poor lighting, dull, and unclear, cropped, lowres, low quality, artifacts, duplicate, morbid, mutilated, poorly drawn face, deformed, dehydrated, bad proportions', seed: Optional[int] = None, **kwargs):
+    def predictions(self, prompt: str = 'an astronaut riding a camel', max_steps: int = 10000, guidance_scale: float = 50.0, negative_prompt: str = 'ugly, bad anatomy, blurry, pixelated obscure, unnatural colors, poor lighting, dull, and unclear, cropped, lowres, low quality, artifacts, duplicate, morbid, mutilated, poorly drawn face, deformed, dehydrated, bad proportions', seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -27,4 +27,7 @@ class mvdream(FastSDK):
             
         """
         return self.submit_job("/predictions", prompt=prompt, max_steps=max_steps, guidance_scale=guidance_scale, negative_prompt=negative_prompt, seed=seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

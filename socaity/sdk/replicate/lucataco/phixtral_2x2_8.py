@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Optional
 
 
@@ -9,7 +9,7 @@ class phixtral_2x2_8(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="e0465400-c5e2-4bec-bb79-ffd83cf47fe7", api_key=api_key)
     
-    def predict(self, prompt: str, top_k: int = 50, top_p: float = 0.95, temperature: float = 0.7, max_new_tokens: int = 1024, seed: Optional[int] = None, **kwargs):
+    def predictions(self, prompt: str, top_k: int = 50, top_p: float = 0.95, temperature: float = 0.7, max_new_tokens: int = 1024, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -29,4 +29,7 @@ class phixtral_2x2_8(FastSDK):
             
         """
         return self.submit_job("/predictions", prompt=prompt, top_k=top_k, top_p=top_p, temperature=temperature, max_new_tokens=max_new_tokens, seed=seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

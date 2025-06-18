@@ -1,13 +1,7 @@
 from socaity.sdk.replicate.black_forest_labs import flux_schnell
 import os
 
-fluxs = flux_schnell()
-#fluxs = flux_schnell(service="replicate", api_key=os.getenv("REPLICATE_API_KEY", None))
-# fluxs = FluxSchnell(service="socaity_local", api_key=os.getenv("SOCAITY_API_KEY", None))
-# fluxs = FluxSchnell()
-
-#from socaity import text2img
-#my_generated_image = text2img("An elephant swimming in a lake")
+flux = flux_schnell(api_key=os.getenv("SOCAITY_API_KEY"))
 
 
 def test_text2img():
@@ -26,10 +20,11 @@ The artwork is minimalistic yet striking, showcasing a vibrant deep-purple and n
 Influenced by the artistic styles of Simon Kenny, Giorgetto Giugiaro, Brian Stelfreeze, and Laura Iverson
         """
     )
-    fj = fluxs.predict(
+    fj = flux(
         prompt=prompt, aspect_ratio="9:16", num_outputs=4, num_inference_steps=4, output_format="png",
         disable_safety_checker=True, go_fast=False, seed=5
     )
+
     imgs = fj.get_result()
     if not isinstance(imgs, list):
         imgs = [imgs]

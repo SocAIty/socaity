@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class styletts2(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="a57378f6-be90-4d56-a9c0-746dcc612450", api_key=api_key)
     
-    def predict(self, text: str, beta: float = 0.7, seed: int = 0, alpha: float = 0.3, diffusion_steps: int = 10, embedding_scale: float = 1.0, weights: Optional[str] = None, reference: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
+    def predictions(self, text: str, beta: float = 0.7, seed: int = 0, alpha: float = 0.3, diffusion_steps: int = 10, embedding_scale: float = 1.0, weights: Optional[str] = None, reference: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -35,4 +35,7 @@ class styletts2(FastSDK):
             
         """
         return self.submit_job("/predictions", text=text, beta=beta, seed=seed, alpha=alpha, diffusion_steps=diffusion_steps, embedding_scale=embedding_scale, weights=weights, reference=reference, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

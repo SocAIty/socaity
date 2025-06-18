@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class musicgen(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="8ea8cdc0-4517-4d15-802e-b8dd55407337", api_key=api_key)
     
-    def predict(self, top_k: int = 250, top_p: float = 0.0, duration: int = 8, temperature: float = 1.0, continuation: bool = False, model_version: str = 'stereo-melody-large', output_format: str = 'wav', continuation_start: int = 0, multi_band_diffusion: bool = False, normalization_strategy: str = 'loudness', classifier_free_guidance: int = 3, seed: Optional[int] = None, prompt: Optional[str] = None, input_audio: Optional[Union[MediaFile, str, bytes]] = None, continuation_end: Optional[int] = None, **kwargs):
+    def predictions(self, top_k: int = 250, top_p: float = 0.0, duration: int = 8, temperature: float = 1.0, continuation: bool = False, model_version: str = 'stereo-melody-large', output_format: str = 'wav', continuation_start: int = 0, multi_band_diffusion: bool = False, normalization_strategy: str = 'loudness', classifier_free_guidance: int = 3, seed: Optional[int] = None, prompt: Optional[str] = None, input_audio: Optional[Union[MediaFile, str, bytes]] = None, continuation_end: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -49,4 +49,7 @@ class musicgen(FastSDK):
             
         """
         return self.submit_job("/predictions", top_k=top_k, top_p=top_p, duration=duration, temperature=temperature, continuation=continuation, model_version=model_version, output_format=output_format, continuation_start=continuation_start, multi_band_diffusion=multi_band_diffusion, normalization_strategy=normalization_strategy, classifier_free_guidance=classifier_free_guidance, seed=seed, prompt=prompt, input_audio=input_audio, continuation_end=continuation_end, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

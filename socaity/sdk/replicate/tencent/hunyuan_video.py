@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Optional
 
 
@@ -9,7 +9,7 @@ class hunyuan_video(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="fadd9278-de64-4d38-bfab-dc987511fc0a", api_key=api_key)
     
-    def predict(self, fps: int = 24, width: int = 864, height: int = 480, prompt: str = 'A cat walks on the grass, realistic style', infer_steps: int = 50, video_length: int = 129, embedded_guidance_scale: float = 6.0, seed: Optional[int] = None, **kwargs):
+    def predictions(self, fps: int = 24, width: int = 864, height: int = 480, prompt: str = 'A cat walks on the grass, realistic style', infer_steps: int = 50, video_length: int = 129, embedded_guidance_scale: float = 6.0, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -33,4 +33,7 @@ class hunyuan_video(FastSDK):
             
         """
         return self.submit_job("/predictions", fps=fps, width=width, height=height, prompt=prompt, infer_steps=infer_steps, video_length=video_length, embedded_guidance_scale=embedded_guidance_scale, seed=seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

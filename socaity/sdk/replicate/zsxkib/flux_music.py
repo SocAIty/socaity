@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Optional
 
 
@@ -9,7 +9,7 @@ class flux_music(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="dc789e86-6ab2-4f69-8406-b7754b3a6775", api_key=api_key)
     
-    def predict(self, steps: int = 50, prompt: str = 'The song is an epic blend of space-rock, rock, and post-rock genres.', model_version: str = 'base', guidance_scale: float = 7.0, negative_prompt: str = 'low quality, gentle', save_spectrogram: bool = False, seed: Optional[int] = None, **kwargs):
+    def predictions(self, steps: int = 50, prompt: str = 'The song is an epic blend of space-rock, rock, and post-rock genres.', model_version: str = 'base', guidance_scale: float = 7.0, negative_prompt: str = 'low quality, gentle', save_spectrogram: bool = False, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -31,4 +31,7 @@ class flux_music(FastSDK):
             
         """
         return self.submit_job("/predictions", steps=steps, prompt=prompt, model_version=model_version, guidance_scale=guidance_scale, negative_prompt=negative_prompt, save_spectrogram=save_spectrogram, seed=seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

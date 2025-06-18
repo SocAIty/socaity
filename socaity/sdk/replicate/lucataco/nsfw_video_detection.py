@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class nsfw_video_detection(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="9a2797ac-5ee0-4cff-baea-a9d2f65ac18d", api_key=api_key)
     
-    def predict(self, video: Union[MediaFile, str, bytes], safety_tolerance: int = 2, **kwargs):
+    def predictions(self, video: Union[MediaFile, str, bytes], safety_tolerance: int = 2, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -23,4 +23,7 @@ class nsfw_video_detection(FastSDK):
             
         """
         return self.submit_job("/predictions", video=video, safety_tolerance=safety_tolerance, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

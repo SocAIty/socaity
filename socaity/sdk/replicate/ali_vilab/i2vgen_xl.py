@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class i2vgen_xl(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="d199690f-be1a-4727-9e5e-f027245f461a", api_key=api_key)
     
-    def predict(self, image: Union[MediaFile, str, bytes], prompt: str, max_frames: int = 16, guidance_scale: float = 9.0, num_inference_steps: int = 50, seed: Optional[int] = None, **kwargs):
+    def predictions(self, image: Union[MediaFile, str, bytes], prompt: str, max_frames: int = 16, guidance_scale: float = 9.0, num_inference_steps: int = 50, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -31,4 +31,7 @@ class i2vgen_xl(FastSDK):
             
         """
         return self.submit_job("/predictions", image=image, prompt=prompt, max_frames=max_frames, guidance_scale=guidance_scale, num_inference_steps=num_inference_steps, seed=seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

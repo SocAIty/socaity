@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class ram_grounded_sam(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="cdc115d5-e386-47a4-9b7f-8f447313f19c", api_key=api_key)
     
-    def predict(self, input_image: Union[MediaFile, str, bytes], use_sam_hq: bool = False, show_visualisation: bool = False, **kwargs):
+    def predictions(self, input_image: Union[MediaFile, str, bytes], use_sam_hq: bool = False, show_visualisation: bool = False, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -25,4 +25,7 @@ class ram_grounded_sam(FastSDK):
             
         """
         return self.submit_job("/predictions", input_image=input_image, use_sam_hq=use_sam_hq, show_visualisation=show_visualisation, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

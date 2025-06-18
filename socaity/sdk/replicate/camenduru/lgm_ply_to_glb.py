@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 
 class lgm_ply_to_glb(FastSDK):
     """
@@ -7,7 +7,7 @@ class lgm_ply_to_glb(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="67404faa-b95f-4602-8033-815196098913", api_key=api_key)
     
-    def predict(self, ply_file_url: str, **kwargs):
+    def predictions(self, ply_file_url: str, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -17,4 +17,7 @@ class lgm_ply_to_glb(FastSDK):
             
         """
         return self.submit_job("/predictions", ply_file_url=ply_file_url, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

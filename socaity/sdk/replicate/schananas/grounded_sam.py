@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class grounded_sam(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="2312e3fb-6a3e-4d7c-b0b6-6f145b0c721f", api_key=api_key)
     
-    def predict(self, image: Union[MediaFile, str, bytes] = 'https://st.mngbcn.com/rcs/pics/static/T5/fotos/outfit/S20/57034757_56-99999999_01.jpg', mask_prompt: str = 'clothes,shoes', adjustment_factor: int = 0, negative_mask_prompt: str = 'pants', **kwargs):
+    def predictions(self, image: Union[MediaFile, str, bytes] = 'https://st.mngbcn.com/rcs/pics/static/T5/fotos/outfit/S20/57034757_56-99999999_01.jpg', mask_prompt: str = 'clothes,shoes', adjustment_factor: int = 0, negative_mask_prompt: str = 'pants', **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -27,4 +27,7 @@ class grounded_sam(FastSDK):
             
         """
         return self.submit_job("/predictions", image=image, mask_prompt=mask_prompt, adjustment_factor=adjustment_factor, negative_mask_prompt=negative_mask_prompt, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

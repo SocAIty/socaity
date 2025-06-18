@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 
 class gemma_2b(FastSDK):
     """
@@ -7,7 +7,7 @@ class gemma_2b(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="e8528d60-07a8-4182-b671-aa3cd6786445", api_key=api_key)
     
-    def predict(self, top_k: int = 50, top_p: float = 0.95, prompt: str = 'Write me a poem about Machine Learning.', temperature: float = 0.7, max_new_tokens: int = 200, min_new_tokens: int = -1, repetition_penalty: float = 1.0, **kwargs):
+    def predictions(self, top_k: int = 50, top_p: float = 0.95, prompt: str = 'Write me a poem about Machine Learning.', temperature: float = 0.7, max_new_tokens: int = 200, min_new_tokens: int = -1, repetition_penalty: float = 1.0, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -29,4 +29,7 @@ class gemma_2b(FastSDK):
             
         """
         return self.submit_job("/predictions", top_k=top_k, top_p=top_p, prompt=prompt, temperature=temperature, max_new_tokens=max_new_tokens, min_new_tokens=min_new_tokens, repetition_penalty=repetition_penalty, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

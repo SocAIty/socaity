@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class stable_video_face_restoration(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="db23cabd-9b2c-434b-ba80-37e919e3f39d", api_key=api_key)
     
-    def predict(self, video: Union[MediaFile, str, bytes], tasks: str = 'face-restoration', overlap: int = 3, decode_chunk_size: int = 16, i2i_noise_strength: float = 1.0, noise_aug_strength: float = 0.0, num_inference_steps: int = 30, max_appearance_guidance_scale: float = 2.0, min_appearance_guidance_scale: float = 2.0, mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, **kwargs):
+    def predictions(self, video: Union[MediaFile, str, bytes], tasks: str = 'face-restoration', overlap: int = 3, decode_chunk_size: int = 16, i2i_noise_strength: float = 1.0, noise_aug_strength: float = 0.0, num_inference_steps: int = 30, max_appearance_guidance_scale: float = 2.0, min_appearance_guidance_scale: float = 2.0, mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -41,4 +41,7 @@ class stable_video_face_restoration(FastSDK):
             
         """
         return self.submit_job("/predictions", video=video, tasks=tasks, overlap=overlap, decode_chunk_size=decode_chunk_size, i2i_noise_strength=i2i_noise_strength, noise_aug_strength=noise_aug_strength, num_inference_steps=num_inference_steps, max_appearance_guidance_scale=max_appearance_guidance_scale, min_appearance_guidance_scale=min_appearance_guidance_scale, mask=mask, seed=seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

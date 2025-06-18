@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 
 class audiogen(FastSDK):
     """
@@ -7,7 +7,7 @@ class audiogen(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="736b4266-8a63-49a8-a405-7d94c1a8444b", api_key=api_key)
     
-    def predict(self, prompt: str, top_k: int = 250, top_p: float = 0.0, duration: float = 3.0, temperature: float = 1.0, output_format: str = 'wav', classifier_free_guidance: int = 3, **kwargs):
+    def predictions(self, prompt: str, top_k: int = 250, top_p: float = 0.0, duration: float = 3.0, temperature: float = 1.0, output_format: str = 'wav', classifier_free_guidance: int = 3, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -29,4 +29,7 @@ class audiogen(FastSDK):
             
         """
         return self.submit_job("/predictions", prompt=prompt, top_k=top_k, top_p=top_p, duration=duration, temperature=temperature, output_format=output_format, classifier_free_guidance=classifier_free_guidance, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

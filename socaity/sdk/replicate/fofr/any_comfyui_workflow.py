@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Any, Union, Dict, List, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Dict, List, Union, Any, Optional
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class any_comfyui_workflow(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="5457afef-4c0d-46df-9f62-cf87a4d8e455", api_key=api_key)
     
-    def trainings(self, webhook_events_filter: Union[List[Any], str] = ['start', 'output', 'logs', 'completed'], id: Optional[str] = None, input: Optional[Dict[str, Any]] = None, context: Optional[Dict[str, Any]] = None, webhook: Optional[Union[MediaFile, str, bytes]] = None, created_at: Optional[str] = None, output_file_prefix: Optional[str] = None, **kwargs):
+    def trainings(self, webhook_events_filter: Union[List[Any], str] = ['start', 'output', 'logs', 'completed'], id: Optional[str] = None, input: Optional[Dict[str, Any]] = None, context: Optional[Dict[str, Any]] = None, webhook: Optional[Union[MediaFile, str, bytes]] = None, created_at: Optional[str] = None, output_file_prefix: Optional[str] = None, **kwargs) -> APISeex:
         """
         None
         
@@ -34,7 +34,7 @@ class any_comfyui_workflow(FastSDK):
         """
         return self.submit_job("/trainings", webhook_events_filter=webhook_events_filter, id=id, input=input, context=context, webhook=webhook, created_at=created_at, output_file_prefix=output_file_prefix, **kwargs)
     
-    def predict(self, output_format: str = 'webp', workflow_json: str = '', output_quality: int = 95, randomise_seeds: bool = True, force_reset_cache: bool = False, return_temp_files: bool = False, input_file: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
+    def predictions(self, output_format: str = 'webp', workflow_json: str = '', output_quality: int = 95, randomise_seeds: bool = True, force_reset_cache: bool = False, return_temp_files: bool = False, input_file: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -57,7 +57,7 @@ class any_comfyui_workflow(FastSDK):
         """
         return self.submit_job("/predictions", output_format=output_format, workflow_json=workflow_json, output_quality=output_quality, randomise_seeds=randomise_seeds, force_reset_cache=force_reset_cache, return_temp_files=return_temp_files, input_file=input_file, **kwargs)
     
-    def trainings_training_id(self, webhook_events_filter: Union[List[Any], str] = ['start', 'output', 'logs', 'completed'], id: Optional[str] = None, input: Optional[Dict[str, Any]] = None, context: Optional[Dict[str, Any]] = None, webhook: Optional[Union[MediaFile, str, bytes]] = None, created_at: Optional[str] = None, output_file_prefix: Optional[str] = None, **kwargs):
+    def trainings_training_id(self, webhook_events_filter: Union[List[Any], str] = ['start', 'output', 'logs', 'completed'], id: Optional[str] = None, input: Optional[Dict[str, Any]] = None, context: Optional[Dict[str, Any]] = None, webhook: Optional[Union[MediaFile, str, bytes]] = None, created_at: Optional[str] = None, output_file_prefix: Optional[str] = None, **kwargs) -> APISeex:
         """
         None
         
@@ -80,10 +80,13 @@ class any_comfyui_workflow(FastSDK):
         """
         return self.submit_job("/trainings/{training_id}", webhook_events_filter=webhook_events_filter, id=id, input=input, context=context, webhook=webhook, created_at=created_at, output_file_prefix=output_file_prefix, **kwargs)
     
-    def trainings_training_id_cancel(self, **kwargs):
+    def trainings_training_id_cancel(self, **kwargs) -> APISeex:
         """
         None
         
         """
         return self.submit_job("/trainings/{training_id}/cancel", **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = trainings
+    __call__ = trainings

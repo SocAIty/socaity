@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class codeformer(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="3c7452a1-b283-46c8-ac17-64d7335e7782", api_key=api_key)
     
-    def predict(self, image: Union[MediaFile, str, bytes], upscale: int = 2, face_upsample: bool = True, background_enhance: bool = True, codeformer_fidelity: float = 0.5, **kwargs):
+    def predictions(self, image: Union[MediaFile, str, bytes], upscale: int = 2, face_upsample: bool = True, background_enhance: bool = True, codeformer_fidelity: float = 0.5, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -29,4 +29,7 @@ class codeformer(FastSDK):
             
         """
         return self.submit_job("/predictions", image=image, upscale=upscale, face_upsample=face_upsample, background_enhance=background_enhance, codeformer_fidelity=codeformer_fidelity, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

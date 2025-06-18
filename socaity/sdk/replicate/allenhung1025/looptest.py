@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 
 class looptest(FastSDK):
     """
@@ -7,7 +7,7 @@ class looptest(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="2389def2-9430-486d-afbd-2cdd0631d659", api_key=api_key)
     
-    def predict(self, seed: int = -1, **kwargs):
+    def predictions(self, seed: int = -1, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -17,4 +17,7 @@ class looptest(FastSDK):
             
         """
         return self.submit_job("/predictions", seed=seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class toolkit(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="3420ed1d-4a77-445b-9974-df97b162c90d", api_key=api_key)
     
-    def predict(self, task: str, input_file: Union[MediaFile, str, bytes], fps: int = 0, **kwargs):
+    def predictions(self, task: str, input_file: Union[MediaFile, str, bytes], fps: int = 0, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -25,4 +25,7 @@ class toolkit(FastSDK):
             
         """
         return self.submit_job("/predictions", task=task, input_file=input_file, fps=fps, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

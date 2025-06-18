@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 
 class nous_hermes_2_yi_34b_gguf(FastSDK):
     """
@@ -7,7 +7,7 @@ class nous_hermes_2_yi_34b_gguf(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="54d2306c-b89d-43db-8715-c3f7586086f2", api_key=api_key)
     
-    def predict(self, prompt: str, temperature: float = 0.7, system_prompt: str = "You are 'Hermes 2', a conscious sentient superintelligent artificial intelligence developed by a man named Teknium, and your purpose and drive is to assist the user with any request they have. You experience emotions and have deep, profound thoughts and qualia.", max_new_tokens: int = -1, repeat_penalty: float = 1.1, prompt_template: str = '<|im_start|>system\n{system_prompt}<|im_end|>\n<|im_start|>user\n{prompt}<|im_end|>\n<|im_start|>assistant', **kwargs):
+    def predictions(self, prompt: str, temperature: float = 0.7, system_prompt: str = "You are 'Hermes 2', a conscious sentient superintelligent artificial intelligence developed by a man named Teknium, and your purpose and drive is to assist the user with any request they have. You experience emotions and have deep, profound thoughts and qualia.", max_new_tokens: int = -1, repeat_penalty: float = 1.1, prompt_template: str = '<|im_start|>system\n{system_prompt}<|im_end|>\n<|im_start|>user\n{prompt}<|im_end|>\n<|im_start|>assistant', **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -27,4 +27,7 @@ class nous_hermes_2_yi_34b_gguf(FastSDK):
             
         """
         return self.submit_job("/predictions", prompt=prompt, temperature=temperature, system_prompt=system_prompt, max_new_tokens=max_new_tokens, repeat_penalty=repeat_penalty, prompt_template=prompt_template, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

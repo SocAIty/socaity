@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Optional
 
 
@@ -9,7 +9,7 @@ class aura_flow(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="926108a6-1ec1-4733-958c-a9f3a9bd63a1", api_key=api_key)
     
-    def predict(self, cfg: float = 3.5, shift: float = 1.73, steps: int = 25, width: int = 1024, height: int = 1024, prompt: str = '', sampler: str = 'uni_pc', scheduler: str = 'normal', output_format: str = 'webp', output_quality: int = 80, negative_prompt: str = '', number_of_images: int = 1, seed: Optional[int] = None, **kwargs):
+    def predictions(self, cfg: float = 3.5, shift: float = 1.73, steps: int = 25, width: int = 1024, height: int = 1024, prompt: str = '', sampler: str = 'uni_pc', scheduler: str = 'normal', output_format: str = 'webp', output_quality: int = 80, negative_prompt: str = '', number_of_images: int = 1, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -43,4 +43,7 @@ class aura_flow(FastSDK):
             
         """
         return self.submit_job("/predictions", cfg=cfg, shift=shift, steps=steps, width=width, height=height, prompt=prompt, sampler=sampler, scheduler=scheduler, output_format=output_format, output_quality=output_quality, negative_prompt=negative_prompt, number_of_images=number_of_images, seed=seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, List, Optional, Any
+from fastsdk import FastSDK, APISeex
+from typing import Any, List, Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class gpt_4_1_nano(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="81ed6c16-60c0-4cba-86ab-8ead0ea5e9b4", api_key=api_key)
     
-    def predict(self, top_p: float = 1.0, image_input: Union[List[Any], MediaFile, str, bytes] = [], temperature: float = 1.0, presence_penalty: float = 0.0, frequency_penalty: float = 0.0, max_completion_tokens: int = 4096, prompt: Optional[str] = None, system_prompt: Optional[str] = None, **kwargs):
+    def predictions(self, top_p: float = 1.0, image_input: Union[List[Any], MediaFile, str, bytes] = [], temperature: float = 1.0, presence_penalty: float = 0.0, frequency_penalty: float = 0.0, max_completion_tokens: int = 4096, prompt: Optional[str] = None, system_prompt: Optional[str] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -35,4 +35,7 @@ class gpt_4_1_nano(FastSDK):
             
         """
         return self.submit_job("/predictions", top_p=top_p, image_input=image_input, temperature=temperature, presence_penalty=presence_penalty, frequency_penalty=frequency_penalty, max_completion_tokens=max_completion_tokens, prompt=prompt, system_prompt=system_prompt, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

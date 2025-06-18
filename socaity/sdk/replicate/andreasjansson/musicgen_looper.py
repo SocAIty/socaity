@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 
 class musicgen_looper(FastSDK):
     """
@@ -7,7 +7,7 @@ class musicgen_looper(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="2b08b99c-be1b-4904-85a9-3e4fcc9dda0e", api_key=api_key)
     
-    def predict(self, prompt: str, bpm: float = 140.0, seed: int = -1, top_k: int = 250, top_p: float = 0.0, variations: int = 4, temperature: float = 1.0, max_duration: int = 8, model_version: str = 'medium', output_format: str = 'wav', classifier_free_guidance: int = 3, **kwargs):
+    def predictions(self, prompt: str, bpm: float = 140.0, seed: int = -1, top_k: int = 250, top_p: float = 0.0, variations: int = 4, temperature: float = 1.0, max_duration: int = 8, model_version: str = 'medium', output_format: str = 'wav', classifier_free_guidance: int = 3, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -37,4 +37,7 @@ class musicgen_looper(FastSDK):
             
         """
         return self.submit_job("/predictions", prompt=prompt, bpm=bpm, seed=seed, top_k=top_k, top_p=top_p, variations=variations, temperature=temperature, max_duration=max_duration, model_version=model_version, output_format=output_format, classifier_free_guidance=classifier_free_guidance, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

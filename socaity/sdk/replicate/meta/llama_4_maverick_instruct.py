@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 
 class llama_4_maverick_instruct(FastSDK):
     """
@@ -7,7 +7,7 @@ class llama_4_maverick_instruct(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="7568638b-4ae3-4886-bbac-b4900451420a", api_key=api_key)
     
-    def predict(self, top_p: float = 1.0, prompt: str = '', max_tokens: int = 1024, temperature: float = 0.6, presence_penalty: float = 0.0, frequency_penalty: float = 0.0, **kwargs):
+    def predictions(self, top_p: float = 1.0, prompt: str = '', max_tokens: int = 1024, temperature: float = 0.6, presence_penalty: float = 0.0, frequency_penalty: float = 0.0, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -27,4 +27,7 @@ class llama_4_maverick_instruct(FastSDK):
             
         """
         return self.submit_job("/predictions", top_p=top_p, prompt=prompt, max_tokens=max_tokens, temperature=temperature, presence_penalty=presence_penalty, frequency_penalty=frequency_penalty, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

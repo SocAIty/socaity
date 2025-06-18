@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class formfinder_flux(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="279ff416-d983-4ab9-a59c-b70792f22842", api_key=api_key)
     
-    def predict(self, prompt: str, model: str = 'dev', go_fast: bool = False, lora_scale: float = 1.0, megapixels: str = '1', num_outputs: int = 1, aspect_ratio: str = '1:1', output_format: str = 'webp', guidance_scale: float = 3.0, output_quality: int = 80, prompt_strength: float = 0.8, extra_lora_scale: float = 1.0, num_inference_steps: int = 28, disable_safety_checker: bool = False, mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, width: Optional[int] = None, height: Optional[int] = None, extra_lora: Optional[str] = None, replicate_weights: Optional[str] = None, **kwargs):
+    def predictions(self, prompt: str, model: str = 'dev', go_fast: bool = False, lora_scale: float = 1.0, megapixels: str = '1', num_outputs: int = 1, aspect_ratio: str = '1:1', output_format: str = 'webp', guidance_scale: float = 3.0, output_quality: int = 80, prompt_strength: float = 0.8, extra_lora_scale: float = 1.0, num_inference_steps: int = 28, disable_safety_checker: bool = False, mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, width: Optional[int] = None, height: Optional[int] = None, extra_lora: Optional[str] = None, replicate_weights: Optional[str] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -61,4 +61,7 @@ class formfinder_flux(FastSDK):
             
         """
         return self.submit_job("/predictions", prompt=prompt, model=model, go_fast=go_fast, lora_scale=lora_scale, megapixels=megapixels, num_outputs=num_outputs, aspect_ratio=aspect_ratio, output_format=output_format, guidance_scale=guidance_scale, output_quality=output_quality, prompt_strength=prompt_strength, extra_lora_scale=extra_lora_scale, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, mask=mask, seed=seed, image=image, width=width, height=height, extra_lora=extra_lora, replicate_weights=replicate_weights, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

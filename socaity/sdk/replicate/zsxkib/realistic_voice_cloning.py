@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class realistic_voice_cloning(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="618b07ed-2cab-4ab9-9c79-ba83724ea423", api_key=api_key)
     
-    def predict(self, protect: float = 0.33, rvc_model: str = 'Squidward', index_rate: float = 0.5, reverb_size: float = 0.15, pitch_change: str = 'no-change', rms_mix_rate: float = 0.25, filter_radius: int = 3, output_format: str = 'mp3', reverb_damping: float = 0.7, reverb_dryness: float = 0.8, reverb_wetness: float = 0.2, crepe_hop_length: int = 128, pitch_change_all: float = 0.0, main_vocals_volume_change: float = 0.0, pitch_detection_algorithm: str = 'rmvpe', instrumental_volume_change: float = 0.0, backup_vocals_volume_change: float = 0.0, song_input: Optional[Union[MediaFile, str, bytes]] = None, custom_rvc_model_download_url: Optional[str] = None, **kwargs):
+    def predictions(self, protect: float = 0.33, rvc_model: str = 'Squidward', index_rate: float = 0.5, reverb_size: float = 0.15, pitch_change: str = 'no-change', rms_mix_rate: float = 0.25, filter_radius: int = 3, output_format: str = 'mp3', reverb_damping: float = 0.7, reverb_dryness: float = 0.8, reverb_wetness: float = 0.2, crepe_hop_length: int = 128, pitch_change_all: float = 0.0, main_vocals_volume_change: float = 0.0, pitch_detection_algorithm: str = 'rmvpe', instrumental_volume_change: float = 0.0, backup_vocals_volume_change: float = 0.0, song_input: Optional[Union[MediaFile, str, bytes]] = None, custom_rvc_model_download_url: Optional[str] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -57,4 +57,7 @@ class realistic_voice_cloning(FastSDK):
             
         """
         return self.submit_job("/predictions", protect=protect, rvc_model=rvc_model, index_rate=index_rate, reverb_size=reverb_size, pitch_change=pitch_change, rms_mix_rate=rms_mix_rate, filter_radius=filter_radius, output_format=output_format, reverb_damping=reverb_damping, reverb_dryness=reverb_dryness, reverb_wetness=reverb_wetness, crepe_hop_length=crepe_hop_length, pitch_change_all=pitch_change_all, main_vocals_volume_change=main_vocals_volume_change, pitch_detection_algorithm=pitch_detection_algorithm, instrumental_volume_change=instrumental_volume_change, backup_vocals_volume_change=backup_vocals_volume_change, song_input=song_input, custom_rvc_model_download_url=custom_rvc_model_download_url, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

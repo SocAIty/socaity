@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class invsr(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="3f8ab2b7-4850-4932-b8cd-ae93251d4ed0", api_key=api_key)
     
-    def predict(self, in_path: Union[MediaFile, str, bytes], seed: int = 12345, num_steps: int = 1, chopping_size: int = 128, **kwargs):
+    def predictions(self, in_path: Union[MediaFile, str, bytes], seed: int = 12345, num_steps: int = 1, chopping_size: int = 128, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -27,4 +27,7 @@ class invsr(FastSDK):
             
         """
         return self.submit_job("/predictions", in_path=in_path, seed=seed, num_steps=num_steps, chopping_size=chopping_size, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

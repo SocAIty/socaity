@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class musicgen_stereo_chord(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="4d80c2dc-a76b-447f-bf79-e677161b6d6c", api_key=api_key)
     
-    def predict(self, top_k: int = 250, top_p: float = 0.0, duration: int = 8, time_sig: str = '4/4', audio_start: int = 0, temperature: float = 1.0, continuation: bool = False, model_version: str = 'stereo-chord-large', output_format: str = 'wav', chroma_coefficient: float = 1.0, multi_band_diffusion: bool = False, normalization_strategy: str = 'loudness', classifier_free_guidance: int = 3, bpm: Optional[float] = None, seed: Optional[int] = None, prompt: Optional[str] = None, audio_end: Optional[int] = None, text_chords: Optional[str] = None, audio_chords: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
+    def predictions(self, top_k: int = 250, top_p: float = 0.0, duration: int = 8, time_sig: str = '4/4', audio_start: int = 0, temperature: float = 1.0, continuation: bool = False, model_version: str = 'stereo-chord-large', output_format: str = 'wav', chroma_coefficient: float = 1.0, multi_band_diffusion: bool = False, normalization_strategy: str = 'loudness', classifier_free_guidance: int = 3, bpm: Optional[float] = None, seed: Optional[int] = None, prompt: Optional[str] = None, audio_end: Optional[int] = None, text_chords: Optional[str] = None, audio_chords: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -57,4 +57,7 @@ class musicgen_stereo_chord(FastSDK):
             
         """
         return self.submit_job("/predictions", top_k=top_k, top_p=top_p, duration=duration, time_sig=time_sig, audio_start=audio_start, temperature=temperature, continuation=continuation, model_version=model_version, output_format=output_format, chroma_coefficient=chroma_coefficient, multi_band_diffusion=multi_band_diffusion, normalization_strategy=normalization_strategy, classifier_free_guidance=classifier_free_guidance, bpm=bpm, seed=seed, prompt=prompt, audio_end=audio_end, text_chords=text_chords, audio_chords=audio_chords, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

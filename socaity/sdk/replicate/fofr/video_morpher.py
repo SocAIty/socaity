@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class video_morpher(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="0ce78050-64c8-4968-aa57-74b52618ac0e", api_key=api_key)
     
-    def predict(self, subject_image_1: Union[MediaFile, str, bytes], subject_image_2: Union[MediaFile, str, bytes], subject_image_3: Union[MediaFile, str, bytes], subject_image_4: Union[MediaFile, str, bytes], mode: str = 'medium', prompt: str = '', checkpoint: str = 'realistic', aspect_ratio: str = '2:3', style_strength: float = 1.0, use_controlnet: bool = True, negative_prompt: str = '', seed: Optional[int] = None, style_image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
+    def predictions(self, subject_image_1: Union[MediaFile, str, bytes], subject_image_2: Union[MediaFile, str, bytes], subject_image_3: Union[MediaFile, str, bytes], subject_image_4: Union[MediaFile, str, bytes], mode: str = 'medium', prompt: str = '', checkpoint: str = 'realistic', aspect_ratio: str = '2:3', style_strength: float = 1.0, use_controlnet: bool = True, negative_prompt: str = '', seed: Optional[int] = None, style_image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -45,4 +45,7 @@ class video_morpher(FastSDK):
             
         """
         return self.submit_job("/predictions", subject_image_1=subject_image_1, subject_image_2=subject_image_2, subject_image_3=subject_image_3, subject_image_4=subject_image_4, mode=mode, prompt=prompt, checkpoint=checkpoint, aspect_ratio=aspect_ratio, style_strength=style_strength, use_controlnet=use_controlnet, negative_prompt=negative_prompt, seed=seed, style_image=style_image, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

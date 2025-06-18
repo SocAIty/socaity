@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 
 class image_urls_to_video(FastSDK):
     """
@@ -7,7 +7,7 @@ class image_urls_to_video(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="ecd3c3af-392c-4b48-860e-87247711b938", api_key=api_key)
     
-    def predict(self, image_urls: str, fps: float = 4.0, mp4: bool = False, output_zip: bool = False, **kwargs):
+    def predictions(self, image_urls: str, fps: float = 4.0, mp4: bool = False, output_zip: bool = False, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -23,4 +23,7 @@ class image_urls_to_video(FastSDK):
             
         """
         return self.submit_job("/predictions", image_urls=image_urls, fps=fps, mp4=mp4, output_zip=output_zip, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

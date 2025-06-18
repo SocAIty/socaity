@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 
 class cantable_diffuguesion(FastSDK):
     """
@@ -7,7 +7,7 @@ class cantable_diffuguesion(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="6dcd3da7-fc2f-44b5-b7f6-d5a22712f195", api_key=api_key)
     
-    def predict(self, seed: int = -1, tempo: float = 90.0, melody: str = '', duration: int = 32, return_mp3: bool = True, return_midi: bool = True, **kwargs):
+    def predictions(self, seed: int = -1, tempo: float = 90.0, melody: str = '', duration: int = 32, return_mp3: bool = True, return_midi: bool = True, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -27,4 +27,7 @@ class cantable_diffuguesion(FastSDK):
             
         """
         return self.submit_job("/predictions", seed=seed, tempo=tempo, melody=melody, duration=duration, return_mp3=return_mp3, return_midi=return_midi, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

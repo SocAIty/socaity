@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class mimic_motion(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="fafb0f0b-99d8-44cc-9a9a-da460afbae86", api_key=api_key)
     
-    def predict(self, motion_video: Union[MediaFile, str, bytes], appearance_image: Union[MediaFile, str, bytes], chunk_size: int = 16, resolution: int = 576, sample_stride: int = 2, frames_overlap: int = 6, guidance_scale: float = 2.0, noise_strength: float = 0.0, denoising_steps: int = 25, checkpoint_version: str = 'v1-1', output_frames_per_second: int = 15, seed: Optional[int] = None, **kwargs):
+    def predictions(self, motion_video: Union[MediaFile, str, bytes], appearance_image: Union[MediaFile, str, bytes], chunk_size: int = 16, resolution: int = 576, sample_stride: int = 2, frames_overlap: int = 6, guidance_scale: float = 2.0, noise_strength: float = 0.0, denoising_steps: int = 25, checkpoint_version: str = 'v1-1', output_frames_per_second: int = 15, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -43,4 +43,7 @@ class mimic_motion(FastSDK):
             
         """
         return self.submit_job("/predictions", motion_video=motion_video, appearance_image=appearance_image, chunk_size=chunk_size, resolution=resolution, sample_stride=sample_stride, frames_overlap=frames_overlap, guidance_scale=guidance_scale, noise_strength=noise_strength, denoising_steps=denoising_steps, checkpoint_version=checkpoint_version, output_frames_per_second=output_frames_per_second, seed=seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

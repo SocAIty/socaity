@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class animatediff_illusions(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="7004e090-b95e-4df1-b93f-0bf02eb1769a", api_key=api_key)
     
-    def predict(self, loop: bool = True, steps: int = 25, width: int = 256, frames: int = 128, height: int = 384, context: int = 16, clip_skip: int = 2, scheduler: str = 'k_dpmpp_sde', base_model: str = 'majicmixRealistic_v5Preview', prompt_map: str = '', head_prompt: str = 'masterpiece, best quality, a haunting and detailed depiction of a ship at sea, battered by waves, ominous,((dark clouds:1.3)),distant lightning, rough seas, rain, silhouette of the ship against the stormy sky', tail_prompt: str = '', output_format: str = 'mp4', guidance_scale: float = 7.5, negative_prompt: str = '', film_interpolation: bool = True, prompt_fixed_ratio: float = 0.5, custom_base_model_url: str = '', num_interpolation_steps: int = 3, enable_qr_code_monster_v2: bool = True, playback_frames_per_second: int = 8, controlnet_conditioning_scale: float = 0.18, qr_code_monster_v2_guess_mode: bool = False, qr_code_monster_v2_preprocessor: bool = True, seed: Optional[int] = None, controlnet_video: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
+    def predictions(self, loop: bool = True, steps: int = 25, width: int = 256, frames: int = 128, height: int = 384, context: int = 16, clip_skip: int = 2, scheduler: str = 'k_dpmpp_sde', base_model: str = 'majicmixRealistic_v5Preview', prompt_map: str = '', head_prompt: str = 'masterpiece, best quality, a haunting and detailed depiction of a ship at sea, battered by waves, ominous,((dark clouds:1.3)),distant lightning, rough seas, rain, silhouette of the ship against the stormy sky', tail_prompt: str = '', output_format: str = 'mp4', guidance_scale: float = 7.5, negative_prompt: str = '', film_interpolation: bool = True, prompt_fixed_ratio: float = 0.5, custom_base_model_url: str = '', num_interpolation_steps: int = 3, enable_qr_code_monster_v2: bool = True, playback_frames_per_second: int = 8, controlnet_conditioning_scale: float = 0.18, qr_code_monster_v2_guess_mode: bool = False, qr_code_monster_v2_preprocessor: bool = True, seed: Optional[int] = None, controlnet_video: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -71,4 +71,7 @@ class animatediff_illusions(FastSDK):
             
         """
         return self.submit_job("/predictions", loop=loop, steps=steps, width=width, frames=frames, height=height, context=context, clip_skip=clip_skip, scheduler=scheduler, base_model=base_model, prompt_map=prompt_map, head_prompt=head_prompt, tail_prompt=tail_prompt, output_format=output_format, guidance_scale=guidance_scale, negative_prompt=negative_prompt, film_interpolation=film_interpolation, prompt_fixed_ratio=prompt_fixed_ratio, custom_base_model_url=custom_base_model_url, num_interpolation_steps=num_interpolation_steps, enable_qr_code_monster_v2=enable_qr_code_monster_v2, playback_frames_per_second=playback_frames_per_second, controlnet_conditioning_scale=controlnet_conditioning_scale, qr_code_monster_v2_guess_mode=qr_code_monster_v2_guess_mode, qr_code_monster_v2_preprocessor=qr_code_monster_v2_preprocessor, seed=seed, controlnet_video=controlnet_video, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

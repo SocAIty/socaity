@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 
 class whisperx_video_transcribe(FastSDK):
     """
@@ -7,7 +7,7 @@ class whisperx_video_transcribe(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="41f4ed07-3d37-4dde-9458-09f1e308d8f1", api_key=api_key)
     
-    def predict(self, url: str, debug: bool = False, batch_size: int = 16, **kwargs):
+    def predictions(self, url: str, debug: bool = False, batch_size: int = 16, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -21,4 +21,7 @@ class whisperx_video_transcribe(FastSDK):
             
         """
         return self.submit_job("/predictions", url=url, debug=debug, batch_size=batch_size, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

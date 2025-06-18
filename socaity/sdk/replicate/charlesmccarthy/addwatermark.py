@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class addwatermark(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="1f2e4a2e-b421-4a6e-8021-79ffb4fca4b3", api_key=api_key)
     
-    def predict(self, video: Union[MediaFile, str, bytes], size: int = 40, watermark: str = 'FULLJOURNEY.AI', **kwargs):
+    def predictions(self, video: Union[MediaFile, str, bytes], size: int = 40, watermark: str = 'FULLJOURNEY.AI', **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -25,4 +25,7 @@ class addwatermark(FastSDK):
             
         """
         return self.submit_job("/predictions", video=video, size=size, watermark=watermark, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

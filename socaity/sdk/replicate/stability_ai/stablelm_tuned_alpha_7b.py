@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 
 class stablelm_tuned_alpha_7b(FastSDK):
     """
@@ -7,7 +7,7 @@ class stablelm_tuned_alpha_7b(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="c89dcbf6-be34-479b-8aa5-d5d6486bec1a", api_key=api_key)
     
-    def predict(self, top_p: float = 1.0, prompt: str = "What's your mood today?", temperature: float = 0.75, max_new_tokens: int = 100, repetition_penalty: float = 1.2, **kwargs):
+    def predictions(self, top_p: float = 1.0, prompt: str = "What's your mood today?", temperature: float = 0.75, max_new_tokens: int = 100, repetition_penalty: float = 1.2, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -25,4 +25,7 @@ class stablelm_tuned_alpha_7b(FastSDK):
             
         """
         return self.submit_job("/predictions", top_p=top_p, prompt=prompt, temperature=temperature, max_new_tokens=max_new_tokens, repetition_penalty=repetition_penalty, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

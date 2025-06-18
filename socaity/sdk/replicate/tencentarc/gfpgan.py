@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class gfpgan(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="41ba6470-a630-4bf4-9b9a-b76c7bc07484", api_key=api_key)
     
-    def predict(self, img: Union[MediaFile, str, bytes], scale: float = 2.0, version: str = 'v1.4', **kwargs):
+    def predictions(self, img: Union[MediaFile, str, bytes], scale: float = 2.0, version: str = 'v1.4', **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -25,4 +25,7 @@ class gfpgan(FastSDK):
             
         """
         return self.submit_job("/predictions", img=img, scale=scale, version=version, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

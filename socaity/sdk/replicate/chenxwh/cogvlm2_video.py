@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class cogvlm2_video(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="0290b9cc-95b5-4a7d-85ac-fecc261777e6", api_key=api_key)
     
-    def predict(self, input_video: Union[MediaFile, str, bytes], top_p: float = 0.1, prompt: str = 'Describe this video.', temperature: float = 0.1, max_new_tokens: int = 2048, **kwargs):
+    def predictions(self, input_video: Union[MediaFile, str, bytes], top_p: float = 0.1, prompt: str = 'Describe this video.', temperature: float = 0.1, max_new_tokens: int = 2048, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -29,4 +29,7 @@ class cogvlm2_video(FastSDK):
             
         """
         return self.submit_job("/predictions", input_video=input_video, top_p=top_p, prompt=prompt, temperature=temperature, max_new_tokens=max_new_tokens, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

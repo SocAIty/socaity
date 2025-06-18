@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 
 class pheme(FastSDK):
     """
@@ -7,7 +7,7 @@ class pheme(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="d0982aab-41ef-4ca8-ab52-cb176dca6f94", api_key=api_key)
     
-    def predict(self, top_k: int = 210, voice: str = 'male_voice', prompt: str = 'I gotta say, I would never expect that to happen!', temperature: float = 0.7, **kwargs):
+    def predictions(self, top_k: int = 210, voice: str = 'male_voice', prompt: str = 'I gotta say, I would never expect that to happen!', temperature: float = 0.7, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -23,4 +23,7 @@ class pheme(FastSDK):
             
         """
         return self.submit_job("/predictions", top_k=top_k, voice=voice, prompt=prompt, temperature=temperature, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

@@ -1,7 +1,7 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Dict, Union, List, Any
+from fastsdk import FastSDK, APISeex
+from typing import Dict, Any, List, Union
 
-from media_toolkit import MediaFile, ImageFile, VideoFile
+from media_toolkit import ImageFile, MediaFile, VideoFile
 
 
 class face2face(FastSDK):
@@ -11,32 +11,7 @@ class face2face(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="0d69b27a-f893-4582-b3e8-a18c1f588e90", api_key=api_key)
     
-    def status(self, job_id: str, return_format: str = 'json', keep_alive: bool = False, **kwargs):
-        """
-        Get the status and result of a job.
-        
-        Args:
-            job_id: The ID of the job
-            return_format: Response format ('json' or 'gzipped')
-            keep_alive: If True, job result is kept in memory/disk
-        
-        Returns:
-            JobResult with status and results
-        
-        """
-        return self.submit_job("/status", job_id=job_id, return_format=return_format, keep_alive=keep_alive, **kwargs)
-    
-    def health(self, **kwargs):
-        """
-        Get server health status.
-        
-        Returns:
-            HTTP response with health status
-        
-        """
-        return self.submit_job("/health", **kwargs)
-    
-    def swap_img_to_img(self, source_img: Union[MediaFile, str, Any, ImageFile, bytes], target_img: Union[MediaFile, str, Any, ImageFile, bytes], enhance_face_model: str = 'gpen_bfr_512', **kwargs):
+    def swap_img_to_img(self, source_img: Union[MediaFile, str, Any, ImageFile, bytes], target_img: Union[MediaFile, str, Any, ImageFile, bytes], enhance_face_model: str = 'gpen_bfr_512', **kwargs) -> APISeex:
         """
         Swap faces between two images.
         
@@ -51,7 +26,7 @@ class face2face(FastSDK):
         """
         return self.submit_job("/swap-img-to-img", source_img=source_img, target_img=target_img, enhance_face_model=enhance_face_model, **kwargs)
     
-    def add_face(self, face_name: Union[str, List[Any]], image: Union[MediaFile, str, Any, ImageFile, bytes], save: bool = False, **kwargs):
+    def add_face(self, face_name: Union[str, List[Any]], image: Union[MediaFile, str, Any, ImageFile, bytes], save: bool = False, **kwargs) -> APISeex:
         """
         Add one or multiple reference face(s) to the face swapper.
         
@@ -75,7 +50,7 @@ class face2face(FastSDK):
         """
         return self.submit_job("/add-face", face_name=face_name, image=image, save=save, **kwargs)
     
-    def swap(self, faces: Union[List[Any], str, Dict[str, Any], MediaFile, Any, bytes], media: Union[MediaFile, str, Any, ImageFile, bytes], enhance_face_model: str = 'gpen_bfr_512', **kwargs):
+    def swap(self, faces: Union[List[Any], str, Dict[str, Any], MediaFile, Any, bytes], media: Union[MediaFile, str, Any, ImageFile, bytes], enhance_face_model: str = 'gpen_bfr_512', **kwargs) -> APISeex:
         """
         Swap faces in an image or video.
         
@@ -98,7 +73,7 @@ class face2face(FastSDK):
         """
         return self.submit_job("/swap", faces=faces, media=media, enhance_face_model=enhance_face_model, **kwargs)
     
-    def swap_video(self, faces: Union[List[Any], str, Dict[str, Any], MediaFile, Any, bytes], target_video: Union[MediaFile, str, Any, VideoFile, bytes], include_audio: bool = True, enhance_face_model: str = 'gpen_bfr_512', **kwargs):
+    def swap_video(self, faces: Union[List[Any], str, Dict[str, Any], MediaFile, Any, bytes], target_video: Union[MediaFile, str, Any, VideoFile, bytes], include_audio: bool = True, enhance_face_model: str = 'gpen_bfr_512', **kwargs) -> APISeex:
         """
         Swap faces in a video file.
         
@@ -121,4 +96,7 @@ class face2face(FastSDK):
         
         """
         return self.submit_job("/swap-video", faces=faces, target_video=target_video, include_audio=include_audio, enhance_face_model=enhance_face_model, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = swap_img_to_img
+    __call__ = swap_img_to_img

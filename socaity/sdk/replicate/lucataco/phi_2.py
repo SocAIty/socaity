@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 
 class phi_2(FastSDK):
     """
@@ -7,7 +7,7 @@ class phi_2(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="ce54bb7f-20cf-46b6-94bd-b83766b62268", api_key=api_key)
     
-    def predict(self, prompt: str, max_length: int = 200, **kwargs):
+    def predictions(self, prompt: str, max_length: int = 200, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -19,4 +19,7 @@ class phi_2(FastSDK):
             
         """
         return self.submit_job("/predictions", prompt=prompt, max_length=max_length, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

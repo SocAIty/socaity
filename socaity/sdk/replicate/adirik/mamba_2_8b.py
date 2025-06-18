@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Optional
 
 
@@ -9,7 +9,7 @@ class mamba_2_8b(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="06d2a61c-8197-415c-8cad-f0ee31914e71", api_key=api_key)
     
-    def predict(self, prompt: str, top_k: int = 1, top_p: float = 1.0, max_length: int = 100, temperature: float = 1.0, repetition_penalty: float = 1.2, seed: Optional[int] = None, **kwargs):
+    def predictions(self, prompt: str, top_k: int = 1, top_p: float = 1.0, max_length: int = 100, temperature: float = 1.0, repetition_penalty: float = 1.2, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -31,4 +31,7 @@ class mamba_2_8b(FastSDK):
             
         """
         return self.submit_job("/predictions", prompt=prompt, top_k=top_k, top_p=top_p, max_length=max_length, temperature=temperature, repetition_penalty=repetition_penalty, seed=seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

@@ -51,6 +51,22 @@ def test_voice2voice():
     assert os.path.exists(output_path), f"Output file {output_path} was not created"
 
 
+def test_speechcraft_initialization():
+    assert speechcraft is not None, "Speechcraft should not be None"
+    assert hasattr(speechcraft, 'text2voice'), "Speechcraft should have text2voice method"
+    assert hasattr(speechcraft, 'voice2embedding'), "Speechcraft should have voice2embedding method"
+    assert hasattr(speechcraft, 'voice2voice'), "Speechcraft should have voice2voice method"
+
+
+def test_speechcraft():
+    test_speechcraft_initialization()
+    test_text2voice()
+    test_voice2embedding()
+    test_test2voice_with_embedding()
+    test_voice2voice()
+    return True
+
+
 if __name__ == "__main__":
     # When running directly, fixtures are just regular functions
     # test_voice2embedding()

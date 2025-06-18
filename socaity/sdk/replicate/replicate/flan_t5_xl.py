@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 
 class flan_t5_xl(FastSDK):
     """
@@ -7,7 +7,7 @@ class flan_t5_xl(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="505dcfd9-4852-4a03-a1d5-7dbbc4367f90", api_key=api_key)
     
-    def predict(self, prompt: str, debug: bool = False, top_p: float = 1.0, max_length: int = 50, temperature: float = 0.75, repetition_penalty: float = 1.0, **kwargs):
+    def predictions(self, prompt: str, debug: bool = False, top_p: float = 1.0, max_length: int = 50, temperature: float = 0.75, repetition_penalty: float = 1.0, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -27,4 +27,7 @@ class flan_t5_xl(FastSDK):
             
         """
         return self.submit_job("/predictions", prompt=prompt, debug=debug, top_p=top_p, max_length=max_length, temperature=temperature, repetition_penalty=repetition_penalty, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

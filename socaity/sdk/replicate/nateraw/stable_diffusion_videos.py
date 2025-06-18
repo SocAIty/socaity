@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Optional
 
 
@@ -9,7 +9,7 @@ class stable_diffusion_videos(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="bfe0fe2b-a359-449c-8ae4-acc8fb4bb82c", api_key=api_key)
     
-    def predict(self, fps: int = 15, prompts: str = 'a cat | a dog | a horse', num_steps: int = 50, scheduler: str = 'klms', guidance_scale: float = 7.5, num_inference_steps: int = 50, seeds: Optional[str] = None, **kwargs):
+    def predictions(self, fps: int = 15, prompts: str = 'a cat | a dog | a horse', num_steps: int = 50, scheduler: str = 'klms', guidance_scale: float = 7.5, num_inference_steps: int = 50, seeds: Optional[str] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -31,4 +31,7 @@ class stable_diffusion_videos(FastSDK):
             
         """
         return self.submit_job("/predictions", fps=fps, prompts=prompts, num_steps=num_steps, scheduler=scheduler, guidance_scale=guidance_scale, num_inference_steps=num_inference_steps, seeds=seeds, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

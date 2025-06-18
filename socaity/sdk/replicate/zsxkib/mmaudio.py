@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class mmaudio(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="b3329e4f-e7a9-4e66-830b-0f1d14d133c1", api_key=api_key)
     
-    def predict(self, prompt: str = '', duration: float = 8.0, num_steps: int = 25, cfg_strength: float = 4.5, negative_prompt: str = 'music', seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, video: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
+    def predictions(self, prompt: str = '', duration: float = 8.0, num_steps: int = 25, cfg_strength: float = 4.5, negative_prompt: str = 'music', seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, video: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -35,4 +35,7 @@ class mmaudio(FastSDK):
             
         """
         return self.submit_job("/predictions", prompt=prompt, duration=duration, num_steps=num_steps, cfg_strength=cfg_strength, negative_prompt=negative_prompt, seed=seed, image=image, video=video, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

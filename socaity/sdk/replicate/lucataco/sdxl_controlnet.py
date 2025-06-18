@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class sdxl_controlnet(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="53f34abc-e7b4-48e9-87ca-a3e4caf037c4", api_key=api_key)
     
-    def predict(self, seed: int = 0, prompt: str = 'aerial view, a futuristic research complex in a bright foggy jungle, hard lighting', condition_scale: float = 0.5, negative_prompt: str = 'low quality, bad quality, sketches', num_inference_steps: int = 50, image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
+    def predictions(self, seed: int = 0, prompt: str = 'aerial view, a futuristic research complex in a bright foggy jungle, hard lighting', condition_scale: float = 0.5, negative_prompt: str = 'low quality, bad quality, sketches', num_inference_steps: int = 50, image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -31,4 +31,7 @@ class sdxl_controlnet(FastSDK):
             
         """
         return self.submit_job("/predictions", seed=seed, prompt=prompt, condition_scale=condition_scale, negative_prompt=negative_prompt, num_inference_steps=num_inference_steps, image=image, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

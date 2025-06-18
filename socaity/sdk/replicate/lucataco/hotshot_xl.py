@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Optional
 
 
@@ -9,7 +9,7 @@ class hotshot_xl(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="5ceba273-ccc6-4b04-b3fe-bc7a254e8456", api_key=api_key)
     
-    def predict(self, mp4: bool = False, steps: int = 30, width: int = 672, height: int = 384, prompt: str = 'a camel smoking a cigarette, hd, high quality', scheduler: str = 'EulerAncestralDiscreteScheduler', negative_prompt: str = 'blurry', seed: Optional[int] = None, **kwargs):
+    def predictions(self, mp4: bool = False, steps: int = 30, width: int = 672, height: int = 384, prompt: str = 'a camel smoking a cigarette, hd, high quality', scheduler: str = 'EulerAncestralDiscreteScheduler', negative_prompt: str = 'blurry', seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -33,4 +33,7 @@ class hotshot_xl(FastSDK):
             
         """
         return self.submit_job("/predictions", mp4=mp4, steps=steps, width=width, height=height, prompt=prompt, scheduler=scheduler, negative_prompt=negative_prompt, seed=seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

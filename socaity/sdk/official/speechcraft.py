@@ -1,7 +1,7 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Any
+from fastsdk import FastSDK, APISeex
+from typing import Any, Union
 
-from media_toolkit import AudioFile, MediaFile
+from media_toolkit import MediaFile, AudioFile
 
 
 class speechcraft(FastSDK):
@@ -11,32 +11,7 @@ class speechcraft(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="ee0af319-70d4-4171-9954-c24ad01b3e05", api_key=api_key)
     
-    def status(self, job_id: str, return_format: str = 'json', keep_alive: bool = False, **kwargs):
-        """
-        Get the status and result of a job.
-        
-        Args:
-            job_id: The ID of the job
-            return_format: Response format ('json' or 'gzipped')
-            keep_alive: If True, job result is kept in memory/disk
-        
-        Returns:
-            JobResult with status and results
-        
-        """
-        return self.submit_job("/status", job_id=job_id, return_format=return_format, keep_alive=keep_alive, **kwargs)
-    
-    def health(self, **kwargs):
-        """
-        Get server health status.
-        
-        Returns:
-            HTTP response with health status
-        
-        """
-        return self.submit_job("/health", **kwargs)
-    
-    def text2voice(self, text: str, voice: Union[MediaFile, str, Any, bytes] = 'en_speaker_3', semantic_temp: float = 0.7, semantic_top_k: int = 50, semantic_top_p: float = 0.95, coarse_temp: float = 0.7, coarse_top_k: int = 50, coarse_top_p: float = 0.95, fine_temp: float = 0.5, **kwargs):
+    def text2voice(self, text: str, voice: Union[MediaFile, str, Any, bytes] = 'en_speaker_3', semantic_temp: float = 0.7, semantic_top_k: int = 50, semantic_top_p: float = 0.95, coarse_temp: float = 0.7, coarse_top_k: int = 50, coarse_top_p: float = 0.95, fine_temp: float = 0.5, **kwargs) -> APISeex:
         """
         :param text: the text to be converted
         :param voice: the name of the voice to be used. Uses the pretrained voices which are stored in models/speakers folder.
@@ -46,7 +21,7 @@ class speechcraft(FastSDK):
         """
         return self.submit_job("/text2voice", text=text, voice=voice, semantic_temp=semantic_temp, semantic_top_k=semantic_top_k, semantic_top_p=semantic_top_p, coarse_temp=coarse_temp, coarse_top_k=coarse_top_k, coarse_top_p=coarse_top_p, fine_temp=fine_temp, **kwargs)
     
-    def voice2embedding(self, audio_file: Union[MediaFile, str, Any, AudioFile, bytes], voice_name: str = 'new_speaker', save: bool = False, **kwargs):
+    def voice2embedding(self, audio_file: Union[MediaFile, str, Any, AudioFile, bytes], voice_name: str = 'new_speaker', save: bool = False, **kwargs) -> APISeex:
         """
         :param audio_file: the audio file as bytes 5-20s is good length
         :param voice_name: how the new voice / embedding is named
@@ -57,7 +32,7 @@ class speechcraft(FastSDK):
         """
         return self.submit_job("/voice2embedding", audio_file=audio_file, voice_name=voice_name, save=save, **kwargs)
     
-    def voice2voice(self, audio_file: Union[MediaFile, str, Any, AudioFile, bytes], voice_name: Union[MediaFile, str, Any, bytes], temp: float = 0.7, **kwargs):
+    def voice2voice(self, audio_file: Union[MediaFile, str, Any, AudioFile, bytes], voice_name: Union[MediaFile, str, Any, bytes], temp: float = 0.7, **kwargs) -> APISeex:
         """
         :param audio_file: the audio file as bytes 5-20s is good length
         :param voice_name: the new of the voice to convert to; or the voice embedding. String or MediaFile.
@@ -66,4 +41,7 @@ class speechcraft(FastSDK):
         
         """
         return self.submit_job("/voice2voice", audio_file=audio_file, voice_name=voice_name, temp=temp, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = text2voice
+    __call__ = text2voice

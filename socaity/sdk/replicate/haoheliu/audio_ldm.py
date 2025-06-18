@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Optional
 
 
@@ -9,7 +9,7 @@ class audio_ldm(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="721cb0b6-c7ce-4298-a719-66ee16a93ad8", api_key=api_key)
     
-    def predict(self, text: str, duration: str = '5.0', n_candidates: int = 3, guidance_scale: float = 2.5, random_seed: Optional[int] = None, **kwargs):
+    def predictions(self, text: str, duration: str = '5.0', n_candidates: int = 3, guidance_scale: float = 2.5, random_seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -27,4 +27,7 @@ class audio_ldm(FastSDK):
             
         """
         return self.submit_job("/predictions", text=text, duration=duration, n_candidates=n_candidates, guidance_scale=guidance_scale, random_seed=random_seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

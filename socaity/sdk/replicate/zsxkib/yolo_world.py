@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class yolo_world(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="41a54615-ab8a-4af0-ac7e-19c1d5378234", api_key=api_key)
     
-    def predict(self, input_media: Union[MediaFile, str, bytes], nms_thr: float = 0.5, score_thr: float = 0.05, class_names: str = 'dog, eye, tongue, ear, leash, backpack, person, nose', max_num_boxes: int = 100, **kwargs):
+    def predictions(self, input_media: Union[MediaFile, str, bytes], nms_thr: float = 0.5, score_thr: float = 0.05, class_names: str = 'dog, eye, tongue, ear, leash, backpack, person, nose', max_num_boxes: int = 100, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -29,4 +29,7 @@ class yolo_world(FastSDK):
             
         """
         return self.submit_job("/predictions", input_media=input_media, nms_thr=nms_thr, score_thr=score_thr, class_names=class_names, max_num_boxes=max_num_boxes, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

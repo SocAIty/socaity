@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, List, Optional, Any
+from fastsdk import FastSDK, APISeex
+from typing import Any, List, Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class o1(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="740bcd11-f6f4-430e-b7a4-49bcba46da7e", api_key=api_key)
     
-    def predict(self, image_input: Union[List[Any], MediaFile, str, bytes] = [], reasoning_effort: str = 'medium', max_completion_tokens: int = 4096, prompt: Optional[str] = None, system_prompt: Optional[str] = None, **kwargs):
+    def predictions(self, image_input: Union[List[Any], MediaFile, str, bytes] = [], reasoning_effort: str = 'medium', max_completion_tokens: int = 4096, prompt: Optional[str] = None, system_prompt: Optional[str] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -29,4 +29,7 @@ class o1(FastSDK):
             
         """
         return self.submit_job("/predictions", image_input=image_input, reasoning_effort=reasoning_effort, max_completion_tokens=max_completion_tokens, prompt=prompt, system_prompt=system_prompt, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

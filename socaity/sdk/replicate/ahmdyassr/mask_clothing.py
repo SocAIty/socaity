@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class mask_clothing(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="09115fc3-0100-42e0-b034-3480586c9990", api_key=api_key)
     
-    def predict(self, face_mask: bool = False, adjustment: int = 0, face_adjustment: int = 0, image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
+    def predictions(self, face_mask: bool = False, adjustment: int = 0, face_adjustment: int = 0, image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -27,4 +27,7 @@ class mask_clothing(FastSDK):
             
         """
         return self.submit_job("/predictions", face_mask=face_mask, adjustment=adjustment, face_adjustment=face_adjustment, image=image, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

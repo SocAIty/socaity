@@ -128,6 +128,7 @@ from socaity.sdk.replicate.dcamsdev.klm_lora_flux import klm_lora_flux
 from socaity.sdk.replicate.declare_lab.mustango import mustango
 from socaity.sdk.replicate.deepfates.deepfits_flux_dev import deepfits_flux_dev
 from socaity.sdk.replicate.deepfates.flux_hot_zuck import flux_hot_zuck
+from socaity.sdk.replicate.deepseek_ai.deepseek_v3 import deepseek_v3
 from socaity.sdk.replicate.deforum.deforum_stable_diffusion import deforum_stable_diffusion
 from socaity.sdk.replicate.derrrick.flux_70s_bands import flux_70s_bands
 from socaity.sdk.replicate.dfrostar.hermes_kellybag import hermes_kellybag

@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Optional
 
 
@@ -9,7 +9,7 @@ class hyper_flux_16step(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="9b042e2c-660d-4be1-868a-4a22f0cf1378", api_key=api_key)
     
-    def predict(self, prompt: str, num_outputs: int = 1, aspect_ratio: str = '1:1', output_format: str = 'webp', guidance_scale: float = 3.5, output_quality: int = 80, num_inference_steps: int = 16, disable_safety_checker: bool = False, seed: Optional[int] = None, width: Optional[int] = None, height: Optional[int] = None, **kwargs):
+    def predictions(self, prompt: str, num_outputs: int = 1, aspect_ratio: str = '1:1', output_format: str = 'webp', guidance_scale: float = 3.5, output_quality: int = 80, num_inference_steps: int = 16, disable_safety_checker: bool = False, seed: Optional[int] = None, width: Optional[int] = None, height: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -39,4 +39,7 @@ class hyper_flux_16step(FastSDK):
             
         """
         return self.submit_job("/predictions", prompt=prompt, num_outputs=num_outputs, aspect_ratio=aspect_ratio, output_format=output_format, guidance_scale=guidance_scale, output_quality=output_quality, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, seed=seed, width=width, height=height, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

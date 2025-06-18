@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Optional
 
 
@@ -9,7 +9,7 @@ class damo_text_to_video(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="6ab55669-b0df-4a2f-be3a-8f641973eb50", api_key=api_key)
     
-    def predict(self, fps: int = 8, prompt: str = 'An astronaut riding a horse', num_frames: int = 16, num_inference_steps: int = 50, seed: Optional[int] = None, **kwargs):
+    def predictions(self, fps: int = 8, prompt: str = 'An astronaut riding a horse', num_frames: int = 16, num_inference_steps: int = 50, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -27,4 +27,7 @@ class damo_text_to_video(FastSDK):
             
         """
         return self.submit_job("/predictions", fps=fps, prompt=prompt, num_frames=num_frames, num_inference_steps=num_inference_steps, seed=seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

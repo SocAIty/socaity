@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Optional
 
 
@@ -9,7 +9,7 @@ class flux_schnell(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="817bca01-a048-4959-84e3-f8be56044f48", api_key=api_key)
     
-    def predict(self, prompt: str, go_fast: bool = True, megapixels: str = '1', num_outputs: int = 1, aspect_ratio: str = '1:1', output_format: str = 'webp', output_quality: int = 80, num_inference_steps: int = 4, disable_safety_checker: bool = False, seed: Optional[int] = None, **kwargs):
+    def predictions(self, prompt: str, go_fast: bool = True, megapixels: str = '1', num_outputs: int = 1, aspect_ratio: str = '1:1', output_format: str = 'webp', output_quality: int = 80, num_inference_steps: int = 4, disable_safety_checker: bool = False, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -37,4 +37,7 @@ class flux_schnell(FastSDK):
             
         """
         return self.submit_job("/predictions", prompt=prompt, go_fast=go_fast, megapixels=megapixels, num_outputs=num_outputs, aspect_ratio=aspect_ratio, output_format=output_format, output_quality=output_quality, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, seed=seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class deoldify_video(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="c65f8678-d8be-4042-b11e-e04d97122e91", api_key=api_key)
     
-    def predict(self, input_video: Union[MediaFile, str, bytes], render_factor: int = 21, **kwargs):
+    def predictions(self, input_video: Union[MediaFile, str, bytes], render_factor: int = 21, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -23,4 +23,7 @@ class deoldify_video(FastSDK):
             
         """
         return self.submit_job("/predictions", input_video=input_video, render_factor=render_factor, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

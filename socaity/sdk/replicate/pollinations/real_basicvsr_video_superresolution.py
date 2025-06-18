@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class real_basicvsr_video_superresolution(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="b901d4ed-734c-4961-9873-121a55ff9ce1", api_key=api_key)
     
-    def predict(self, video: Union[MediaFile, str, bytes], **kwargs):
+    def predictions(self, video: Union[MediaFile, str, bytes], **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -21,4 +21,7 @@ class real_basicvsr_video_superresolution(FastSDK):
             
         """
         return self.submit_job("/predictions", video=video, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class jina_clip_v2(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="2978d47d-bd47-41d1-8d9e-e77e35fc0153", api_key=api_key)
     
-    def predict(self, embedding_dim: int = 64, output_format: str = 'base64', text: Optional[str] = None, image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
+    def predictions(self, embedding_dim: int = 64, output_format: str = 'base64', text: Optional[str] = None, image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -27,4 +27,7 @@ class jina_clip_v2(FastSDK):
             
         """
         return self.submit_job("/predictions", embedding_dim=embedding_dim, output_format=output_format, text=text, image=image, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

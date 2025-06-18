@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class background_remover(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="41bbfe93-f999-4de3-b380-fabe0b960cb0", api_key=api_key)
     
-    def predict(self, image: Union[MediaFile, str, bytes], format: str = 'png', reverse: bool = False, threshold: float = 0.0, background_type: str = 'rgba', **kwargs):
+    def predictions(self, image: Union[MediaFile, str, bytes], format: str = 'png', reverse: bool = False, threshold: float = 0.0, background_type: str = 'rgba', **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -29,4 +29,7 @@ class background_remover(FastSDK):
             
         """
         return self.submit_job("/predictions", image=image, format=format, reverse=reverse, threshold=threshold, background_type=background_type, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

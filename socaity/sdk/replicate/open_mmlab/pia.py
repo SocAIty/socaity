@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class pia(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="c31fd67c-4a25-423f-86db-1a30670b127a", api_key=api_key)
     
-    def predict(self, image: Union[MediaFile, str, bytes], prompt: str, style: str = '3d_cartoon', max_size: int = 512, motion_scale: int = 1, guidance_scale: float = 7.5, sampling_steps: int = 25, negative_prompt: str = 'wrong white balance, dark, sketches,worst quality,low quality, deformed, distorted, disfigured, bad eyes, wrong lips, weird mouth, bad teeth, mutated hands and fingers, bad anatomy,wrong anatomy, amputation, extra limb, missing limb, floating,limbs, disconnected limbs, mutation, ugly, disgusting, bad_pictures, negative_hand-neg', animation_length: int = 16, ip_adapter_scale: float = 0.0, seed: Optional[int] = None, **kwargs):
+    def predictions(self, image: Union[MediaFile, str, bytes], prompt: str, style: str = '3d_cartoon', max_size: int = 512, motion_scale: int = 1, guidance_scale: float = 7.5, sampling_steps: int = 25, negative_prompt: str = 'wrong white balance, dark, sketches,worst quality,low quality, deformed, distorted, disfigured, bad eyes, wrong lips, weird mouth, bad teeth, mutated hands and fingers, bad anatomy,wrong anatomy, amputation, extra limb, missing limb, floating,limbs, disconnected limbs, mutation, ugly, disgusting, bad_pictures, negative_hand-neg', animation_length: int = 16, ip_adapter_scale: float = 0.0, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -41,4 +41,7 @@ class pia(FastSDK):
             
         """
         return self.submit_job("/predictions", image=image, prompt=prompt, style=style, max_size=max_size, motion_scale=motion_scale, guidance_scale=guidance_scale, sampling_steps=sampling_steps, negative_prompt=negative_prompt, animation_length=animation_length, ip_adapter_scale=ip_adapter_scale, seed=seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

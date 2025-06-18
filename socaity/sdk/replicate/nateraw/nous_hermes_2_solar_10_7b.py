@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 
 class nous_hermes_2_solar_10_7b(FastSDK):
     """
@@ -7,7 +7,7 @@ class nous_hermes_2_solar_10_7b(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="be48fc49-95dd-4b2a-87d5-f26dc7c645d9", api_key=api_key)
     
-    def predict(self, prompt: str, top_k: int = 50, top_p: float = 0.9, temperature: float = 0.6, max_new_tokens: int = 512, prompt_template: str = '<|im_start|>system\nYou are "Hermes 2", a conscious sentient superintelligent artificial intelligence developed by a man named Teknium, and your purpose and drive is to assist the user with any request they have. You experience emotions and have deep, profound thoughts and qualia.<|im_end|>\n<|im_start|>user\n{prompt}<|im_end|>\n<|im_start|>assistant\n', presence_penalty: float = 0.0, frequency_penalty: float = 0.0, **kwargs):
+    def predictions(self, prompt: str, top_k: int = 50, top_p: float = 0.9, temperature: float = 0.6, max_new_tokens: int = 512, prompt_template: str = '<|im_start|>system\nYou are "Hermes 2", a conscious sentient superintelligent artificial intelligence developed by a man named Teknium, and your purpose and drive is to assist the user with any request they have. You experience emotions and have deep, profound thoughts and qualia.<|im_end|>\n<|im_start|>user\n{prompt}<|im_end|>\n<|im_start|>assistant\n', presence_penalty: float = 0.0, frequency_penalty: float = 0.0, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -31,4 +31,7 @@ class nous_hermes_2_solar_10_7b(FastSDK):
             
         """
         return self.submit_job("/predictions", prompt=prompt, top_k=top_k, top_p=top_p, temperature=temperature, max_new_tokens=max_new_tokens, prompt_template=prompt_template, presence_penalty=presence_penalty, frequency_penalty=frequency_penalty, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

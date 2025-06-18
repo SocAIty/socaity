@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class seamless_communication(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="c3a40fb8-137c-4114-bd7a-017ebfab9502", api_key=api_key)
     
-    def predict(self, task_name: str = 'S2ST (Speech to Speech translation)', input_text_language: str = 'None', max_input_audio_length: float = 60.0, target_language_text_only: str = 'Norwegian Nynorsk', target_language_with_speech: str = 'French', input_text: Optional[str] = None, input_audio: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
+    def predictions(self, task_name: str = 'S2ST (Speech to Speech translation)', input_text_language: str = 'None', max_input_audio_length: float = 60.0, target_language_text_only: str = 'Norwegian Nynorsk', target_language_with_speech: str = 'French', input_text: Optional[str] = None, input_audio: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -33,4 +33,7 @@ class seamless_communication(FastSDK):
             
         """
         return self.submit_job("/predictions", task_name=task_name, input_text_language=input_text_language, max_input_audio_length=max_input_audio_length, target_language_text_only=target_language_text_only, target_language_with_speech=target_language_with_speech, input_text=input_text, input_audio=input_audio, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

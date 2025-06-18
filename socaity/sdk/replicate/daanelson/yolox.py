@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class yolox(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="cd41e5da-0dd9-4893-872a-df2692fc91aa", api_key=api_key)
     
-    def predict(self, input_image: Union[MediaFile, str, bytes], nms: float = 0.3, conf: float = 0.3, tsize: int = 640, model_name: str = 'yolox-s', return_json: bool = False, **kwargs):
+    def predictions(self, input_image: Union[MediaFile, str, bytes], nms: float = 0.3, conf: float = 0.3, tsize: int = 640, model_name: str = 'yolox-s', return_json: bool = False, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -31,4 +31,7 @@ class yolox(FastSDK):
             
         """
         return self.submit_job("/predictions", input_image=input_image, nms=nms, conf=conf, tsize=tsize, model_name=model_name, return_json=return_json, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class magic_image_refiner(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="52c089e7-8c07-4a9a-a862-01b7d6afd1e4", api_key=api_key)
     
-    def predict(self, hdr: float = 0.0, steps: int = 20, scheduler: str = 'DDIM', creativity: float = 0.25, guess_mode: bool = False, resolution: str = 'original', resemblance: float = 0.75, guidance_scale: float = 7.0, negative_prompt: str = 'teeth, tooth, open mouth, longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, mutant', mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, prompt: Optional[str] = None, **kwargs):
+    def predictions(self, hdr: float = 0.0, steps: int = 20, scheduler: str = 'DDIM', creativity: float = 0.25, guess_mode: bool = False, resolution: str = 'original', resemblance: float = 0.75, guidance_scale: float = 7.0, negative_prompt: str = 'teeth, tooth, open mouth, longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, mutant', mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, prompt: Optional[str] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -45,4 +45,7 @@ class magic_image_refiner(FastSDK):
             
         """
         return self.submit_job("/predictions", hdr=hdr, steps=steps, scheduler=scheduler, creativity=creativity, guess_mode=guess_mode, resolution=resolution, resemblance=resemblance, guidance_scale=guidance_scale, negative_prompt=negative_prompt, mask=mask, seed=seed, image=image, prompt=prompt, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

@@ -57,25 +57,30 @@ When initializing your ModelClient you can additionally pass which provider you 
 
 Import a model from the model-zoo or just use the simple API (text2img, text2speech etc.)
 ```python
-from socaity import FluxSchnell, text2speech, text2img
+from socaity import speechcraft
+audiogen = speechcraft(api_key=os.getenv("SOCAITY_API_KEY"))
 ```
 Then you can use it as a function
 ```python
-flux_schnell = FluxSchnell().text2img("A beautiful sunset in the mountains")
-my_image = text2img("A beautiful sunset in the mountains").get_result()
+audio_job = audiogen.text2voice(text="welcome to generative ai", voice="hermine")
+audio_job.get_result().save("welcome.mp3")
 ```
 
 ### Example 1: Combine llm, text2img and text2speech
 
 We will use different models to showcase how to create for example a perfect combination for a blog.
 ```python
-from socaity import DeepSeekR1, text2voice, text2img
+from socaity import speechcraft
+from socaity.sdk.replicate.deepseek_ai import deepseek_v3
+from socaity.sdk.replicate.black_forest_labs import flux_schnell
 
-deepseek = DeepSeekR1()
-poem = deepseek.chat("Write a poem with 3 sentences why a SDK is so much better than plain web requests.").get_result()
-poem = deepseek.pretty(poem)
+deepseek = deepseek_v3(api_key=os.getenv("SOCAITY_API_KEY"))
+poem = deepseek(prompt="Write a poem with 3 sentences why a SDK is so much better than plain web requests.").get_result()
+poem = poem.join("")
 
-audio = text2voice(poem, model="speechcraft", voice="hermine")
+audiogen = speechcraft(api_key=os.getenv("SOCAITY_API_KEY"))
+audio = audiogen.text2voice(text=poem, voice="hermine")
+
 
 my_image_prompt = """
 A robot enjoying a stunning sunset in the alps. In the clouds is written in big letters "SOCAITY SDK".
@@ -84,7 +89,8 @@ The artwork is striking and cinematic, showcasing a vibrant neon-green lime pale
 Influenced by the artistic styles of Simon Kenny, Giorgetto Giugiaro, Brian Stelfreeze, and Laura Iverson.
 """
 
-image = text2img(text=my_image_prompt, model="flux-schnell", num_outputs=1)
+flux = flux_schnell(api_key=os.getenv("SOCAITY_API_KEY"))
+image = flux(text=my_image_prompt, model="flux-schnell", num_outputs=1)
 audio.get_result().save("sdk_poem.mp3")
 image.get_result().save("sdk_poem.png")
 ```

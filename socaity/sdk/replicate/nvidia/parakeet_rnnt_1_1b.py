@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class parakeet_rnnt_1_1b(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="5a2f2250-0001-4849-b676-828f107dfc70", api_key=api_key)
     
-    def predict(self, audio_file: Union[MediaFile, str, bytes], **kwargs):
+    def predictions(self, audio_file: Union[MediaFile, str, bytes], **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -21,4 +21,7 @@ class parakeet_rnnt_1_1b(FastSDK):
             
         """
         return self.submit_job("/predictions", audio_file=audio_file, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

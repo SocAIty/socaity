@@ -1,15 +1,16 @@
 import os
+from socaity.sdk.replicate.meta import sam_2
 
-from socaity import Sam2
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+INPUT_IMG = os.path.join(BASE_DIR, "test_files", "face2face", "test_face_1.jpg")
 
-genai = Sam2(service="replicate", api_key=os.getenv("REPLICATE_API_KEY", None))
-# fluxs = FluxSchnell(service="socaity_local", api_key=os.getenv("SOCAITY_API_KEY", None))
 
 def test_sam2():
-    image = "test_files/face2face/test_face_1.jpg"
-    fj = genai.segment(image=image)
+    genai = sam_2(api_key=os.getenv("SOCAITY_API_KEY", None))
+    fj = genai(image=INPUT_IMG)
     masks = fj.get_result()
     print(masks)
+    return masks
 
 
 if __name__ == "__main__":

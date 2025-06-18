@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class ssd_1b(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="7fe791ac-9587-4813-9c0d-857e2ecfbf47", api_key=api_key)
     
-    def predict(self, width: int = 768, height: int = 768, prompt: str = 'with smoke, half ice and half fire and ultra realistic in detail.wolf, typography, dark fantasy, wildlife photography, vibrant, cinematic and on a black background', scheduler: str = 'K_EULER', lora_scale: float = 0.6, num_outputs: int = 1, batched_prompt: bool = False, guidance_scale: float = 7.5, apply_watermark: bool = True, negative_prompt: str = 'scary, cartoon, painting', prompt_strength: float = 0.8, num_inference_steps: int = 25, disable_safety_checker: bool = False, mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, replicate_weights: Optional[str] = None, **kwargs):
+    def predictions(self, width: int = 768, height: int = 768, prompt: str = 'with smoke, half ice and half fire and ultra realistic in detail.wolf, typography, dark fantasy, wildlife photography, vibrant, cinematic and on a black background', scheduler: str = 'K_EULER', lora_scale: float = 0.6, num_outputs: int = 1, batched_prompt: bool = False, guidance_scale: float = 7.5, apply_watermark: bool = True, negative_prompt: str = 'scary, cartoon, painting', prompt_strength: float = 0.8, num_inference_steps: int = 25, disable_safety_checker: bool = False, mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, replicate_weights: Optional[str] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -53,4 +53,7 @@ class ssd_1b(FastSDK):
             
         """
         return self.submit_job("/predictions", width=width, height=height, prompt=prompt, scheduler=scheduler, lora_scale=lora_scale, num_outputs=num_outputs, batched_prompt=batched_prompt, guidance_scale=guidance_scale, apply_watermark=apply_watermark, negative_prompt=negative_prompt, prompt_strength=prompt_strength, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, mask=mask, seed=seed, image=image, replicate_weights=replicate_weights, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

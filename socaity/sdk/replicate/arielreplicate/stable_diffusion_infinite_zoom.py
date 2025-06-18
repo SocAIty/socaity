@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 
 class stable_diffusion_infinite_zoom(FastSDK):
     """
@@ -7,7 +7,7 @@ class stable_diffusion_infinite_zoom(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="94ff68a1-11b2-4672-94ba-30572855ba8a", api_key=api_key)
     
-    def predict(self, prompt: str, inpaint_iter: int = 2, output_format: str = 'mp4', **kwargs):
+    def predictions(self, prompt: str, inpaint_iter: int = 2, output_format: str = 'mp4', **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -21,4 +21,7 @@ class stable_diffusion_infinite_zoom(FastSDK):
             
         """
         return self.submit_job("/predictions", prompt=prompt, inpaint_iter=inpaint_iter, output_format=output_format, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

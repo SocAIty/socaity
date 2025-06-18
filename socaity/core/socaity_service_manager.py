@@ -1,5 +1,6 @@
 from typing import Dict, Set
 from pathlib import Path
+from datetime import datetime, timedelta
 from fastsdk.service_management import ServiceManager, FileSystemStore, ServiceDefinition
 from fastsdk.sdk_factory import create_sdk
 from fastsdk.utils import normalize_name_for_py
@@ -12,6 +13,7 @@ class SocaityServiceManager(ServiceManager):
     COMMUNITY_SDK_DIR = SDK_ROOT / "community"
     REPLICATE_SDK_DIR = SDK_ROOT / "replicate"
     CACHE_DIR = SDK_ROOT / "cache"
+    CACHE_TTL_MINUTES = 15
 
     def __init__(self):
         super().__init__(service_store=FileSystemStore(self.CACHE_DIR))
@@ -19,6 +21,20 @@ class SocaityServiceManager(ServiceManager):
         self._created_sdks: Dict[str, Path] = {}  # class_name -> save_path
         self._deleted_sdks: Dict[str, Path] = {}  # model_name -> save_path
         self.update_package()
+
+    def _is_cache_stale(self) -> bool:
+        """Check if the cache is older than the TTL by examining cache directory modification time"""
+        if not self.CACHE_DIR.exists():
+            return True  # No cache exists, needs update
+        
+        try:
+            cache_mtime = datetime.fromtimestamp(self.CACHE_DIR.stat().st_mtime)
+            cache_age = datetime.now() - cache_mtime
+            ttl = timedelta(minutes=self.CACHE_TTL_MINUTES)
+            
+            return cache_age > ttl
+        except OSError:
+            return True  # If we can't check, assume stale
 
     def _get_save_path(self, provider: str, username: str, model_name: str, is_official: bool = False) -> Path:
         """Get the appropriate save path based on provider and model info"""
@@ -40,6 +56,9 @@ class SocaityServiceManager(ServiceManager):
 
     def update_package(self) -> None:
         """Update the package with latest model changes"""
+        if not self._is_cache_stale():
+            return
+        
         package_updates = self.socaity_backend_client.update_package(self.service_store.get_version_index())
         if not package_updates or not package_updates.get("updates"):
             return
@@ -52,6 +71,17 @@ class SocaityServiceManager(ServiceManager):
                 self._handle_model_update(update_item)
 
         self._update_init_files()
+        # Touch the cache directory to update its modification time
+        self._touch_cache_dir()
+
+    def _touch_cache_dir(self) -> None:
+        """Update the cache directory modification time to current time"""
+        if self.CACHE_DIR.exists():
+            self.CACHE_DIR.touch()
+
+    def force_update_package(self) -> None:
+        """Force update the package regardless of cache TTL"""
+        self.update_package()
 
     def _handle_model_deletion(self, update_item: Dict) -> None:
         """Handle deletion of a model"""
@@ -108,12 +138,6 @@ class SocaityServiceManager(ServiceManager):
         else:
             service_def = service_def_data
 
-        # Store the service definition in the service store for caching
-        try:
-            self.service_store.save_service(service_def)
-        except Exception as e:
-            print(f"Warning: Failed to save service definition for {hosted_model_id}: {e}")
-
         # Extract information from the update item
         provider = update_item.get("provider", "socaity")
         display_name = update_item.get("display_name", "")
@@ -139,6 +163,12 @@ class SocaityServiceManager(ServiceManager):
             self._created_sdks[actual_class_name] = Path(file_path)
         except Exception as e:
             print(f"Error creating SDK for {hosted_model_id}: {e}")
+
+        # Store the service definition in the service store for caching and reload
+        try:
+            self.service_store.save_service(service_def)
+        except Exception as e:
+            print(f"Warning: Failed to save service definition for {hosted_model_id}: {e}")
 
     def _update_init_files(self) -> None:
         """Update all __init__.py files with current imports"""

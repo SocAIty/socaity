@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class train_rvc_model(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="9f4a5c71-0e90-4672-838e-ff3d86dcc273", api_key=api_key)
     
-    def predict(self, dataset_zip: Union[MediaFile, str, bytes], epoch: int = 10, version: str = 'v2', f0method: str = 'rmvpe_gpu', batch_size: str = '7', sample_rate: str = '48k', **kwargs):
+    def predictions(self, dataset_zip: Union[MediaFile, str, bytes], epoch: int = 10, version: str = 'v2', f0method: str = 'rmvpe_gpu', batch_size: str = '7', sample_rate: str = '48k', **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -31,4 +31,7 @@ class train_rvc_model(FastSDK):
             
         """
         return self.submit_job("/predictions", dataset_zip=dataset_zip, epoch=epoch, version=version, f0method=f0method, batch_size=batch_size, sample_rate=sample_rate, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

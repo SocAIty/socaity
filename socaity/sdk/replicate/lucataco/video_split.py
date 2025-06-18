@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class video_split(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="c51c85bb-b396-4089-84a5-3a706c8e8756", api_key=api_key)
     
-    def predict(self, input_video: Union[MediaFile, str, bytes], target_fps: int = 30, target_width: int = 848, target_height: int = 480, create_captions: bool = False, target_duration: float = 2.0, **kwargs):
+    def predictions(self, input_video: Union[MediaFile, str, bytes], target_fps: int = 30, target_width: int = 848, target_height: int = 480, create_captions: bool = False, target_duration: float = 2.0, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -31,4 +31,7 @@ class video_split(FastSDK):
             
         """
         return self.submit_job("/predictions", input_video=input_video, target_fps=target_fps, target_width=target_width, target_height=target_height, create_captions=create_captions, target_duration=target_duration, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

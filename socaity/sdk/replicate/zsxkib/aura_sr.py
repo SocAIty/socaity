@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class aura_sr(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="5cf1cdf5-7c85-45ef-bef5-2267e0c470a4", api_key=api_key)
     
-    def predict(self, image: Union[MediaFile, str, bytes], scale_factor: int = 4, max_batch_size: int = 1, **kwargs):
+    def predictions(self, image: Union[MediaFile, str, bytes], scale_factor: int = 4, max_batch_size: int = 1, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -25,4 +25,7 @@ class aura_sr(FastSDK):
             
         """
         return self.submit_job("/predictions", image=image, scale_factor=scale_factor, max_batch_size=max_batch_size, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class whisper_diarization(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="85d70882-606b-4083-b164-1fa4acd98a0c", api_key=api_key)
     
-    def predict(self, translate: bool = False, group_segments: bool = True, file: Optional[Union[MediaFile, str, bytes]] = None, prompt: Optional[str] = None, file_url: Optional[str] = None, language: Optional[str] = None, file_string: Optional[str] = None, num_speakers: Optional[int] = None, **kwargs):
+    def predictions(self, translate: bool = False, group_segments: bool = True, file: Optional[Union[MediaFile, str, bytes]] = None, prompt: Optional[str] = None, file_url: Optional[str] = None, language: Optional[str] = None, file_string: Optional[str] = None, num_speakers: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -35,4 +35,7 @@ class whisper_diarization(FastSDK):
             
         """
         return self.submit_job("/predictions", translate=translate, group_segments=group_segments, file=file, prompt=prompt, file_url=file_url, language=language, file_string=file_string, num_speakers=num_speakers, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

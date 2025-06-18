@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class shap_e(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="01265335-2249-43c0-b787-453da9a6fbb0", api_key=api_key)
     
-    def predict(self, save_mesh: bool = False, batch_size: int = 1, render_mode: str = 'nerf', render_size: int = 128, guidance_scale: float = 15.0, image: Optional[Union[MediaFile, str, bytes]] = None, prompt: Optional[str] = None, **kwargs):
+    def predictions(self, save_mesh: bool = False, batch_size: int = 1, render_mode: str = 'nerf', render_size: int = 128, guidance_scale: float = 15.0, image: Optional[Union[MediaFile, str, bytes]] = None, prompt: Optional[str] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -33,4 +33,7 @@ class shap_e(FastSDK):
             
         """
         return self.submit_job("/predictions", save_mesh=save_mesh, batch_size=batch_size, render_mode=render_mode, render_size=render_size, guidance_scale=guidance_scale, image=image, prompt=prompt, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

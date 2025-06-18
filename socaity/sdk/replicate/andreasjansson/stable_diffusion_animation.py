@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Optional
 
 
@@ -9,7 +9,7 @@ class stable_diffusion_animation(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="1400c39d-e851-4ec4-82fc-315ac1bf7161", api_key=api_key)
     
-    def predict(self, prompt_end: str, prompt_start: str, width: int = 512, height: int = 512, gif_ping_pong: bool = False, output_format: str = 'gif', guidance_scale: float = 7.5, prompt_strength: float = 0.8, film_interpolation: bool = True, intermediate_output: bool = False, num_inference_steps: int = 50, num_animation_frames: int = 10, gif_frames_per_second: int = 20, num_interpolation_steps: int = 5, seed: Optional[int] = None, **kwargs):
+    def predictions(self, prompt_end: str, prompt_start: str, width: int = 512, height: int = 512, gif_ping_pong: bool = False, output_format: str = 'gif', guidance_scale: float = 7.5, prompt_strength: float = 0.8, film_interpolation: bool = True, intermediate_output: bool = False, num_inference_steps: int = 50, num_animation_frames: int = 10, gif_frames_per_second: int = 20, num_interpolation_steps: int = 5, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -47,4 +47,7 @@ class stable_diffusion_animation(FastSDK):
             
         """
         return self.submit_job("/predictions", prompt_end=prompt_end, prompt_start=prompt_start, width=width, height=height, gif_ping_pong=gif_ping_pong, output_format=output_format, guidance_scale=guidance_scale, prompt_strength=prompt_strength, film_interpolation=film_interpolation, intermediate_output=intermediate_output, num_inference_steps=num_inference_steps, num_animation_frames=num_animation_frames, gif_frames_per_second=gif_frames_per_second, num_interpolation_steps=num_interpolation_steps, seed=seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

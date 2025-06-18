@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class bark(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="7aeef358-94ec-4cc1-abd7-b238ac3a490a", api_key=api_key)
     
-    def predict(self, prompt: str = 'Hello, my name is Suno. And, uh — and I like pizza. [laughs] But I also have other interests such as playing tic tac toe.', text_temp: float = 0.7, output_full: bool = False, waveform_temp: float = 0.7, history_prompt: Optional[str] = None, custom_history_prompt: Optional[Union[MediaFile, str, bytes]] = None, **kwargs):
+    def predictions(self, prompt: str = 'Hello, my name is Suno. And, uh — and I like pizza. [laughs] But I also have other interests such as playing tic tac toe.', text_temp: float = 0.7, output_full: bool = False, waveform_temp: float = 0.7, history_prompt: Optional[str] = None, custom_history_prompt: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -31,4 +31,7 @@ class bark(FastSDK):
             
         """
         return self.submit_job("/predictions", prompt=prompt, text_temp=text_temp, output_full=output_full, waveform_temp=waveform_temp, history_prompt=history_prompt, custom_history_prompt=custom_history_prompt, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

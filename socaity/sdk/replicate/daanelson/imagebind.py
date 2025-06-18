@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class imagebind(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="9e850624-b6b5-458e-a445-56ee6b06e29b", api_key=api_key)
     
-    def predict(self, modality: str = 'vision', input: Optional[Union[MediaFile, str, bytes]] = None, text_input: Optional[str] = None, **kwargs):
+    def predictions(self, modality: str = 'vision', input: Optional[Union[MediaFile, str, bytes]] = None, text_input: Optional[str] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -25,4 +25,7 @@ class imagebind(FastSDK):
             
         """
         return self.submit_job("/predictions", modality=modality, input=input, text_input=text_input, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

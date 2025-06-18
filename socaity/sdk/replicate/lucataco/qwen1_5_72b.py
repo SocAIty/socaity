@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Optional
 
 
@@ -9,7 +9,7 @@ class qwen1_5_72b(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="8cc9762d-a6ee-4062-8283-089ef558bc06", api_key=api_key)
     
-    def predict(self, top_k: int = 1, top_p: float = 1.0, prompt: str = 'Give me a short introduction to large language model.', temperature: float = 1.0, system_prompt: str = 'You are a helpful assistant.', max_new_tokens: int = 512, repetition_penalty: float = 1.0, seed: Optional[int] = None, **kwargs):
+    def predictions(self, top_k: int = 1, top_p: float = 1.0, prompt: str = 'Give me a short introduction to large language model.', temperature: float = 1.0, system_prompt: str = 'You are a helpful assistant.', max_new_tokens: int = 512, repetition_penalty: float = 1.0, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -33,4 +33,7 @@ class qwen1_5_72b(FastSDK):
             
         """
         return self.submit_job("/predictions", top_k=top_k, top_p=top_p, prompt=prompt, temperature=temperature, system_prompt=system_prompt, max_new_tokens=max_new_tokens, repetition_penalty=repetition_penalty, seed=seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class owlvit_base_patch32(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="06f63a82-ad3f-4325-91f0-a348cd38852e", api_key=api_key)
     
-    def predict(self, threshold: float = 0.1, show_visualisation: bool = True, image: Optional[Union[MediaFile, str, bytes]] = None, query: Optional[str] = None, **kwargs):
+    def predictions(self, threshold: float = 0.1, show_visualisation: bool = True, image: Optional[Union[MediaFile, str, bytes]] = None, query: Optional[str] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -27,4 +27,7 @@ class owlvit_base_patch32(FastSDK):
             
         """
         return self.submit_job("/predictions", threshold=threshold, show_visualisation=show_visualisation, image=image, query=query, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Optional
 
 
@@ -9,7 +9,7 @@ class mochi_1(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="9da90610-f223-424d-abbb-2ad6c1d4b1ca", api_key=api_key)
     
-    def predict(self, fps: int = 30, prompt: str = "Close-up of a chameleon's eye, with its scaly skin changing color. Ultra high resolution 4k.", num_frames: int = 163, guidance_scale: float = 6.0, num_inference_steps: int = 64, seed: Optional[int] = None, **kwargs):
+    def predictions(self, fps: int = 30, prompt: str = "Close-up of a chameleon's eye, with its scaly skin changing color. Ultra high resolution 4k.", num_frames: int = 163, guidance_scale: float = 6.0, num_inference_steps: int = 64, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -29,4 +29,7 @@ class mochi_1(FastSDK):
             
         """
         return self.submit_job("/predictions", fps=fps, prompt=prompt, num_frames=num_frames, guidance_scale=guidance_scale, num_inference_steps=num_inference_steps, seed=seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

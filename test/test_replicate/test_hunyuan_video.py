@@ -1,12 +1,10 @@
-from socaity import SocaityServiceManager  # imported to create update first run
-from socaity.sdk.replicate import HunyuanVideo
-
-genai = HunyuanVideo()
-# genai = HunyuanVideo(service="replicate", api_key=os.getenv("REPLICATE_API_KEY", None))
-# genai = HunyuanVideo(service="socaity_local", api_key=os.getenv("SOCAITY_API_KEY", None))
+import os
+from socaity.sdk.replicate.tencent import hunyuan_video
 
 
 def test_text2video():
+    genai = hunyuan_video(api_key=os.getenv("SOCAITY_API_KEY", None))
+
     prompt = (
         "Rick (of Rick and Morty) sells a GPU over the counter in a computer store."
         "Rick is standing behind the counter. He already has the GPU in his hand and is not moving within the store."
@@ -28,10 +26,6 @@ def test_text2video():
     for i, v in enumerate(vid):
         v.save(f"test_files/output/text2video/test_hunyuan_video_{i+1}.mp4")
 
+
 if __name__ == "__main__":
-
-    #from media_toolkit import VideoFile
-    #v = VideoFile().from_any('https://replicate.delivery/xezq/wUs83jTFvo4xOdTAUarf6VFRtYwF0i3BqyS5drN87lYElFBKA/video.mp4')
-    #a = 1
-
     test_text2video()

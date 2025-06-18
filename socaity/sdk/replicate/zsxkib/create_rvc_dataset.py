@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 
 class create_rvc_dataset(FastSDK):
     """
@@ -7,7 +7,7 @@ class create_rvc_dataset(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="b4229eae-1f48-4adb-bcaf-502aaf304c25", api_key=api_key)
     
-    def predict(self, youtube_url: str, audio_name: str = 'rvc_v2_voices', **kwargs):
+    def predictions(self, youtube_url: str, audio_name: str = 'rvc_v2_voices', **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -19,4 +19,7 @@ class create_rvc_dataset(FastSDK):
             
         """
         return self.submit_job("/predictions", youtube_url=youtube_url, audio_name=audio_name, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class wan2_1_with_lora(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="bc1e7c1e-2347-4085-b329-a03904a4514e", api_key=api_key)
     
-    def predict(self, prompt: str, model: str = '14b', frames: int = 81, fast_mode: str = 'Balanced', resolution: str = '480p', aspect_ratio: str = '16:9', sample_shift: float = 8.0, sample_steps: int = 30, negative_prompt: str = '', lora_strength_clip: float = 1.0, sample_guide_scale: float = 5.0, lora_strength_model: float = 1.0, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, lora_url: Optional[str] = None, **kwargs):
+    def predictions(self, prompt: str, model: str = '14b', frames: int = 81, fast_mode: str = 'Balanced', resolution: str = '480p', aspect_ratio: str = '16:9', sample_shift: float = 8.0, sample_steps: int = 30, negative_prompt: str = '', lora_strength_clip: float = 1.0, sample_guide_scale: float = 5.0, lora_strength_model: float = 1.0, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, lora_url: Optional[str] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -49,4 +49,7 @@ class wan2_1_with_lora(FastSDK):
             
         """
         return self.submit_job("/predictions", prompt=prompt, model=model, frames=frames, fast_mode=fast_mode, resolution=resolution, aspect_ratio=aspect_ratio, sample_shift=sample_shift, sample_steps=sample_steps, negative_prompt=negative_prompt, lora_strength_clip=lora_strength_clip, sample_guide_scale=sample_guide_scale, lora_strength_model=lora_strength_model, seed=seed, image=image, lora_url=lora_url, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

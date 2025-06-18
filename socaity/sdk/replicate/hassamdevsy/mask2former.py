@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class mask2former(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="820f5706-634a-47e0-8412-011655f93527", api_key=api_key)
     
-    def predict(self, image: Union[MediaFile, str, bytes], **kwargs):
+    def predictions(self, image: Union[MediaFile, str, bytes], **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -21,4 +21,7 @@ class mask2former(FastSDK):
             
         """
         return self.submit_job("/predictions", image=image, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

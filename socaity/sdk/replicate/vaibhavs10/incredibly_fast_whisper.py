@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class incredibly_fast_whisper(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="93029465-6cee-4127-ad03-389a16dd9f6f", api_key=api_key)
     
-    def predict(self, audio: Union[MediaFile, str, bytes], task: str = 'transcribe', language: str = 'None', timestamp: str = 'chunk', batch_size: int = 24, diarise_audio: bool = False, hf_token: Optional[str] = None, **kwargs):
+    def predictions(self, audio: Union[MediaFile, str, bytes], task: str = 'transcribe', language: str = 'None', timestamp: str = 'chunk', batch_size: int = 24, diarise_audio: bool = False, hf_token: Optional[str] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -33,4 +33,7 @@ class incredibly_fast_whisper(FastSDK):
             
         """
         return self.submit_job("/predictions", audio=audio, task=task, language=language, timestamp=timestamp, batch_size=batch_size, diarise_audio=diarise_audio, hf_token=hf_token, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

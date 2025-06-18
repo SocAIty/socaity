@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 
 class gpt_j_6b(FastSDK):
     """
@@ -7,7 +7,7 @@ class gpt_j_6b(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="7bc71c35-504b-473a-bd3d-e62f0d526bf8", api_key=api_key)
     
-    def predict(self, prompt: str, top_k: int = 50, top_p: float = 1.0, decoding: str = 'top_p', max_length: int = 500, temperature: float = 0.75, repetition_penalty: float = 1.2, **kwargs):
+    def predictions(self, prompt: str, top_k: int = 50, top_p: float = 1.0, decoding: str = 'top_p', max_length: int = 500, temperature: float = 0.75, repetition_penalty: float = 1.2, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -29,4 +29,7 @@ class gpt_j_6b(FastSDK):
             
         """
         return self.submit_job("/predictions", prompt=prompt, top_k=top_k, top_p=top_p, decoding=decoding, max_length=max_length, temperature=temperature, repetition_penalty=repetition_penalty, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

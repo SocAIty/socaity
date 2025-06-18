@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 
 class clip_features(FastSDK):
     """
@@ -7,7 +7,7 @@ class clip_features(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="c0c833f2-2dc4-43b5-8c2a-09bf8d70c89c", api_key=api_key)
     
-    def predict(self, inputs: str = 'a\nb', **kwargs):
+    def predictions(self, inputs: str = 'a\nb', **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -17,4 +17,7 @@ class clip_features(FastSDK):
             
         """
         return self.submit_job("/predictions", inputs=inputs, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

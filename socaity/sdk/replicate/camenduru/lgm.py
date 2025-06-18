@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class lgm(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="576eb7a3-8357-412d-be64-4f7f531bb198", api_key=api_key)
     
-    def predict(self, input_image: Union[MediaFile, str, bytes], seed: int = 42, prompt: str = 'a songbird', negative_prompt: str = 'ugly, blurry, pixelated obscure, unnatural colors, poor lighting, dull, unclear, cropped, lowres, low quality, artifacts, duplicate', **kwargs):
+    def predictions(self, input_image: Union[MediaFile, str, bytes], seed: int = 42, prompt: str = 'a songbird', negative_prompt: str = 'ugly, blurry, pixelated obscure, unnatural colors, poor lighting, dull, unclear, cropped, lowres, low quality, artifacts, duplicate', **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -27,4 +27,7 @@ class lgm(FastSDK):
             
         """
         return self.submit_job("/predictions", input_image=input_image, seed=seed, prompt=prompt, negative_prompt=negative_prompt, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

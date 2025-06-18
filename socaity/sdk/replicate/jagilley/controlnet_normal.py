@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class controlnet_normal(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="d5b65bd9-c507-4297-a1aa-e9a885651f7f", api_key=api_key)
     
-    def predict(self, image: Union[MediaFile, str, bytes], prompt: str, eta: float = 0.0, scale: float = 9.0, a_prompt: str = 'best quality, extremely detailed', n_prompt: str = 'longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality', ddim_steps: int = 20, num_samples: str = '1', bg_threshold: float = 0.0, image_resolution: str = '512', detect_resolution: int = 512, seed: Optional[int] = None, **kwargs):
+    def predictions(self, image: Union[MediaFile, str, bytes], prompt: str, eta: float = 0.0, scale: float = 9.0, a_prompt: str = 'best quality, extremely detailed', n_prompt: str = 'longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality', ddim_steps: int = 20, num_samples: str = '1', bg_threshold: float = 0.0, image_resolution: str = '512', detect_resolution: int = 512, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -43,4 +43,7 @@ class controlnet_normal(FastSDK):
             
         """
         return self.submit_job("/predictions", image=image, prompt=prompt, eta=eta, scale=scale, a_prompt=a_prompt, n_prompt=n_prompt, ddim_steps=ddim_steps, num_samples=num_samples, bg_threshold=bg_threshold, image_resolution=image_resolution, detect_resolution=detect_resolution, seed=seed, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

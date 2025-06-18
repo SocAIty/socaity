@@ -22,10 +22,10 @@
             }
         },
         {
-            "name": "Python: Tests",
+            "name": "Python: Test socaity SDK",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/test",
+            "program": "${workspaceFolder}/test/test_models.py",
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
@@ -46,6 +46,16 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/test/test_spechcraft.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
+            }
+        },
+        {
+            "name": "Python: Test DeepSeek",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/test/test_replicate/test_deepseek.py",
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"

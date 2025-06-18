@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class mask_maker(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="d1b3584b-c64d-4a9d-9a4a-539921f667e4", api_key=api_key)
     
-    def predict(self, image: Union[MediaFile, str, bytes], threshold: float = 0.2, mask_format: str = 'coco_rle', mask_output: str = '', mask_prompt: Optional[str] = None, **kwargs):
+    def predictions(self, image: Union[MediaFile, str, bytes], threshold: float = 0.2, mask_format: str = 'coco_rle', mask_output: str = '', mask_prompt: Optional[str] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -29,4 +29,7 @@ class mask_maker(FastSDK):
             
         """
         return self.submit_job("/predictions", image=image, threshold=threshold, mask_format=mask_format, mask_output=mask_output, mask_prompt=mask_prompt, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

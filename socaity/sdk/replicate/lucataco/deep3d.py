@@ -1,4 +1,4 @@
-from fastsdk.fastSDK import FastSDK
+from fastsdk import FastSDK, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
@@ -11,7 +11,7 @@ class deep3d(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="2a83dbc4-4a08-4d65-bc04-8192adf0324b", api_key=api_key)
     
-    def predict(self, video: Union[MediaFile, str, bytes], model: str = 'deep3d_v1.0_640x360', **kwargs):
+    def predictions(self, video: Union[MediaFile, str, bytes], model: str = 'deep3d_v1.0_640x360', **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -23,4 +23,7 @@ class deep3d(FastSDK):
             
         """
         return self.submit_job("/predictions", video=video, model=model, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions

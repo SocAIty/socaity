@@ -1,5 +1,5 @@
-from fastsdk.fastSDK import FastSDK
-from typing import Union, Optional
+from fastsdk import FastSDK, APISeex
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,7 @@ class rvc_v2(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="ceaa8915-7b34-4775-b445-bf769fe8c5a2", api_key=api_key)
     
-    def predict(self, protect: float = 0.33, f0_method: str = 'rmvpe', rvc_model: str = 'Obama', index_rate: float = 0.5, pitch_change: float = 0.0, rms_mix_rate: float = 0.25, filter_radius: int = 3, output_format: str = 'mp3', crepe_hop_length: int = 128, input_audio: Optional[Union[MediaFile, str, bytes]] = None, custom_rvc_model_download_url: Optional[str] = None, **kwargs):
+    def predictions(self, protect: float = 0.33, f0_method: str = 'rmvpe', rvc_model: str = 'Obama', index_rate: float = 0.5, pitch_change: float = 0.0, rms_mix_rate: float = 0.25, filter_radius: int = 3, output_format: str = 'mp3', crepe_hop_length: int = 128, input_audio: Optional[Union[MediaFile, str, bytes]] = None, custom_rvc_model_download_url: Optional[str] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -41,4 +41,7 @@ class rvc_v2(FastSDK):
             
         """
         return self.submit_job("/predictions", protect=protect, f0_method=f0_method, rvc_model=rvc_model, index_rate=index_rate, pitch_change=pitch_change, rms_mix_rate=rms_mix_rate, filter_radius=filter_radius, output_format=output_format, crepe_hop_length=crepe_hop_length, input_audio=input_audio, custom_rvc_model_download_url=custom_rvc_model_download_url, **kwargs)
-     
+    
+    # Convenience aliases for the primary endpoint
+    run = predictions
+    __call__ = predictions
