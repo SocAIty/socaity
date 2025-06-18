@@ -1,5 +1,5 @@
 from fastsdk import FastSDK, APISeex
-from typing import Dict, List, Union, Any, Optional
+from typing import List, Optional, Any, Dict, Union
 
 from media_toolkit import MediaFile
 

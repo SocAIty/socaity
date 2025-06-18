@@ -5,7 +5,7 @@ from socaity.sdk.replicate.black_forest_labs import flux_schnell
 
 deepseek = deepseek_v3(api_key=os.getenv("SOCAITY_API_KEY"))
 poem = deepseek(prompt="Write a poem with 3 sentences why a SDK is so much better than plain web requests.").get_result()
-poem = poem.join("")
+poem = "".join(poem)
 
 audiogen = speechcraft(api_key=os.getenv("SOCAITY_API_KEY"))
 audio = audiogen.text2voice(text=poem, voice="hermine")
