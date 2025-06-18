@@ -96,6 +96,7 @@ image.get_result().save("sdk_poem.png")
 ```
 This results in something like this:
 
+https://github.com/user-attachments/assets/978ee377-3ceb-4a87-add5-daee15306231
 
 ### Jobs vs. Results
 
@@ -103,22 +104,12 @@ When you invoke an service, internally we use threading and asyncio to check the
 This makes it possible to run multiple services in parallel and is very efficient.
 ```python
 # the base method always returns a job
-d_job = deepseek.chat("Write a poem with 3 sentences why a SDK is so much better than plain web requests.")
+d_job = deepseek("Write a poem with 3 sentences why a SDK is so much better than plain web requests.")
 # in the meantime you can call other services or do what you want
 ... do other things here ... 
 # when you need the result you can call get_result()
 poem = d_job.get_result()
 ```
-To simplify even more you can use the helper functions with the argument `await_result=True` then the function will block until the result is available.
-```python
-from socaity import chat 
-poem = chat("Write a poem with 3 sentences why a SDK is so much better than plain web requests.", await_result=True)
-```
-
-
-https://github.com/user-attachments/assets/978ee377-3ceb-4a87-add5-daee15306231
-
-
 
 # Model zoo
 
@@ -128,8 +119,9 @@ To start here's a list of some of the models you can use with the SDK.
 Just import them with ```from socaity import ...``` to use them.
 
 ### Text domain
-- DeepSeek-R1
-- LLama3 Family (8b, 13b, 70b models. Codellama and Instruct models)
+- DeepSeek models
+- OpenAPI models
+- LLama3 Family (8b, 13b, 70b models)
 
 ### Image domain
 - FluxSchnell (Text2Image)
@@ -155,40 +147,16 @@ Hosted  | Use the AIs hosted on socaity servers or of another provider.  | Runs 
 Hybrid | Deploy on runpod, locally and use socaity services.            | Full flexibility                               | Effort
 
 
-### Example: deploying and using an service locally 
 
-This example demonstrates the use case with [face2face](https://github.com/SocAIty/face2face).
-With face2face you can swap faces, restore images and detect faces in images.
-```bash
-# Install the package
-pip install face2face
-# Start the server on localhost 
-python -m face2face.server
-```
-Now you can use the SDK with the service parameter set to "localhost"
-```python
-from socaity import Face2Face
-f2f = Face2Face(service="localhost")
-f2f.swap_img_to_img("path/to/image1.jpg", "path/to/image2.jpg")
-```
 
-Socaity publishes services open-source. So you can use any of them in a similar way.
+### Hosting a service on Socaity.ai
+
+Any service created with [fasttaskapi]() can be hosted on socaity.ai for free if made public. You can even earn some credits.
+The service will then be added to the socaity SDK.
+Checkout [https://www.socaity.ai] for more information.
 
 Furthermore: any service that is created with [FastTaskAPI](https://github.com/SocAIty/FastTaskAPI) can be easily used in combination with [FastSDK](https://github.com/SocaIty/fastsdk).
 Checkout the [FastSDK](https://github.com/SocaIty/fastsdk) documentation for more information.
-
-### Example: using a service hosted on runpod
-
-We assume the service is already hosted. FastTaskAPI makes it incredibly easy to deploy services.
-Checkout the [FastTaskAPI](https://github.com/SocAIty/FastTaskAPI) documentation to learn how to host on runpod.
-```python
-# setup adresses
-from socaity.api.image.img2img.face2face.face2face_service_client import srvc_face2face
-srvc_face2face.add_service_url("my_runpod", "https://api.runpod.ai/v2/your_runpod_service_id")
-# use the service
-f2f = Face2Face(service="my_runpod", api_key="your_api_key")
-f2f.swap_img_to_img("path/to/image1.jpg", "path/to/image2.jpg")
-```
 
 
 # Important Note
