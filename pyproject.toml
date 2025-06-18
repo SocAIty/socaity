@@ -15,8 +15,8 @@ readme = "README.md"
 dependencies = [
     "tqdm",
     "httpx",
-    "fastsdk>=00.02.00",
-    "media-toolkit[VideoFile]>=00.02.03",
+    "fastsdk>=0.2.1",
+    "media-toolkit[VideoFile]>=00.02.06",
     "singleton_decorator==1.0.0"
 ]
 
