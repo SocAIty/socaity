@@ -45,14 +45,9 @@ Now you are ready to use the SDK.
 **Alternatively** you can set the API key in your code when using the SDK. 
 We don't recommend this, as it a common mistake to push your code including your API key to a public repository.
 ```python
-from socaity import speechcraft
-genAI = speechcraft(api_key="sk..your_api_key")
+from socaity import face2face
+f2f = face2face(api_key="sk..your_api_key")
 ```
-
-If you **instead** want to directly communicate with your runpod services or replicate you can set 
-the environment variable `SOCAITY_API_KEY="sk..."`.
-When initializing your ModelClient you can additionally pass which provider you want to use by using "service" parameter.
-
 # Quick start
 
 Import a model from the model-zoo or just use the simple API (text2img, text2speech etc.)
