@@ -45,12 +45,12 @@ Now you are ready to use the SDK.
 **Alternatively** you can set the API key in your code when using the SDK. 
 We don't recommend this, as it a common mistake to push your code including your API key to a public repository.
 ```python
-from socaity import FluxSchnell
-flux_schnell = FluxSchnell(service="socaity", api_key="sai..your_api_key")
+from socaity import speechcraft
+genAI = speechcraft(api_key="sk..your_api_key")
 ```
 
 If you **instead** want to directly communicate with your runpod services or replicate you can set 
-the environment variable `RUNPOD_API_KEY` or `REPLICATE_API_KEY`.
+the environment variable `SOCAITY_API_KEY="sk..."`.
 When initializing your ModelClient you can additionally pass which provider you want to use by using "service" parameter.
 
 # Quick start
