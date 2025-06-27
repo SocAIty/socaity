@@ -14,8 +14,6 @@ If you are a Software Engineer, Game Developer, Artist, Content Creator and you 
 For an overview of all models and to obtain an API key visit [socaity.ai](https://www.socaity.ai)
 
 Run models as if they were python functions nomatter where they are deployed:
-- hosted on socaity servers (default)
-- deployed on your localhost / your own server- hybrid deployment
 
 You can focus on your app, while we handle all the complicated stuff under the hood.
 

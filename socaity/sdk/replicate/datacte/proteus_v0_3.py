@@ -11,9 +11,9 @@ class proteus_v0_3(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="eef5966d-7af3-4675-9e75-ec6201c0a9e6", api_key=api_key)
     
-    def predictions(self, width: int = 1024, height: int = 1024, prompt: str = 'Anime full body portrait of a swordsman holding his weapon in front of him. He is facing the camera with a fierce look on his face. Anime key visual (best quality, HD, ~+~aesthetic~+~:1.2)', scheduler: str = 'DPM++2MSDE', num_outputs: int = 1, guidance_scale: float = 7.5, apply_watermark: bool = True, negative_prompt: str = 'worst quality, low quality', prompt_strength: float = 0.8, num_inference_steps: int = 20, disable_safety_checker: bool = False, mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, width: int = 1024, height: int = 1024, prompt: str = 'Anime full body portrait of a swordsman holding his weapon in front of him. He is facing the camera with a fierce look on his face. Anime key visual (best quality, HD, ~+~aesthetic~+~:1.2)', scheduler: str = 'DPM++2MSDE', num_outputs: int = 1, guidance_scale: float = 7.5, apply_watermark: bool = True, negative_prompt: str = 'worst quality, low quality', prompt_strength: float = 0.8, num_inference_steps: int = 20, disable_safety_checker: bool = False, mask: Optional[Union[str, MediaFile, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

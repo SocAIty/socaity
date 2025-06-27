@@ -9,7 +9,7 @@ class lgm_ply_to_glb(FastSDK):
     
     def predictions(self, ply_file_url: str, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

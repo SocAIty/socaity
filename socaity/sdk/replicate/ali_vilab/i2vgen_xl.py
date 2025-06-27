@@ -11,9 +11,9 @@ class i2vgen_xl(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="d199690f-be1a-4727-9e5e-f027245f461a", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], prompt: str, max_frames: int = 16, guidance_scale: float = 9.0, num_inference_steps: int = 50, seed: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], prompt: str, max_frames: int = 16, guidance_scale: float = 9.0, num_inference_steps: int = 50, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

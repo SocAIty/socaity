@@ -11,9 +11,9 @@ class addwatermark(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="1f2e4a2e-b421-4a6e-8021-79ffb4fca4b3", api_key=api_key)
     
-    def predictions(self, video: Union[MediaFile, str, bytes], size: int = 40, watermark: str = 'FULLJOURNEY.AI', **kwargs) -> APISeex:
+    def predictions(self, video: Union[str, MediaFile, bytes], size: int = 40, watermark: str = 'FULLJOURNEY.AI', **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

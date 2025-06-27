@@ -11,9 +11,9 @@ class supir(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="05ee9d66-1243-46d8-92c8-6cd343820df4", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], s_cfg: float = 7.5, s_churn: float = 5.0, s_noise: float = 1.003, upscale: int = 1, a_prompt: str = 'Cinematic, High Contrast, highly detailed, taken using a Canon EOS R camera, hyper detailed photo - realistic maximum detail, 32k, Color Grading, ultra HD, extreme meticulous detailing, skin pore detailing, hyper sharpness, perfect without deformations.', min_size: float = 1024.0, n_prompt: str = 'painting, oil painting, illustration, drawing, art, sketch, oil painting, cartoon, CG Style, 3D render, unreal engine, blurring, dirty, messy, worst quality, low quality, frames, watermark, signature, jpeg artifacts, deformed, lowres, over-smooth', s_stage1: int = -1, s_stage2: float = 1.0, edm_steps: int = 50, use_llava: bool = True, linear: bool = False, model_name: str = 'SUPIR-v0Q', color_fix_type: str = 'Wavelet', spt_linear: float = 1.0, linear_s_stage2: bool = False, spt_linear_s_stage2: float = 0.0, seed: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], s_cfg: float = 7.5, s_churn: float = 5.0, s_noise: float = 1.003, upscale: int = 1, a_prompt: str = 'Cinematic, High Contrast, highly detailed, taken using a Canon EOS R camera, hyper detailed photo - realistic maximum detail, 32k, Color Grading, ultra HD, extreme meticulous detailing, skin pore detailing, hyper sharpness, perfect without deformations.', min_size: float = 1024.0, n_prompt: str = 'painting, oil painting, illustration, drawing, art, sketch, oil painting, cartoon, CG Style, 3D render, unreal engine, blurring, dirty, messy, worst quality, low quality, frames, watermark, signature, jpeg artifacts, deformed, lowres, over-smooth', s_stage1: int = -1, s_stage2: float = 1.0, edm_steps: int = 50, use_llava: bool = True, linear: bool = False, model_name: str = 'SUPIR-v0Q', color_fix_type: str = 'Wavelet', spt_linear: float = 1.0, linear_s_stage2: bool = False, spt_linear_s_stage2: float = 0.0, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

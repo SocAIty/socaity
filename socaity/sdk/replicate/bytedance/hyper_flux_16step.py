@@ -11,7 +11,7 @@ class hyper_flux_16step(FastSDK):
     
     def predictions(self, prompt: str, num_outputs: int = 1, aspect_ratio: str = '1:1', output_format: str = 'webp', guidance_scale: float = 3.5, output_quality: int = 80, num_inference_steps: int = 16, disable_safety_checker: bool = False, seed: Optional[int] = None, width: Optional[int] = None, height: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

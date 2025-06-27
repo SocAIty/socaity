@@ -8,11 +8,12 @@ from socaity.sdk.replicate.zsxkib.diffbir import diffbir
 from socaity.sdk.replicate.zsxkib.film_frame_interpolation_for_large_motion import film_frame_interpolation_for_large_motion
 from socaity.sdk.replicate.zsxkib.flux_music import flux_music
 from socaity.sdk.replicate.zsxkib.hunyuan_video2video import hunyuan_video2video
+from socaity.sdk.replicate.zsxkib.ic_light_background import ic_light_background
 from socaity.sdk.replicate.zsxkib.jina_clip_v2 import jina_clip_v2
 from socaity.sdk.replicate.zsxkib.mimic_motion import mimic_motion
 from socaity.sdk.replicate.zsxkib.mmaudio import mmaudio
+from socaity.sdk.replicate.zsxkib.pyramid_flow import pyramid_flow
 from socaity.sdk.replicate.zsxkib.realistic_voice_cloning import realistic_voice_cloning
 from socaity.sdk.replicate.zsxkib.samurai import samurai
 from socaity.sdk.replicate.zsxkib.stable_video_face_restoration import stable_video_face_restoration
 from socaity.sdk.replicate.zsxkib.yolo_world import yolo_world
-from socaity.sdk.replicate.zsxkibramid_flow import pyramid_flow

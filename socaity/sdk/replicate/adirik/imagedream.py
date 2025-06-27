@@ -11,9 +11,9 @@ class imagedream(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="ce95efe9-fad5-4a29-a402-8d0fe4ba9630", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], prompt: str, shading: bool = False, num_steps: int = 12500, guidance_scale: float = 5.0, negative_prompt: str = 'ugly, bad anatomy, blurry, pixelated obscure, unnatural colors, poor lighting, dull, and unclear, cropped, lowres, low quality, artifacts, duplicate, morbid, mutilated, poorly drawn face, deformed, dehydrated, bad proportions', seed: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], prompt: str, shading: bool = False, num_steps: int = 12500, guidance_scale: float = 5.0, negative_prompt: str = 'ugly, bad anatomy, blurry, pixelated obscure, unnatural colors, poor lighting, dull, and unclear, cropped, lowres, low quality, artifacts, duplicate, morbid, mutilated, poorly drawn face, deformed, dehydrated, bad proportions', seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

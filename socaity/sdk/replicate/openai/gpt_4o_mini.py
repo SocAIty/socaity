@@ -1,5 +1,5 @@
 from fastsdk import FastSDK, APISeex
-from typing import List, Optional, Union, Any
+from typing import Optional, List, Any, Union
 
 from media_toolkit import MediaFile
 
@@ -11,15 +11,15 @@ class gpt_4o_mini(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="09f23f97-71ce-49b0-b6a6-9817472c703f", api_key=api_key)
     
-    def predictions(self, top_p: float = 1.0, image_input: Union[List[Any], MediaFile, str, bytes] = [], temperature: float = 1.0, presence_penalty: float = 0.0, frequency_penalty: float = 0.0, max_completion_tokens: int = 4096, prompt: Optional[str] = None, system_prompt: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, top_p: float = 1.0, image_input: Union[str, MediaFile, List[Any], bytes] = '[]', temperature: float = 1.0, presence_penalty: float = 0.0, frequency_penalty: float = 0.0, max_completion_tokens: int = 4096, prompt: Optional[str] = None, system_prompt: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:
             top_p: Nucleus sampling parameter - the model considers the results of the tokens with top_p probability mass. (0.1 means only the tokens comprising the top 10% probability mass are considered.) Defaults to 1.0.
             
-            image_input: List of images to send to the model Defaults to [].
+            image_input: List of images to send to the model Defaults to '[]'.
             
             temperature: Sampling temperature between 0 and 2 Defaults to 1.0.
             

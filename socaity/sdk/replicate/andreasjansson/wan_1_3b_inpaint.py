@@ -11,9 +11,9 @@ class wan_1_3b_inpaint(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="8c6671c9-d902-4c4e-9ec8-3d5e5844034b", api_key=api_key)
     
-    def predictions(self, prompt: str, input_video: Union[MediaFile, str, bytes], seed: int = -1, strength: float = 0.9, expand_mask: int = 10, guide_scale: float = 5.0, sampling_steps: int = 50, negative_prompt: str = '', frames_per_second: int = 16, keep_aspect_ratio: bool = False, inpaint_fixup_steps: int = 0, mask_video: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, prompt: str, input_video: Union[str, MediaFile, bytes], seed: int = -1, strength: float = 0.9, expand_mask: int = 10, guide_scale: float = 5.0, sampling_steps: int = 50, negative_prompt: str = '', frames_per_second: int = 16, keep_aspect_ratio: bool = False, inpaint_fixup_steps: int = 0, mask_video: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

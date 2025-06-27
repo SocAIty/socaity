@@ -11,16 +11,9 @@ class whisper(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="6cc28a27-46eb-490e-be58-ce948c221273", api_key=api_key)
     
-    def ready(self, **kwargs) -> APISeex:
+    def predictions(self, audio: Union[str, MediaFile, bytes], language: str = 'auto', translate: bool = False, temperature: float = 0.0, transcription: str = 'plain text', suppress_tokens: str = '-1', logprob_threshold: float = -1.0, no_speech_threshold: float = 0.6, condition_on_previous_text: bool = True, compression_ratio_threshold: float = 2.4, temperature_increment_on_fallback: float = 0.2, patience: Optional[float] = None, initial_prompt: Optional[str] = None, **kwargs) -> APISeex:
         """
-        None
         
-        """
-        return self.submit_job("/ready", **kwargs)
-    
-    def predictions(self, audio: Union[MediaFile, str, bytes], language: str = 'auto', translate: bool = False, temperature: float = 0.0, transcription: str = 'plain text', suppress_tokens: str = '-1', logprob_threshold: float = -1.0, no_speech_threshold: float = 0.6, condition_on_previous_text: bool = True, compression_ratio_threshold: float = 2.4, temperature_increment_on_fallback: float = 0.2, patience: Optional[float] = None, initial_prompt: Optional[str] = None, **kwargs) -> APISeex:
-        """
-        Run a single prediction on the model
         
         
         Args:
@@ -54,5 +47,5 @@ class whisper(FastSDK):
         return self.submit_job("/predictions", audio=audio, language=language, translate=translate, temperature=temperature, transcription=transcription, suppress_tokens=suppress_tokens, logprob_threshold=logprob_threshold, no_speech_threshold=no_speech_threshold, condition_on_previous_text=condition_on_previous_text, compression_ratio_threshold=compression_ratio_threshold, temperature_increment_on_fallback=temperature_increment_on_fallback, patience=patience, initial_prompt=initial_prompt, **kwargs)
     
     # Convenience aliases for the primary endpoint
-    run = ready
-    __call__ = ready
+    run = predictions
+    __call__ = predictions

@@ -9,7 +9,7 @@ class animatediff_prompt_travel(FastSDK):
     
     def predictions(self, seed: int = -1, steps: int = 25, width: int = 256, frames: int = 128, height: int = 384, context: int = 16, clip_skip: int = 2, scheduler: str = 'k_dpmpp_sde', base_model: str = 'majicmixRealistic_v5Preview', prompt_map: str = '0: ship steadily moving,((waves crashing against the ship:1.0)) | 32: (((lightning strikes))), distant thunder, ship rocked by waves | 64: ship silhouette,(((heavy rain))),wind howling, waves rising higher | 96: ship navigating through the storm, rain easing off', head_prompt: str = 'masterpiece, best quality, a haunting and detailed depiction of a ship at sea, battered by waves, ominous,((dark clouds:1.3)),distant lightning, rough seas, rain, silhouette of the ship against the stormy sky', tail_prompt: str = "dark horizon, flashes of lightning illuminating the ship, sailors working hard, ship's lanterns flickering, eerie, mysterious, sails flapping loudly, stormy atmosphere", output_format: str = 'mp4', guidance_scale: float = 7.5, negative_prompt: str = '(worst quality, low quality:1.4), black and white, b&w, sunny, clear skies, calm seas, beach, daytime, ((bright colors)), cartoonish, modern ships, sketchy, unfinished, modern buildings, trees, island', prompt_fixed_ratio: float = 0.5, custom_base_model_url: str = '', playback_frames_per_second: int = 8, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

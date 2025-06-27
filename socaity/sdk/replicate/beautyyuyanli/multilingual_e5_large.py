@@ -9,7 +9,7 @@ class multilingual_e5_large(FastSDK):
     
     def predictions(self, texts: str = '["In the water, fish are swimming.", "Fish swim in the water.", "A book lies open on the table."]', batch_size: int = 32, normalize_embeddings: bool = True, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

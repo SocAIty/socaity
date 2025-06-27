@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.center_for_curriculum_redesign.bge_1_5_query_embeddings import bge_1_5_query_embeddings

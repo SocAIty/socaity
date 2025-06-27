@@ -7,16 +7,9 @@ class cogvideox_5b(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="579d6489-362b-4a37-b0fd-9ef14b7c8882", api_key=api_key)
     
-    def ready(self, **kwargs) -> APISeex:
-        """
-        None
-        
-        """
-        return self.submit_job("/ready", **kwargs)
-    
     def predictions(self, prompt: str, seed: int = 42, steps: int = 50, guidance: float = 6.0, num_outputs: int = 1, extend_prompt: bool = True, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:
@@ -36,5 +29,5 @@ class cogvideox_5b(FastSDK):
         return self.submit_job("/predictions", prompt=prompt, seed=seed, steps=steps, guidance=guidance, num_outputs=num_outputs, extend_prompt=extend_prompt, **kwargs)
     
     # Convenience aliases for the primary endpoint
-    run = ready
-    __call__ = ready
+    run = predictions
+    __call__ = predictions

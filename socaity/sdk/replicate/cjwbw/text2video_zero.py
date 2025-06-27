@@ -11,7 +11,7 @@ class text2video_zero(FastSDK):
     
     def predictions(self, fps: int = 4, prompt: str = 'A horse galloping on a street', model_name: str = 'dreamlike-art/dreamlike-photoreal-2.0', timestep_t0: int = 44, timestep_t1: int = 47, video_length: int = 20, negative_prompt: str = '', motion_field_strength_x: int = 12, motion_field_strength_y: int = 12, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

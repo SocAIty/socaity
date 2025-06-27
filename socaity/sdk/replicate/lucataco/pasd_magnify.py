@@ -11,9 +11,9 @@ class pasd_magnify(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="ebd8b0d6-d26d-45b8-8ec9-4d33df9f714d", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], prompt: str = 'Frog, clean, high-resolution, 8k, best quality, masterpiece', n_prompt: str = 'dotted, noise, blur, lowres, oversmooth, longbody, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality', denoise_steps: int = 20, guidance_scale: float = 7.5, upsample_scale: int = 2, conditioning_scale: float = 1.1, seed: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], prompt: str = 'Frog, clean, high-resolution, 8k, best quality, masterpiece', n_prompt: str = 'dotted, noise, blur, lowres, oversmooth, longbody, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality', denoise_steps: int = 20, guidance_scale: float = 7.5, upsample_scale: int = 2, conditioning_scale: float = 1.1, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

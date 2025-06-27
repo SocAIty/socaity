@@ -9,7 +9,7 @@ class snowflake_arctic_embed_l(FastSDK):
     
     def predictions(self, prompt: str = 'Snowflake is the Data Cloud!', **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

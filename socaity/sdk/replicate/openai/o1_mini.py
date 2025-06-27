@@ -11,7 +11,7 @@ class o1_mini(FastSDK):
     
     def predictions(self, max_completion_tokens: int = 4096, prompt: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

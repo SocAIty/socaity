@@ -11,9 +11,9 @@ class video_split(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="c51c85bb-b396-4089-84a5-3a706c8e8756", api_key=api_key)
     
-    def predictions(self, input_video: Union[MediaFile, str, bytes], target_fps: int = 30, target_width: int = 848, target_height: int = 480, create_captions: bool = False, target_duration: float = 2.0, **kwargs) -> APISeex:
+    def predictions(self, input_video: Union[str, MediaFile, bytes], target_fps: int = 30, target_width: int = 848, target_height: int = 480, create_captions: bool = False, target_duration: float = 2.0, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

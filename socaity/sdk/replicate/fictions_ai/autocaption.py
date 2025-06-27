@@ -11,9 +11,9 @@ class autocaption(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="2fd8cd0d-99dc-469b-8550-0f14c0f08ca1", api_key=api_key)
     
-    def predictions(self, video_file_input: Union[MediaFile, str, bytes], font: str = 'Poppins/Poppins-ExtraBold.ttf', color: str = 'white', kerning: float = -5.0, opacity: float = 0.0, ax_hars: int = 20, fontsize: float = 7.0, translate: bool = False, output_video: bool = True, stroke_color: str = 'black', stroke_width: float = 2.6, right_to_left: bool = False, subs_position: str = 'bottom75', highlight_color: str = 'yellow', output_transcript: bool = True, transcript_file_input: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, video_file_input: Union[str, MediaFile, bytes], font: str = 'Poppins/Poppins-ExtraBold.ttf', color: str = 'white', kerning: float = -5.0, opacity: float = 0.0, ax_hars: int = 20, fontsize: float = 7.0, translate: bool = False, output_video: bool = True, stroke_color: str = 'black', stroke_width: float = 2.6, right_to_left: bool = False, subs_position: str = 'bottom75', highlight_color: str = 'yellow', output_transcript: bool = True, transcript_file_input: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

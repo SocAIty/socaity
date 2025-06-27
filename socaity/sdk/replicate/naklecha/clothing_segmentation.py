@@ -11,9 +11,9 @@ class clothing_segmentation(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="bb3f71e6-4cfa-4d75-a39c-ad86f5816ef2", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], clothing: str = 'topwear', **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], clothing: str = 'topwear', **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

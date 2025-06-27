@@ -1,5 +1,5 @@
 from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from typing import Dict, Optional, Any, Union
 
 from media_toolkit import MediaFile
 
@@ -11,7 +11,21 @@ class kandinsky_2_1(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="89ca03f9-0f9c-4a7a-b45e-a3365b7e02a6", api_key=api_key)
     
-    def predictions(self, task: str = 'text2img', width: int = 512, height: int = 512, prompt: str = 'A alien cheeseburger creature eating itself, claymation, cinematic, moody lighting', strength: float = 0.3, num_outputs: int = 1, guidance_scale: float = 4.0, negative_prompt: str = 'low quality, bad quality', num_steps_prior: int = 25, num_inference_steps: int = 100, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def no_name(self, **kwargs) -> APISeex:
+        """
+        None
+        
+        """
+        return self.submit_job("/", **kwargs)
+    
+    def shutdown(self, **kwargs) -> APISeex:
+        """
+        None
+        
+        """
+        return self.submit_job("/shutdown", **kwargs)
+    
+    def predictions(self, task: str = 'text2img', width: int = 512, height: int = 512, prompt: str = 'A alien cheeseburger creature eating itself, claymation, cinematic, moody lighting', strength: float = 0.3, num_outputs: int = 1, guidance_scale: float = 4.0, negative_prompt: str = 'low quality, bad quality', num_steps_prior: int = 25, num_inference_steps: int = 100, seed: Optional[int] = None, image: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -44,6 +58,31 @@ class kandinsky_2_1(FastSDK):
         """
         return self.submit_job("/predictions", task=task, width=width, height=height, prompt=prompt, strength=strength, num_outputs=num_outputs, guidance_scale=guidance_scale, negative_prompt=negative_prompt, num_steps_prior=num_steps_prior, num_inference_steps=num_inference_steps, seed=seed, image=image, **kwargs)
     
+    def health_check(self, **kwargs) -> APISeex:
+        """
+        None
+        
+        """
+        return self.submit_job("/health-check", **kwargs)
+    
+    def predictions_prediction_id(self, rediction_equest: Dict[str, Any], **kwargs) -> APISeex:
+        """
+        Run a single prediction on the model (idempotent creation).
+        
+        
+        Args:
+            rediction_equest: No description available.
+            
+        """
+        return self.submit_job("/predictions/{prediction_id}", rediction_equest=rediction_equest, **kwargs)
+    
+    def predictions_prediction_id_cancel(self, **kwargs) -> APISeex:
+        """
+        Cancel a running prediction
+        
+        """
+        return self.submit_job("/predictions/{prediction_id}/cancel", **kwargs)
+    
     # Convenience aliases for the primary endpoint
-    run = predictions
-    __call__ = predictions
+    run = no_name
+    __call__ = no_name

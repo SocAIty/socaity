@@ -9,7 +9,7 @@ class stable_diffusion_infinite_zoom(FastSDK):
     
     def predictions(self, prompt: str, inpaint_iter: int = 2, output_format: str = 'mp4', **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

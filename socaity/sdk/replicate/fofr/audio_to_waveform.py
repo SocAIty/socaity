@@ -11,9 +11,9 @@ class audio_to_waveform(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="60f4f983-b431-4032-b387-28a93edb15e1", api_key=api_key)
     
-    def predictions(self, audio: Union[MediaFile, str, bytes], bg_color: str = '#000000', fg_alpha: float = 0.75, bar_count: int = 100, bar_width: float = 0.4, bars_color: str = '#ffffff', caption_text: str = '', **kwargs) -> APISeex:
+    def predictions(self, audio: Union[str, MediaFile, bytes], bg_color: str = '#000000', fg_alpha: float = 0.75, bar_count: int = 100, bar_width: float = 0.4, bars_color: str = '#ffffff', caption_text: str = '', **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

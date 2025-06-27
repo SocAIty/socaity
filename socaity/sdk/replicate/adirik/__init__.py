@@ -3,6 +3,7 @@ from socaity.sdk.replicate.adirik.flux_cinestill import flux_cinestill
 from socaity.sdk.replicate.adirik.flux_fantasy_architecture import flux_fantasy_architecture
 from socaity.sdk.replicate.adirik.grounding_dino import grounding_dino
 from socaity.sdk.replicate.adirik.imagedream import imagedream
+from socaity.sdk.replicate.adirik.interior_design import interior_design
 from socaity.sdk.replicate.adirik.mamba_130m import mamba_130m
 from socaity.sdk.replicate.adirik.mamba_1_4b import mamba_1_4b
 from socaity.sdk.replicate.adirik.mamba_2_8b import mamba_2_8b

@@ -11,9 +11,9 @@ class controlnet_tile(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="5bf66383-8a5d-4cec-9d37-3f9fe24288a8", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], scale: int = 2, strength: float = 0.5, num_inference_steps: int = 32, seed: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], scale: int = 2, strength: float = 0.5, num_inference_steps: int = 32, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

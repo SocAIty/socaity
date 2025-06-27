@@ -11,7 +11,7 @@ class riffusion(FastSDK):
     
     def predictions(self, alpha: float = 0.5, prompt_a: str = 'funky synth solo', denoising: float = 0.75, seed_image_id: str = 'vibes', num_inference_steps: int = 50, prompt_b: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

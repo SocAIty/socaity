@@ -11,9 +11,9 @@ class mmaudio(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="b3329e4f-e7a9-4e66-830b-0f1d14d133c1", api_key=api_key)
     
-    def predictions(self, prompt: str = '', duration: float = 8.0, num_steps: int = 25, cfg_strength: float = 4.5, negative_prompt: str = 'music', seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, video: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, prompt: str = '', duration: float = 8.0, num_steps: int = 25, cfg_strength: float = 4.5, negative_prompt: str = 'music', seed: Optional[int] = None, image: Optional[Union[str, MediaFile, bytes]] = None, video: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

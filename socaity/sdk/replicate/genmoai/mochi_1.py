@@ -11,7 +11,7 @@ class mochi_1(FastSDK):
     
     def predictions(self, fps: int = 30, prompt: str = "Close-up of a chameleon's eye, with its scaly skin changing color. Ultra high resolution 4k.", num_frames: int = 163, guidance_scale: float = 6.0, num_inference_steps: int = 64, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

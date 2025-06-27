@@ -11,9 +11,9 @@ class mask_maker(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="d1b3584b-c64d-4a9d-9a4a-539921f667e4", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], threshold: float = 0.2, mask_format: str = 'coco_rle', mask_output: str = '', mask_prompt: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], threshold: float = 0.2, mask_format: str = 'coco_rle', mask_output: str = '', mask_prompt: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

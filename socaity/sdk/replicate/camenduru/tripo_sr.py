@@ -11,9 +11,9 @@ class tripo_sr(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="b776d683-2130-46a2-bd09-ef909b81bc0b", api_key=api_key)
     
-    def predictions(self, image_path: Union[MediaFile, str, bytes], foreground_ratio: float = 0.85, do_remove_background: bool = True, **kwargs) -> APISeex:
+    def predictions(self, image_path: Union[str, MediaFile, bytes], foreground_ratio: float = 0.85, do_remove_background: bool = True, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

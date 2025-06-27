@@ -11,9 +11,9 @@ class bge_large_en_v1_5(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="9a896975-5072-4e81-81b5-83756e6a5de1", api_key=api_key)
     
-    def predictions(self, texts: str = '', batch_size: int = 32, convert_to_numpy: bool = False, normalize_embeddings: bool = True, path: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, texts: str = '', batch_size: int = 32, convert_to_numpy: bool = False, normalize_embeddings: bool = True, path: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

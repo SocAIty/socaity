@@ -11,9 +11,9 @@ class real_basicvsr_video_superresolution(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="b901d4ed-734c-4961-9873-121a55ff9ce1", api_key=api_key)
     
-    def predictions(self, video: Union[MediaFile, str, bytes], **kwargs) -> APISeex:
+    def predictions(self, video: Union[str, MediaFile, bytes], **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

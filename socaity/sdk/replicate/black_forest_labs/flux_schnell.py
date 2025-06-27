@@ -11,13 +11,13 @@ class flux_schnell(FastSDK):
     
     def predictions(self, prompt: str, go_fast: bool = True, megapixels: str = '1', num_outputs: int = 1, aspect_ratio: str = '1:1', output_format: str = 'webp', output_quality: int = 80, num_inference_steps: int = 4, disable_safety_checker: bool = False, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:
             prompt: Prompt for generated image
             
-            go_fast: Run faster predictions with model optimized for speed (currently fp8 quantized); disable to run in original bf16 Defaults to True.
+            go_fast: Run faster predictions with model optimized for speed (currently fp8 quantized); disable to run in original bf16. Note that outputs will not be deterministic when this is enabled, even if you set a seed. Defaults to True.
             
             megapixels: Approximate number of megapixels for generated image Defaults to '1'.
             

@@ -11,9 +11,9 @@ class whisperx(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="200c0572-31f8-4508-9d92-047f97fe36e1", api_key=api_key)
     
-    def predictions(self, audio_file: Union[MediaFile, str, bytes], debug: bool = False, vad_onset: float = 0.5, batch_size: int = 64, vad_offset: float = 0.363, diarization: bool = False, temperature: float = 0.0, align_output: bool = False, language_detection_min_prob: float = 0.0, language_detection_max_tries: int = 5, language: Optional[str] = None, max_speakers: Optional[int] = None, min_speakers: Optional[int] = None, initial_prompt: Optional[str] = None, huggingface_access_token: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, audio_file: Union[str, MediaFile, bytes], debug: bool = False, vad_onset: float = 0.5, batch_size: int = 64, vad_offset: float = 0.363, diarization: bool = False, temperature: float = 0.0, align_output: bool = False, language_detection_min_prob: float = 0.0, language_detection_max_tries: int = 5, language: Optional[str] = None, max_speakers: Optional[int] = None, min_speakers: Optional[int] = None, initial_prompt: Optional[str] = None, huggingface_access_token: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

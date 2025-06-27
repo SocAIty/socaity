@@ -9,7 +9,7 @@ class audiogen(FastSDK):
     
     def predictions(self, prompt: str, top_k: int = 250, top_p: float = 0.0, duration: float = 3.0, temperature: float = 1.0, output_format: str = 'wav', classifier_free_guidance: int = 3, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

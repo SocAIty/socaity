@@ -11,9 +11,9 @@ class yolox(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="cd41e5da-0dd9-4893-872a-df2692fc91aa", api_key=api_key)
     
-    def predictions(self, input_image: Union[MediaFile, str, bytes], nms: float = 0.3, conf: float = 0.3, tsize: int = 640, model_name: str = 'yolox-s', return_json: bool = False, **kwargs) -> APISeex:
+    def predictions(self, input_image: Union[str, MediaFile, bytes], nms: float = 0.3, conf: float = 0.3, tsize: int = 640, model_name: str = 'yolox-s', return_json: bool = False, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

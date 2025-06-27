@@ -9,7 +9,7 @@ class musicgen_looper(FastSDK):
     
     def predictions(self, prompt: str, bpm: float = 140.0, seed: int = -1, top_k: int = 250, top_p: float = 0.0, variations: int = 4, temperature: float = 1.0, max_duration: int = 8, model_version: str = 'medium', output_format: str = 'wav', classifier_free_guidance: int = 3, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

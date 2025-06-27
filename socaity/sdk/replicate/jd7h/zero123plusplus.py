@@ -11,9 +11,9 @@ class zero123plusplus(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="e54c61c8-e627-4ef8-b561-7680d07b7635", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], remove_background: bool = False, return_intermediate_images: bool = False, **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], remove_background: bool = False, return_intermediate_images: bool = False, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

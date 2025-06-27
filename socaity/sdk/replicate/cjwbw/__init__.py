@@ -2,7 +2,6 @@ from socaity.sdk.replicate.cjwbw.controlvideo import controlvideo
 from socaity.sdk.replicate.cjwbw.damo_text_to_video import damo_text_to_video
 from socaity.sdk.replicate.cjwbw.parler_tts import parler_tts
 from socaity.sdk.replicate.cjwbw.rembg import rembg
-from socaity.sdk.replicate.cjwbw.rmgb import rmgb
 from socaity.sdk.replicate.cjwbw.rudalle_sr import rudalle_sr
 from socaity.sdk.replicate.cjwbw.seamless_communication import seamless_communication
 from socaity.sdk.replicate.cjwbw.semantic_segment_anything import semantic_segment_anything

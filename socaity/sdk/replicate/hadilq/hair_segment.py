@@ -11,9 +11,9 @@ class hair_segment(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="50f5a01a-d6e4-4338-ba86-a99c6d26ebdb", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

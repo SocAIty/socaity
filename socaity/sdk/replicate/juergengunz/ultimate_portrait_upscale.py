@@ -11,9 +11,9 @@ class ultimate_portrait_upscale(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="d71a074c-559b-4f5d-bf18-51b541df04bd", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], cfg: float = 8.0, steps: int = 20, denoise: float = 0.1, upscaler: str = '4x-UltraSharp', mask_blur: int = 8, mode_type: str = 'Linear', scheduler: str = 'normal', tile_width: int = 512, upscale_by: float = 2.0, tile_height: int = 512, sampler_name: str = 'euler', tile_padding: int = 32, seam_fix_mode: str = 'None', seam_fix_width: int = 64, negative_prompt: str = 'cartoon, cgi, render, painting, illustration, drawing', positive_prompt: str = 'business portrait, detailed skin, perfect skin, soft lighting, beautiful eyes, photorealistic, perfect teeth', seam_fix_denoise: float = 1.0, seam_fix_padding: int = 16, seam_fix_mask_blur: int = 8, controlnet_strength: float = 1.0, force_uniform_tiles: bool = True, use_controlnet_tile: bool = True, seed: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], cfg: float = 8.0, steps: int = 20, denoise: float = 0.1, upscaler: str = '4x-UltraSharp', mask_blur: int = 8, mode_type: str = 'Linear', scheduler: str = 'normal', tile_width: int = 512, upscale_by: float = 2.0, tile_height: int = 512, sampler_name: str = 'euler', tile_padding: int = 32, seam_fix_mode: str = 'None', seam_fix_width: int = 64, negative_prompt: str = 'cartoon, cgi, render, painting, illustration, drawing', positive_prompt: str = 'business portrait, detailed skin, perfect skin, soft lighting, beautiful eyes, photorealistic, perfect teeth', seam_fix_denoise: float = 1.0, seam_fix_padding: int = 16, seam_fix_mask_blur: int = 8, controlnet_strength: float = 1.0, force_uniform_tiles: bool = True, use_controlnet_tile: bool = True, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

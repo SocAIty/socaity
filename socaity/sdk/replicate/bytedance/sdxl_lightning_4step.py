@@ -9,7 +9,7 @@ class sdxl_lightning_4step(FastSDK):
     
     def predictions(self, seed: int = 0, width: int = 1024, height: int = 1024, prompt: str = 'self-portrait of a woman, lightning in the background', scheduler: str = 'K_EULER', num_outputs: int = 1, guidance_scale: float = 0.0, negative_prompt: str = 'worst quality, low quality', num_inference_steps: int = 4, disable_safety_checker: bool = False, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

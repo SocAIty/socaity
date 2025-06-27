@@ -11,7 +11,7 @@ class flux_music(FastSDK):
     
     def predictions(self, steps: int = 50, prompt: str = 'The song is an epic blend of space-rock, rock, and post-rock genres.', model_version: str = 'base', guidance_scale: float = 7.0, negative_prompt: str = 'low quality, gentle', save_spectrogram: bool = False, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

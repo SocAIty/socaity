@@ -11,7 +11,7 @@ class stable_diffusion_animation(FastSDK):
     
     def predictions(self, prompt_end: str, prompt_start: str, width: int = 512, height: int = 512, gif_ping_pong: bool = False, output_format: str = 'gif', guidance_scale: float = 7.5, prompt_strength: float = 0.8, film_interpolation: bool = True, intermediate_output: bool = False, num_inference_steps: int = 50, num_animation_frames: int = 10, gif_frames_per_second: int = 20, num_interpolation_steps: int = 5, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

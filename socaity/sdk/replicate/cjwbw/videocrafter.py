@@ -11,7 +11,7 @@ class videocrafter(FastSDK):
     
     def predictions(self, prompt: str = 'With the style of van gogh, A young couple dances under the moonlight by the lake.', save_fps: int = 10, ddim_steps: int = 50, unconditional_guidance_scale: float = 12.0, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

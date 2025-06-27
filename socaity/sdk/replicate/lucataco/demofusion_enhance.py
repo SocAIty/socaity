@@ -11,9 +11,9 @@ class demofusion_enhance(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="2690a512-4e72-4970-93c3-da2639c720dd", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], scale: int = 2, sigma: float = 0.8, prompt: str = 'A high resolution photo', stride: int = 64, auto_prompt: bool = False, multi_decoder: bool = False, cosine_scale_1: float = 3.0, cosine_scale_2: float = 1.0, cosine_scale_3: float = 1.0, guidance_scale: float = 8.5, negative_prompt: str = 'blurry, ugly, duplicate, poorly drawn, deformed, mosaic', view_batch_size: int = 16, num_inference_steps: int = 40, seed: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], scale: int = 2, sigma: float = 0.8, prompt: str = 'A high resolution photo', stride: int = 64, auto_prompt: bool = False, multi_decoder: bool = False, cosine_scale_1: float = 3.0, cosine_scale_2: float = 1.0, cosine_scale_3: float = 1.0, guidance_scale: float = 8.5, negative_prompt: str = 'blurry, ugly, duplicate, poorly drawn, deformed, mosaic', view_batch_size: int = 16, num_inference_steps: int = 40, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

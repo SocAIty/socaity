@@ -11,9 +11,9 @@ class frames_to_video(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="e288c787-b473-4e4c-9eff-1073736a7c9b", api_key=api_key)
     
-    def predictions(self, fps: float = 24.0, frames_zip: Optional[Union[MediaFile, str, bytes]] = None, frames_urls: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, fps: float = 24.0, frames_zip: Optional[Union[str, MediaFile, bytes]] = None, frames_urls: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

@@ -11,9 +11,9 @@ class diffbir(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="bc7d5e09-7819-4faf-8576-0d637be0cd75", api_key=api_key)
     
-    def predictions(self, input: Union[MediaFile, str, bytes], seed: int = 231, steps: int = 50, tiled: bool = False, tile_size: int = 512, has_aligned: bool = False, tile_stride: int = 256, repeat_times: int = 1, use_guidance: bool = False, color_fix_type: str = 'wavelet', guidance_scale: float = 0.0, guidance_space: str = 'latent', guidance_repeat: int = 5, only_center_face: bool = False, guidance_time_stop: int = -1, guidance_time_start: int = 1001, background_upsampler: str = 'RealESRGAN', face_detection_model: str = 'retinaface_resnet50', upscaling_model_type: str = 'general_scenes', restoration_model_type: str = 'general_scenes', super_resolution_factor: int = 4, disable_preprocess_model: bool = False, reload_restoration_model: bool = False, background_upsampler_tile: int = 400, background_upsampler_tile_stride: int = 400, **kwargs) -> APISeex:
+    def predictions(self, input: Union[str, MediaFile, bytes], seed: int = 231, steps: int = 50, tiled: bool = False, tile_size: int = 512, has_aligned: bool = False, tile_stride: int = 256, repeat_times: int = 1, use_guidance: bool = False, color_fix_type: str = 'wavelet', guidance_scale: float = 0.0, guidance_space: str = 'latent', guidance_repeat: int = 5, only_center_face: bool = False, guidance_time_stop: int = -1, guidance_time_start: int = 1001, background_upsampler: str = 'RealESRGAN', face_detection_model: str = 'retinaface_resnet50', upscaling_model_type: str = 'general_scenes', restoration_model_type: str = 'general_scenes', super_resolution_factor: int = 4, disable_preprocess_model: bool = False, reload_restoration_model: bool = False, background_upsampler_tile: int = 400, background_upsampler_tile_stride: int = 400, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

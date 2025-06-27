@@ -11,9 +11,9 @@ class voicecraft(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="93620bcc-7660-48a9-8c9e-0e59df84af65", api_key=api_key)
     
-    def predictions(self, orig_audio: Union[MediaFile, str, bytes], target_transcript: str, task: str = 'zero-shot text-to-speech', top_p: float = 0.9, kvcache: int = 1, cut_off_sec: float = 3.01, left_margin: float = 0.08, temperature: float = 1.0, right_margin: float = 0.08, whisperx_model: str = 'base.en', orig_transcript: str = '', stop_repetition: int = 3, voicecraft_model: str = 'giga330M_TTSEnhanced.pth', sample_batch_size: int = 4, seed: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, orig_audio: Union[str, MediaFile, bytes], target_transcript: str, task: str = 'zero-shot text-to-speech', top_p: float = 0.9, kvcache: int = 1, cut_off_sec: float = 3.01, left_margin: float = 0.08, temperature: float = 1.0, right_margin: float = 0.08, whisperx_model: str = 'base.en', orig_transcript: str = '', stop_repetition: int = 3, voicecraft_model: str = 'giga330M_TTSEnhanced.pth', sample_batch_size: int = 4, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

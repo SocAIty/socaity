@@ -11,9 +11,9 @@ class sam_2(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="050cedcc-badf-4362-a4c8-8435f9a416b2", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], use_m2m: bool = True, points_per_side: int = 32, pred_iou_thresh: float = 0.88, stability_score_thresh: float = 0.95, **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], use_m2m: bool = True, points_per_side: int = 32, pred_iou_thresh: float = 0.88, stability_score_thresh: float = 0.95, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

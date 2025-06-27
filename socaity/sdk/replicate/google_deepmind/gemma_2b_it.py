@@ -9,7 +9,7 @@ class gemma_2b_it(FastSDK):
     
     def predictions(self, top_k: int = 50, top_p: float = 0.95, prompt: str = 'Write me a poem about Machine Learning.', temperature: float = 0.7, max_new_tokens: int = 200, min_new_tokens: int = -1, repetition_penalty: float = 1.15, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

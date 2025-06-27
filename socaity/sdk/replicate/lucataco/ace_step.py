@@ -11,7 +11,7 @@ class ace_step(FastSDK):
     
     def predictions(self, tags: str, seed: int = -1, duration: float = 60.0, scheduler: str = 'euler', guidance_type: str = 'apg', guidance_scale: float = 15.0, number_of_steps: int = 60, granularity_scale: float = 10.0, guidance_interval: float = 0.5, min_guidance_scale: float = 3.0, tag_guidance_scale: float = 0.0, lyric_guidance_scale: float = 0.0, guidance_interval_decay: float = 0.0, lyrics: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

@@ -11,9 +11,9 @@ class samurai(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="0a6c1511-3558-4796-bc3c-94417a13b5a7", api_key=api_key)
     
-    def predictions(self, video: Union[MediaFile, str, bytes], width: int = 400, height: int = 300, x_coordinate: int = 100, y_coordinate: int = 100, **kwargs) -> APISeex:
+    def predictions(self, video: Union[str, MediaFile, bytes], width: int = 400, height: int = 300, x_coordinate: int = 100, y_coordinate: int = 100, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

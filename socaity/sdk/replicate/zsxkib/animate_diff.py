@@ -9,7 +9,7 @@ class animate_diff(FastSDK):
     
     def predictions(self, seed: int = -1, steps: int = 25, width: int = 512, frames: int = 16, height: int = 512, prompt: str = 'photo of vocano, rocks, storm weather, wind, lava waves, lightning, 8k uhd, dslr, soft lighting, high quality, film grain, Fujifilm XT3', base_model: str = 'realisticVisionV20_v20', output_format: str = 'mp4', guidance_scale: float = 7.5, negative_prompt: str = 'blur, haze, deformed iris, deformed pupils, semi-realistic, cgi, 3d, render, sketch, cartoon, drawing, anime, mutated hands and fingers, deformed, distorted, disfigured, poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, disconnected limbs, mutation, mutated, ugly, disgusting, amputation', pan_up_motion_strength: float = 0.0, zoom_in_motion_strength: float = 0.0, pan_down_motion_strength: float = 0.0, pan_left_motion_strength: float = 0.0, zoom_out_motion_strength: float = 0.0, pan_right_motion_strength: float = 0.0, rolling_clockwise_motion_strength: float = 0.0, rolling_anticlockwise_motion_strength: float = 0.0, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

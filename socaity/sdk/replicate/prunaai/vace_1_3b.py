@@ -1,5 +1,5 @@
 from fastsdk import FastSDK, APISeex
-from typing import List, Optional, Union, Any
+from typing import Optional, List, Any, Union
 
 from media_toolkit import MediaFile
 
@@ -11,9 +11,9 @@ class vace_1_3b(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="44d72183-8b42-4bd5-92fb-faafd583a07e", api_key=api_key)
     
-    def predictions(self, prompt: str, seed: int = -1, size: str = '480*832', frame_num: int = 81, speed_mode: str = 'Lightly Juiced 🍊 (more consistent)', sample_shift: int = 16, sample_steps: int = 50, sample_solver: str = 'unipc', sample_guide_scale: float = 5.0, src_mask: Optional[Union[MediaFile, str, bytes]] = None, src_video: Optional[Union[MediaFile, str, bytes]] = None, src_ref_images: Optional[Union[List[Any], MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, prompt: str, seed: int = -1, size: str = '480*832', frame_num: int = 81, speed_mode: str = 'Lightly Juiced 🍊 (more consistent)', sample_shift: int = 16, sample_steps: int = 50, sample_solver: str = 'unipc', sample_guide_scale: float = 5.0, src_mask: Optional[Union[str, MediaFile, bytes]] = None, src_video: Optional[Union[str, MediaFile, bytes]] = None, src_ref_images: Optional[Union[str, MediaFile, List[Any], bytes]] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

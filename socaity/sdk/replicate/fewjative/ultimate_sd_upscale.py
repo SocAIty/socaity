@@ -11,9 +11,9 @@ class ultimate_sd_upscale(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="3765c151-0f0c-440b-8bf4-f04c6190eaef", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], cfg: float = 8.0, steps: int = 20, denoise: float = 0.2, upscaler: str = '4x-UltraSharp', mask_blur: int = 8, mode_type: str = 'Linear', scheduler: str = 'normal', tile_width: int = 512, upscale_by: float = 2.0, tile_height: int = 512, sampler_name: str = 'euler', tile_padding: int = 32, seam_fix_mode: str = 'None', seam_fix_width: int = 64, negative_prompt: str = '', positive_prompt: str = 'Hey! Have a nice day :D', seam_fix_denoise: float = 1.0, seam_fix_padding: int = 16, seam_fix_mask_blur: int = 8, controlnet_strength: float = 1.0, force_uniform_tiles: bool = True, use_controlnet_tile: bool = True, seed: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], cfg: float = 8.0, steps: int = 20, denoise: float = 0.2, upscaler: str = '4x-UltraSharp', mask_blur: int = 8, mode_type: str = 'Linear', scheduler: str = 'normal', tile_width: int = 512, upscale_by: float = 2.0, tile_height: int = 512, sampler_name: str = 'euler', tile_padding: int = 32, seam_fix_mode: str = 'None', seam_fix_width: int = 64, negative_prompt: str = '', positive_prompt: str = 'Hey! Have a nice day :D', seam_fix_denoise: float = 1.0, seam_fix_padding: int = 16, seam_fix_mask_blur: int = 8, controlnet_strength: float = 1.0, force_uniform_tiles: bool = True, use_controlnet_tile: bool = True, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

@@ -11,9 +11,9 @@ class cogvlm2_video(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="0290b9cc-95b5-4a7d-85ac-fecc261777e6", api_key=api_key)
     
-    def predictions(self, input_video: Union[MediaFile, str, bytes], top_p: float = 0.1, prompt: str = 'Describe this video.', temperature: float = 0.1, max_new_tokens: int = 2048, **kwargs) -> APISeex:
+    def predictions(self, input_video: Union[str, MediaFile, bytes], top_p: float = 0.1, prompt: str = 'Describe this video.', temperature: float = 0.1, max_new_tokens: int = 2048, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

@@ -9,7 +9,7 @@ class orpheus_3b_0_1_ft(FastSDK):
     
     def predictions(self, text: str, top_p: float = 0.95, voice: str = 'tara', temperature: float = 0.6, max_new_tokens: int = 1200, repetition_penalty: float = 1.1, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

@@ -9,7 +9,7 @@ class emopia(FastSDK):
     
     def predictions(self, seed: int = -1, emotion: str = 'High valence, high arousal', **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

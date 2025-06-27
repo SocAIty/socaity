@@ -9,7 +9,7 @@ class looptest(FastSDK):
     
     def predictions(self, seed: int = -1, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

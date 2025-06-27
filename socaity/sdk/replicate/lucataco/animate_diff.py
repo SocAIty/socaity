@@ -11,7 +11,7 @@ class animate_diff(FastSDK):
     
     def predictions(self, path: str = 'toonyou_beta3.safetensors', steps: int = 25, prompt: str = 'masterpiece, best quality, 1girl, solo, cherry blossoms, hanami, pink flower, white flower, spring season, wisteria, petals, flower, plum blossoms, outdoors, falling petals, white hair, black eyes', n_prompt: str = '', motion_module: str = 'mm_sd_v14', guidance_scale: float = 7.5, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

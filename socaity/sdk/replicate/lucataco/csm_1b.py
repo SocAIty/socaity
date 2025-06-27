@@ -9,7 +9,7 @@ class csm_1b(FastSDK):
     
     def predictions(self, text: str = 'Hello from Sesame.', speaker: int = 0, max_audio_length_ms: int = 10000, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

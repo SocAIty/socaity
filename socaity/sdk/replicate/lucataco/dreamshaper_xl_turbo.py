@@ -11,7 +11,7 @@ class dreamshaper_xl_turbo(FastSDK):
     
     def predictions(self, width: int = 1024, height: int = 1024, prompt: str = 'An astronaut riding a rainbow unicorn', scheduler: str = 'K_EULER', num_outputs: int = 1, guidance_scale: float = 2.0, apply_watermark: bool = True, negative_prompt: str = '', num_inference_steps: int = 6, disable_safety_checker: bool = False, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

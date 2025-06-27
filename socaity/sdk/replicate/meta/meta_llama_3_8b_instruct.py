@@ -7,16 +7,9 @@ class meta_llama_3_8b_instruct(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="d171bbca-3ce4-4584-ab83-debb5dfa0ad5", api_key=api_key)
     
-    def ready(self, **kwargs) -> APISeex:
-        """
-        None
-        
-        """
-        return self.submit_job("/ready", **kwargs)
-    
     def predictions(self, top_k: int = 50, top_p: float = 0.9, prompt: str = '', max_tokens: int = 512, min_tokens: int = 0, temperature: float = 0.6, prompt_template: str = '{prompt}', presence_penalty: float = 1.15, frequency_penalty: float = 0.2, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:
@@ -42,5 +35,5 @@ class meta_llama_3_8b_instruct(FastSDK):
         return self.submit_job("/predictions", top_k=top_k, top_p=top_p, prompt=prompt, max_tokens=max_tokens, min_tokens=min_tokens, temperature=temperature, prompt_template=prompt_template, presence_penalty=presence_penalty, frequency_penalty=frequency_penalty, **kwargs)
     
     # Convenience aliases for the primary endpoint
-    run = ready
-    __call__ = ready
+    run = predictions
+    __call__ = predictions

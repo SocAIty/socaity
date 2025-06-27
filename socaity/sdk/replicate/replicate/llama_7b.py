@@ -9,7 +9,7 @@ class llama_7b(FastSDK):
     
     def predictions(self, prompt: str, top_p: float = 0.95, max_gen_len: int = 256, temperature: float = 0.8, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

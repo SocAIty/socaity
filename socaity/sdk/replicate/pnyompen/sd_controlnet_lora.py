@@ -11,9 +11,9 @@ class sd_controlnet_lora(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="1f2089d2-a406-4fd6-b762-496d74794321", api_key=api_key)
     
-    def predictions(self, prompt: str = 'An astronaut riding a rainbow unicorn', img2img: bool = False, strength: float = 0.8, remove_bg: bool = False, scheduler: str = 'K_EULER', lora_scale: float = 0.95, num_outputs: int = 1, guidance_scale: float = 7.5, condition_scale: float = 1.1, negative_prompt: str = '', ip_adapter_scale: float = 1.0, num_inference_steps: int = 30, auto_generate_caption: bool = False, generated_caption_weight: float = 0.5, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, lora_weights: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, prompt: str = 'An astronaut riding a rainbow unicorn', img2img: bool = False, strength: float = 0.8, remove_bg: bool = False, scheduler: str = 'K_EULER', lora_scale: float = 0.95, num_outputs: int = 1, guidance_scale: float = 7.5, condition_scale: float = 1.1, negative_prompt: str = '', ip_adapter_scale: float = 1.0, num_inference_steps: int = 30, auto_generate_caption: bool = False, generated_caption_weight: float = 0.5, seed: Optional[int] = None, image: Optional[Union[str, MediaFile, bytes]] = None, lora_weights: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

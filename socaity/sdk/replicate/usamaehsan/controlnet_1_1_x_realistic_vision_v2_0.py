@@ -11,9 +11,9 @@ class controlnet_1_1_x_realistic_vision_v2_0(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="0db6a1a4-eef9-44e2-b340-de3d3e96123d", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], steps: int = 20, prompt: str = '(a tabby cat)+++, high resolution, sitting on a park bench', strength: float = 0.8, max_width: float = 612.0, max_height: float = 612.0, guidance_scale: int = 10, negative_prompt: str = '(deformed iris, deformed pupils, semi-realistic, cgi, 3d, render, sketch, cartoon, drawing, anime:1.4), text, close up, cropped, out of frame, worst quality, low quality, jpeg artifacts, ugly, duplicate, morbid, mutilated, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, blurry, dehydrated, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, fused fingers, too many fingers, long neck', seed: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], steps: int = 20, prompt: str = '(a tabby cat)+++, high resolution, sitting on a park bench', strength: float = 0.8, max_width: float = 612.0, max_height: float = 612.0, guidance_scale: int = 10, negative_prompt: str = '(deformed iris, deformed pupils, semi-realistic, cgi, 3d, render, sketch, cartoon, drawing, anime:1.4), text, close up, cropped, out of frame, worst quality, low quality, jpeg artifacts, ugly, duplicate, morbid, mutilated, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, blurry, dehydrated, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, fused fingers, too many fingers, long neck', seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

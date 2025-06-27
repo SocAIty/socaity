@@ -11,9 +11,9 @@ class swinir(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="a38caf79-16b9-494d-a212-5191e6e72799", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], jpeg: int = 40, noise: int = 15, task_type: str = 'Real-World Image Super-Resolution-Large', **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], jpeg: int = 40, noise: int = 15, task_type: str = 'Real-World Image Super-Resolution-Large', **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

@@ -11,7 +11,7 @@ class tile_morph(FastSDK):
     
     def predictions(self, prompt_end: str, prompt_start: str, width: int = 512, height: int = 512, guidance_scale: float = 7.5, frames_per_second: int = 20, intermediate_output: bool = False, num_inference_steps: int = 50, num_animation_frames: int = 10, num_interpolation_steps: int = 20, seed_end: Optional[int] = None, seed_start: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

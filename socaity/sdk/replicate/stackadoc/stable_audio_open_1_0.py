@@ -9,7 +9,7 @@ class stable_audio_open_1_0(FastSDK):
     
     def predictions(self, prompt: str, seed: int = -1, steps: int = 100, cfg_scale: float = 6.0, sigma_max: int = 500, sigma_min: float = 0.03, batch_size: int = 1, sampler_type: str = 'dpmpp-3m-sde', seconds_start: int = 0, seconds_total: int = 8, negative_prompt: str = '', init_noise_level: float = 1.0, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

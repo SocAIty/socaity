@@ -11,9 +11,9 @@ class mediapipe_face(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="f5adba97-df80-4165-94ec-0014501d1719", api_key=api_key)
     
-    def predictions(self, images: Union[MediaFile, str, bytes], bias: float = 0.0, blur_amount: float = 0.0, output_transparent_image: bool = False, **kwargs) -> APISeex:
+    def predictions(self, images: Union[str, MediaFile, bytes], bias: float = 0.0, blur_amount: float = 0.0, output_transparent_image: bool = False, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

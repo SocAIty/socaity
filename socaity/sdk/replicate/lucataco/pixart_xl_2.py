@@ -11,7 +11,7 @@ class pixart_xl_2(FastSDK):
     
     def predictions(self, style: str = 'None', width: int = 1024, height: int = 1024, prompt: str = 'A small cactus with a happy face in the Sahara desert', scheduler: str = 'DPMSolverMultistep', num_outputs: int = 1, guidance_scale: float = 4.5, num_inference_steps: int = 14, seed: Optional[int] = None, negative_prompt: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

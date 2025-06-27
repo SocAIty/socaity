@@ -9,7 +9,7 @@ class mustango(FastSDK):
     
     def predictions(self, steps: int = 100, prompt: str = "This is a new age piece. There is a flute playing the main melody with a lot of staccato notes. The rhythmic background consists of a medium tempo electronic drum beat with percussive elements all over the spectrum. There is a playful atmosphere to the piece. This piece can be used in the soundtrack of a children's TV show or an advertisement jingle.", guidance: float = 3.0, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

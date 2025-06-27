@@ -9,7 +9,7 @@ class kokoro_82m(FastSDK):
     
     def predictions(self, text: str, speed: float = 1.0, voice: str = 'af_bella', **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

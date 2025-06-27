@@ -11,9 +11,9 @@ class thin_plate_spline_motion_model(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="d7f06376-5b6b-448d-b383-2081ba59c1c9", api_key=api_key)
     
-    def predictions(self, source_image: Union[MediaFile, str, bytes], driving_video: Union[MediaFile, str, bytes], dataset_name: str = 'vox', **kwargs) -> APISeex:
+    def predictions(self, source_image: Union[str, MediaFile, bytes], driving_video: Union[str, MediaFile, bytes], dataset_name: str = 'vox', **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

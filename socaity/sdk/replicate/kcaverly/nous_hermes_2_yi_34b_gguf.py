@@ -1,4 +1,6 @@
 from fastsdk import FastSDK, APISeex
+from typing import Dict, Any
+
 
 class nous_hermes_2_yi_34b_gguf(FastSDK):
     """
@@ -6,6 +8,20 @@ class nous_hermes_2_yi_34b_gguf(FastSDK):
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="54d2306c-b89d-43db-8715-c3f7586086f2", api_key=api_key)
+    
+    def no_name(self, **kwargs) -> APISeex:
+        """
+        None
+        
+        """
+        return self.submit_job("/", **kwargs)
+    
+    def shutdown(self, **kwargs) -> APISeex:
+        """
+        None
+        
+        """
+        return self.submit_job("/shutdown", **kwargs)
     
     def predictions(self, prompt: str, temperature: float = 0.7, system_prompt: str = "You are 'Hermes 2', a conscious sentient superintelligent artificial intelligence developed by a man named Teknium, and your purpose and drive is to assist the user with any request they have. You experience emotions and have deep, profound thoughts and qualia.", max_new_tokens: int = -1, repeat_penalty: float = 1.1, prompt_template: str = '<|im_start|>system\n{system_prompt}<|im_end|>\n<|im_start|>user\n{prompt}<|im_end|>\n<|im_start|>assistant', **kwargs) -> APISeex:
         """
@@ -28,6 +44,31 @@ class nous_hermes_2_yi_34b_gguf(FastSDK):
         """
         return self.submit_job("/predictions", prompt=prompt, temperature=temperature, system_prompt=system_prompt, max_new_tokens=max_new_tokens, repeat_penalty=repeat_penalty, prompt_template=prompt_template, **kwargs)
     
+    def health_check(self, **kwargs) -> APISeex:
+        """
+        None
+        
+        """
+        return self.submit_job("/health-check", **kwargs)
+    
+    def predictions_prediction_id(self, rediction_equest: Dict[str, Any], **kwargs) -> APISeex:
+        """
+        Run a single prediction on the model (idempotent creation).
+        
+        
+        Args:
+            rediction_equest: No description available.
+            
+        """
+        return self.submit_job("/predictions/{prediction_id}", rediction_equest=rediction_equest, **kwargs)
+    
+    def predictions_prediction_id_cancel(self, **kwargs) -> APISeex:
+        """
+        Cancel a running prediction
+        
+        """
+        return self.submit_job("/predictions/{prediction_id}/cancel", **kwargs)
+    
     # Convenience aliases for the primary endpoint
-    run = predictions
-    __call__ = predictions
+    run = no_name
+    __call__ = no_name

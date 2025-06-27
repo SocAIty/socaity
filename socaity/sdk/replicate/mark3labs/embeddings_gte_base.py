@@ -9,7 +9,7 @@ class embeddings_gte_base(FastSDK):
     
     def predictions(self, text: str, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

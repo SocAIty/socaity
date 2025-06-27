@@ -11,9 +11,9 @@ class singing_voice_conversion(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="03f4b34b-cd6d-425d-a9b3-6272ae4cb4df", api_key=api_key)
     
-    def predictions(self, source_audio: Union[MediaFile, str, bytes], target_singer: str = 'Taylor Swift', key_shift_mode: int = 0, pitch_shift_control: str = 'Auto Shift', diffusion_inference_steps: int = 1000, **kwargs) -> APISeex:
+    def predictions(self, source_audio: Union[str, MediaFile, bytes], target_singer: str = 'Taylor Swift', key_shift_mode: int = 0, pitch_shift_control: str = 'Auto Shift', diffusion_inference_steps: int = 1000, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

@@ -11,9 +11,9 @@ class tooncrafter(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="0bbfd0a9-4f09-4f7a-aaa1-faff1b296218", api_key=api_key)
     
-    def predictions(self, image_1: Union[MediaFile, str, bytes], image_2: Union[MediaFile, str, bytes], loop: bool = False, prompt: str = '', max_width: int = 512, max_height: int = 512, interpolate: bool = False, negative_prompt: str = '', color_correction: bool = True, seed: Optional[int] = None, image_3: Optional[Union[MediaFile, str, bytes]] = None, image_4: Optional[Union[MediaFile, str, bytes]] = None, image_5: Optional[Union[MediaFile, str, bytes]] = None, image_6: Optional[Union[MediaFile, str, bytes]] = None, image_7: Optional[Union[MediaFile, str, bytes]] = None, image_8: Optional[Union[MediaFile, str, bytes]] = None, image_9: Optional[Union[MediaFile, str, bytes]] = None, image_10: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, image_1: Union[str, MediaFile, bytes], image_2: Union[str, MediaFile, bytes], loop: bool = False, prompt: str = '', max_width: int = 512, max_height: int = 512, interpolate: bool = False, negative_prompt: str = '', color_correction: bool = True, seed: Optional[int] = None, image_3: Optional[Union[str, MediaFile, bytes]] = None, image_4: Optional[Union[str, MediaFile, bytes]] = None, image_5: Optional[Union[str, MediaFile, bytes]] = None, image_6: Optional[Union[str, MediaFile, bytes]] = None, image_7: Optional[Union[str, MediaFile, bytes]] = None, image_8: Optional[Union[str, MediaFile, bytes]] = None, image_9: Optional[Union[str, MediaFile, bytes]] = None, image_10: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

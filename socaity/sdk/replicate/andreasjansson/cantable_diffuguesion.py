@@ -9,7 +9,7 @@ class cantable_diffuguesion(FastSDK):
     
     def predictions(self, seed: int = -1, tempo: float = 90.0, melody: str = '', duration: int = 32, return_mp3: bool = True, return_midi: bool = True, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

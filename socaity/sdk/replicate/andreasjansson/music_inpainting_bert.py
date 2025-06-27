@@ -9,7 +9,7 @@ class music_inpainting_bert(FastSDK):
     
     def predictions(self, notes: str, chords: str, seed: int = -1, tempo: int = 120, sample_width: int = 10, time_signature: int = 4, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

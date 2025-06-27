@@ -9,7 +9,7 @@ class dance_diffusion(FastSDK):
     
     def predictions(self, steps: int = 100, length: float = 8.0, batch_size: int = 1, model_name: str = 'maestro-150k', **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

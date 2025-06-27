@@ -11,7 +11,7 @@ class mvdream(FastSDK):
     
     def predictions(self, prompt: str = 'an astronaut riding a camel', max_steps: int = 10000, guidance_scale: float = 50.0, negative_prompt: str = 'ugly, bad anatomy, blurry, pixelated obscure, unnatural colors, poor lighting, dull, and unclear, cropped, lowres, low quality, artifacts, duplicate, morbid, mutilated, poorly drawn face, deformed, dehydrated, bad proportions', seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

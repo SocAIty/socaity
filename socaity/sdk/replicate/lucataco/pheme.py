@@ -9,7 +9,7 @@ class pheme(FastSDK):
     
     def predictions(self, top_k: int = 210, voice: str = 'male_voice', prompt: str = 'I gotta say, I would never expect that to happen!', temperature: float = 0.7, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

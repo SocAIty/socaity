@@ -11,9 +11,9 @@ class film_frame_interpolation_for_large_motion(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="138d2e16-0804-4e2e-916b-ea0f9b732cea", api_key=api_key)
     
-    def predictions(self, mp4: Union[MediaFile, str, bytes], num_interpolation_steps: int = 3, playback_frames_per_second: int = 24, **kwargs) -> APISeex:
+    def predictions(self, mp4: Union[str, MediaFile, bytes], num_interpolation_steps: int = 3, playback_frames_per_second: int = 24, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

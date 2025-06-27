@@ -11,9 +11,9 @@ class gfpgan(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="41ba6470-a630-4bf4-9b9a-b76c7bc07484", api_key=api_key)
     
-    def predictions(self, img: Union[MediaFile, str, bytes], scale: float = 2.0, version: str = 'v1.4', **kwargs) -> APISeex:
+    def predictions(self, img: Union[str, MediaFile, bytes], scale: float = 2.0, version: str = 'v1.4', **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

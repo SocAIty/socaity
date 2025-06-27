@@ -11,9 +11,9 @@ class xtts_v2(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="f31156fb-c378-43f0-86a4-3bec755a5347", api_key=api_key)
     
-    def predictions(self, speaker: Union[MediaFile, str, bytes], text: str = "Hi there, I'm your new voice clone. Try your best to upload quality audio", language: str = 'en', cleanup_voice: bool = False, **kwargs) -> APISeex:
+    def predictions(self, speaker: Union[str, MediaFile, bytes], text: str = "Hi there, I'm your new voice clone. Try your best to upload quality audio", language: str = 'en', cleanup_voice: bool = False, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

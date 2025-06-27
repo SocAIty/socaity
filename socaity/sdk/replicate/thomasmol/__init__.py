@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.thomasmol.whisper_diarization import whisper_diarization

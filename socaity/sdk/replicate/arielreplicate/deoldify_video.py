@@ -11,9 +11,9 @@ class deoldify_video(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="c65f8678-d8be-4042-b11e-e04d97122e91", api_key=api_key)
     
-    def predictions(self, input_video: Union[MediaFile, str, bytes], render_factor: int = 21, **kwargs) -> APISeex:
+    def predictions(self, input_video: Union[str, MediaFile, bytes], render_factor: int = 21, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

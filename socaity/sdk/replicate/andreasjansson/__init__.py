@@ -1,3 +1,4 @@
+from socaity.sdk.replicate.andreasjansson.blip_2 import blip_2
 from socaity.sdk.replicate.andreasjansson.cantable_diffuguesion import cantable_diffuguesion
 from socaity.sdk.replicate.andreasjansson.clip_features import clip_features
 from socaity.sdk.replicate.andreasjansson.flux_goo import flux_goo

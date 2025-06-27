@@ -11,9 +11,9 @@ class ram_grounded_sam(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="cdc115d5-e386-47a4-9b7f-8f447313f19c", api_key=api_key)
     
-    def predictions(self, input_image: Union[MediaFile, str, bytes], use_sam_hq: bool = False, show_visualisation: bool = False, **kwargs) -> APISeex:
+    def predictions(self, input_image: Union[str, MediaFile, bytes], use_sam_hq: bool = False, show_visualisation: bool = False, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

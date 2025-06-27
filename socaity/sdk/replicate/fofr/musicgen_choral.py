@@ -11,9 +11,9 @@ class musicgen_choral(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="f8aae157-3c1f-41f5-b6e4-62669e3f370c", api_key=api_key)
     
-    def predictions(self, top_k: int = 250, top_p: float = 0.0, duration: int = 8, temperature: float = 1.0, continuation: bool = False, output_format: str = 'wav', continuation_start: int = 0, multi_band_diffusion: bool = False, normalization_strategy: str = 'loudness', classifier_free_guidance: int = 3, seed: Optional[int] = None, prompt: Optional[str] = None, input_audio: Optional[Union[MediaFile, str, bytes]] = None, continuation_end: Optional[int] = None, replicate_weights: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, top_k: int = 250, top_p: float = 0.0, duration: int = 8, temperature: float = 1.0, continuation: bool = False, output_format: str = 'wav', continuation_start: int = 0, multi_band_diffusion: bool = False, normalization_strategy: str = 'loudness', classifier_free_guidance: int = 3, seed: Optional[int] = None, prompt: Optional[str] = None, input_audio: Optional[Union[str, MediaFile, bytes]] = None, continuation_end: Optional[int] = None, replicate_weights: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

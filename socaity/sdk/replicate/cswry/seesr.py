@@ -11,9 +11,9 @@ class seesr(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="0f78ac90-63d9-4974-8129-394f453ecaa3", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], seed: int = 231, cfg_scale: float = 5.5, user_prompt: str = '', sample_times: int = 1, scale_factor: int = 4, negative_prompt: str = 'dotted, noise, blur, lowres, smooth', positive_prompt: str = 'clean, high-resolution, 8k', latent_tiled_size: int = 320, num_inference_steps: int = 50, latent_tiled_overlap: int = 4, **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], seed: int = 231, cfg_scale: float = 5.5, user_prompt: str = '', sample_times: int = 1, scale_factor: int = 4, negative_prompt: str = 'dotted, noise, blur, lowres, smooth', positive_prompt: str = 'clean, high-resolution, 8k', latent_tiled_size: int = 320, num_inference_steps: int = 50, latent_tiled_overlap: int = 4, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

@@ -9,7 +9,7 @@ class flan_t5_xl(FastSDK):
     
     def predictions(self, prompt: str, debug: bool = False, top_p: float = 1.0, max_length: int = 50, temperature: float = 0.75, repetition_penalty: float = 1.0, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

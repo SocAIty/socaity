@@ -11,9 +11,9 @@ class stable_diffusion_inpainting(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="d5e66f27-1249-4db2-9f73-651c156399ad", api_key=api_key)
     
-    def predictions(self, mask: Union[MediaFile, str, bytes], image: Union[MediaFile, str, bytes], width: int = 512, height: int = 512, prompt: str = 'a vision of paradise. unreal engine', scheduler: str = 'DPMSolverMultistep', num_outputs: int = 1, guidance_scale: float = 7.5, num_inference_steps: int = 50, disable_safety_checker: bool = False, seed: Optional[int] = None, negative_prompt: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, mask: Union[str, MediaFile, bytes], image: Union[str, MediaFile, bytes], width: int = 512, height: int = 512, prompt: str = 'a vision of paradise. unreal engine', scheduler: str = 'DPMSolverMultistep', num_outputs: int = 1, guidance_scale: float = 7.5, num_inference_steps: int = 50, disable_safety_checker: bool = False, seed: Optional[int] = None, negative_prompt: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

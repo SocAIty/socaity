@@ -11,7 +11,7 @@ class kandinsky_2_2(FastSDK):
     
     def predictions(self, width: int = 512, height: int = 512, prompt: str = 'A moss covered astronaut with a black background', num_outputs: int = 1, output_format: str = 'webp', num_inference_steps: int = 75, num_inference_steps_prior: int = 25, seed: Optional[int] = None, negative_prompt: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

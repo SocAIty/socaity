@@ -11,7 +11,7 @@ class e5_mistral_7b_instruct(FastSDK):
     
     def predictions(self, document: str, normalize: bool = False, task: Optional[str] = None, query: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

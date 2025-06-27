@@ -11,9 +11,9 @@ class rudalle_sr(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="ae44cda0-15db-4eee-be00-27a5b56446af", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], scale: int = 4, **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], scale: int = 4, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

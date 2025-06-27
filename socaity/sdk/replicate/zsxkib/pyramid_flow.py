@@ -11,9 +11,9 @@ class pyramid_flow(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="0ad6dc5a-4aeb-41e0-ad3b-083361dfe04b", api_key=api_key)
     
-    def predictions(self, prompt: str, duration: int = 3, guidance_scale: float = 9.0, frames_per_second: int = 8, video_guidance_scale: float = 5.0, image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, prompt: str, duration: int = 3, guidance_scale: float = 9.0, frames_per_second: int = 8, video_guidance_scale: float = 5.0, image: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

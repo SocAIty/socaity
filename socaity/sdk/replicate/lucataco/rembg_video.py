@@ -11,9 +11,9 @@ class rembg_video(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="26f1e220-7c28-4bd5-aef1-9ca64b2fe2e2", api_key=api_key)
     
-    def predictions(self, video: Union[MediaFile, str, bytes], mode: str = 'Normal', background_color: str = '#FFFFFF', **kwargs) -> APISeex:
+    def predictions(self, video: Union[str, MediaFile, bytes], mode: str = 'Normal', background_color: str = '#FFFFFF', **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

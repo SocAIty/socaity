@@ -9,7 +9,7 @@ class create_rvc_dataset(FastSDK):
     
     def predictions(self, youtube_url: str, audio_name: str = 'rvc_v2_voices', **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

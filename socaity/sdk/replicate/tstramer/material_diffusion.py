@@ -11,9 +11,9 @@ class material_diffusion(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="ccb73456-e827-42e9-8e65-e571b7bd0c02", api_key=api_key)
     
-    def predictions(self, width: int = 512, height: int = 512, prompt: str = '', scheduler: str = 'K-LMS', num_outputs: int = 1, guidance_scale: float = 7.5, prompt_strength: float = 0.8, num_inference_steps: int = 50, mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, init_image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, width: int = 512, height: int = 512, prompt: str = '', scheduler: str = 'K-LMS', num_outputs: int = 1, guidance_scale: float = 7.5, prompt_strength: float = 0.8, num_inference_steps: int = 50, mask: Optional[Union[str, MediaFile, bytes]] = None, seed: Optional[int] = None, init_image: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

@@ -11,9 +11,9 @@ class mask_clothing(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="09115fc3-0100-42e0-b034-3480586c9990", api_key=api_key)
     
-    def predictions(self, face_mask: bool = False, adjustment: int = 0, face_adjustment: int = 0, image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, face_mask: bool = False, adjustment: int = 0, face_adjustment: int = 0, image: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

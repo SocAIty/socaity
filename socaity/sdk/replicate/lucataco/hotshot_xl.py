@@ -11,7 +11,7 @@ class hotshot_xl(FastSDK):
     
     def predictions(self, mp4: bool = False, steps: int = 30, width: int = 672, height: int = 384, prompt: str = 'a camel smoking a cigarette, hd, high quality', scheduler: str = 'EulerAncestralDiscreteScheduler', negative_prompt: str = 'blurry', seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

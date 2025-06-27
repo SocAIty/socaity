@@ -9,7 +9,7 @@ class image_urls_to_video(FastSDK):
     
     def predictions(self, image_urls: str, fps: float = 4.0, mp4: bool = False, output_zip: bool = False, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

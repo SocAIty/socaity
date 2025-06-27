@@ -11,7 +11,7 @@ class stable_diffusion(FastSDK):
     
     def predictions(self, width: int = 768, height: int = 768, prompt: str = 'a vision of paradise. unreal engine', scheduler: str = 'DPMSolverMultistep', num_outputs: int = 1, guidance_scale: float = 7.5, num_inference_steps: int = 50, seed: Optional[int] = None, negative_prompt: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

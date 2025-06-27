@@ -11,9 +11,9 @@ class codeformer(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="3c7452a1-b283-46c8-ac17-64d7335e7782", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], upscale: int = 2, face_upsample: bool = True, background_enhance: bool = True, codeformer_fidelity: float = 0.5, **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], upscale: int = 2, face_upsample: bool = True, background_enhance: bool = True, codeformer_fidelity: float = 0.5, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

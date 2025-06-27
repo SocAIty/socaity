@@ -1,5 +1,5 @@
 from fastsdk import FastSDK, APISeex
-from typing import List, Union, Any
+from typing import List, Any, Union
 
 from media_toolkit import MediaFile
 
@@ -11,9 +11,9 @@ class trellis(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="f5e519f8-a442-42b7-9a1e-b4addb1d3ffa", api_key=api_key)
     
-    def predictions(self, images: Union[List[Any], MediaFile, str, bytes], seed: int = 0, texture_size: int = 1024, mesh_simplify: float = 0.95, generate_color: bool = True, generate_model: bool = False, randomize_seed: bool = True, generate_normal: bool = False, save_gaussian_ply: bool = False, ss_sampling_steps: int = 12, slat_sampling_steps: int = 12, return_no_background: bool = False, ss_guidance_strength: float = 7.5, slat_guidance_strength: float = 3.0, **kwargs) -> APISeex:
+    def predictions(self, images: Union[str, MediaFile, List[Any], bytes], seed: int = 0, texture_size: int = 1024, mesh_simplify: float = 0.95, generate_color: bool = True, generate_model: bool = False, randomize_seed: bool = True, generate_normal: bool = False, save_gaussian_ply: bool = False, ss_sampling_steps: int = 12, slat_sampling_steps: int = 12, return_no_background: bool = False, ss_guidance_strength: float = 7.5, slat_guidance_strength: float = 3.0, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

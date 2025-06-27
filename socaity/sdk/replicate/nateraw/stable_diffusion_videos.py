@@ -11,7 +11,7 @@ class stable_diffusion_videos(FastSDK):
     
     def predictions(self, fps: int = 15, prompts: str = 'a cat | a dog | a horse', num_steps: int = 50, scheduler: str = 'klms', guidance_scale: float = 7.5, num_inference_steps: int = 50, seeds: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

@@ -11,9 +11,9 @@ class shap_e(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="01265335-2249-43c0-b787-453da9a6fbb0", api_key=api_key)
     
-    def predictions(self, save_mesh: bool = False, batch_size: int = 1, render_mode: str = 'nerf', render_size: int = 128, guidance_scale: float = 15.0, image: Optional[Union[MediaFile, str, bytes]] = None, prompt: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, save_mesh: bool = False, batch_size: int = 1, render_mode: str = 'nerf', render_size: int = 128, guidance_scale: float = 15.0, image: Optional[Union[str, MediaFile, bytes]] = None, prompt: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

@@ -11,7 +11,7 @@ class deforum_stable_diffusion(FastSDK):
     
     def predictions(self, fps: int = 15, zoom: str = '0: (1.04)', angle: str = '0:(0)', sampler: str = 'plms', max_frames: int = 100, translation_x: str = '0: (0)', translation_y: str = '0: (0)', color_coherence: str = 'Match Frame 0 LAB', animation_prompts: str = '0: a beautiful portrait of a woman by Artgerm, trending on Artstation', seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

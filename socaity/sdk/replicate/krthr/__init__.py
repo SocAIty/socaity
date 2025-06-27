@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.krthr.clip_embeddings import clip_embeddings

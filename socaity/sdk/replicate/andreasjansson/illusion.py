@@ -11,9 +11,9 @@ class illusion(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="972ee562-9885-4195-a023-39b551715c6f", api_key=api_key)
     
-    def predictions(self, prompt: str, qr_code_content: str, seed: int = -1, width: int = 768, border: int = 1, height: int = 768, num_outputs: int = 1, guidance_scale: float = 7.5, negative_prompt: str = 'ugly, disfigured, low quality, blurry, nsfw', qrcode_background: str = 'gray', num_inference_steps: int = 40, controlnet_conditioning_scale: float = 2.2, image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, prompt: str, qr_code_content: str, seed: int = -1, width: int = 768, border: int = 1, height: int = 768, num_outputs: int = 1, guidance_scale: float = 7.5, negative_prompt: str = 'ugly, disfigured, low quality, blurry, nsfw', qrcode_background: str = 'gray', num_inference_steps: int = 40, controlnet_conditioning_scale: float = 2.2, image: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

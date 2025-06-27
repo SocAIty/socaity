@@ -11,9 +11,9 @@ class realistic_voice_cloning(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="618b07ed-2cab-4ab9-9c79-ba83724ea423", api_key=api_key)
     
-    def predictions(self, protect: float = 0.33, rvc_model: str = 'Squidward', index_rate: float = 0.5, reverb_size: float = 0.15, pitch_change: str = 'no-change', rms_mix_rate: float = 0.25, filter_radius: int = 3, output_format: str = 'mp3', reverb_damping: float = 0.7, reverb_dryness: float = 0.8, reverb_wetness: float = 0.2, crepe_hop_length: int = 128, pitch_change_all: float = 0.0, main_vocals_volume_change: float = 0.0, pitch_detection_algorithm: str = 'rmvpe', instrumental_volume_change: float = 0.0, backup_vocals_volume_change: float = 0.0, song_input: Optional[Union[MediaFile, str, bytes]] = None, custom_rvc_model_download_url: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, protect: float = 0.33, rvc_model: str = 'Squidward', index_rate: float = 0.5, reverb_size: float = 0.15, pitch_change: str = 'no-change', rms_mix_rate: float = 0.25, filter_radius: int = 3, output_format: str = 'mp3', reverb_damping: float = 0.7, reverb_dryness: float = 0.8, reverb_wetness: float = 0.2, crepe_hop_length: int = 128, pitch_change_all: float = 0.0, main_vocals_volume_change: float = 0.0, pitch_detection_algorithm: str = 'rmvpe', instrumental_volume_change: float = 0.0, backup_vocals_volume_change: float = 0.0, song_input: Optional[Union[str, MediaFile, bytes]] = None, custom_rvc_model_download_url: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

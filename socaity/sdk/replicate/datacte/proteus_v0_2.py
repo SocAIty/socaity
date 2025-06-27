@@ -11,9 +11,9 @@ class proteus_v0_2(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="67f7c61f-5d0c-4eb1-b06e-3d1f5f924fb2", api_key=api_key)
     
-    def predictions(self, width: int = 1024, height: int = 1024, prompt: str = 'black fluffy gorgeous dangerous cat animal creature, large orange eyes, big fluffy ears, piercing gaze, full moon, dark ambiance, best quality, extremely detailed', scheduler: str = 'KarrasDPM', num_outputs: int = 1, guidance_scale: float = 7.5, apply_watermark: bool = True, negative_prompt: str = 'worst quality, low quality', prompt_strength: float = 0.8, num_inference_steps: int = 20, disable_safety_checker: bool = False, mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, width: int = 1024, height: int = 1024, prompt: str = 'black fluffy gorgeous dangerous cat animal creature, large orange eyes, big fluffy ears, piercing gaze, full moon, dark ambiance, best quality, extremely detailed', scheduler: str = 'KarrasDPM', num_outputs: int = 1, guidance_scale: float = 7.5, apply_watermark: bool = True, negative_prompt: str = 'worst quality, low quality', prompt_strength: float = 0.8, num_inference_steps: int = 20, disable_safety_checker: bool = False, mask: Optional[Union[str, MediaFile, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

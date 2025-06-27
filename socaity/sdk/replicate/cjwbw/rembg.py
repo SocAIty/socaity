@@ -11,9 +11,9 @@ class rembg(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="bd65f429-81ef-432d-a9b6-fcfcd2982bba", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes] = '', **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes] = '', **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

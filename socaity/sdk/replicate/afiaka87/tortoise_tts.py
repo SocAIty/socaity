@@ -11,9 +11,9 @@ class tortoise_tts(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="82a76d4e-73a1-4e7e-94d6-0e6f4b81519e", api_key=api_key)
     
-    def predictions(self, seed: int = 0, text: str = 'The expressiveness of autoregressive transformers is literally nuts! I absolutely adore them.', preset: str = 'fast', voice_a: str = 'random', voice_b: str = 'disabled', voice_c: str = 'disabled', cvvp_amount: float = 0.0, custom_voice: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, seed: int = 0, text: str = 'The expressiveness of autoregressive transformers is literally nuts! I absolutely adore them.', preset: str = 'fast', voice_a: str = 'random', voice_b: str = 'disabled', voice_c: str = 'disabled', cvvp_amount: float = 0.0, custom_voice: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

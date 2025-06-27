@@ -11,9 +11,9 @@ class playground_v2_5_1024px_aesthetic(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="98466e47-f0f6-4cfe-8842-f7758bd9d61c", api_key=api_key)
     
-    def predictions(self, width: int = 1024, height: int = 1024, prompt: str = 'Astronaut in a jungle, cold color palette, muted colors, detailed, 8k', scheduler: str = 'DPMSolver++', num_outputs: int = 1, guidance_scale: float = 3.0, apply_watermark: bool = True, negative_prompt: str = 'ugly, deformed, noisy, blurry, distorted', prompt_strength: float = 0.8, num_inference_steps: int = 25, disable_safety_checker: bool = False, mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, width: int = 1024, height: int = 1024, prompt: str = 'Astronaut in a jungle, cold color palette, muted colors, detailed, 8k', scheduler: str = 'DPMSolver++', num_outputs: int = 1, guidance_scale: float = 3.0, apply_watermark: bool = True, negative_prompt: str = 'ugly, deformed, noisy, blurry, distorted', prompt_strength: float = 0.8, num_inference_steps: int = 25, disable_safety_checker: bool = False, mask: Optional[Union[str, MediaFile, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

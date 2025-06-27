@@ -11,9 +11,9 @@ class seamless_communication(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="c3a40fb8-137c-4114-bd7a-017ebfab9502", api_key=api_key)
     
-    def predictions(self, task_name: str = 'S2ST (Speech to Speech translation)', input_text_language: str = 'None', max_input_audio_length: float = 60.0, target_language_text_only: str = 'Norwegian Nynorsk', target_language_with_speech: str = 'French', input_text: Optional[str] = None, input_audio: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, task_name: str = 'S2ST (Speech to Speech translation)', input_text_language: str = 'None', max_input_audio_length: float = 60.0, target_language_text_only: str = 'Norwegian Nynorsk', target_language_with_speech: str = 'French', input_text: Optional[str] = None, input_audio: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

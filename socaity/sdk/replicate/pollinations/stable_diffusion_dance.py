@@ -11,7 +11,14 @@ class stable_diffusion_dance(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="35430f6b-5b5a-45c2-adf9-6830a2f707ac", api_key=api_key)
     
-    def predictions(self, width: int = 384, height: int = 512, prompts: str = 'a moth\na killer dragonfly\nTwo fishes talking to eachother in deep sea', batch_size: int = 24, frame_rate: float = 16.0, random_seed: int = 13, prompt_scale: float = 15.0, style_suffix: str = 'Painting by Paul Klee, intricate details', audio_smoothing: float = 0.8, diffusion_steps: int = 20, audio_noise_scale: float = 0.3, audio_loudness_type: str = 'peak', frame_interpolation: bool = True, audio_file: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def no_name(self, **kwargs) -> APISeex:
+        """
+        None
+        
+        """
+        return self.submit_job("/", **kwargs)
+    
+    def predictions(self, width: int = 384, height: int = 512, prompts: str = 'a moth\na killer dragonfly\nTwo fishes talking to eachother in deep sea', batch_size: int = 24, frame_rate: float = 16.0, random_seed: int = 13, prompt_scale: float = 15.0, style_suffix: str = 'Painting by Paul Klee, intricate details', audio_smoothing: float = 0.8, diffusion_steps: int = 20, audio_noise_scale: float = 0.3, audio_loudness_type: str = 'peak', frame_interpolation: bool = True, audio_file: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
         """
         Run a single prediction on the model
         
@@ -49,5 +56,5 @@ class stable_diffusion_dance(FastSDK):
         return self.submit_job("/predictions", width=width, height=height, prompts=prompts, batch_size=batch_size, frame_rate=frame_rate, random_seed=random_seed, prompt_scale=prompt_scale, style_suffix=style_suffix, audio_smoothing=audio_smoothing, diffusion_steps=diffusion_steps, audio_noise_scale=audio_noise_scale, audio_loudness_type=audio_loudness_type, frame_interpolation=frame_interpolation, audio_file=audio_file, **kwargs)
     
     # Convenience aliases for the primary endpoint
-    run = predictions
-    __call__ = predictions
+    run = no_name
+    __call__ = no_name

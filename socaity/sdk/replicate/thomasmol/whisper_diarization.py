@@ -11,9 +11,9 @@ class whisper_diarization(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="85d70882-606b-4083-b164-1fa4acd98a0c", api_key=api_key)
     
-    def predictions(self, translate: bool = False, group_segments: bool = True, file: Optional[Union[MediaFile, str, bytes]] = None, prompt: Optional[str] = None, file_url: Optional[str] = None, language: Optional[str] = None, file_string: Optional[str] = None, num_speakers: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, translate: bool = False, group_segments: bool = True, file: Optional[Union[str, MediaFile, bytes]] = None, prompt: Optional[str] = None, file_url: Optional[str] = None, language: Optional[str] = None, file_string: Optional[str] = None, num_speakers: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

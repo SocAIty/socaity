@@ -11,9 +11,9 @@ class audio_super_resolution(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="9e7eb7fe-4918-4151-805d-4948aa6cdc90", api_key=api_key)
     
-    def predictions(self, input_file: Union[MediaFile, str, bytes], ddim_steps: int = 50, guidance_scale: float = 3.5, seed: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, input_file: Union[str, MediaFile, bytes], ddim_steps: int = 50, guidance_scale: float = 3.5, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

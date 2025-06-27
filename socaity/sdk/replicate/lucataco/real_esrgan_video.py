@@ -11,9 +11,9 @@ class real_esrgan_video(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="f7b0ed6f-3794-4b3f-a273-f2d96d2b699a", api_key=api_key)
     
-    def predictions(self, video_path: Union[MediaFile, str, bytes], model: str = 'RealESRGAN_x4plus', resolution: str = 'FHD', **kwargs) -> APISeex:
+    def predictions(self, video_path: Union[str, MediaFile, bytes], model: str = 'RealESRGAN_x4plus', resolution: str = 'FHD', **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

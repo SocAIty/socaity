@@ -9,7 +9,7 @@ class magnet(FastSDK):
     
     def predictions(self, model: str = 'facebook/magnet-small-10secs', top_p: float = 0.9, prompt: str = '80s electronic track with melodic synthesizers, catchy beat and groovy bass', max_cfg: float = 10.0, min_cfg: float = 1.0, span_score: str = 'prod-stride1', variations: int = 3, temperature: float = 3.0, decoding_steps_stage_1: int = 20, decoding_steps_stage_2: int = 10, decoding_steps_stage_3: int = 10, decoding_steps_stage_4: int = 10, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

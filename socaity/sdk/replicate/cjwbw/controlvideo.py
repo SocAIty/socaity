@@ -11,9 +11,9 @@ class controlvideo(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="f9e98013-d3c4-40d5-b37f-09d47e02127e", api_key=api_key)
     
-    def predictions(self, video_path: Union[MediaFile, str, bytes], prompt: str = 'A striking mallard floats effortlessly on the sparkling pond.', condition: str = 'depth', video_length: int = 15, is_long_video: bool = False, guidance_scale: float = 12.5, smoother_steps: str = '19, 20', num_inference_steps: int = 50, seed: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, video_path: Union[str, MediaFile, bytes], prompt: str = 'A striking mallard floats effortlessly on the sparkling pond.', condition: str = 'depth', video_length: int = 15, is_long_video: bool = False, guidance_scale: float = 12.5, smoother_steps: str = '19, 20', num_inference_steps: int = 50, seed: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

@@ -11,7 +11,7 @@ class audio_ldm(FastSDK):
     
     def predictions(self, text: str, duration: str = '5.0', n_candidates: int = 3, guidance_scale: float = 2.5, random_seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

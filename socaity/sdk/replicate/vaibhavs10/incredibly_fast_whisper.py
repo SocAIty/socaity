@@ -11,9 +11,9 @@ class incredibly_fast_whisper(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="93029465-6cee-4127-ad03-389a16dd9f6f", api_key=api_key)
     
-    def predictions(self, audio: Union[MediaFile, str, bytes], task: str = 'transcribe', language: str = 'None', timestamp: str = 'chunk', batch_size: int = 24, diarise_audio: bool = False, hf_token: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, audio: Union[str, MediaFile, bytes], task: str = 'transcribe', language: str = 'None', timestamp: str = 'chunk', batch_size: int = 24, diarise_audio: bool = False, hf_token: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

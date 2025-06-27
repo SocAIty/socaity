@@ -11,9 +11,9 @@ class aura_sr_v2(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="e6bb9747-7fbb-43a8-8045-84b7379084f1", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], output_format: str = 'webp', max_batch_size: int = 8, output_quality: int = 80, **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], output_format: str = 'webp', max_batch_size: int = 8, output_quality: int = 80, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

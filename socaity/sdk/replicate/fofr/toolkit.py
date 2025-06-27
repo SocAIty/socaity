@@ -11,9 +11,9 @@ class toolkit(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="3420ed1d-4a77-445b-9974-df97b162c90d", api_key=api_key)
     
-    def predictions(self, task: str, input_file: Union[MediaFile, str, bytes], fps: int = 0, **kwargs) -> APISeex:
+    def predictions(self, task: str, input_file: Union[str, MediaFile, bytes], fps: int = 0, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

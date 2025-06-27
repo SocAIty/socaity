@@ -11,7 +11,7 @@ class all_mpnet_base_v2(FastSDK):
     
     def predictions(self, text: Optional[str] = None, text_batch: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

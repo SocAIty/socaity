@@ -216,6 +216,14 @@ class SocaityServiceManager(ServiceManager):
                 username_imports = self._generate_replicate_imports(username)
                 self._write_init_file(username_dir, username_imports)
 
+    def _get_path_as_import(self, file_path: Path) -> str:
+        """Get the path as import for a given file path"""
+        path_as_import = str(file_path).replace('\\', '/')
+        if path_as_import.endswith('.py'):
+            path_as_import = path_as_import[:-3]  # Remove .py extension
+        path_as_import = path_as_import.replace('/', '.')
+        return path_as_import
+
     def _generate_replicate_imports(self, username: str) -> Set[str]:
         """Generate import statements specifically for replicate username directories"""
         imports = set()
@@ -227,7 +235,7 @@ class SocaityServiceManager(ServiceManager):
                     # Get the relative path from SDK_ROOT
                     relative_path = file_path.relative_to(self.SDK_ROOT)
                     # Convert path to import format
-                    path_as_import = str(relative_path).replace('\\', '/').replace('/', '.').replace('.py', '')
+                    path_as_import = self._get_path_as_import(relative_path)
                     # Construct import path
                     import_path = f"socaity.sdk.{path_as_import}"
                     import_stmt = f"from {import_path} import {class_name}"
@@ -265,7 +273,7 @@ class SocaityServiceManager(ServiceManager):
                 # Get the relative path from SDK_ROOT
                 relative_path = file_path.relative_to(self.SDK_ROOT)
                 # Convert path to import format
-                path_as_import = str(relative_path).replace('\\', '/').replace('/', '.').replace('.py', '')
+                path_as_import = self._get_path_as_import(relative_path)
                 # Construct import path
                 import_path = f"socaity.sdk.{path_as_import}"
                 import_stmt = f"from {import_path} import {class_name}"

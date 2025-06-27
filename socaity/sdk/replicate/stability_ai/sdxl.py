@@ -1,5 +1,5 @@
 from fastsdk import FastSDK, APISeex
-from typing import List, Optional, Any, Dict, Union
+from typing import Optional, Union
 
 from media_toolkit import MediaFile
 
@@ -11,30 +11,9 @@ class sdxl(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="c6f62ea6-7a73-45b7-96fa-d992742b17c3", api_key=api_key)
     
-    def trainings(self, webhook_events_filter: Union[List[Any], str] = ['start', 'output', 'logs', 'completed'], id: Optional[str] = None, input: Optional[Dict[str, Any]] = None, webhook: Optional[Union[MediaFile, str, bytes]] = None, created_at: Optional[str] = None, output_file_prefix: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, width: int = 1024, height: int = 1024, prompt: str = 'An astronaut riding a rainbow unicorn', refine: str = 'no_refiner', scheduler: str = 'K_EULER', lora_scale: float = 0.6, num_outputs: int = 1, guidance_scale: float = 7.5, apply_watermark: bool = True, high_noise_frac: float = 0.8, negative_prompt: str = '', prompt_strength: float = 0.8, num_inference_steps: int = 50, disable_safety_checker: bool = False, mask: Optional[Union[str, MediaFile, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[str, MediaFile, bytes]] = None, refine_steps: Optional[int] = None, replicate_weights: Optional[str] = None, **kwargs) -> APISeex:
         """
-        None
         
-        
-        Args:
-            webhook_events_filter: No description available. Defaults to ['start', 'output', 'logs', 'completed'].
-            
-            id: No description available. Optional.
-            
-            input: No description available. Optional.
-            
-            webhook: No description available. Optional.
-            
-            created_at: No description available. Optional.
-            
-            output_file_prefix: No description available. Optional.
-            
-        """
-        return self.submit_job("/trainings", webhook_events_filter=webhook_events_filter, id=id, input=input, webhook=webhook, created_at=created_at, output_file_prefix=output_file_prefix, **kwargs)
-    
-    def predictions(self, width: int = 1024, height: int = 1024, prompt: str = 'An astronaut riding a rainbow unicorn', refine: str = 'no_refiner', scheduler: str = 'K_EULER', lora_scale: float = 0.6, num_outputs: int = 1, guidance_scale: float = 7.5, apply_watermark: bool = True, high_noise_frac: float = 0.8, negative_prompt: str = '', prompt_strength: float = 0.8, num_inference_steps: int = 50, disable_safety_checker: bool = False, mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, refine_steps: Optional[int] = None, replicate_weights: Optional[str] = None, **kwargs) -> APISeex:
-        """
-        Run a single prediction on the model
         
         
         Args:
@@ -79,24 +58,6 @@ class sdxl(FastSDK):
         """
         return self.submit_job("/predictions", width=width, height=height, prompt=prompt, refine=refine, scheduler=scheduler, lora_scale=lora_scale, num_outputs=num_outputs, guidance_scale=guidance_scale, apply_watermark=apply_watermark, high_noise_frac=high_noise_frac, negative_prompt=negative_prompt, prompt_strength=prompt_strength, num_inference_steps=num_inference_steps, disable_safety_checker=disable_safety_checker, mask=mask, seed=seed, image=image, refine_steps=refine_steps, replicate_weights=replicate_weights, **kwargs)
     
-    def trainings_training_id(self, raining_equest: Dict[str, Any], **kwargs) -> APISeex:
-        """
-        None
-        
-        
-        Args:
-            raining_equest: No description available.
-            
-        """
-        return self.submit_job("/trainings/{training_id}", raining_equest=raining_equest, **kwargs)
-    
-    def trainings_training_id_cancel(self, **kwargs) -> APISeex:
-        """
-        None
-        
-        """
-        return self.submit_job("/trainings/{training_id}/cancel", **kwargs)
-    
     # Convenience aliases for the primary endpoint
-    run = trainings
-    __call__ = trainings
+    run = predictions
+    __call__ = predictions

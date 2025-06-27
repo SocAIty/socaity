@@ -11,9 +11,9 @@ class zeroscope_v2_xl(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="9c9c5066-abb8-4a4f-acfb-20f7d57d203f", api_key=api_key)
     
-    def predictions(self, fps: int = 8, model: str = 'xl', width: int = 576, height: int = 320, prompt: str = 'An astronaut riding a horse', batch_size: int = 1, num_frames: int = 24, init_weight: float = 0.5, guidance_scale: float = 7.5, remove_watermark: bool = False, num_inference_steps: int = 50, seed: Optional[int] = None, init_video: Optional[Union[MediaFile, str, bytes]] = None, negative_prompt: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, fps: int = 8, model: str = 'xl', width: int = 576, height: int = 320, prompt: str = 'An astronaut riding a horse', batch_size: int = 1, num_frames: int = 24, init_weight: float = 0.5, guidance_scale: float = 7.5, remove_watermark: bool = False, num_inference_steps: int = 50, seed: Optional[int] = None, init_video: Optional[Union[str, MediaFile, bytes]] = None, negative_prompt: Optional[str] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

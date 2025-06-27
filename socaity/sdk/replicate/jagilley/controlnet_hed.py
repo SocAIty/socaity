@@ -11,9 +11,9 @@ class controlnet_hed(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="4c983c66-b093-47a1-94dc-8a46905229d2", api_key=api_key)
     
-    def predictions(self, prompt: str, input_image: Union[MediaFile, str, bytes], eta: float = 0.0, scale: float = 9.0, a_prompt: str = 'best quality, extremely detailed', n_prompt: str = 'longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality', ddim_steps: int = 20, num_samples: str = '1', image_resolution: str = '512', detect_resolution: int = 512, seed: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, prompt: str, input_image: Union[str, MediaFile, bytes], eta: float = 0.0, scale: float = 9.0, a_prompt: str = 'best quality, extremely detailed', n_prompt: str = 'longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality', ddim_steps: int = 20, num_samples: str = '1', image_resolution: str = '512', detect_resolution: int = 512, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

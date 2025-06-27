@@ -9,7 +9,7 @@ class llama_2_13b_embeddings(FastSDK):
     
     def predictions(self, prompts: str, prompt_separator: str = '\n\n', **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

@@ -11,7 +11,7 @@ class sticker_maker(FastSDK):
     
     def predictions(self, steps: int = 17, width: int = 1152, height: int = 1152, prompt: str = 'a cute cat', output_format: str = 'webp', output_quality: int = 90, negative_prompt: str = '', number_of_images: int = 1, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

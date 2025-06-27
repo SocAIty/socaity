@@ -4,16 +4,16 @@ from typing import Union
 from media_toolkit import MediaFile
 
 
-class rmgb(FastSDK):
+class remove_bg(FastSDK):
     """
-    Generated client for cjwbw/rmgb
+    Generated client for zylim0702/remove-bg
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="2cde0481-d448-4332-a3c6-4759c60c2253", api_key=api_key)
+        super().__init__(service_name_or_id="e9d43ee2-ccfe-4282-91c3-00f15b75248b", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

@@ -9,7 +9,7 @@ class whisperx_video_transcribe(FastSDK):
     
     def predictions(self, url: str, debug: bool = False, batch_size: int = 16, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

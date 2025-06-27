@@ -11,9 +11,9 @@ class swin2sr(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="6e37ff20-c897-459b-88b3-7214da99faca", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], task: str = 'real_sr', **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], task: str = 'real_sr', **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

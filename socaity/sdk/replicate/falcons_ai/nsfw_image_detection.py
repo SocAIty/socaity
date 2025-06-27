@@ -11,9 +11,9 @@ class nsfw_image_detection(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="8e26b425-7598-435b-8e80-38e58d4b1664", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

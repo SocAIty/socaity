@@ -9,7 +9,7 @@ class nomic_embed_text_v1(FastSDK):
     
     def predictions(self, sentences: str, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

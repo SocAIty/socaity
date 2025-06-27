@@ -11,9 +11,9 @@ class jina_clip_v2(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="2978d47d-bd47-41d1-8d9e-e77e35fc0153", api_key=api_key)
     
-    def predictions(self, embedding_dim: int = 64, output_format: str = 'base64', text: Optional[str] = None, image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, embedding_dim: int = 64, output_format: str = 'base64', text: Optional[str] = None, image: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

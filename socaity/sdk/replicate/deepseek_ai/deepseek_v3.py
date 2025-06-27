@@ -9,7 +9,7 @@ class deepseek_v3(FastSDK):
     
     def predictions(self, top_p: float = 1.0, prompt: str = '', max_tokens: int = 1024, temperature: float = 0.6, presence_penalty: float = 0.0, frequency_penalty: float = 0.0, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

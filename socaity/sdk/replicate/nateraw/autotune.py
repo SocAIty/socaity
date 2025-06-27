@@ -11,16 +11,9 @@ class autotune(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="bb298a70-019d-4d23-b498-2888f630419f", api_key=api_key)
     
-    def ready(self, **kwargs) -> APISeex:
+    def predictions(self, audio_file: Union[str, MediaFile, bytes], scale: str = 'closest', output_format: str = 'wav', **kwargs) -> APISeex:
         """
-        None
         
-        """
-        return self.submit_job("/ready", **kwargs)
-    
-    def predictions(self, audio_file: Union[MediaFile, str, bytes], scale: str = 'closest', output_format: str = 'wav', **kwargs) -> APISeex:
-        """
-        Run a single prediction on the model
         
         
         Args:
@@ -34,5 +27,5 @@ class autotune(FastSDK):
         return self.submit_job("/predictions", audio_file=audio_file, scale=scale, output_format=output_format, **kwargs)
     
     # Convenience aliases for the primary endpoint
-    run = ready
-    __call__ = ready
+    run = predictions
+    __call__ = predictions

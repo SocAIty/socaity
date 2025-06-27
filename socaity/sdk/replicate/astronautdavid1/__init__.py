@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.astronautdavid1.mad2_flux_lora import mad2_flux_lora

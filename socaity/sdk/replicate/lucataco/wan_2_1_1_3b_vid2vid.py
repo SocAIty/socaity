@@ -11,9 +11,9 @@ class wan_2_1_1_3b_vid2vid(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="78b7326b-ca6a-4fcd-a4e6-11963900b560", api_key=api_key)
     
-    def predictions(self, prompt: str, tiled: bool = True, cfg_scale: float = 6.0, num_frames: int = 81, aspect_ratio: str = '832x480', negative_prompt: str = 'low quality, blurry, distorted, disfigured, text, watermark', frames_per_second: int = 16, denoising_strength: float = 0.7, num_inference_steps: int = 40, seed: Optional[int] = None, input_video: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, prompt: str, tiled: bool = True, cfg_scale: float = 6.0, num_frames: int = 81, aspect_ratio: str = '832x480', negative_prompt: str = 'low quality, blurry, distorted, disfigured, text, watermark', frames_per_second: int = 16, denoising_strength: float = 0.7, num_inference_steps: int = 40, seed: Optional[int] = None, input_video: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

@@ -11,7 +11,7 @@ class qr_code_controlnet(FastSDK):
     
     def predictions(self, url: str, prompt: str, eta: float = 0.0, scheduler: str = 'DDIM', guess_mode: bool = False, num_outputs: int = 1, guidance_scale: float = 9.0, negative_prompt: str = 'Longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality', image_resolution: int = 768, num_inference_steps: int = 20, disable_safety_check: bool = False, qr_conditioning_scale: float = 1.0, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

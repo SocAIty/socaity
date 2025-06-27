@@ -11,9 +11,9 @@ class background_remover(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="ac005f5c-17c4-4693-a642-24824565c896", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

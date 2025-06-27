@@ -11,9 +11,9 @@ class invsr(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="3f8ab2b7-4850-4932-b8cd-ae93251d4ed0", api_key=api_key)
     
-    def predictions(self, in_path: Union[MediaFile, str, bytes], seed: int = 12345, num_steps: int = 1, chopping_size: int = 128, **kwargs) -> APISeex:
+    def predictions(self, in_path: Union[str, MediaFile, bytes], seed: int = 12345, num_steps: int = 1, chopping_size: int = 128, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

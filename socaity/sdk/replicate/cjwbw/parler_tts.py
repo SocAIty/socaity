@@ -9,7 +9,7 @@ class parler_tts(FastSDK):
     
     def predictions(self, prompt: str = 'Hey, how are you doing today?', description: str = 'A female speaker with a slightly low-pitched voice delivers her words quite expressively, in a very confined sounding environment with clear audio quality. She speaks very fast.', **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

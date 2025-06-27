@@ -11,9 +11,9 @@ class semantic_segment_anything(FastSDK):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="04c66564-04a1-43c6-85e1-5ce7a90f4339", api_key=api_key)
     
-    def predictions(self, image: Union[MediaFile, str, bytes], output_json: bool = True, **kwargs) -> APISeex:
+    def predictions(self, image: Union[str, MediaFile, bytes], output_json: bool = True, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

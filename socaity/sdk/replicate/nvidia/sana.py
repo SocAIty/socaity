@@ -11,7 +11,7 @@ class sana(FastSDK):
     
     def predictions(self, width: int = 1024, height: int = 1024, prompt: str = 'a cyberpunk cat with a neon sign that says "Sana"', model_variant: str = '1600M-1024px', guidance_scale: float = 5.0, negative_prompt: str = '', pag_guidance_scale: float = 2.0, num_inference_steps: int = 18, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:

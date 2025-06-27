@@ -9,7 +9,7 @@ class clip_features(FastSDK):
     
     def predictions(self, inputs: str = 'a\nb', **kwargs) -> APISeex:
         """
-        Run a single prediction on the model
+        
         
         
         Args:
