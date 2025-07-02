@@ -4,9 +4,9 @@ import os
 
 
 # Global directory paths for use in both pytest and direct execution
-BASE_DIR = os.path.dirname(__file__)
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 INPUT_DIR = os.path.join(BASE_DIR, "test_files", "text2speech")
-OUTPUT_DIR = os.path.join(BASE_DIR, "output")
+OUTPUT_DIR = os.path.join(BASE_DIR, "output", "speechcraft")
 SAMPLE_TEXT = "I love society [laughs]! [happy] What a day to make voice overs with artificial intelligence."
 TEST_FILE_1 = f'{INPUT_DIR}/voice_clone_test_voice_1.wav'
 TEST_FILE_2 = f'{INPUT_DIR}/voice_clone_test_voice_2.wav'

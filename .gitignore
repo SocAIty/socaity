@@ -1,6 +1,7 @@
 # package specific
 test/test_files/output/
 test/output/
+test/test_socaity/output/
 # socaity/sdk/cache/  -- is for now kept inside, to have smaller updates on startup
 
 # Byte-compiled / optimized / DLL files
