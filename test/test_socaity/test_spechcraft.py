@@ -1,4 +1,5 @@
-from socaity import speechcraft, MediaFile
+from socaity import speechcraft, MediaFile, service_manager
+from fastsdk.service_management.service_definition import SocaityServiceAddress
 import os
 
 
@@ -11,7 +12,10 @@ TEST_FILE_1 = f'{INPUT_DIR}/voice_clone_test_voice_1.wav'
 TEST_FILE_2 = f'{INPUT_DIR}/voice_clone_test_voice_2.wav'
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
-speechcraft = speechcraft()
+speechcraft = speechcraft(api_key=os.getenv("SOCAITY_API_KEY"))
+
+local_url = os.getenv("SOCAITY_INFER_BACKEND_URL", "https://api.socaity.ai/v1/") + "speechcraft"
+service_manager.update_service(speechcraft.service_definition.id, service_address=SocaityServiceAddress(url=local_url))
 
 
 def test_text2voice():
@@ -69,5 +73,6 @@ def test_speechcraft():
 
 if __name__ == "__main__":
     # When running directly, fixtures are just regular functions
+    test_text2voice()
     # test_voice2embedding()
-    test_test2voice_with_embedding()
+    # test_test2voice_with_embedding()

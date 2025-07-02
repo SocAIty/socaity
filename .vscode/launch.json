@@ -45,7 +45,7 @@
             "name": "Python: Test SpeechCraft",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/test/test_spechcraft.py",
+            "program": "${workspaceFolder}/test/test_socaity/test_spechcraft.py",
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
