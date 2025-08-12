@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class magnet(FastSDK):
+class magnet(FastClient):
     """
     Generated client for lucataco/magnet
     """

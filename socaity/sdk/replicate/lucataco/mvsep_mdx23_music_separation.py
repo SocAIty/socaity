@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class mvsep_mdx23_music_separation(FastSDK):
+class mvsep_mdx23_music_separation(FastClient):
     """
     Generated client for lucataco/mvsep-mdx23-music-separation
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="dfc95e7b-bf4d-4f6b-ac10-fc8ee5177287", api_key=api_key)
     
-    def predictions(self, audio: Union[str, MediaFile, bytes], **kwargs) -> APISeex:
+    def predictions(self, audio: Union[MediaFile, str, bytes], **kwargs) -> APISeex:
         """
         
         

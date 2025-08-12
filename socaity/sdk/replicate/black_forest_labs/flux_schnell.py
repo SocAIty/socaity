@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class flux_schnell(FastSDK):
+class flux_schnell(FastClient):
     """
     Generated client for black-forest-labs/flux-schnell
     """

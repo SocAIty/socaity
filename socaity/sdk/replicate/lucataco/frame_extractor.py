@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class frame_extractor(FastSDK):
+class frame_extractor(FastClient):
     """
     Generated client for lucataco/frame-extractor
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="75d0bd49-1736-4298-b105-7d3663c3b71a", api_key=api_key)
     
-    def predictions(self, video: Union[str, MediaFile, bytes], return_first_frame: bool = False, **kwargs) -> APISeex:
+    def predictions(self, video: Union[MediaFile, str, bytes], return_first_frame: bool = False, **kwargs) -> APISeex:
         """
         
         

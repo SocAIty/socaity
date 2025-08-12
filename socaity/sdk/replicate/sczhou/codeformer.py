@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class codeformer(FastSDK):
+class codeformer(FastClient):
     """
     Generated client for sczhou/codeformer
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="3c7452a1-b283-46c8-ac17-64d7335e7782", api_key=api_key)
     
-    def predictions(self, image: Union[str, MediaFile, bytes], upscale: int = 2, face_upsample: bool = True, background_enhance: bool = True, codeformer_fidelity: float = 0.5, **kwargs) -> APISeex:
+    def predictions(self, image: Union[MediaFile, str, bytes], upscale: int = 2, face_upsample: bool = True, background_enhance: bool = True, codeformer_fidelity: float = 0.5, **kwargs) -> APISeex:
         """
         
         

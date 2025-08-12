@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class audio_ldm(FastSDK):
+class audio_ldm(FastClient):
     """
     Generated client for haoheliu/audio-ldm
     """

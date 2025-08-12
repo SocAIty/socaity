@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class controlnet_hed(FastSDK):
+class controlnet_hed(FastClient):
     """
     Generated client for jagilley/controlnet-hed
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="4c983c66-b093-47a1-94dc-8a46905229d2", api_key=api_key)
     
-    def predictions(self, prompt: str, input_image: Union[str, MediaFile, bytes], eta: float = 0.0, scale: float = 9.0, a_prompt: str = 'best quality, extremely detailed', n_prompt: str = 'longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality', ddim_steps: int = 20, num_samples: str = '1', image_resolution: str = '512', detect_resolution: int = 512, seed: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, prompt: str, input_image: Union[MediaFile, str, bytes], eta: float = 0.0, scale: float = 9.0, a_prompt: str = 'best quality, extremely detailed', n_prompt: str = 'longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality', ddim_steps: int = 20, num_samples: str = '1', image_resolution: str = '512', detect_resolution: int = 512, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         
         

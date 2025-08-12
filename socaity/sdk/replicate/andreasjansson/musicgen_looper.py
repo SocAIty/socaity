@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class musicgen_looper(FastSDK):
+class musicgen_looper(FastClient):
     """
     Generated client for andreasjansson/musicgen-looper
     """

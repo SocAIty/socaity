@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class autotune(FastSDK):
+class autotune(FastClient):
     """
     Generated client for nateraw/autotune
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="bb298a70-019d-4d23-b498-2888f630419f", api_key=api_key)
     
-    def predictions(self, audio_file: Union[str, MediaFile, bytes], scale: str = 'closest', output_format: str = 'wav', **kwargs) -> APISeex:
+    def predictions(self, audio_file: Union[MediaFile, str, bytes], scale: str = 'closest', output_format: str = 'wav', **kwargs) -> APISeex:
         """
         
         

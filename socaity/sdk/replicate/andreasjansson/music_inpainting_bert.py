@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class music_inpainting_bert(FastSDK):
+class music_inpainting_bert(FastClient):
     """
     Generated client for andreasjansson/music-inpainting-bert
     """

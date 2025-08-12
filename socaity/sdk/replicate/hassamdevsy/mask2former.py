@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class mask2former(FastSDK):
+class mask2former(FastClient):
     """
     Generated client for hassamdevsy/mask2former
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="820f5706-634a-47e0-8412-011655f93527", api_key=api_key)
     
-    def predictions(self, image: Union[str, MediaFile, bytes], **kwargs) -> APISeex:
+    def predictions(self, image: Union[MediaFile, str, bytes], **kwargs) -> APISeex:
         """
         
         

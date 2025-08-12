@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class ram_grounded_sam(FastSDK):
+class ram_grounded_sam(FastClient):
     """
     Generated client for idea-research/ram-grounded-sam
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="cdc115d5-e386-47a4-9b7f-8f447313f19c", api_key=api_key)
     
-    def predictions(self, input_image: Union[str, MediaFile, bytes], use_sam_hq: bool = False, show_visualisation: bool = False, **kwargs) -> APISeex:
+    def predictions(self, input_image: Union[MediaFile, str, bytes], use_sam_hq: bool = False, show_visualisation: bool = False, **kwargs) -> APISeex:
         """
         
         

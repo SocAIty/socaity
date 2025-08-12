@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class flan_t5_xl(FastSDK):
+class flan_t5_xl(FastClient):
     """
     Generated client for replicate/flan-t5-xl
     """

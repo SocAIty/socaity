@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class ic_light_background(FastSDK):
+class ic_light_background(FastClient):
     """
     Generated client for zsxkib/ic-light-background
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="1fb36653-7ac0-4755-8d93-af13540a00eb", api_key=api_key)
     
-    def predictions(self, prompt: str, subject_image: Union[str, MediaFile, bytes], background_image: Union[str, MediaFile, bytes], cfg: float = 2.0, steps: int = 25, width: int = 512, height: int = 640, light_source: str = 'Use Background Image', highres_scale: float = 1.5, output_format: str = 'webp', compute_normal: bool = False, output_quality: int = 80, appended_prompt: str = 'best quality', highres_denoise: float = 0.5, negative_prompt: str = 'lowres, bad anatomy, bad hands, cropped, worst quality', number_of_images: int = 1, seed: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, prompt: str, subject_image: Union[MediaFile, str, bytes], background_image: Union[MediaFile, str, bytes], cfg: float = 2.0, steps: int = 25, width: int = 512, height: int = 640, light_source: str = 'Use Background Image', highres_scale: float = 1.5, output_format: str = 'webp', compute_normal: bool = False, output_quality: int = 80, appended_prompt: str = 'best quality', highres_denoise: float = 0.5, negative_prompt: str = 'lowres, bad anatomy, bad hands, cropped, worst quality', number_of_images: int = 1, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         
         

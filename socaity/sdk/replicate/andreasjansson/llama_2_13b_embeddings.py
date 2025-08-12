@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class llama_2_13b_embeddings(FastSDK):
+class llama_2_13b_embeddings(FastClient):
     """
     Generated client for andreasjansson/llama-2-13b-embeddings
     """

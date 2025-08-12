@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class deepseek_v3(FastSDK):
+class deepseek_v3(FastClient):
     """
     Generated client for deepseek-ai/deepseek-v3
     """

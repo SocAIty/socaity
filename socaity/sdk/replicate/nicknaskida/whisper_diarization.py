@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class whisper_diarization(FastSDK):
+class whisper_diarization(FastClient):
     """
     Generated client for nicknaskida/whisper-diarization
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="f6afd38a-eb3a-40d8-988e-21754d3a0c9a", api_key=api_key)
     
-    def predictions(self, translate: bool = False, batch_size: int = 64, num_speakers: int = 2, group_segments: bool = True, offset_seconds: int = 0, transcript_output_format: str = 'both', file: Optional[Union[str, MediaFile, bytes]] = None, prompt: Optional[str] = None, file_url: Optional[str] = None, hf_token: Optional[str] = None, language: Optional[str] = None, file_string: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, translate: bool = False, batch_size: int = 64, num_speakers: int = 2, group_segments: bool = True, offset_seconds: int = 0, transcript_output_format: str = 'both', file: Optional[Union[MediaFile, str, bytes]] = None, prompt: Optional[str] = None, file_url: Optional[str] = None, hf_token: Optional[str] = None, language: Optional[str] = None, file_string: Optional[str] = None, **kwargs) -> APISeex:
         """
         
         

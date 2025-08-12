@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class mustango(FastSDK):
+class mustango(FastClient):
     """
     Generated client for declare-lab/mustango
     """

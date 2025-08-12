@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class all_mpnet_base_v2(FastSDK):
+class all_mpnet_base_v2(FastClient):
     """
     Generated client for replicate/all-mpnet-base-v2
     """

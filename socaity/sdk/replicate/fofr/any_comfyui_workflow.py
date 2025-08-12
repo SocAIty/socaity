@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class any_comfyui_workflow(FastSDK):
+class any_comfyui_workflow(FastClient):
     """
     Generated client for fofr/any-comfyui-workflow
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="5457afef-4c0d-46df-9f62-cf87a4d8e455", api_key=api_key)
     
-    def predictions(self, output_format: str = 'webp', workflow_json: str = '', output_quality: int = 95, randomise_seeds: bool = True, force_reset_cache: bool = False, return_temp_files: bool = False, input_file: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, output_format: str = 'webp', workflow_json: str = '', output_quality: int = 95, randomise_seeds: bool = True, force_reset_cache: bool = False, return_temp_files: bool = False, input_file: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
         """
         
         

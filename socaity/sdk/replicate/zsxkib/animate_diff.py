@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class animate_diff(FastSDK):
+class animate_diff(FastClient):
     """
     Generated client for zsxkib/animate-diff
     """

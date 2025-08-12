@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class clip_features(FastSDK):
+class clip_features(FastClient):
     """
     Generated client for andreasjansson/clip-features
     """

@@ -1,7 +1,8 @@
 from typing import Dict, Set
 from pathlib import Path
 from datetime import datetime, timedelta
-from fastsdk.service_management import ServiceManager, FileSystemStore, ServiceDefinition
+from fastsdk.service_management import ServiceManager, FileSystemStore
+from fastsdk import ServiceDefinition
 from fastsdk.sdk_factory import create_sdk
 from fastsdk.utils import normalize_name_for_py
 from socaity.core.socaity_backend_client import SocaityBackendClient

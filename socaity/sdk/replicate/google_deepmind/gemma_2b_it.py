@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class gemma_2b_it(FastSDK):
+class gemma_2b_it(FastClient):
     """
     Generated client for google-deepmind/gemma-2b-it
     """

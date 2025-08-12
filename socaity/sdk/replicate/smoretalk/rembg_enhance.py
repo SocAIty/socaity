@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class rembg_enhance(FastSDK):
+class rembg_enhance(FastClient):
     """
     Generated client for smoretalk/rembg-enhance
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="1c92d5ca-dab3-4bca-9a54-c361ff454fa0", api_key=api_key)
     
-    def predictions(self, image: Union[str, MediaFile, bytes], **kwargs) -> APISeex:
+    def predictions(self, image: Union[MediaFile, str, bytes], **kwargs) -> APISeex:
         """
         
         

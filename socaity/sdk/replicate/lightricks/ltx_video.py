@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class ltx_video(FastSDK):
+class ltx_video(FastClient):
     """
     Generated client for lightricks/ltx-video
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="ed68a927-b15b-4d1e-aa2c-cc9e968152e5", api_key=api_key)
     
-    def predictions(self, cfg: float = 3.0, model: str = '0.9.1', steps: int = 30, length: int = 97, prompt: str = 'best quality, 4k, HDR, a tracking shot of a beautiful scene', target_size: int = 640, aspect_ratio: str = '3:2', negative_prompt: str = 'low quality, worst quality, deformed, distorted', image_noise_scale: float = 0.15, seed: Optional[int] = None, image: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, cfg: float = 3.0, model: str = '0.9.1', steps: int = 30, length: int = 97, prompt: str = 'best quality, 4k, HDR, a tracking shot of a beautiful scene', target_size: int = 640, aspect_ratio: str = '3:2', negative_prompt: str = 'low quality, worst quality, deformed, distorted', image_noise_scale: float = 0.15, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
         """
         
         

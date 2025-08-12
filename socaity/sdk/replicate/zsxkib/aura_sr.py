@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class aura_sr(FastSDK):
+class aura_sr(FastClient):
     """
     Generated client for zsxkib/aura-sr
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="5cf1cdf5-7c85-45ef-bef5-2267e0c470a4", api_key=api_key)
     
-    def predictions(self, image: Union[str, MediaFile, bytes], scale_factor: int = 4, max_batch_size: int = 1, **kwargs) -> APISeex:
+    def predictions(self, image: Union[MediaFile, str, bytes], scale_factor: int = 4, max_batch_size: int = 1, **kwargs) -> APISeex:
         """
         
         

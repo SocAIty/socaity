@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class florence_2_large(FastSDK):
+class florence_2_large(FastClient):
     """
     Generated client for lucataco/florence-2-large
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="e45381de-1d62-4126-af47-130a1cbacc25", api_key=api_key)
     
-    def predictions(self, image: Union[str, MediaFile, bytes], task_input: str = 'Caption', text_input: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, image: Union[MediaFile, str, bytes], task_input: str = 'Caption', text_input: Optional[str] = None, **kwargs) -> APISeex:
         """
         
         

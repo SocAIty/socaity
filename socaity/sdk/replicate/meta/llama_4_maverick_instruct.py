@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class llama_4_maverick_instruct(FastSDK):
+class llama_4_maverick_instruct(FastClient):
     """
     Generated client for meta/llama-4-maverick-instruct
     """

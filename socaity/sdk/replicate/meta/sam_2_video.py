@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class sam_2_video(FastSDK):
+class sam_2_video(FastClient):
     """
     Generated client for meta/sam-2-video
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="d02baeff-417a-4506-b151-8c40e5fa3ee3", api_key=api_key)
     
-    def predictions(self, input_video: Union[str, MediaFile, bytes], click_coordinates: str, mask_type: str = 'binary', video_fps: int = 30, click_frames: str = '0', click_labels: str = '1', output_video: bool = False, output_format: str = 'webp', output_quality: int = 80, annotation_type: str = 'mask', click_object_ids: str = '', output_frame_interval: int = 1, **kwargs) -> APISeex:
+    def predictions(self, input_video: Union[MediaFile, str, bytes], click_coordinates: str, mask_type: str = 'binary', video_fps: int = 30, click_frames: str = '0', click_labels: str = '1', output_video: bool = False, output_format: str = 'webp', output_quality: int = 80, annotation_type: str = 'mask', click_object_ids: str = '', output_frame_interval: int = 1, **kwargs) -> APISeex:
         """
         
         

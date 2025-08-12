@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class pheme(FastSDK):
+class pheme(FastClient):
     """
     Generated client for lucataco/pheme
     """

@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class sana(FastSDK):
+class sana(FastClient):
     """
     Generated client for nvidia/sana
     """

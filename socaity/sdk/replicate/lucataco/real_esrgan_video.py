@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class real_esrgan_video(FastSDK):
+class real_esrgan_video(FastClient):
     """
     Generated client for lucataco/real-esrgan-video
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="f7b0ed6f-3794-4b3f-a273-f2d96d2b699a", api_key=api_key)
     
-    def predictions(self, video_path: Union[str, MediaFile, bytes], model: str = 'RealESRGAN_x4plus', resolution: str = 'FHD', **kwargs) -> APISeex:
+    def predictions(self, video_path: Union[MediaFile, str, bytes], model: str = 'RealESRGAN_x4plus', resolution: str = 'FHD', **kwargs) -> APISeex:
         """
         
         

@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class dance_diffusion(FastSDK):
+class dance_diffusion(FastClient):
     """
     Generated client for harmonai/dance-diffusion
     """

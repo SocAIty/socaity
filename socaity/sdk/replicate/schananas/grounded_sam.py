@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class grounded_sam(FastSDK):
+class grounded_sam(FastClient):
     """
     Generated client for schananas/grounded-sam
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="2312e3fb-6a3e-4d7c-b0b6-6f145b0c721f", api_key=api_key)
     
-    def predictions(self, image: Union[str, MediaFile, bytes] = 'https://st.mngbcn.com/rcs/pics/static/T5/fotos/outfit/S20/57034757_56-99999999_01.jpg', mask_prompt: str = 'clothes,shoes', adjustment_factor: int = 0, negative_mask_prompt: str = 'pants', **kwargs) -> APISeex:
+    def predictions(self, image: Union[MediaFile, str, bytes] = 'https://st.mngbcn.com/rcs/pics/static/T5/fotos/outfit/S20/57034757_56-99999999_01.jpg', mask_prompt: str = 'clothes,shoes', adjustment_factor: int = 0, negative_mask_prompt: str = 'pants', **kwargs) -> APISeex:
         """
         
         

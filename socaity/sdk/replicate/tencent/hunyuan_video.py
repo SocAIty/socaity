@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class hunyuan_video(FastSDK):
+class hunyuan_video(FastClient):
     """
     Generated client for tencent/hunyuan-video
     """

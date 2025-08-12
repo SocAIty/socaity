@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class deep3d(FastSDK):
+class deep3d(FastClient):
     """
     Generated client for lucataco/deep3d
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="2a83dbc4-4a08-4d65-bc04-8192adf0324b", api_key=api_key)
     
-    def predictions(self, video: Union[str, MediaFile, bytes], model: str = 'deep3d_v1.0_640x360', **kwargs) -> APISeex:
+    def predictions(self, video: Union[MediaFile, str, bytes], model: str = 'deep3d_v1.0_640x360', **kwargs) -> APISeex:
         """
         
         

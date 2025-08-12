@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class latent_sr(FastSDK):
+class latent_sr(FastClient):
     """
     Generated client for nightmareai/latent-sr
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="3b68cf50-06e3-4b1c-b2bb-aa285d9663b1", api_key=api_key)
     
-    def predictions(self, image: Union[str, MediaFile, bytes], up_f: int = 4, steps: int = 100, **kwargs) -> APISeex:
+    def predictions(self, image: Union[MediaFile, str, bytes], up_f: int = 4, steps: int = 100, **kwargs) -> APISeex:
         """
         
         

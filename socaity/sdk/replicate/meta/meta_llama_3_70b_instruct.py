@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class meta_llama_3_70b_instruct(FastSDK):
+class meta_llama_3_70b_instruct(FastClient):
     """
     Generated client for meta/meta-llama-3-70b-instruct
     """

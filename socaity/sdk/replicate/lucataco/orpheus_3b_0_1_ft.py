@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class orpheus_3b_0_1_ft(FastSDK):
+class orpheus_3b_0_1_ft(FastClient):
     """
     Generated client for lucataco/orpheus-3b-0-1-ft
     """

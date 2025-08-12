@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class bge_1_5_query_embeddings(FastSDK):
+class bge_1_5_query_embeddings(FastClient):
     """
     Generated client for center-for-curriculum-redesign/bge-1-5-query-embeddings
     """

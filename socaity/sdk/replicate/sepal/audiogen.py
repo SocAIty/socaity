@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class audiogen(FastSDK):
+class audiogen(FastClient):
     """
     Generated client for sepal/audiogen
     """

@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class ace_step(FastSDK):
+class ace_step(FastClient):
     """
     Generated client for lucataco/ace-step
     """

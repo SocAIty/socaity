@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class zero123plusplus(FastSDK):
+class zero123plusplus(FastClient):
     """
     Generated client for jd7h/zero123plusplus
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="e54c61c8-e627-4ef8-b561-7680d07b7635", api_key=api_key)
     
-    def predictions(self, image: Union[str, MediaFile, bytes], remove_background: bool = False, return_intermediate_images: bool = False, **kwargs) -> APISeex:
+    def predictions(self, image: Union[MediaFile, str, bytes], remove_background: bool = False, return_intermediate_images: bool = False, **kwargs) -> APISeex:
         """
         
         

@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import List, Any, Union
+from fastsdk import FastClient, APISeex
+from typing import List, Union, Any
 
 from media_toolkit import MediaFile
 
 
-class video_merge(FastSDK):
+class video_merge(FastClient):
     """
     Generated client for lucataco/video-merge
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="0a9bb226-1d9f-4252-bff3-7a5de0c58d55", api_key=api_key)
     
-    def predictions(self, video_files: Union[str, MediaFile, List[Any], bytes], fps: int = 0, width: int = 0, height: int = 0, keep_audio: bool = True, **kwargs) -> APISeex:
+    def predictions(self, video_files: Union[List[Any], MediaFile, str, bytes], fps: int = 0, width: int = 0, height: int = 0, keep_audio: bool = True, **kwargs) -> APISeex:
         """
         
         

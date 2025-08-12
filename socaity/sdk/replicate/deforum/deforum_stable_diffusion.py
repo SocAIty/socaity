@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class deforum_stable_diffusion(FastSDK):
+class deforum_stable_diffusion(FastClient):
     """
     Generated client for deforum/deforum-stable-diffusion
     """

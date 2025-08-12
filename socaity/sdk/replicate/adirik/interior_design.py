@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class interior_design(FastSDK):
+class interior_design(FastClient):
     """
     Generated client for adirik/interior-design
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="fdc56358-7633-41fa-9880-aa45eb7cf3b2", api_key=api_key)
     
-    def predictions(self, image: Union[str, MediaFile, bytes], prompt: str, guidance_scale: float = 15.0, negative_prompt: str = 'lowres, watermark, banner, logo, watermark, contactinfo, text, deformed, blurry, blur, out of focus, out of frame, surreal, extra, ugly, upholstered walls, fabric walls, plush walls, mirror, mirrored, functional, realistic', prompt_strength: float = 0.8, num_inference_steps: int = 50, seed: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, image: Union[MediaFile, str, bytes], prompt: str, guidance_scale: float = 15.0, negative_prompt: str = 'lowres, watermark, banner, logo, watermark, contactinfo, text, deformed, blurry, blur, out of focus, out of frame, surreal, extra, ugly, upholstered walls, fabric walls, plush walls, mirror, mirrored, functional, realistic', prompt_strength: float = 0.8, num_inference_steps: int = 50, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         
         

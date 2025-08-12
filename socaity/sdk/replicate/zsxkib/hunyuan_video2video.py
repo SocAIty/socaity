@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class hunyuan_video2video(FastSDK):
+class hunyuan_video2video(FastClient):
     """
     Generated client for zsxkib/hunyuan-video2video
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="e1e6a6c2-9f32-45a0-94c4-077b5880602e", api_key=api_key)
     
-    def predictions(self, video: Union[str, MediaFile, bytes], crf: int = 19, steps: int = 30, width: int = 768, height: int = 768, prompt: str = 'high quality nature video of a excited brown bear walking through the grass, masterpiece, best quality', flow_shift: int = 9, force_rate: int = 0, force_size: str = 'Disabled', frame_rate: int = 24, custom_width: int = 512, custom_height: int = 512, frame_load_cap: int = 101, guidance_scale: float = 6.0, keep_proportion: bool = True, denoise_strength: float = 0.85, select_every_nth: int = 1, skip_first_frames: int = 0, seed: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, video: Union[MediaFile, str, bytes], crf: int = 19, steps: int = 30, width: int = 768, height: int = 768, prompt: str = 'high quality nature video of a excited brown bear walking through the grass, masterpiece, best quality', flow_shift: int = 9, force_rate: int = 0, force_size: str = 'Disabled', frame_rate: int = 24, custom_width: int = 512, custom_height: int = 512, frame_load_cap: int = 101, guidance_scale: float = 6.0, keep_proportion: bool = True, denoise_strength: float = 0.85, select_every_nth: int = 1, skip_first_frames: int = 0, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         
         

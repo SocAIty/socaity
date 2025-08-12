@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class birefnet(FastSDK):
+class birefnet(FastClient):
     """
     Generated client for men1scus/birefnet
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="08229d1e-901a-45bb-97e5-6291fe34fd3d", api_key=api_key)
     
-    def predictions(self, image: Union[str, MediaFile, bytes], resolution: str = '', **kwargs) -> APISeex:
+    def predictions(self, image: Union[MediaFile, str, bytes], resolution: str = '', **kwargs) -> APISeex:
         """
         
         

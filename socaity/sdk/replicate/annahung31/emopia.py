@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class emopia(FastSDK):
+class emopia(FastClient):
     """
     Generated client for annahung31/emopia
     """

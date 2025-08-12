@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class sdxl_lightning(FastSDK):
+class sdxl_lightning(FastClient):
     """
     Generated client for prunaai/sdxl-lightning
     """

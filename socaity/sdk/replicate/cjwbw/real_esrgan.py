@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class real_esrgan(FastSDK):
+class real_esrgan(FastClient):
     """
     Generated client for cjwbw/real-esrgan
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="fd658ede-ab56-4be3-a1ca-9f458b5ee831", api_key=api_key)
     
-    def predictions(self, image: Union[str, MediaFile, bytes], upscale: int = 4, **kwargs) -> APISeex:
+    def predictions(self, image: Union[MediaFile, str, bytes], upscale: int = 4, **kwargs) -> APISeex:
         """
         
         

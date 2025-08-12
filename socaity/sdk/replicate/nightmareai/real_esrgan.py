@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class real_esrgan(FastSDK):
+class real_esrgan(FastClient):
     """
     Generated client for nightmareai/real-esrgan
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="f002d550-9af6-4fe1-99f9-26f2bccbad1f", api_key=api_key)
     
-    def predictions(self, image: Union[str, MediaFile, bytes], scale: float = 4.0, face_enhance: bool = False, **kwargs) -> APISeex:
+    def predictions(self, image: Union[MediaFile, str, bytes], scale: float = 4.0, face_enhance: bool = False, **kwargs) -> APISeex:
         """
         
         

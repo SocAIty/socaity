@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class mvdream(FastSDK):
+class mvdream(FastClient):
     """
     Generated client for adirik/mvdream
     """

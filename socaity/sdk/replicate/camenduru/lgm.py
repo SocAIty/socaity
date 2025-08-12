@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class lgm(FastSDK):
+class lgm(FastClient):
     """
     Generated client for camenduru/lgm
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="576eb7a3-8357-412d-be64-4f7f531bb198", api_key=api_key)
     
-    def predictions(self, input_image: Union[str, MediaFile, bytes], seed: int = 42, prompt: str = 'a songbird', negative_prompt: str = 'ugly, blurry, pixelated obscure, unnatural colors, poor lighting, dull, unclear, cropped, lowres, low quality, artifacts, duplicate', **kwargs) -> APISeex:
+    def predictions(self, input_image: Union[MediaFile, str, bytes], seed: int = 42, prompt: str = 'a songbird', negative_prompt: str = 'ugly, blurry, pixelated obscure, unnatural colors, poor lighting, dull, unclear, cropped, lowres, low quality, artifacts, duplicate', **kwargs) -> APISeex:
         """
         
         

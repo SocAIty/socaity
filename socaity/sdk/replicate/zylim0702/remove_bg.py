@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class remove_bg(FastSDK):
+class remove_bg(FastClient):
     """
     Generated client for zylim0702/remove-bg
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="e9d43ee2-ccfe-4282-91c3-00f15b75248b", api_key=api_key)
     
-    def predictions(self, image: Union[str, MediaFile, bytes], **kwargs) -> APISeex:
+    def predictions(self, image: Union[MediaFile, str, bytes], **kwargs) -> APISeex:
         """
         
         

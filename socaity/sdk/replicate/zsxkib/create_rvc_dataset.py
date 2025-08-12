@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class create_rvc_dataset(FastSDK):
+class create_rvc_dataset(FastClient):
     """
     Generated client for zsxkib/create-rvc-dataset
     """

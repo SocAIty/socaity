@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class cogvideox_5b(FastSDK):
+class cogvideox_5b(FastClient):
     """
     Generated client for cuuupid/cogvideox-5b
     """

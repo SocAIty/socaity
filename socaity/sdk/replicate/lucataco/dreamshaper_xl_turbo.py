@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class dreamshaper_xl_turbo(FastSDK):
+class dreamshaper_xl_turbo(FastClient):
     """
     Generated client for lucataco/dreamshaper-xl-turbo
     """

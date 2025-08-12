@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class magic_image_refiner(FastSDK):
+class magic_image_refiner(FastClient):
     """
     Generated client for fermatresearch/magic-image-refiner
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="52c089e7-8c07-4a9a-a862-01b7d6afd1e4", api_key=api_key)
     
-    def predictions(self, hdr: float = 0.0, steps: int = 20, scheduler: str = 'DDIM', creativity: float = 0.25, guess_mode: bool = False, resolution: str = 'original', resemblance: float = 0.75, guidance_scale: float = 7.0, negative_prompt: str = 'teeth, tooth, open mouth, longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, mutant', mask: Optional[Union[str, MediaFile, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[str, MediaFile, bytes]] = None, prompt: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, hdr: float = 0.0, steps: int = 20, scheduler: str = 'DDIM', creativity: float = 0.25, guess_mode: bool = False, resolution: str = 'original', resemblance: float = 0.75, guidance_scale: float = 7.0, negative_prompt: str = 'teeth, tooth, open mouth, longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, mutant', mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, prompt: Optional[str] = None, **kwargs) -> APISeex:
         """
         
         

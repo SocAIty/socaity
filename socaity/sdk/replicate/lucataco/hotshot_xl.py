@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class hotshot_xl(FastSDK):
+class hotshot_xl(FastClient):
     """
     Generated client for lucataco/hotshot-xl
     """

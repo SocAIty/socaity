@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class tile_morph(FastSDK):
+class tile_morph(FastClient):
     """
     Generated client for andreasjansson/tile-morph
     """

@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class stable_diffusion_animation(FastSDK):
+class stable_diffusion_animation(FastClient):
     """
     Generated client for andreasjansson/stable-diffusion-animation
     """

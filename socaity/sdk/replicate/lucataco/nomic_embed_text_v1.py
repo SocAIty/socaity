@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class nomic_embed_text_v1(FastSDK):
+class nomic_embed_text_v1(FastClient):
     """
     Generated client for lucataco/nomic-embed-text-v1
     """

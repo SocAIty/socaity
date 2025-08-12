@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class styletts2(FastSDK):
+class styletts2(FastClient):
     """
     Generated client for adirik/styletts2
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="a57378f6-be90-4d56-a9c0-746dcc612450", api_key=api_key)
     
-    def predictions(self, text: str, beta: float = 0.7, seed: int = 0, alpha: float = 0.3, diffusion_steps: int = 10, embedding_scale: float = 1.0, weights: Optional[str] = None, reference: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, text: str, beta: float = 0.7, seed: int = 0, alpha: float = 0.3, diffusion_steps: int = 10, embedding_scale: float = 1.0, weights: Optional[str] = None, reference: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
         """
         
         

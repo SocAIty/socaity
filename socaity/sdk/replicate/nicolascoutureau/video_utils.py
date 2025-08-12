@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class video_utils(FastSDK):
+class video_utils(FastClient):
     """
     Generated client for nicolascoutureau/video-utils
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="ff5b0116-92a4-490c-9d7c-6f64b1092882", api_key=api_key)
     
-    def predictions(self, task: str, input_file: Union[str, MediaFile, bytes], fps: int = 0, **kwargs) -> APISeex:
+    def predictions(self, task: str, input_file: Union[MediaFile, str, bytes], fps: int = 0, **kwargs) -> APISeex:
         """
         
         

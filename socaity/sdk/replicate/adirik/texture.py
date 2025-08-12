@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class texture(FastSDK):
+class texture(FastClient):
     """
     Generated client for adirik/texture
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="95b3a073-a4da-4872-b8f9-104c433f72ae", api_key=api_key)
     
-    def predictions(self, shape_path: Union[str, MediaFile, bytes], seed: int = 0, prompt: str = 'A next gen nascar', shape_scale: float = 0.6, guidance_scale: float = 10.0, texture_resolution: int = 1024, texture_interpolation_mode: str = 'bilinear', **kwargs) -> APISeex:
+    def predictions(self, shape_path: Union[MediaFile, str, bytes], seed: int = 0, prompt: str = 'A next gen nascar', shape_scale: float = 0.6, guidance_scale: float = 10.0, texture_resolution: int = 1024, texture_interpolation_mode: str = 'bilinear', **kwargs) -> APISeex:
         """
         
         

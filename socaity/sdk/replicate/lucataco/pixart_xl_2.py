@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class pixart_xl_2(FastSDK):
+class pixart_xl_2(FastClient):
     """
     Generated client for lucataco/pixart-xl-2
     """

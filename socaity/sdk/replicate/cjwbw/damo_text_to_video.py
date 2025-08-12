@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class damo_text_to_video(FastSDK):
+class damo_text_to_video(FastClient):
     """
     Generated client for cjwbw/damo-text-to-video
     """

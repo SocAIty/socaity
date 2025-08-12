@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class mochi_1(FastSDK):
+class mochi_1(FastClient):
     """
     Generated client for genmoai/mochi-1
     """

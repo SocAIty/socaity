@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class videocrafter(FastSDK):
+class videocrafter(FastClient):
     """
     Generated client for cjwbw/videocrafter
     """

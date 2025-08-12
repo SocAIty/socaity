@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class image_urls_to_video(FastSDK):
+class image_urls_to_video(FastClient):
     """
     Generated client for chigozienri/image-urls-to-video
     """

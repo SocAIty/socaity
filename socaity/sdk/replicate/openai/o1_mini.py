@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class o1_mini(FastSDK):
+class o1_mini(FastClient):
     """
     Generated client for openai/o1-mini
     """

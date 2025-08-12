@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class stable_diffusion(FastSDK):
+class stable_diffusion(FastClient):
     """
     Generated client for stability-ai/stable-diffusion
     """

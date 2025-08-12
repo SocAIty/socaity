@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class merge_img(FastSDK):
+class merge_img(FastClient):
     """
     Generated client for lucataco/merge-img
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="81ac2500-951a-40f0-bd75-ca22308ea8b2", api_key=api_key)
     
-    def predictions(self, background: Optional[Union[str, MediaFile, bytes]] = None, foreground: Optional[Union[str, MediaFile, bytes]] = None, position_x: Optional[int] = None, position_y: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, background: Optional[Union[MediaFile, str, bytes]] = None, foreground: Optional[Union[MediaFile, str, bytes]] = None, position_x: Optional[int] = None, position_y: Optional[int] = None, **kwargs) -> APISeex:
         """
         
         

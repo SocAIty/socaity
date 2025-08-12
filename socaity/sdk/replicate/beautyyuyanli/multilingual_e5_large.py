@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class multilingual_e5_large(FastSDK):
+class multilingual_e5_large(FastClient):
     """
     Generated client for beautyyuyanli/multilingual-e5-large
     """

@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class edit_video_by_editing_text(FastSDK):
+class edit_video_by_editing_text(FastClient):
     """
     Generated client for jd7h/edit-video-by-editing-text
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="ed6f5d3e-761f-4f00-b342-1f7e55301c87", api_key=api_key)
     
-    def predictions(self, video_in: Union[str, MediaFile, bytes], mode: str = 'transcribe', split_at: str = 'word', transcription: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, video_in: Union[MediaFile, str, bytes], mode: str = 'transcribe', split_at: str = 'word', transcription: Optional[str] = None, **kwargs) -> APISeex:
         """
         
         

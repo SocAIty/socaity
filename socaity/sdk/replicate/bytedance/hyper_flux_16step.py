@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class hyper_flux_16step(FastSDK):
+class hyper_flux_16step(FastClient):
     """
     Generated client for bytedance/hyper-flux-16step
     """

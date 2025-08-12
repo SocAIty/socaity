@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class clothing_segmentation(FastSDK):
+class clothing_segmentation(FastClient):
     """
     Generated client for naklecha/clothing-segmentation
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="bb3f71e6-4cfa-4d75-a39c-ad86f5816ef2", api_key=api_key)
     
-    def predictions(self, image: Union[str, MediaFile, bytes], clothing: str = 'topwear', **kwargs) -> APISeex:
+    def predictions(self, image: Union[MediaFile, str, bytes], clothing: str = 'topwear', **kwargs) -> APISeex:
         """
         
         

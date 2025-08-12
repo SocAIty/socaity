@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class embeddings_gte_base(FastSDK):
+class embeddings_gte_base(FastClient):
     """
     Generated client for mark3labs/embeddings-gte-base
     """

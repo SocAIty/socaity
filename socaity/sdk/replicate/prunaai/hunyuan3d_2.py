@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class hunyuan3d_2(FastSDK):
+class hunyuan3d_2(FastClient):
     """
     Generated client for prunaai/hunyuan3d-2
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="2060f890-7195-46af-af4c-ec0b8af12030", api_key=api_key)
     
-    def predictions(self, file_type: str = 'glb', face_count: int = 40000, num_chunks: int = 20000, speed_mode: str = 'Juiced 🔥 (fast)', generator_seed: int = 12345, octree_resolution: int = 200, num_inference_steps: int = 50, image_path: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, file_type: str = 'glb', face_count: int = 40000, num_chunks: int = 20000, speed_mode: str = 'Juiced 🔥 (fast)', generator_seed: int = 12345, octree_resolution: int = 200, num_inference_steps: int = 50, image_path: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
         """
         
         

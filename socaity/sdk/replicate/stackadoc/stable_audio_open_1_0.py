@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class stable_audio_open_1_0(FastSDK):
+class stable_audio_open_1_0(FastClient):
     """
     Generated client for stackadoc/stable-audio-open-1-0
     """

@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class hunyuan3d_2mv(FastSDK):
+class hunyuan3d_2mv(FastClient):
     """
     Generated client for tencent/hunyuan3d-2mv
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="2dbbfde1-d700-46b5-b932-0e7f26ed309b", api_key=api_key)
     
-    def predictions(self, front_image: Union[str, MediaFile, bytes], seed: int = 1234, steps: int = 30, file_type: str = 'glb', num_chunks: int = 200000, guidance_scale: float = 5.0, randomize_seed: bool = True, target_face_num: int = 10000, octree_resolution: int = 256, remove_background: bool = True, back_image: Optional[Union[str, MediaFile, bytes]] = None, left_image: Optional[Union[str, MediaFile, bytes]] = None, right_image: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, front_image: Union[MediaFile, str, bytes], seed: int = 1234, steps: int = 30, file_type: str = 'glb', num_chunks: int = 200000, guidance_scale: float = 5.0, randomize_seed: bool = True, target_face_num: int = 10000, octree_resolution: int = 256, remove_background: bool = True, back_image: Optional[Union[MediaFile, str, bytes]] = None, left_image: Optional[Union[MediaFile, str, bytes]] = None, right_image: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
         """
         
         

@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class f5_tts(FastSDK):
+class f5_tts(FastClient):
     """
     Generated client for x-lance/f5-tts
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="f3527621-8d19-4a30-a15a-f231a3b394f4", api_key=api_key)
     
-    def predictions(self, gen_text: str, ref_audio: Union[str, MediaFile, bytes], speed: float = 1.0, remove_silence: bool = True, custom_split_words: str = '', ref_text: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, gen_text: str, ref_audio: Union[MediaFile, str, bytes], speed: float = 1.0, remove_silence: bool = True, custom_split_words: str = '', ref_text: Optional[str] = None, **kwargs) -> APISeex:
         """
         
         

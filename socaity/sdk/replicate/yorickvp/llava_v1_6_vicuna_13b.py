@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, List, Any, Union
+from fastsdk import FastClient, APISeex
+from typing import List, Union, Any, Optional
 
 from media_toolkit import MediaFile
 
 
-class llava_v1_6_vicuna_13b(FastSDK):
+class llava_v1_6_vicuna_13b(FastClient):
     """
     Generated client for yorickvp/llava-v1-6-vicuna-13b
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="9c69a246-a055-453f-b326-23c2d41ac378", api_key=api_key)
     
-    def predictions(self, prompt: str, top_p: float = 1.0, max_tokens: int = 1024, temperature: float = 0.2, image: Optional[Union[str, MediaFile, bytes]] = None, history: Optional[Union[str, List[Any]]] = None, **kwargs) -> APISeex:
+    def predictions(self, prompt: str, top_p: float = 1.0, max_tokens: int = 1024, temperature: float = 0.2, image: Optional[Union[MediaFile, str, bytes]] = None, history: Optional[Union[List[Any], str]] = None, **kwargs) -> APISeex:
         """
         
         

@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class blip_2(FastSDK):
+class blip_2(FastClient):
     """
     Generated client for andreasjansson/blip-2
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="184bb954-b6c9-4543-81f0-c455411aaad5", api_key=api_key)
     
-    def predictions(self, image: Union[str, MediaFile, bytes], caption: bool = False, question: str = 'What is this a picture of?', temperature: float = 1.0, use_nucleus_sampling: bool = False, context: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, image: Union[MediaFile, str, bytes], caption: bool = False, question: str = 'What is this a picture of?', temperature: float = 1.0, use_nucleus_sampling: bool = False, context: Optional[str] = None, **kwargs) -> APISeex:
         """
         
         

@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class cantable_diffuguesion(FastSDK):
+class cantable_diffuguesion(FastClient):
     """
     Generated client for andreasjansson/cantable-diffuguesion
     """

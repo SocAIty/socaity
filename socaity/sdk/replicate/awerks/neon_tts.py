@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class neon_tts(FastSDK):
+class neon_tts(FastClient):
     """
     Generated client for awerks/neon-tts
     """

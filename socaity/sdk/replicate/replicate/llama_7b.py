@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class llama_7b(FastSDK):
+class llama_7b(FastClient):
     """
     Generated client for replicate/llama-7b
     """

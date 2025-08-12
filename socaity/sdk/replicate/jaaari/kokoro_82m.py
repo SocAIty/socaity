@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class kokoro_82m(FastSDK):
+class kokoro_82m(FastClient):
     """
     Generated client for jaaari/kokoro-82m
     """

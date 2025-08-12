@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class stablelm_tuned_alpha_7b(FastSDK):
+class stablelm_tuned_alpha_7b(FastClient):
     """
     Generated client for stability-ai/stablelm-tuned-alpha-7b
     """

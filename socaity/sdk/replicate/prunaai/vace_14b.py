@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, List, Any, Union
+from fastsdk import FastClient, APISeex
+from typing import List, Union, Any, Optional
 
 from media_toolkit import MediaFile
 
 
-class vace_14b(FastSDK):
+class vace_14b(FastClient):
     """
     Generated client for prunaai/vace-14b
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="08602100-ad7e-414d-a6e9-7cc24184072a", api_key=api_key)
     
-    def predictions(self, prompt: str, seed: int = -1, size: str = '832*480', frame_num: int = 81, speed_mode: str = 'Lightly Juiced 🍊 (more consistent)', sample_shift: int = 16, sample_steps: int = 50, sample_solver: str = 'unipc', sample_guide_scale: float = 5.0, src_mask: Optional[Union[str, MediaFile, bytes]] = None, src_video: Optional[Union[str, MediaFile, bytes]] = None, src_ref_images: Optional[Union[str, MediaFile, List[Any], bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, prompt: str, seed: int = -1, size: str = '832*480', frame_num: int = 81, speed_mode: str = 'Lightly Juiced 🍊 (more consistent)', sample_shift: int = 16, sample_steps: int = 50, sample_solver: str = 'unipc', sample_guide_scale: float = 5.0, src_mask: Optional[Union[MediaFile, str, bytes]] = None, src_video: Optional[Union[MediaFile, str, bytes]] = None, src_ref_images: Optional[Union[List[Any], MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
         """
         
         

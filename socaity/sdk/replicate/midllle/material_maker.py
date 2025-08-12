@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class material_maker(FastSDK):
+class material_maker(FastClient):
     """
     Generated client for midllle/material-maker
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="2b381d5e-1ef0-4efb-9876-a68d692f2e0f", api_key=api_key)
     
-    def predictions(self, input_image: Union[str, MediaFile, bytes], mirror: bool = False, seamless: bool = False, ishiiruka: bool = False, replicate: bool = False, tile_size: int = 512, ishiiruka_texture_encoder: bool = False, **kwargs) -> APISeex:
+    def predictions(self, input_image: Union[MediaFile, str, bytes], mirror: bool = False, seamless: bool = False, ishiiruka: bool = False, replicate: bool = False, tile_size: int = 512, ishiiruka_texture_encoder: bool = False, **kwargs) -> APISeex:
         """
         
         

@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class bark(FastSDK):
+class bark(FastClient):
     """
     Generated client for suno-ai/bark
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="7aeef358-94ec-4cc1-abd7-b238ac3a490a", api_key=api_key)
     
-    def predictions(self, prompt: str = 'Hello, my name is Suno. And, uh — and I like pizza. [laughs] But I also have other interests such as playing tic tac toe.', text_temp: float = 0.7, output_full: bool = False, waveform_temp: float = 0.7, history_prompt: Optional[str] = None, custom_history_prompt: Optional[Union[str, MediaFile, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, prompt: str = 'Hello, my name is Suno. And, uh — and I like pizza. [laughs] But I also have other interests such as playing tic tac toe.', text_temp: float = 0.7, output_full: bool = False, waveform_temp: float = 0.7, history_prompt: Optional[str] = None, custom_history_prompt: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
         """
         
         

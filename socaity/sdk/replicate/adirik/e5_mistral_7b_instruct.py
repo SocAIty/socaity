@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class e5_mistral_7b_instruct(FastSDK):
+class e5_mistral_7b_instruct(FastClient):
     """
     Generated client for adirik/e5-mistral-7b-instruct
     """

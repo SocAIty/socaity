@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class spanish_f5_tts(FastSDK):
+class spanish_f5_tts(FastClient):
     """
     Generated client for fermatresearch/spanish-f5-tts
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="49bd6dea-f24a-4f9f-b32d-61610d872d20", api_key=api_key)
     
-    def predictions(self, gen_text: str, ref_text: str, ref_audio: Union[str, MediaFile, bytes], remove_silence: bool = True, custom_split_words: str = '', **kwargs) -> APISeex:
+    def predictions(self, gen_text: str, ref_text: str, ref_audio: Union[MediaFile, str, bytes], remove_silence: bool = True, custom_split_words: str = '', **kwargs) -> APISeex:
         """
         
         

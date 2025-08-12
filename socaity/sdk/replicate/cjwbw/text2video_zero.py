@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class text2video_zero(FastSDK):
+class text2video_zero(FastClient):
     """
     Generated client for cjwbw/text2video-zero
     """

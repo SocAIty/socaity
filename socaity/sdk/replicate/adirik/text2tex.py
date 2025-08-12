@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class text2tex(FastSDK):
+class text2tex(FastClient):
     """
     Generated client for adirik/text2tex
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="617a3bde-432c-4750-b2b5-df52f4eedd7a", api_key=api_key)
     
-    def predictions(self, prompt: str, obj_file: Union[str, MediaFile, bytes], ddim_steps: int = 50, update_mode: str = 'heuristic', new_strength: float = 1.0, update_steps: int = 20, num_viewpoints: int = 36, viewpoint_mode: str = 'predefined', negative_prompt: str = '', update_strength: float = 0.3, seed: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, prompt: str, obj_file: Union[MediaFile, str, bytes], ddim_steps: int = 50, update_mode: str = 'heuristic', new_strength: float = 1.0, update_steps: int = 20, num_viewpoints: int = 36, viewpoint_mode: str = 'predefined', negative_prompt: str = '', update_strength: float = 0.3, seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         
         

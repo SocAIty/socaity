@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class kandinsky_2_2(FastSDK):
+class kandinsky_2_2(FastClient):
     """
     Generated client for ai-forever/kandinsky-2-2
     """

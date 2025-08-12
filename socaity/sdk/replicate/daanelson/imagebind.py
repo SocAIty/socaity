@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class imagebind(FastSDK):
+class imagebind(FastClient):
     """
     Generated client for daanelson/imagebind
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="9e850624-b6b5-458e-a445-56ee6b06e29b", api_key=api_key)
     
-    def predictions(self, modality: str = 'vision', input: Optional[Union[str, MediaFile, bytes]] = None, text_input: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, modality: str = 'vision', input: Optional[Union[MediaFile, str, bytes]] = None, text_input: Optional[str] = None, **kwargs) -> APISeex:
         """
         
         

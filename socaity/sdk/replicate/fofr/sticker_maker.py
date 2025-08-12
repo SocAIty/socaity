@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class sticker_maker(FastSDK):
+class sticker_maker(FastClient):
     """
     Generated client for fofr/sticker-maker
     """

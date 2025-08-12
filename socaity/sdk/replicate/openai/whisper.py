@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class whisper(FastSDK):
+class whisper(FastClient):
     """
     Generated client for openai/whisper
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="6cc28a27-46eb-490e-be58-ce948c221273", api_key=api_key)
     
-    def predictions(self, audio: Union[str, MediaFile, bytes], language: str = 'auto', translate: bool = False, temperature: float = 0.0, transcription: str = 'plain text', suppress_tokens: str = '-1', logprob_threshold: float = -1.0, no_speech_threshold: float = 0.6, condition_on_previous_text: bool = True, compression_ratio_threshold: float = 2.4, temperature_increment_on_fallback: float = 0.2, patience: Optional[float] = None, initial_prompt: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, audio: Union[MediaFile, str, bytes], language: str = 'auto', translate: bool = False, temperature: float = 0.0, transcription: str = 'plain text', suppress_tokens: str = '-1', logprob_threshold: float = -1.0, no_speech_threshold: float = 0.6, condition_on_previous_text: bool = True, compression_ratio_threshold: float = 2.4, temperature_increment_on_fallback: float = 0.2, patience: Optional[float] = None, initial_prompt: Optional[str] = None, **kwargs) -> APISeex:
         """
         
         

@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class realistic_vision_v5_1(FastSDK):
+class realistic_vision_v5_1(FastClient):
     """
     Generated client for lucataco/realistic-vision-v5-1
     """

@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class loralisandro(FastSDK):
+class loralisandro(FastClient):
     """
     Generated client for lisandroe/loralisandro
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="b4fd40f2-f9b1-4e82-95cc-3d74677d94cb", api_key=api_key)
     
-    def predictions(self, prompt: str, model: str = 'dev', go_fast: bool = False, lora_scale: float = 1.0, megapixels: str = '1', num_outputs: int = 1, aspect_ratio: str = '1:1', output_format: str = 'webp', guidance_scale: float = 3.0, output_quality: int = 80, prompt_strength: float = 0.8, extra_lora_scale: float = 1.0, num_inference_steps: int = 28, disable_safety_checker: bool = False, mask: Optional[Union[str, MediaFile, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[str, MediaFile, bytes]] = None, width: Optional[int] = None, height: Optional[int] = None, extra_lora: Optional[str] = None, replicate_weights: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, prompt: str, model: str = 'dev', go_fast: bool = False, lora_scale: float = 1.0, megapixels: str = '1', num_outputs: int = 1, aspect_ratio: str = '1:1', output_format: str = 'webp', guidance_scale: float = 3.0, output_quality: int = 80, prompt_strength: float = 0.8, extra_lora_scale: float = 1.0, num_inference_steps: int = 28, disable_safety_checker: bool = False, mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, width: Optional[int] = None, height: Optional[int] = None, extra_lora: Optional[str] = None, replicate_weights: Optional[str] = None, **kwargs) -> APISeex:
         """
         
         

@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class riffusion(FastSDK):
+class riffusion(FastClient):
     """
     Generated client for riffusion/riffusion
     """

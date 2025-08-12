@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class sana_sprint_1_6b(FastSDK):
+class sana_sprint_1_6b(FastClient):
     """
     Generated client for nvidia/sana-sprint-1-6b
     """

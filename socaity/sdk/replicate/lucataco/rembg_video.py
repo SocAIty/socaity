@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class rembg_video(FastSDK):
+class rembg_video(FastClient):
     """
     Generated client for lucataco/rembg-video
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="26f1e220-7c28-4bd5-aef1-9ca64b2fe2e2", api_key=api_key)
     
-    def predictions(self, video: Union[str, MediaFile, bytes], mode: str = 'Normal', background_color: str = '#FFFFFF', **kwargs) -> APISeex:
+    def predictions(self, video: Union[MediaFile, str, bytes], mode: str = 'Normal', background_color: str = '#FFFFFF', **kwargs) -> APISeex:
         """
         
         

@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class stable_diffusion_infinite_zoom(FastSDK):
+class stable_diffusion_infinite_zoom(FastClient):
     """
     Generated client for arielreplicate/stable-diffusion-infinite-zoom
     """

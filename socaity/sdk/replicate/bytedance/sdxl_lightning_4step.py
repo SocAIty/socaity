@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class sdxl_lightning_4step(FastSDK):
+class sdxl_lightning_4step(FastClient):
     """
     Generated client for bytedance/sdxl-lightning-4step
     """

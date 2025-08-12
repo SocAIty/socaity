@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class wan2_1_with_lora(FastSDK):
+class wan2_1_with_lora(FastClient):
     """
     Generated client for fofr/wan2-1-with-lora
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="bc1e7c1e-2347-4085-b329-a03904a4514e", api_key=api_key)
     
-    def predictions(self, prompt: str, model: str = '14b', frames: int = 81, fast_mode: str = 'Balanced', resolution: str = '480p', aspect_ratio: str = '16:9', sample_shift: float = 8.0, sample_steps: int = 30, negative_prompt: str = '', lora_strength_clip: float = 1.0, sample_guide_scale: float = 5.0, lora_strength_model: float = 1.0, seed: Optional[int] = None, image: Optional[Union[str, MediaFile, bytes]] = None, lora_url: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, prompt: str, model: str = '14b', frames: int = 81, fast_mode: str = 'Balanced', resolution: str = '480p', aspect_ratio: str = '16:9', sample_shift: float = 8.0, sample_steps: int = 30, negative_prompt: str = '', lora_strength_clip: float = 1.0, sample_guide_scale: float = 5.0, lora_strength_model: float = 1.0, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, lora_url: Optional[str] = None, **kwargs) -> APISeex:
         """
         
         

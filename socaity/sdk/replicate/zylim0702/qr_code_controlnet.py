@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class qr_code_controlnet(FastSDK):
+class qr_code_controlnet(FastClient):
     """
     Generated client for zylim0702/qr-code-controlnet
     """

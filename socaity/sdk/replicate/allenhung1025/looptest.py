@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class looptest(FastSDK):
+class looptest(FastClient):
     """
     Generated client for allenhung1025/looptest
     """

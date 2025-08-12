@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class animatediff_prompt_travel(FastSDK):
+class animatediff_prompt_travel(FastClient):
     """
     Generated client for zsxkib/animatediff-prompt-travel
     """

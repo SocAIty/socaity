@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class rembg(FastSDK):
+class rembg(FastClient):
     """
     Generated client for cjwbw/rembg
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="bd65f429-81ef-432d-a9b6-fcfcd2982bba", api_key=api_key)
     
-    def predictions(self, image: Union[str, MediaFile, bytes] = '', **kwargs) -> APISeex:
+    def predictions(self, image: Union[MediaFile, str, bytes] = '', **kwargs) -> APISeex:
         """
         
         

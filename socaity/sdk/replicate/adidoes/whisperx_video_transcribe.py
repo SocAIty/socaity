@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class whisperx_video_transcribe(FastSDK):
+class whisperx_video_transcribe(FastClient):
     """
     Generated client for adidoes/whisperx-video-transcribe
     """

@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class background_remover(FastSDK):
+class background_remover(FastClient):
     """
     Generated client for -851-labs/background-remover
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="41bbfe93-f999-4de3-b380-fabe0b960cb0", api_key=api_key)
     
-    def predictions(self, image: Union[str, MediaFile, bytes], format: str = 'png', reverse: bool = False, threshold: float = 0.0, background_type: str = 'rgba', **kwargs) -> APISeex:
+    def predictions(self, image: Union[MediaFile, str, bytes], format: str = 'png', reverse: bool = False, threshold: float = 0.0, background_type: str = 'rgba', **kwargs) -> APISeex:
         """
         
         

@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class flux_music(FastSDK):
+class flux_music(FastClient):
     """
     Generated client for zsxkib/flux-music
     """

@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class disposable_camera(FastSDK):
+class disposable_camera(FastClient):
     """
     Generated client for levelsio/disposable-camera
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="06d50f34-0176-4692-9560-7d20c889e2a7", api_key=api_key)
     
-    def predictions(self, prompt: str, model: str = 'dev', go_fast: bool = False, lora_scale: float = 1.0, megapixels: str = '1', num_outputs: int = 1, aspect_ratio: str = '1:1', output_format: str = 'webp', guidance_scale: float = 3.0, output_quality: int = 80, prompt_strength: float = 0.8, extra_lora_scale: float = 1.0, num_inference_steps: int = 28, disable_safety_checker: bool = False, mask: Optional[Union[str, MediaFile, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[str, MediaFile, bytes]] = None, width: Optional[int] = None, height: Optional[int] = None, extra_lora: Optional[str] = None, replicate_weights: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, prompt: str, model: str = 'dev', go_fast: bool = False, lora_scale: float = 1.0, megapixels: str = '1', num_outputs: int = 1, aspect_ratio: str = '1:1', output_format: str = 'webp', guidance_scale: float = 3.0, output_quality: int = 80, prompt_strength: float = 0.8, extra_lora_scale: float = 1.0, num_inference_steps: int = 28, disable_safety_checker: bool = False, mask: Optional[Union[MediaFile, str, bytes]] = None, seed: Optional[int] = None, image: Optional[Union[MediaFile, str, bytes]] = None, width: Optional[int] = None, height: Optional[int] = None, extra_lora: Optional[str] = None, replicate_weights: Optional[str] = None, **kwargs) -> APISeex:
         """
         
         

@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
-from typing import Optional, Union
+from fastsdk import FastClient, APISeex
+from typing import Union, Optional
 
 from media_toolkit import MediaFile
 
 
-class wonder3d(FastSDK):
+class wonder3d(FastClient):
     """
     Generated client for adirik/wonder3d
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="9120889d-ff19-44ed-bfa9-03414b7f71e2", api_key=api_key)
     
-    def predictions(self, num_steps: int = 3000, remove_bg: bool = True, image: Optional[Union[str, MediaFile, bytes]] = None, random_seed: Optional[int] = None, **kwargs) -> APISeex:
+    def predictions(self, num_steps: int = 3000, remove_bg: bool = True, image: Optional[Union[MediaFile, str, bytes]] = None, random_seed: Optional[int] = None, **kwargs) -> APISeex:
         """
         
         

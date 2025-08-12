@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class flux_1_dev(FastSDK):
+class flux_1_dev(FastClient):
     """
     Generated client for prunaai/flux-1-dev
     """

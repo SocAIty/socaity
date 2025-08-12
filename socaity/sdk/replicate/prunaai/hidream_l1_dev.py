@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class hidream_l1_dev(FastSDK):
+class hidream_l1_dev(FastClient):
     """
     Generated client for prunaai/hidream-l1-dev
     """

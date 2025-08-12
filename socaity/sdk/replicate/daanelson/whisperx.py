@@ -1,17 +1,17 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Union
 
 from media_toolkit import MediaFile
 
 
-class whisperx(FastSDK):
+class whisperx(FastClient):
     """
     Generated client for daanelson/whisperx
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="1b739546-44d6-470b-8bb0-47a941587637", api_key=api_key)
     
-    def predictions(self, audio: Union[str, MediaFile, bytes], debug: bool = False, only_text: bool = False, batch_size: int = 32, align_output: bool = False, **kwargs) -> APISeex:
+    def predictions(self, audio: Union[MediaFile, str, bytes], debug: bool = False, only_text: bool = False, batch_size: int = 32, align_output: bool = False, **kwargs) -> APISeex:
         """
         
         

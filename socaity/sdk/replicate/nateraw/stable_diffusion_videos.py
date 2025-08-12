@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class stable_diffusion_videos(FastSDK):
+class stable_diffusion_videos(FastClient):
     """
     Generated client for nateraw/stable-diffusion-videos
     """

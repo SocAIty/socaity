@@ -1,8 +1,8 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 from typing import Optional
 
 
-class animate_diff(FastSDK):
+class animate_diff(FastClient):
     """
     Generated client for lucataco/animate-diff
     """

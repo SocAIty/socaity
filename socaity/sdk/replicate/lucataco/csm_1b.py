@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class csm_1b(FastSDK):
+class csm_1b(FastClient):
     """
     Generated client for lucataco/csm-1b
     """

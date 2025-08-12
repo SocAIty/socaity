@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class lgm_ply_to_glb(FastSDK):
+class lgm_ply_to_glb(FastClient):
     """
     Generated client for camenduru/lgm-ply-to-glb
     """

@@ -1,6 +1,6 @@
-from fastsdk import FastSDK, APISeex
+from fastsdk import FastClient, APISeex
 
-class parler_tts(FastSDK):
+class parler_tts(FastClient):
     """
     Generated client for cjwbw/parler-tts
     """
