@@ -1,6 +1,7 @@
 import argparse
 from socaity.core.socaity_service_manager import SocaityServiceManager
 
+
 def main():
     parser = argparse.ArgumentParser(description="Socaity SDK Manager")
     
@@ -48,6 +49,7 @@ def main():
         # "By default the package will NOT install all models. It will only update / install the official models."
         print("Updating official packages...")
         service_manager.update_package()
+
 
 if __name__ == "__main__":
     main()

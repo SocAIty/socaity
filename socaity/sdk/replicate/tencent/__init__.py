@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.tencent.hunyuan_video import hunyuan_video

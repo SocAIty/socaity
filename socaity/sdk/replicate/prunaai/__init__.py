@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.prunaai.hunyuan3d_2 import hunyuan3d_2

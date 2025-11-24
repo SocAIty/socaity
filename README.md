@@ -30,8 +30,37 @@ Quicklinks:
 
 ## Installation
 Install the package from PyPi
-```python
+```bash
 pip install socaity
+```
+
+### Installing Models
+The SDK now supports selective installation of models to keep your environment clean.
+By default, only official models are updated/installed. You can install additional models via CLI or Python.
+
+**CLI Usage:**
+```bash
+# Install a specific model
+socaity -install model_name_or_id
+# OR
+socaity -i model_name_or_id
+
+# Install all available models
+socaity -i all
+
+# Install via python module
+python -m socaity install model_name_or_id
+```
+
+**Python Usage:**
+```python
+import socaity
+
+# Install a specific model
+socaity.install("model_name_or_id")
+
+# Install all models
+socaity.install("all")
 ```
 
 ## Authentication

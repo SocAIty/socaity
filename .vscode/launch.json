@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Create Socaity SDK",
+            "name": "socaity_sdk: Create Socaity SDK",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/socaity/core/socaity_service_manager.py",
@@ -12,17 +12,17 @@
             }
         },
         {
-            "name": "Python: FastSDK",
+            "name": "socaity_sdk: Test CLI",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/fastsdk/test/test_manual_sdk.py",
+            "program": "${workspaceFolder}/test/test_cli.py",
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex"
             }
         },
         {
-            "name": "Python: Test socaity SDK",
+            "name": "socaity_sdk: Test SDK",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/test/test_models.py",
