@@ -1,17 +1,17 @@
 from fastsdk import FastClient, APISeex
-from typing import List, Union, Any, Optional, Dict
+from typing import Optional, Dict, List, Any
 
 from media_toolkit import MediaFile
 
 
 class gpt_4_1(FastClient):
     """
-    Generated client for openai/gpt-4-1
+    Generated client based on openai/gpt-4-1 format
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="40bc98bb-e6de-4750-a1c2-c2c2955ba947", api_key=api_key)
     
-    def predictions(self, top_p: float = 1.0, messages: Union[List[Any], Dict[str, Any]] = [], image_input: Union[List[Any], MediaFile, str, bytes] = [], temperature: float = 1.0, presence_penalty: float = 0.0, frequency_penalty: float = 0.0, max_completion_tokens: int = 4096, prompt: Optional[str] = None, system_prompt: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, top_p: float = 1.0, messages: List[Dict[str, Any]] = [], image_input: List[MediaFile] = [], temperature: float = 1.0, presence_penalty: float = 0.0, frequency_penalty: float = 0.0, max_completion_tokens: int = 4096, prompt: Optional[str] = None, system_prompt: Optional[str] = None, **kwargs) -> APISeex:
         """
         
         

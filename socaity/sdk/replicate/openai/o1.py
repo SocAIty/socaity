@@ -1,17 +1,17 @@
 from fastsdk import FastClient, APISeex
-from typing import List, Union, Any, Optional, Dict
+from typing import Optional, Dict, List, Literal, Any
 
 from media_toolkit import MediaFile
 
 
 class o1(FastClient):
     """
-    Generated client for openai/o1
+    Generated client based on openai/o1 format
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="740bcd11-f6f4-430e-b7a4-49bcba46da7e", api_key=api_key)
     
-    def predictions(self, messages: Union[List[Any], Dict[str, Any]] = [], image_input: Union[List[Any], MediaFile, str, bytes] = [], reasoning_effort: str = 'medium', max_completion_tokens: int = 4096, prompt: Optional[str] = None, system_prompt: Optional[str] = None, **kwargs) -> APISeex:
+    def predictions(self, messages: List[Dict[str, Any]] = [], image_input: List[MediaFile] = [], reasoning_effort: Literal["low", "medium", "high"] = 'medium', max_completion_tokens: int = 4096, prompt: Optional[str] = None, system_prompt: Optional[str] = None, **kwargs) -> APISeex:
         """
         
         

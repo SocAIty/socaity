@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.wan_video.wan_2_2_i2v_fast import wan_2_2_i2v_fast

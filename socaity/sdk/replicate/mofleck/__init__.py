@@ -1,1 +1,2 @@
+from socaity.sdk.replicate.mofleck.arcodeltriunfosjv1 import arcodeltriunfosjv1
 from socaity.sdk.replicate.mofleck.teslasemishipped import teslasemishipped

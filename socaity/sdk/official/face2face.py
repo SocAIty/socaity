@@ -1,7 +1,7 @@
 from fastsdk import FastClient, APISeex
-from typing import List, Union, Any, Dict
+from typing import Dict, List, Literal, Any, Union
 
-from media_toolkit import ImageFile, MediaFile, VideoFile
+from media_toolkit import MediaFile, ImageFile, VideoFile
 
 
 class face2face(FastClient):
@@ -11,7 +11,7 @@ class face2face(FastClient):
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="0d69b27a-f893-4582-b3e8-a18c1f588e90", api_key=api_key)
     
-    def swap(self, faces: Union[MediaFile, Any, str, Dict[str, Any], List[Any], bytes], media: Union[MediaFile, Any, str, VideoFile, ImageFile, bytes], enhance_face_model: str = 'gpen_bfr_512', **kwargs) -> APISeex:
+    def swap(self, faces: Union[List[str], Dict[str, Any], List[bytes], List[MediaFile]], media: Union[List[bytes], List[MediaFile], List[str]], enhance_face_model: Literal["", "gpen_bfr_512", "gpen_bfr_1024", "gpen_bfr_2048", "gfpgan_1.4"] = 'gpen_bfr_512', **kwargs) -> APISeex:
         """
         Swap faces in an image or video.
         
@@ -20,9 +20,10 @@ class face2face(FastClient):
                 - str: Name of a reference face
                 - dict: Swap pairs with structure {source_face_name: target_face_name}
                 - list: List of face names or Face embeddings
+                - ImageFile: Use face detection to create a face embedding from the image.
                 - MediaFile: Single face embedding file
-                - MediaList: Multiple face embedding files
-            media: The image or video to swap faces in
+                - MediaList: Multiple face embeddings
+            media: The image(s) or video(s) to swap faces in
             enhance_face_model: Face enhancement model to use. Defaults to 'gpen_bfr_512'
         
         Returns:
@@ -34,7 +35,7 @@ class face2face(FastClient):
         """
         return self.submit_job("/swap", faces=faces, media=media, enhance_face_model=enhance_face_model, **kwargs)
     
-    def add_face(self, image: Union[ImageFile, Any, MediaFile, str, bytes], face_name: Union[List[Any], str], save: bool = False, **kwargs) -> APISeex:
+    def add_face(self, image: Union[bytes, ImageFile, str], face_name: Union[str, List[str]], save: bool = False, **kwargs) -> APISeex:
         """
         Add one or multiple reference face(s) to the face swapper.
         
@@ -58,7 +59,7 @@ class face2face(FastClient):
         """
         return self.submit_job("/add-face", image=image, face_name=face_name, save=save, **kwargs)
     
-    def swap_video(self, faces: Union[MediaFile, Any, str, Dict[str, Any], List[Any], bytes], target_video: Union[VideoFile, Any, MediaFile, str, bytes], include_audio: bool = True, enhance_face_model: str = 'gpen_bfr_512', **kwargs) -> APISeex:
+    def swap_video(self, faces: Union[List[str], Dict[str, Any], List[bytes], List[MediaFile]], target_video: Union[bytes, VideoFile, str], include_audio: bool = True, enhance_face_model: Literal["", "gpen_bfr_512", "gpen_bfr_1024", "gpen_bfr_2048", "gfpgan_1.4"] = 'gpen_bfr_512', **kwargs) -> APISeex:
         """
         Swap faces in a video file.
         
@@ -81,7 +82,20 @@ class face2face(FastClient):
         """
         return self.submit_job("/swap-video", faces=faces, target_video=target_video, include_audio=include_audio, enhance_face_model=enhance_face_model, **kwargs)
     
-    def swap_img_to_img(self, source_img: Union[ImageFile, Any, MediaFile, str, bytes], target_img: Union[ImageFile, Any, MediaFile, str, bytes], enhance_face_model: str = 'gpen_bfr_512', **kwargs) -> APISeex:
+    def enhance_face(self, face_image: Union[bytes, ImageFile, str, MediaFile], enhance_face_model: Literal["", "gpen_bfr_512", "gpen_bfr_1024", "gpen_bfr_2048", "gfpgan_1.4"] = 'gpen_bfr_512', **kwargs) -> APISeex:
+        """
+        Enhance a face image.
+        
+        
+        Args:
+            face_image: No description available.
+            
+            enhance_face_model: No description available. Defaults to 'gpen_bfr_512'.
+            
+        """
+        return self.submit_job("/enhance-face", face_image=face_image, enhance_face_model=enhance_face_model, **kwargs)
+    
+    def swap_img_to_img(self, source_img: Union[bytes, ImageFile, str], target_img: Union[bytes, ImageFile, str], enhance_face_model: Literal["", "gpen_bfr_512", "gpen_bfr_1024", "gpen_bfr_2048", "gfpgan_1.4"] = 'gpen_bfr_512', **kwargs) -> APISeex:
         """
         Swap faces between two images.
         

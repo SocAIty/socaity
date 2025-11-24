@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.alexgenovese.upscaler import upscaler

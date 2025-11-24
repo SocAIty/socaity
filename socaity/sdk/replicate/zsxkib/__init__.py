@@ -4,6 +4,7 @@ from socaity.sdk.replicate.zsxkib.animatediff_prompt_travel import animatediff_p
 from socaity.sdk.replicate.zsxkib.aura_sr import aura_sr
 from socaity.sdk.replicate.zsxkib.aura_sr_v2 import aura_sr_v2
 from socaity.sdk.replicate.zsxkib.create_rvc_dataset import create_rvc_dataset
+from socaity.sdk.replicate.zsxkib.dia import dia
 from socaity.sdk.replicate.zsxkib.diffbir import diffbir
 from socaity.sdk.replicate.zsxkib.film_frame_interpolation_for_large_motion import film_frame_interpolation_for_large_motion
 from socaity.sdk.replicate.zsxkib.flux_music import flux_music

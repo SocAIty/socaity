@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.resemble_ai.chatterbox_multilingual import chatterbox_multilingual

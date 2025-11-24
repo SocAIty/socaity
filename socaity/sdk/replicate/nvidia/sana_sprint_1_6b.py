@@ -1,13 +1,15 @@
 from fastsdk import FastClient, APISeex
+from typing import Literal
+
 
 class sana_sprint_1_6b(FastClient):
     """
-    Generated client for nvidia/sana-sprint-1-6b
+    Generated client based on nvidia/sana-sprint-1-6b format
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="c153dcec-e536-4913-8b42-d020ccfb3ee2", api_key=api_key)
     
-    def predictions(self, seed: int = -1, width: int = 1024, height: int = 1024, prompt: str = 'a tiny astronaut hatching from an egg on the moon', output_format: str = 'jpg', guidance_scale: float = 4.5, output_quality: int = 80, inference_steps: int = 2, intermediate_timesteps: float = 1.3, **kwargs) -> APISeex:
+    def predictions(self, seed: int = -1, width: int = 1024, height: int = 1024, prompt: str = 'a tiny astronaut hatching from an egg on the moon', output_format: Literal["webp", "jpg", "png"] = 'jpg', guidance_scale: float = 4.5, output_quality: int = 80, inference_steps: int = 2, intermediate_timesteps: float = 1.3, **kwargs) -> APISeex:
         """
         
         

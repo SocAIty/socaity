@@ -1,13 +1,15 @@
 from fastsdk import FastClient, APISeex
+from typing import Literal
+
 
 class hidream_l1_full(FastClient):
     """
-    Generated client for prunaai/hidream-l1-full
+    Generated client based on prunaai/hidream-l1-full format
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="11792ec3-e2d8-4667-bfc2-ea46bfb5b9c7", api_key=api_key)
     
-    def predictions(self, prompt: str, seed: int = -1, model_type: str = 'full', resolution: str = '1024 × 1024 (Square)', speed_mode: str = 'Lightly Juiced 🍊 (more consistent)', output_format: str = 'webp', output_quality: int = 100, **kwargs) -> APISeex:
+    def predictions(self, prompt: str, seed: int = -1, model_type: Literal["full"] = 'full', resolution: Literal["1024 × 1024 (Square)", "768 × 1360 (Portrait)", "1360 × 768 (Landscape)", "880 × 1168 (Portrait)", "1168 × 880 (Landscape)", "1248 × 832 (Landscape)", "832 × 1248 (Portrait)"] = '1024 × 1024 (Square)', speed_mode: Literal["Unsqueezed 🍋 (highest quality)", "Lightly Juiced 🍊 (more consistent)", "Juiced 🔥 (more speed)", "Extra Juiced 🚀 (even more speed)"] = 'Lightly Juiced 🍊 (more consistent)', output_format: Literal["png", "jpg", "webp"] = 'webp', output_quality: int = 100, **kwargs) -> APISeex:
         """
         
         

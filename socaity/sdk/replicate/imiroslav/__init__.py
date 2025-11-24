@@ -1,0 +1,1 @@
+from socaity.sdk.replicate.imiroslav.ai_skoda_octavia import ai_skoda_octavia

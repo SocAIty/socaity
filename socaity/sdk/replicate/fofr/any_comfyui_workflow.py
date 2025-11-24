@@ -1,17 +1,17 @@
 from fastsdk import FastClient, APISeex
-from typing import Union, Optional
+from typing import Optional, Literal
 
 from media_toolkit import MediaFile
 
 
 class any_comfyui_workflow(FastClient):
     """
-    Generated client for fofr/any-comfyui-workflow
+    Generated client based on fofr/any-comfyui-workflow format
     """
     def __init__(self, api_key: str = None):
         super().__init__(service_name_or_id="5457afef-4c0d-46df-9f62-cf87a4d8e455", api_key=api_key)
     
-    def predictions(self, output_format: str = 'webp', workflow_json: str = '', output_quality: int = 95, randomise_seeds: bool = True, force_reset_cache: bool = False, return_temp_files: bool = False, input_file: Optional[Union[MediaFile, str, bytes]] = None, **kwargs) -> APISeex:
+    def predictions(self, output_format: Literal["webp", "jpg", "png"] = 'webp', workflow_json: str = '', output_quality: int = 95, randomise_seeds: bool = True, force_reset_cache: bool = False, return_temp_files: bool = False, input_file: Optional[MediaFile] = None, **kwargs) -> APISeex:
         """
         
         
