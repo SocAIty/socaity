@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.s_clementc.manon import manon

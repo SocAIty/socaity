@@ -1,4 +1,4 @@
-from typing import Dict, Set
+from typing import Dict, Set, List
 from pathlib import Path
 from datetime import datetime, timedelta
 from fastsdk.service_management import ServiceManager, FileSystemStore
@@ -55,12 +55,22 @@ class SocaityServiceManager(ServiceManager):
         
         return normalize_name_for_py(username), normalize_name_for_py(model_name)
 
-    def update_package(self) -> None:
-        """Update the package with latest model changes"""
-        if not self._is_cache_stale():
+    def update_package(self, install_ids: List[str] = None, force: bool = False) -> None:
+        """Update the package with latest model changes
+        
+        Args:
+            install_ids: Optional list of specific model IDs/names to install. 
+                        If None, updates installed models and installs new official models.
+                        If ["all"], installs everything.
+            force: If True, ignores cache TTL.
+        """
+        if not force and not self._is_cache_stale() and not install_ids:
             return
         
-        package_updates = self.socaity_backend_client.update_package(self.service_store.get_version_index())
+        package_updates = self.socaity_backend_client.update_package(
+            self.service_store.get_version_index(),
+            install_ids=install_ids
+        )
         if not package_updates or not package_updates.get("updates"):
             return
 
@@ -75,6 +85,14 @@ class SocaityServiceManager(ServiceManager):
         # Touch the cache directory to update its modification time
         self._touch_cache_dir()
 
+    def install_service(self, service_name_or_id: str) -> None:
+        """Install a specific service by name or ID"""
+        self.update_package(install_ids=[service_name_or_id])
+
+    def install_all(self) -> None:
+        """Install all available services"""
+        self.update_package(install_ids=["all"])
+
     def _touch_cache_dir(self) -> None:
         """Update the cache directory modification time to current time"""
         if self.CACHE_DIR.exists():
@@ -82,7 +100,7 @@ class SocaityServiceManager(ServiceManager):
 
     def force_update_package(self) -> None:
         """Force update the package regardless of cache TTL"""
-        self.update_package()
+        self.update_package(force=True)
 
     def _handle_model_deletion(self, update_item: Dict) -> None:
         """Handle deletion of a model"""

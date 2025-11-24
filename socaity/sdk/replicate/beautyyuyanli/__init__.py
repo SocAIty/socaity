@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.beautyyuyanli.multilingual_e5_large import multilingual_e5_large

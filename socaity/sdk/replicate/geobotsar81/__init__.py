@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.geobotsar81.geobotsar_flux_2 import geobotsar_flux_2

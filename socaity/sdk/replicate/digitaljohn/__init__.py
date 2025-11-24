@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.digitaljohn.urban_narrative import urban_narrative

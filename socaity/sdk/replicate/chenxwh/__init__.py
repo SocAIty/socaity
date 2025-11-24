@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.chenxwh.cogvlm2_video import cogvlm2_video

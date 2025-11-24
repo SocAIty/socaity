@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.scmdr.ai_graphic import ai_graphic

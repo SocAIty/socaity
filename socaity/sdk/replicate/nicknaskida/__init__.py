@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.nicknaskida.whisper_diarization import whisper_diarization

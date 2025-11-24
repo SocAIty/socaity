@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.black_forest_labs.flux_schnell import flux_schnell

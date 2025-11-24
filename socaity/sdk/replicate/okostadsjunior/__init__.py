@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.okostadsjunior.ninicollyloli import ninicollyloli

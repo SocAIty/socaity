@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.ali_vilab.i2vgen_xl import i2vgen_xl

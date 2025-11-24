@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.chatworks.luchtpods import luchtpods

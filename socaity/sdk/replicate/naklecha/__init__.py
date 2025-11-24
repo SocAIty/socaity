@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.naklecha.clothing_segmentation import clothing_segmentation

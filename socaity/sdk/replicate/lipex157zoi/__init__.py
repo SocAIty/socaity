@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.lipex157zoi.lipexbradok import lipexbradok

@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.tudortotolici.newspaper_illustration import newspaper_illustration

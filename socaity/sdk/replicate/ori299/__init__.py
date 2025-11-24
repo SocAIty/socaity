@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.ori299.mc_thumbnails_v1 import mc_thumbnails_v1

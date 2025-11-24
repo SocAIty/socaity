@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.puribogdan.puri import puri
