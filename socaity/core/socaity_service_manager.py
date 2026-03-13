@@ -204,7 +204,11 @@ class SocaityServiceManager(ServiceManager):
         # Update community SDK __init__.py
         community_imports = self._generate_imports(target="community")
         self._write_init_file(self.COMMUNITY_SDK_DIR, community_imports)
-        
+
+        # Update replicate SDK __init__.py
+        replicate_imports = self._generate_imports(target="replicate")
+        self._write_init_file(self.REPLICATE_SDK_DIR, replicate_imports)
+
         # Update replicate username-specific __init__.py files
         self._update_replicate_init_files()
 

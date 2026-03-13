@@ -163,7 +163,7 @@ Note that we have just launched the startup. Expect new models coming highly fre
 
 # Working locally or with other providers
 
-Any service that is [fastSDK](https://github.com/SocAIty/fastsdk) compatible  (openAPI / [fastTaskAPI](https://github.com/SocAIty/FastTaskAPI), replicate and [runpod](https://www.runpod.io/)) 
+Any service that is [fastSDK](https://github.com/SocAIty/fastsdk) compatible  (openAPI / [APIPOD](https://github.com/SocAIty/APIPod), replicate and [runpod](https://www.runpod.io/)) 
 can be used with this package.
 
 Model deployment type    | Description                                                    | Pros                                           | Cons
@@ -177,11 +177,11 @@ Hybrid | Deploy on runpod, locally and use socaity services.            | Full f
 
 ### Hosting a service on Socaity.ai
 
-Any service created with [fasttaskapi]() can be hosted on socaity.ai for free if made public. You can even earn some credits.
+Any service created with [apipod]() can be hosted on socaity.ai for free if made public. You can even earn some credits.
 The service will then be added to the socaity SDK.
 Checkout [https://www.socaity.ai] for more information.
 
-Furthermore: any service that is created with [FastTaskAPI](https://github.com/SocAIty/FastTaskAPI) can be easily used in combination with [FastSDK](https://github.com/SocaIty/fastsdk).
+Furthermore: any service that is created with [APIPod](https://github.com/SocAIty/APIPod) can be easily used in combination with [FastSDK](https://github.com/SocaIty/fastsdk).
 Checkout the [FastSDK](https://github.com/SocaIty/fastsdk) documentation for more information.
 
 

@@ -1,6 +1,7 @@
 import sys
 from socaity.cli import main
 import socaity
+from socaity.sdk import face2face
 
 
 def _capture_cli_output(args):
