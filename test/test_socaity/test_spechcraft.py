@@ -1,4 +1,4 @@
-from socaity import speechcraft, MediaFile, service_manager
+from socaity import speechcraft, MediaFile, service_registry
 from fastsdk.service_definition import SocaityServiceAddress
 import os
 
@@ -15,7 +15,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 speechcraft = speechcraft(api_key=os.getenv("SOCAITY_API_KEY"))
 
 local_url = os.getenv("SOCAITY_INFER_BACKEND_URL", "https://api.socaity.ai/v1/") + "speechcraft"
-service_manager.update_service(speechcraft.service_definition.id, service_address=SocaityServiceAddress(url=local_url))
+service_registry.update_service(speechcraft.service_definition.id, service_address=SocaityServiceAddress(url=local_url))
 
 
 def test_text2voice():

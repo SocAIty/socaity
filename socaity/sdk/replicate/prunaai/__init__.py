@@ -1,1 +1,1 @@
-from socaity.sdk.replicate.prunaai.hunyuan3d_2 import hunyuan3d_2
+from socaity.sdk.services._71aa7260_9c91_4c93_b69c_6f4cd990d868 import hunyuan3d_2

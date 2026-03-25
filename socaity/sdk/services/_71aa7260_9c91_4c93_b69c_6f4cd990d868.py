@@ -1,5 +1,5 @@
 from fastsdk import FastClient, APISeex
-from typing import Literal, Optional
+from typing import Optional, Literal
 
 from media_toolkit import MediaFile
 

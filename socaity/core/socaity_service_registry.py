@@ -1,115 +1,163 @@
-from typing import Dict, Set, List
+import re
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Set
 from pathlib import Path
 from datetime import datetime, timedelta
 
 from apipod_registry import Registry, ServiceDefinition
 from apipod_registry.service_registry.file_system_registry import FileSystemStore
-from fastsdk.sdk_factory import create_sdk
 from apipod_registry.utils.normalization import normalize_name_for_py
+from fastsdk.sdk_factory import create_sdk
 from socaity.core.socaity_backend_client import SocaityBackendClient
+
+IMPORT_PATTERN = re.compile(
+    r"^from\s+socaity\.sdk\.services\.(\w+)\s+import\s+(\w+)(?:\s+as\s+(\w+))?$"
+)
+
+
+@dataclass
+class ImportEntry:
+    """Single import statement in a namespace __init__.py."""
+    module_name: str
+    class_name: str
+    alias: str
+
+    def to_statement(self) -> str:
+        stmt = f"from socaity.sdk.services.{self.module_name} import {self.class_name}"
+        if self.alias != self.class_name:
+            stmt += f" as {self.alias}"
+        return stmt
+
+    @staticmethod
+    def parse(line: str) -> Optional['ImportEntry']:
+        match = IMPORT_PATTERN.match(line.strip())
+        if not match:
+            return None
+        module_name, class_name, alias = match.groups()
+        return ImportEntry(module_name, class_name, alias or class_name)
 
 
 class SocaityServiceRegistry(Registry):
     SDK_ROOT = Path(__file__).parent.parent / "sdk"
-    OFFICIAL_SDK_DIR = SDK_ROOT / "official"
-    COMMUNITY_SDK_DIR = SDK_ROOT / "community"
-    REPLICATE_SDK_DIR = SDK_ROOT / "replicate"
+    SERVICES_DIR = SDK_ROOT / "services"
     CACHE_DIR = SDK_ROOT / "cache"
     CACHE_TTL_MINUTES = 15
 
     def __init__(self):
         super().__init__(service_store=FileSystemStore(self.CACHE_DIR))
-        self.socaity_backend_client = SocaityBackendClient()
-        self._created_sdks: Dict[str, Path] = {}  # class_name -> save_path
-        self._deleted_sdks: Dict[str, Path] = {}  # model_name -> save_path
+        self._backend = SocaityBackendClient()
+        self._namespace_additions: Dict[str, List[ImportEntry]] = {}
+        self._namespace_deletions: Dict[str, Set[str]] = {}
+        self._ensure_sdk_structure()
         self.update_package()
 
-    def _is_cache_stale(self) -> bool:
-        """Check if the cache is older than the TTL by examining cache directory modification time"""
-        if not self.CACHE_DIR.exists():
-            return True  # No cache exists, needs update
-        
-        try:
-            cache_mtime = datetime.fromtimestamp(self.CACHE_DIR.stat().st_mtime)
-            cache_age = datetime.now() - cache_mtime
-            ttl = timedelta(minutes=self.CACHE_TTL_MINUTES)
-            
-            return cache_age > ttl
-        except OSError:
-            return True  # If we can't check, assume stale
-
-    def _get_save_path(self, provider: str, service_id: str, display_name: str, is_official: bool = False) -> Path:
-        """Get the appropriate save path based on provider and model info"""
-        if provider.lower() == "replicate":
-            # For replicate, we use the display_name which is "username/modelname"
-            if "/" in display_name:
-                username, model_name = display_name.split("/", 1)
-            else:
-                username, model_name = "official", display_name
-            
-            username = normalize_name_for_py(username)
-            model_name = normalize_name_for_py(model_name)
-            return self.REPLICATE_SDK_DIR / username / f"{model_name}.py"
-        
-        # For socaity provider
-        filename = f"_{normalize_name_for_py(service_id)}.py"
-        if is_official:
-            return self.OFFICIAL_SDK_DIR / filename
-        else:
-            return self.COMMUNITY_SDK_DIR / filename
-
-    def update_package(self, install_ids: List[str] = None, force: bool = False) -> None:
-        """Update the package with latest model changes
-        
-        Args:
-            install_ids: Optional list of specific model IDs/names to install. 
-                        If None, updates installed models and installs new official models.
-                        If ["all"], installs everything.
-            force: If True, ignores cache TTL.
-        """
-        if not force and not self._is_cache_stale() and not install_ids:
-            return
-        
-        package_updates = self.socaity_backend_client.update_package(
-            self.service_store.get_version_index(),
-            install_ids=install_ids
-        )
-        if not package_updates or not package_updates.get("updates"):
-            return
-
-        print("Updating package...")
-        for update_item in package_updates["updates"]:
-            if update_item.get("action") == "delete":
-                self._handle_model_deletion(update_item)
-            else:
-                self._handle_model_update(update_item)
-
-        self._update_init_files()
-        # Touch the cache directory to update its modification time
-        self._touch_cache_dir()
+    # ---- Public API ----
 
     def install_service(self, service_name_or_id: str) -> None:
-        """Install a specific service by name or ID"""
         self.update_package(install_ids=[service_name_or_id])
 
     def install_all(self) -> None:
-        """Install all available services"""
         self.update_package(install_ids=["all"])
 
-    def _touch_cache_dir(self) -> None:
-        """Update the cache directory modification time to current time"""
-        if self.CACHE_DIR.exists():
-            self.CACHE_DIR.touch()
-
     def force_update_package(self) -> None:
-        """Force update the package regardless of cache TTL"""
         self.update_package(force=True)
 
-    def _handle_model_deletion(self, update_item: Dict) -> None:
-        """Handle deletion of a model"""
-        service_def_data = update_item.get("service_definition")
+    def update_package(self, install_ids: List[str] = None, force: bool = False) -> None:
+        if not force and not self._is_cache_stale() and not install_ids:
+            return
+
+        updates = self._backend.update_package(
+            self.service_store.get_version_index(),
+            install_ids=install_ids,
+        )
+        if not updates or not updates.get("updates"):
+            return
+
+        print("Updating package...")
+        for item in updates["updates"]:
+            if item.get("action") == "delete":
+                self._handle_deletion(item)
+            else:
+                self._handle_update(item)
+
+        self._flush_init_files()
+        self._touch_cache_dir()
+
+    # ---- Namespace resolution ----
+
+    @staticmethod
+    def _resolve_namespace(
+        provider: str,
+        display_name: str,
+        is_official: bool,
+        created_by_user_display_name: str,
+    ) -> tuple[str, str]:
+        """Determine (namespace_path_relative_to_SDK_ROOT, alias) for a service."""
+        if provider and provider.lower() == "replicate":
+            if "/" in display_name:
+                username, model_name = display_name.split("/", 1)
+            else:
+                username, model_name = "unknown", display_name
+            return (
+                f"replicate/{normalize_name_for_py(username)}",
+                normalize_name_for_py(model_name),
+            )
+
+        alias = normalize_name_for_py(display_name)
+        if is_official:
+            return "official", alias
+
+        user = normalize_name_for_py(created_by_user_display_name or "unknown")
+        return f"community/{user}", alias
+
+    @staticmethod
+    def _derive_class_name(provider: str, display_name: str) -> str:
+        if provider and provider.lower() == "replicate" and "/" in display_name:
+            _, model_name = display_name.split("/", 1)
+            return normalize_name_for_py(model_name)
+        return normalize_name_for_py(display_name)
+
+    # ---- Update / delete handlers ----
+
+    def _handle_update(self, item: dict) -> None:
+        service_def = self._extract_service_def(item)
+        if not service_def:
+            return
+
+        provider = item.get("provider", "socaity")
+        is_official = item.get("is_official", False) and provider.lower() != "replicate"
+        created_by = item.get("created_by_user_display_name", "")
+
+        module_name = normalize_name_for_py(service_def.id)
+        save_path = self.SERVICES_DIR / f"{module_name}.py"
+        class_name = self._derive_class_name(provider, service_def.display_name)
+        namespace, alias = self._resolve_namespace(provider, service_def.display_name, is_official, created_by)
+
+        print(f"  Installing {service_def.display_name} -> {namespace}/{alias}")
+
+        try:
+            _, actual_class_name, _ = create_sdk(
+                service_definition=service_def,
+                save_path=str(save_path),
+                class_name=class_name,
+            )
+        except Exception as e:
+            print(f"  Error creating SDK for {service_def.id}: {e}")
+            return
+
+        self._namespace_additions.setdefault(namespace, []).append(
+            ImportEntry(module_name, actual_class_name, alias)
+        )
+
+        try:
+            self.service_store.save_service(service_def)
+        except Exception as e:
+            print(f"  Warning: cache write failed for {service_def.id}: {e}")
+
+    def _handle_deletion(self, item: dict) -> None:
+        service_def_data = item.get("service_definition")
         if not service_def_data:
-            print("No service definition for deletion. Skipping it.")
+            print("  No service definition for deletion. Skipping.")
             return
 
         if isinstance(service_def_data, dict):
@@ -119,245 +167,141 @@ class SocaityServiceRegistry(Registry):
             service_id = service_def_data.id
             display_name = service_def_data.display_name
 
-        print(f"Deleting {service_id}...")
-        
-        try:
-            provider = update_item.get("provider", "socaity")
-            is_official = update_item.get("is_official", False)
-            
-            save_path = self._get_save_path(provider, service_id, display_name, is_official)
-                
-            if save_path and save_path.exists():
-                # We need the model name for the _deleted_sdks tracking (used in import generation)
-                model_name = save_path.stem
-                self._deleted_sdks[model_name] = save_path
-                save_path.unlink()
-        except Exception as e:
-            print(f"Error deleting file {service_id}: {e}")
+        provider = item.get("provider", "socaity")
+        is_official = item.get("is_official", False)
+        created_by = item.get("created_by_user_display_name", "")
+
+        module_name = normalize_name_for_py(service_id)
+        service_file = self.SERVICES_DIR / f"{module_name}.py"
+        namespace, _ = self._resolve_namespace(provider, display_name, is_official, created_by)
+
+        print(f"  Deleting {display_name} from {namespace}")
+
+        if service_file.exists():
+            service_file.unlink()
+
+        self._namespace_deletions.setdefault(namespace, set()).add(module_name)
 
         try:
             self.service_store.delete_service(service_id)
         except Exception as e:
-            print(f"Error deleting service {service_id}: {e}")
+            print(f"  Error removing {service_id} from store: {e}")
 
-    def _handle_model_update(self, update_item: Dict) -> None:
-        """Handle update of a model"""
-        service_def_data = update_item.get("service_definition")
-        
-        if not service_def_data:
-            print("No service definition for update. Skipping it.")
-            return
+    # ---- Init-file management ----
 
-        # Convert the dictionary to a ServiceDefinition object if needed
-        if isinstance(service_def_data, dict):
-            service_def = ServiceDefinition(**service_def_data)
-        else:
-            service_def = service_def_data
+    def _flush_init_files(self) -> None:
+        """Apply all pending additions/deletions to the relevant namespace __init__.py files."""
+        affected = set(self._namespace_additions) | set(self._namespace_deletions)
 
-        service_id = service_def.id
-        display_name = service_def.display_name
-        print(f"Updating {service_id}...")
+        for namespace in affected:
+            ns_dir = self._ensure_namespace_package(namespace)
+            init_file = ns_dir / "__init__.py"
 
-        # Extract information from the update item
-        provider = update_item.get("provider", "socaity")
-        is_official = update_item.get("is_official", False)
-        
-        # Determine if model is official (only for socaity models)
-        is_official = is_official if provider.lower() != "replicate" else False
-        
-        save_path = self._get_save_path(provider, service_id, display_name, is_official)
-        
-        # For class name, we still want a clean name
-        if provider.lower() == "replicate" and "/" in display_name:
-            _, model_name = display_name.split("/", 1)
-            class_name = normalize_name_for_py(model_name)
-        else:
-            class_name = normalize_name_for_py(display_name)
-        
-        # Use the service definition directly (already contains all needed information)
+            entries = self._load_namespace_imports(init_file)
+
+            for module_name in self._namespace_deletions.get(namespace, set()):
+                entries = {a: e for a, e in entries.items() if e.module_name != module_name}
+
+            for entry in self._namespace_additions.get(namespace, []):
+                resolved = self._resolve_alias_conflict(entry.alias, entries, entry.module_name)
+                if resolved != entry.alias:
+                    print(f"  Name conflict in {namespace}: '{entry.alias}' -> '{resolved}'")
+                    entry = ImportEntry(entry.module_name, entry.class_name, resolved)
+                entries[entry.alias] = entry
+
+            self._write_namespace_init(init_file, entries)
+
+        self._write_sdk_init()
+        self._namespace_additions.clear()
+        self._namespace_deletions.clear()
+
+    @staticmethod
+    def _load_namespace_imports(init_file: Path) -> Dict[str, ImportEntry]:
+        """Parse a namespace __init__.py into {alias: ImportEntry}."""
+        entries: Dict[str, ImportEntry] = {}
+        if not init_file.exists():
+            return entries
+        for line in init_file.read_text().splitlines():
+            entry = ImportEntry.parse(line)
+            if entry:
+                entries[entry.alias] = entry
+        return entries
+
+    @staticmethod
+    def _resolve_alias_conflict(alias: str, existing: Dict[str, ImportEntry], module_name: str) -> str:
+        """Return alias unchanged if no conflict, otherwise append _1, _2, etc."""
+        if alias not in existing or existing[alias].module_name == module_name:
+            return alias
+        counter = 1
+        while f"{alias}_{counter}" in existing:
+            counter += 1
+        return f"{alias}_{counter}"
+
+    @staticmethod
+    def _write_namespace_init(init_file: Path, entries: Dict[str, ImportEntry]) -> None:
+        statements = sorted(e.to_statement() for e in entries.values())
+        init_file.write_text("\n".join(statements) + "\n" if statements else "")
+
+    def _write_sdk_init(self) -> None:
+        (self.SDK_ROOT / "__init__.py").write_text("from socaity.sdk.official import *\n")
+
+    # ---- Directory helpers ----
+
+    def _ensure_sdk_structure(self) -> None:
+        for d in (self.SERVICES_DIR, self.CACHE_DIR,
+                  self.SDK_ROOT / "official",
+                  self.SDK_ROOT / "community",
+                  self.SDK_ROOT / "replicate"):
+            d.mkdir(parents=True, exist_ok=True)
+
+        for d in (self.SERVICES_DIR,
+                  self.SDK_ROOT / "official",
+                  self.SDK_ROOT / "community",
+                  self.SDK_ROOT / "replicate"):
+            init = d / "__init__.py"
+            if not init.exists():
+                init.write_text("")
+
+        self._write_sdk_init()
+
+    def _ensure_namespace_package(self, namespace: str) -> Path:
+        """Ensure every segment of the namespace path is a proper Python package."""
+        current = self.SDK_ROOT
+        for part in Path(namespace).parts:
+            current = current / part
+            current.mkdir(parents=True, exist_ok=True)
+            init = current / "__init__.py"
+            if not init.exists():
+                init.write_text("")
+        return current
+
+    # ---- Misc helpers ----
+
+    @staticmethod
+    def _extract_service_def(item: dict) -> Optional[ServiceDefinition]:
+        data = item.get("service_definition")
+        if not data:
+            print("  No service definition in update item. Skipping.")
+            return None
+        if isinstance(data, dict):
+            return ServiceDefinition(**data)
+        return data
+
+    def _is_cache_stale(self) -> bool:
+        if not self.CACHE_DIR.exists():
+            return True
         try:
-            file_path, actual_class_name, _ = create_sdk(
-                service_definition=service_def,
-                save_path=str(save_path),
-                class_name=class_name
-            )
-            self._created_sdks[actual_class_name] = Path(file_path)
-        except Exception as e:
-            print(f"Error creating SDK for {service_id}: {e}")
+            age = datetime.now() - datetime.fromtimestamp(self.CACHE_DIR.stat().st_mtime)
+            return age > timedelta(minutes=self.CACHE_TTL_MINUTES)
+        except OSError:
+            return True
 
-        # Store the service definition in the service store for caching and reload
-        try:
-            self.service_store.save_service(service_def)
-        except Exception as e:
-            print(f"Warning: Failed to save service definition for {service_id}: {e}")
-
-    def _update_init_files(self) -> None:
-        """Update all __init__.py files with current imports"""
-        self._ensure_sdk_directories()
-        
-        # Update main SDK __init__.py (only import official models)
-        main_content = "from socaity.sdk.official import *"
-        self._write_init_content(self.SDK_ROOT, main_content)
-        
-        # Update official SDK __init__.py
-        official_imports = self._generate_imports(target="official")
-        self._write_init_file(self.OFFICIAL_SDK_DIR, official_imports)
-        
-        # Update community SDK __init__.py
-        community_imports = self._generate_imports(target="community")
-        self._write_init_file(self.COMMUNITY_SDK_DIR, community_imports)
-
-        # Update replicate SDK __init__.py
-        replicate_imports = self._generate_imports(target="replicate")
-        self._write_init_file(self.REPLICATE_SDK_DIR, replicate_imports)
-
-        # Update replicate username-specific __init__.py files
-        self._update_replicate_init_files()
-
-    def _ensure_sdk_directories(self) -> None:
-        """Ensure all necessary SDK directories exist"""
-        self.SDK_ROOT.mkdir(exist_ok=True)
-        self.OFFICIAL_SDK_DIR.mkdir(exist_ok=True)
-        self.COMMUNITY_SDK_DIR.mkdir(exist_ok=True)
-        self.REPLICATE_SDK_DIR.mkdir(exist_ok=True)
-
-    def _update_replicate_init_files(self) -> None:
-        """Update __init__.py files for each replicate username directory"""
-        # Get all replicate usernames from created SDKs
-        replicate_usernames = set()
-        for class_name, file_path in self._created_sdks.items():
-            if "replicate" in str(file_path):
-                try:
-                    relative_path = file_path.relative_to(self.REPLICATE_SDK_DIR)
-                    username = relative_path.parts[0]  # First part is the username
-                    replicate_usernames.add(username)
-                except ValueError:
-                    continue
-        
-        # Create __init__.py for each username directory
-        for username in replicate_usernames:
-            username_dir = self.REPLICATE_SDK_DIR / username
-            if username_dir.exists():
-                username_imports = self._generate_replicate_imports(username)
-                self._write_init_file(username_dir, username_imports)
-
-    def _get_path_as_import(self, file_path: Path) -> str:
-        """Get the path as import for a given file path"""
-        path_as_import = str(file_path).replace('\\', '/')
-        if path_as_import.endswith('.py'):
-            path_as_import = path_as_import[:-3]  # Remove .py extension
-        path_as_import = path_as_import.replace('/', '.')
-        return path_as_import
-
-    def _generate_replicate_imports(self, username: str) -> Set[str]:
-        """Generate import statements specifically for replicate username directories"""
-        imports = set()
-        
-        for class_name, file_path in self._created_sdks.items():
-            # Check if this file belongs to this specific username
-            if "replicate" in str(file_path) and username in str(file_path):
-                try:
-                    # Get the relative path from SDK_ROOT
-                    relative_path = file_path.relative_to(self.SDK_ROOT)
-                    # Convert path to import format
-                    path_as_import = self._get_path_as_import(relative_path)
-                    # Construct import path
-                    import_path = f"socaity.sdk.{path_as_import}"
-                    import_stmt = f"from {import_path} import {class_name}"
-                    imports.add(import_stmt)
-                except Exception as e:
-                    print(f"Error processing replicate import for {file_path}: {e}")
-                    continue
-
-        # Add existing imports from the username directory
-        username_dir = self.REPLICATE_SDK_DIR / username
-        try:
-            old_imports = self._load_imports_from_init_py(username_dir / "__init__.py")
-            imports.update(old_imports)
-        except FileNotFoundError:
-            pass
-
-        # Remove deleted imports
-        self._remove_deleted_imports(imports)
-        return imports
-
-    def _generate_imports(self, target: str = None) -> Set[str]:
-        """Generate import statements for SDK files
-        
-        Args:
-            target: The target for imports - "official", "community", "replicate"
-        """
-        imports = set()
-        
-        for class_name, file_path in self._created_sdks.items():
-            # Filter based on target
-            if target is not None and target not in str(file_path):
-                continue
-
-            try:
-                # Get the relative path from SDK_ROOT
-                relative_path = file_path.relative_to(self.SDK_ROOT)
-                # Convert path to import format
-                path_as_import = self._get_path_as_import(relative_path)
-                # Construct import path
-                import_path = f"socaity.sdk.{path_as_import}"
-                import_stmt = f"from {import_path} import {class_name}"
-                imports.add(import_stmt)
-            except Exception as e:
-                print(f"Error processing import for {file_path}: {e}")
-                continue
-
-        # Add existing imports from __init__.py files
-        if target == "official":
-            init_dir = self.OFFICIAL_SDK_DIR
-        elif target == "community":
-            init_dir = self.COMMUNITY_SDK_DIR
-        elif target == "replicate":
-            init_dir = self.REPLICATE_SDK_DIR
-        else:
-            init_dir = self.SDK_ROOT
-            
-        try:
-            old_imports = self._load_imports_from_init_py(init_dir / "__init__.py")
-            imports.update(old_imports)
-        except FileNotFoundError:
-            pass
-
-        # Remove deleted imports
-        self._remove_deleted_imports(imports)
-        return imports
-
-    def _write_init_content(self, directory: Path, content: str) -> None:
-        """Write specific content to __init__.py file"""
-        init_file = directory / "__init__.py"
-        init_file.write_text(content)
-
-    def _write_init_file(self, directory: Path, imports: Set[str]) -> None:
-        """Write imports to __init__.py file"""
-        init_file = directory / "__init__.py"
-        # Sort imports alphabetically
-        sorted_imports = sorted(imports, key=lambda x: x)
-        init_file.write_text("\n".join(sorted_imports))
-
-    def _load_imports_from_init_py(self, path: Path) -> Set[str]:
-        """Load existing imports from __init__.py file"""
-        imports = set()
-        if path.exists():
-            for line in path.read_text().splitlines():
-                if line.strip() and line.startswith("from"):
-                    imports.add(line.strip())
-        return imports
-
-    def _remove_deleted_imports(self, imports: Set[str]) -> None:
-        """Remove imports of deleted SDKs from the given imports set"""
-        imports_to_remove = {
-            imp
-            for imp in imports 
-            for del_path in self._deleted_sdks.values() 
-            if str(del_path) in imp
-        }
-        imports.difference_update(imports_to_remove)
+    def _touch_cache_dir(self) -> None:
+        if self.CACHE_DIR.exists():
+            self.CACHE_DIR.touch()
 
 
+# for debugging purposes
 if __name__ == "__main__":
-    sm = SocaityServiceRegistry()
+    registry = SocaityServiceRegistry()
+    registry.update_package(force=True)
