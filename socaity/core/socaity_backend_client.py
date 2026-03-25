@@ -1,11 +1,11 @@
 import httpx
-from typing import Dict, List, Optional
+from typing import Dict, List
 import os
 
 
 class SocaityBackendClient:
     def __init__(self):
-        self.infer_backend_url = os.getenv("SOCAITY_INFER_BACKEND_URL", "https://api.socaity.ai/v1/")
+        self.backend_url = os.getenv("SOCAITY_BACKEND_URL", "https://webapi.socaity.ai/")
         self.api_key = os.getenv("SOCAITY_API_KEY")
 
     def parse_api_response(self, response: httpx.Response):
@@ -26,7 +26,7 @@ class SocaityBackendClient:
         }
 
         try:
-            response = client.post(self.infer_backend_url + "sdk/update_package", json=payload, headers=headers, timeout=400)
+            response = client.post(self.backend_url + "v1/sdk/update_package", json=payload, headers=headers, timeout=400)
             return self.parse_api_response(response)
         except Exception as e:
             print(f"Could not update package: {e}")

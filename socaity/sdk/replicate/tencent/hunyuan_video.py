@@ -5,7 +5,7 @@ class hunyuan_video(FastClient):
     Generated client based on tencent/hunyuan-video format
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="fadd9278-de64-4d38-bfab-dc987511fc0a", api_key=api_key)
+        super().__init__(service_name_or_id="a840f561-6a97-47e5-96f6-b41d8e8749a7", api_key=api_key)
     
     def predictions(self, fps: int = 24, seed: int = 42, width: int = 864, height: int = 480, prompt: str = 'A cat walks on the grass, realistic style', infer_steps: int = 50, video_length: int = 129, embedded_guidance_scale: float = 6.0, **kwargs) -> APISeex:
         """

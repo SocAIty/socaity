@@ -9,7 +9,7 @@ class hunyuan3d_2(FastClient):
     Generated client based on prunaai/hunyuan3d-2 format
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="2060f890-7195-46af-af4c-ec0b8af12030", api_key=api_key)
+        super().__init__(service_name_or_id="71aa7260-9c91-4c93-b69c-6f4cd990d868", api_key=api_key)
     
     def predictions(self, file_type: Literal["glb", "obj"] = 'glb', face_count: int = 40000, num_chunks: int = 20000, speed_mode: Literal["Unsqueezed 🍋 (highest quality)", "Juiced 🔥 (fast)"] = 'Juiced 🔥 (fast)', generator_seed: int = 12345, octree_resolution: int = 200, num_inference_steps: int = 50, image_path: Optional[MediaFile] = None, **kwargs) -> APISeex:
         """

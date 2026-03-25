@@ -1,9 +1,9 @@
-from socaity.core.socaity_service_manager import SocaityServiceManager
+from socaity.core.socaity_service_registry import SocaityServiceRegistry
 
 from media_toolkit import MediaFile, ImageFile, VideoFile, AudioFile
 
 from fastsdk import FastSDK
-service_manager = FastSDK().service_manager = SocaityServiceManager()
+service_manager = FastSDK().service_manager = SocaityServiceRegistry()
 
 
 def install(service_name_or_id: str) -> None:

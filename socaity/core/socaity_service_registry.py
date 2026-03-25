@@ -1,14 +1,15 @@
 from typing import Dict, Set, List
 from pathlib import Path
 from datetime import datetime, timedelta
-from fastsdk.service_management import ServiceManager, FileSystemStore
-from fastsdk import ServiceDefinition
+
+from apipod_registry import Registry, ServiceDefinition
+from apipod_registry.service_registry.file_system_registry import FileSystemStore
 from fastsdk.sdk_factory import create_sdk
-from fastsdk.utils import normalize_name_for_py
+from apipod_registry.utils.normalization import normalize_name_for_py
 from socaity.core.socaity_backend_client import SocaityBackendClient
 
 
-class SocaityServiceManager(ServiceManager):
+class SocaityServiceRegistry(Registry):
     SDK_ROOT = Path(__file__).parent.parent / "sdk"
     OFFICIAL_SDK_DIR = SDK_ROOT / "official"
     COMMUNITY_SDK_DIR = SDK_ROOT / "community"
@@ -37,23 +38,25 @@ class SocaityServiceManager(ServiceManager):
         except OSError:
             return True  # If we can't check, assume stale
 
-    def _get_save_path(self, provider: str, username: str, model_name: str, is_official: bool = False) -> Path:
+    def _get_save_path(self, provider: str, service_id: str, display_name: str, is_official: bool = False) -> Path:
         """Get the appropriate save path based on provider and model info"""
         if provider.lower() == "replicate":
+            # For replicate, we use the display_name which is "username/modelname"
+            if "/" in display_name:
+                username, model_name = display_name.split("/", 1)
+            else:
+                username, model_name = "official", display_name
+            
+            username = normalize_name_for_py(username)
+            model_name = normalize_name_for_py(model_name)
             return self.REPLICATE_SDK_DIR / username / f"{model_name}.py"
-        elif is_official:
-            return self.OFFICIAL_SDK_DIR / f"{model_name}.py"
-        else:
-            return self.COMMUNITY_SDK_DIR / f"{model_name}.py"
-
-    def _parse_display_name(self, display_name: str) -> tuple[str, str]:
-        """Parse display name into username and model name"""
-        if "/" in display_name:
-            username, model_name = display_name.split("/", 1)
-        else:
-            username, model_name = "official", display_name
         
-        return normalize_name_for_py(username), normalize_name_for_py(model_name)
+        # For socaity provider
+        filename = f"_{normalize_name_for_py(service_id)}.py"
+        if is_official:
+            return self.OFFICIAL_SDK_DIR / filename
+        else:
+            return self.COMMUNITY_SDK_DIR / filename
 
     def update_package(self, install_ids: List[str] = None, force: bool = False) -> None:
         """Update the package with latest model changes
@@ -104,51 +107,45 @@ class SocaityServiceManager(ServiceManager):
 
     def _handle_model_deletion(self, update_item: Dict) -> None:
         """Handle deletion of a model"""
-        mhi = update_item.get("model_hosting_info", {})
-        hosted_model_id = mhi.get("id")
-        print(f"Deleting {hosted_model_id}...")
+        service_def_data = update_item.get("service_definition")
+        if not service_def_data:
+            print("No service definition for deletion. Skipping it.")
+            return
+
+        if isinstance(service_def_data, dict):
+            service_id = service_def_data.get("id")
+            display_name = service_def_data.get("display_name", "")
+        else:
+            service_id = service_def_data.id
+            display_name = service_def_data.display_name
+
+        print(f"Deleting {service_id}...")
         
         try:
-            # Get provider and display name for path calculation
             provider = update_item.get("provider", "socaity")
-            display_name = update_item.get("display_name", "")
-            username, model_name = self._parse_display_name(display_name)
+            is_official = update_item.get("is_official", False)
             
-            # For socaity models, we need to check both official and community dirs
-            if provider and provider.lower() != "replicate":
-                official_path = self.OFFICIAL_SDK_DIR / f"{model_name}.py"
-                community_path = self.COMMUNITY_SDK_DIR / f"{model_name}.py"
-                
-                if official_path.exists():
-                    save_path = official_path
-                elif community_path.exists():
-                    save_path = community_path
-                else:
-                    save_path = None
-            else:
-                save_path = self._get_save_path(provider, username, model_name, False)
+            save_path = self._get_save_path(provider, service_id, display_name, is_official)
                 
             if save_path and save_path.exists():
+                # We need the model name for the _deleted_sdks tracking (used in import generation)
+                model_name = save_path.stem
                 self._deleted_sdks[model_name] = save_path
                 save_path.unlink()
         except Exception as e:
-            print(f"Error deleting file {hosted_model_id}: {e}")
+            print(f"Error deleting file {service_id}: {e}")
 
         try:
-            self.service_store.delete_service(hosted_model_id)
+            self.service_store.delete_service(service_id)
         except Exception as e:
-            print(f"Error deleting service {hosted_model_id}: {e}")
+            print(f"Error deleting service {service_id}: {e}")
 
     def _handle_model_update(self, update_item: Dict) -> None:
         """Handle update of a model"""
-        mhi = update_item.get("model_hosting_info", {})
         service_def_data = update_item.get("service_definition")
-        hosted_model_id = mhi.get("id")
-        
-        print(f"Updating {hosted_model_id}...")
         
         if not service_def_data:
-            print(f"No service definition for {hosted_model_id}. Skipping it.")
+            print("No service definition for update. Skipping it.")
             return
 
         # Convert the dictionary to a ServiceDefinition object if needed
@@ -157,37 +154,42 @@ class SocaityServiceManager(ServiceManager):
         else:
             service_def = service_def_data
 
+        service_id = service_def.id
+        display_name = service_def.display_name
+        print(f"Updating {service_id}...")
+
         # Extract information from the update item
         provider = update_item.get("provider", "socaity")
-        display_name = update_item.get("display_name", "")
         is_official = update_item.get("is_official", False)
         
-        username, model_name = self._parse_display_name(display_name)
-        
-        # Determine if model is official (only for socaity models)  
+        # Determine if model is official (only for socaity models)
         is_official = is_official if provider.lower() != "replicate" else False
         
-        save_path = self._get_save_path(provider, username, model_name, is_official)
+        save_path = self._get_save_path(provider, service_id, display_name, is_official)
         
-        # Normalize the model name for use as a Python class name
-        class_name = normalize_name_for_py(model_name)
+        # For class name, we still want a clean name
+        if provider.lower() == "replicate" and "/" in display_name:
+            _, model_name = display_name.split("/", 1)
+            class_name = normalize_name_for_py(model_name)
+        else:
+            class_name = normalize_name_for_py(display_name)
         
         # Use the service definition directly (already contains all needed information)
         try:
             file_path, actual_class_name, _ = create_sdk(
                 service_definition=service_def,
                 save_path=str(save_path),
-                class_name=class_name  # Use just the model name for the class name
+                class_name=class_name
             )
             self._created_sdks[actual_class_name] = Path(file_path)
         except Exception as e:
-            print(f"Error creating SDK for {hosted_model_id}: {e}")
+            print(f"Error creating SDK for {service_id}: {e}")
 
         # Store the service definition in the service store for caching and reload
         try:
             self.service_store.save_service(service_def)
         except Exception as e:
-            print(f"Warning: Failed to save service definition for {hosted_model_id}: {e}")
+            print(f"Warning: Failed to save service definition for {service_id}: {e}")
 
     def _update_init_files(self) -> None:
         """Update all __init__.py files with current imports"""
@@ -283,7 +285,7 @@ class SocaityServiceManager(ServiceManager):
         """Generate import statements for SDK files
         
         Args:
-            target: The target for imports - "official", "community"
+            target: The target for imports - "official", "community", "replicate"
         """
         imports = set()
         
@@ -305,16 +307,18 @@ class SocaityServiceManager(ServiceManager):
                 print(f"Error processing import for {file_path}: {e}")
                 continue
 
-        # Add existing imports
+        # Add existing imports from __init__.py files
         if target == "official":
-            init_path = self.OFFICIAL_SDK_DIR
+            init_dir = self.OFFICIAL_SDK_DIR
         elif target == "community":
-            init_path = self.COMMUNITY_SDK_DIR
+            init_dir = self.COMMUNITY_SDK_DIR
+        elif target == "replicate":
+            init_dir = self.REPLICATE_SDK_DIR
         else:
-            init_path = self.SDK_ROOT
+            init_dir = self.SDK_ROOT
             
         try:
-            old_imports = self._load_imports_from_init_py(init_path / "__init__.py")
+            old_imports = self._load_imports_from_init_py(init_dir / "__init__.py")
             imports.update(old_imports)
         except FileNotFoundError:
             pass
@@ -331,8 +335,8 @@ class SocaityServiceManager(ServiceManager):
     def _write_init_file(self, directory: Path, imports: Set[str]) -> None:
         """Write imports to __init__.py file"""
         init_file = directory / "__init__.py"
-        # Sort imports to have common imports first, then alphabetically
-        sorted_imports = sorted(imports, key=lambda x: ('.common.' not in x, x))
+        # Sort imports alphabetically
+        sorted_imports = sorted(imports, key=lambda x: x)
         init_file.write_text("\n".join(sorted_imports))
 
     def _load_imports_from_init_py(self, path: Path) -> Set[str]:
@@ -356,4 +360,4 @@ class SocaityServiceManager(ServiceManager):
 
 
 if __name__ == "__main__":
-    sm = SocaityServiceManager()
+    sm = SocaityServiceRegistry()

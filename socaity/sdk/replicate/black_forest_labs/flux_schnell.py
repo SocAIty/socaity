@@ -7,7 +7,7 @@ class flux_schnell(FastClient):
     Generated client based on black-forest-labs/flux-schnell format
     """
     def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="817bca01-a048-4959-84e3-f8be56044f48", api_key=api_key)
+        super().__init__(service_name_or_id="404643cc-3870-4be7-9169-f57b0bbc4091", api_key=api_key)
     
     def predictions(self, prompt: str, seed: int = 42, go_fast: bool = True, megapixels: Literal["1", "0.25"] = '1', num_outputs: int = 1, aspect_ratio: Literal["1:1", "16:9", "21:9", "3:2", "2:3", "4:5", "5:4", "3:4", "4:3", "9:16", "9:21"] = '1:1', output_format: Literal["webp", "jpg", "png"] = 'webp', output_quality: int = 80, num_inference_steps: int = 4, disable_safety_checker: bool = False, **kwargs) -> APISeex:
         """

@@ -59,7 +59,7 @@ def test_install_of_services():
 
 
 if __name__ == "__main__":
-    test_socaity_cli_help()
-    test_socaity_install_function_exposed()
+    #test_socaity_cli_help()
+    #test_socaity_install_function_exposed()
     test_install_of_services()
     print("All tests passed")

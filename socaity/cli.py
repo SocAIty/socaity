@@ -1,5 +1,5 @@
 import argparse
-from socaity.core.socaity_service_manager import SocaityServiceManager
+from socaity.core.socaity_service_registry import SocaityServiceRegistry
 
 
 def main():
@@ -27,7 +27,7 @@ def main():
 
     args = parser.parse_args()
     
-    service_manager = SocaityServiceManager()
+    service_registry = SocaityServiceRegistry()
     
     target_service = None
     
@@ -39,16 +39,16 @@ def main():
     if target_service:
         if target_service.lower() == "all":
             print("Installing all available services...")
-            service_manager.install_all()
+            service_registry.install_all()
         else:
             print(f"Installing service: {target_service}...")
-            service_manager.install_service(target_service)
+            service_registry.install_service(target_service)
     else:
         # Default behavior if run without arguments? 
         # Maybe just update/check official?
         # "By default the package will NOT install all models. It will only update / install the official models."
         print("Updating official packages...")
-        service_manager.update_package()
+        service_registry.update_package()
 
 
 if __name__ == "__main__":
