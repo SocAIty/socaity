@@ -15,8 +15,6 @@ IMPORT_PATTERN = re.compile(
     r"^from\s+socaity\.sdk\.services\.(\w+)\s+import\s+(\w+)(?:\s+as\s+(\w+))?$"
 )
 
-REPLICATE_SPECS = {"replicate", "cog", "cog2"}
-
 
 @dataclass
 class ImportEntry:
@@ -104,31 +102,27 @@ class SocaityServiceRegistry(Registry):
     # ---- Provider / namespace resolution ----
 
     @staticmethod
-    def _is_replicate(service_def: ServiceDefinition) -> bool:
-        return (
-            service_def.specification in REPLICATE_SPECS
-            or isinstance(service_def.service_address, ReplicateServiceAddress)
-        )
-
-    @staticmethod
     def _resolve_namespace(
         service_def: ServiceDefinition,
         is_official: bool,
         creator_display_name: str,
+        third_party_provider: Optional[str] = None,
     ) -> tuple[str, str]:
         """Return (namespace_path_relative_to_SDK_ROOT, alias)."""
-        if SocaityServiceRegistry._is_replicate(service_def):
-            display_name = service_def.display_name or ""
+        display_name = service_def.display_name or service_def.id
+
+        if third_party_provider and third_party_provider.lower() != "socaity":
+            provider = normalize_name_for_py(third_party_provider)
             if "/" in display_name:
                 username, model_name = display_name.split("/", 1)
             else:
                 username, model_name = "unknown", display_name
             return (
-                f"replicate/{normalize_name_for_py(username)}",
+                f"{provider}/{normalize_name_for_py(username)}",
                 normalize_name_for_py(model_name),
             )
 
-        alias = normalize_name_for_py(service_def.display_name or service_def.id)
+        alias = normalize_name_for_py(display_name)
         if is_official:
             return "official", alias
 
@@ -136,9 +130,9 @@ class SocaityServiceRegistry(Registry):
         return f"community/{user}", alias
 
     @staticmethod
-    def _derive_class_name(service_def: ServiceDefinition) -> str:
+    def _derive_class_name(service_def: ServiceDefinition, third_party_provider: Optional[str] = None) -> str:
         display_name = service_def.display_name or service_def.id
-        if SocaityServiceRegistry._is_replicate(service_def) and "/" in display_name:
+        if third_party_provider and third_party_provider.lower() != "socaity" and "/" in display_name:
             _, model_name = display_name.split("/", 1)
             return normalize_name_for_py(model_name)
         return normalize_name_for_py(display_name)
@@ -152,11 +146,12 @@ class SocaityServiceRegistry(Registry):
 
         is_official = item.get("is_official", False)
         creator_display_name = self._extract_creator_display_name(item)
+        third_party_provider = item.get("third_party_provider")
 
         module_name = normalize_name_for_py(service_def.id)
         save_path = self.SERVICES_DIR / f"{module_name}.py"
-        class_name = self._derive_class_name(service_def)
-        namespace, alias = self._resolve_namespace(service_def, is_official, creator_display_name)
+        class_name = self._derive_class_name(service_def, third_party_provider)
+        namespace, alias = self._resolve_namespace(service_def, is_official, creator_display_name, third_party_provider)
 
         print(f"  Installing {service_def.display_name} -> {namespace}/{alias}")
 
@@ -197,6 +192,7 @@ class SocaityServiceRegistry(Registry):
 
         is_official = item.get("is_official", False)
         creator_display_name = self._extract_creator_display_name(item)
+        third_party_provider = item.get("third_party_provider")
 
         # Reconstruct a minimal ServiceDefinition for namespace resolution
         try:
@@ -205,7 +201,7 @@ class SocaityServiceRegistry(Registry):
                 if isinstance(service_def_data, dict)
                 else service_def_data
             )
-            namespace, _ = self._resolve_namespace(minimal_def, is_official, creator_display_name)
+            namespace, _ = self._resolve_namespace(minimal_def, is_official, creator_display_name, third_party_provider)
         except Exception:
             namespace = "community/unknown"
 

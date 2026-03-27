@@ -55,14 +55,21 @@ def test_install_of_services():
     """
     Services to install
     """
-    services_to_install = ["black-forest-labs/flux-schnell", "deepseek-ai/deepseek-v3", "tencent/hunyuan-video", "prunaai/hunyuan3d-2", "carlos/face2face"]
+    services_to_install = [
+        "black-forest-labs/flux-schnell",
+        "deepseek-ai/deepseek-v3",
+        "tencent/hunyuan-video",
+        "prunaai/hunyuan3d-2",
+        "carlos/face2face",
+        "https://socaity.ai/APIs/service/third-party/29e32fbf-5e82-40f3-b4c7-80bd5039c752/baeb143a-882c-473c-a321-d2f13eecc710"
+    ]
     for service in services_to_install:
         captured_out, captured_err = _capture_cli_output(["socaity", "-i", service])
         assert f"Installing service: {service}..." in captured_out or f"Installing service: {service}..." in captured_err
 
 
 if __name__ == "__main__":
-    #test_socaity_cli_help()
-    #test_socaity_install_function_exposed()
+    test_socaity_cli_help()
+    test_socaity_install_function_exposed()
     test_install_of_services()
     print("All tests passed")
