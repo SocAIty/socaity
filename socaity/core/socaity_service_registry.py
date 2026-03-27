@@ -5,6 +5,7 @@ from pathlib import Path
 from datetime import datetime, timedelta
 
 from apipod_registry import Registry, ServiceDefinition
+from apipod_registry.definitions.service_definitions import ReplicateServiceAddress
 from apipod_registry.service_registry.file_system_registry import FileSystemStore
 from apipod_registry.utils.normalization import normalize_name_for_py
 from fastsdk.sdk_factory import create_sdk
@@ -13,6 +14,8 @@ from socaity.core.socaity_backend_client import SocaityBackendClient
 IMPORT_PATTERN = re.compile(
     r"^from\s+socaity\.sdk\.services\.(\w+)\s+import\s+(\w+)(?:\s+as\s+(\w+))?$"
 )
+
+REPLICATE_SPECS = {"replicate", "cog", "cog2"}
 
 
 @dataclass
@@ -54,46 +57,68 @@ class SocaityServiceRegistry(Registry):
     # ---- Public API ----
 
     def install_service(self, service_name_or_id: str) -> None:
-        self.update_package(install_ids=[service_name_or_id])
+        """Install a service by name, UUID, or 'user/service' identifier."""
+        item = self._backend.install_service(service_name_or_id)
+        if not item:
+            print(f"Could not resolve service '{service_name_or_id}'.")
+            return
+        print(f"Installing {service_name_or_id}...")
+        self._dispatch_item(item)
+        self._flush_init_files()
+        self._touch_cache_dir()
 
     def install_all(self) -> None:
-        self.update_package(install_ids=["all"])
+        """Install all available services (not currently supported by backend)."""
+        print("install_all is not supported by the current backend.")
 
     def force_update_package(self) -> None:
         self.update_package(force=True)
 
-    def update_package(self, install_ids: List[str] = None, force: bool = False) -> None:
-        if not force and not self._is_cache_stale() and not install_ids:
+    def update_package(self, force: bool = False) -> None:
+        """Check installed services for updates and apply them."""
+        if not force and not self._is_cache_stale():
             return
 
-        updates = self._backend.update_package(
-            self.service_store.get_version_index(),
-            install_ids=install_ids,
-        )
-        if not updates or not updates.get("updates"):
+        items = self._backend.get_service_updates(self.service_store.get_version_index())
+        if not items:
             return
 
         print("Updating package...")
-        for item in updates["updates"]:
-            if item.get("action") == "delete":
-                self._handle_deletion(item)
-            else:
-                self._handle_update(item)
+        for item in items:
+            self._dispatch_item(item)
 
         self._flush_init_files()
         self._touch_cache_dir()
 
-    # ---- Namespace resolution ----
+    # ---- Routing ----
+
+    def _dispatch_item(self, item: dict) -> None:
+        action = item.get("action")
+        if action == "delete":
+            self._handle_deletion(item)
+        elif action in ("update", "install"):
+            self._handle_update(item)
+        else:
+            print(f"  Unknown action '{action}'. Skipping.")
+
+    # ---- Provider / namespace resolution ----
+
+    @staticmethod
+    def _is_replicate(service_def: ServiceDefinition) -> bool:
+        return (
+            service_def.specification in REPLICATE_SPECS
+            or isinstance(service_def.service_address, ReplicateServiceAddress)
+        )
 
     @staticmethod
     def _resolve_namespace(
-        provider: str,
-        display_name: str,
+        service_def: ServiceDefinition,
         is_official: bool,
-        created_by_user_display_name: str,
+        creator_display_name: str,
     ) -> tuple[str, str]:
-        """Determine (namespace_path_relative_to_SDK_ROOT, alias) for a service."""
-        if provider and provider.lower() == "replicate":
+        """Return (namespace_path_relative_to_SDK_ROOT, alias)."""
+        if SocaityServiceRegistry._is_replicate(service_def):
+            display_name = service_def.display_name or ""
             if "/" in display_name:
                 username, model_name = display_name.split("/", 1)
             else:
@@ -103,16 +128,17 @@ class SocaityServiceRegistry(Registry):
                 normalize_name_for_py(model_name),
             )
 
-        alias = normalize_name_for_py(display_name)
+        alias = normalize_name_for_py(service_def.display_name or service_def.id)
         if is_official:
             return "official", alias
 
-        user = normalize_name_for_py(created_by_user_display_name or "unknown")
+        user = normalize_name_for_py(creator_display_name or "unknown")
         return f"community/{user}", alias
 
     @staticmethod
-    def _derive_class_name(provider: str, display_name: str) -> str:
-        if provider and provider.lower() == "replicate" and "/" in display_name:
+    def _derive_class_name(service_def: ServiceDefinition) -> str:
+        display_name = service_def.display_name or service_def.id
+        if SocaityServiceRegistry._is_replicate(service_def) and "/" in display_name:
             _, model_name = display_name.split("/", 1)
             return normalize_name_for_py(model_name)
         return normalize_name_for_py(display_name)
@@ -124,14 +150,13 @@ class SocaityServiceRegistry(Registry):
         if not service_def:
             return
 
-        provider = item.get("provider", "socaity")
-        is_official = item.get("is_official", False) and provider.lower() != "replicate"
-        created_by = item.get("created_by_user_display_name", "")
+        is_official = item.get("is_official", False)
+        creator_display_name = self._extract_creator_display_name(item)
 
         module_name = normalize_name_for_py(service_def.id)
         save_path = self.SERVICES_DIR / f"{module_name}.py"
-        class_name = self._derive_class_name(provider, service_def.display_name)
-        namespace, alias = self._resolve_namespace(provider, service_def.display_name, is_official, created_by)
+        class_name = self._derive_class_name(service_def)
+        namespace, alias = self._resolve_namespace(service_def, is_official, creator_display_name)
 
         print(f"  Installing {service_def.display_name} -> {namespace}/{alias}")
 
@@ -156,24 +181,36 @@ class SocaityServiceRegistry(Registry):
 
     def _handle_deletion(self, item: dict) -> None:
         service_def_data = item.get("service_definition")
+        message = item.get("message", "")
+
         if not service_def_data:
-            print("  No service definition for deletion. Skipping.")
+            # Deletion without a service_definition — only a message, no file to remove.
+            print(f"  Delete notice: {message}")
             return
 
         if isinstance(service_def_data, dict):
             service_id = service_def_data.get("id")
-            display_name = service_def_data.get("display_name", "")
+            display_name = service_def_data.get("display_name", service_id)
         else:
             service_id = service_def_data.id
             display_name = service_def_data.display_name
 
-        provider = item.get("provider", "socaity")
         is_official = item.get("is_official", False)
-        created_by = item.get("created_by_user_display_name", "")
+        creator_display_name = self._extract_creator_display_name(item)
+
+        # Reconstruct a minimal ServiceDefinition for namespace resolution
+        try:
+            minimal_def = (
+                ServiceDefinition(**service_def_data)
+                if isinstance(service_def_data, dict)
+                else service_def_data
+            )
+            namespace, _ = self._resolve_namespace(minimal_def, is_official, creator_display_name)
+        except Exception:
+            namespace = "community/unknown"
 
         module_name = normalize_name_for_py(service_id)
         service_file = self.SERVICES_DIR / f"{module_name}.py"
-        namespace, _ = self._resolve_namespace(provider, display_name, is_official, created_by)
 
         print(f"  Deleting {display_name} from {namespace}")
 
@@ -190,7 +227,7 @@ class SocaityServiceRegistry(Registry):
     # ---- Init-file management ----
 
     def _flush_init_files(self) -> None:
-        """Apply all pending additions/deletions to the relevant namespace __init__.py files."""
+        """Apply all pending additions/deletions to namespace __init__.py files."""
         affected = set(self._namespace_additions) | set(self._namespace_deletions)
 
         for namespace in affected:
@@ -217,7 +254,6 @@ class SocaityServiceRegistry(Registry):
 
     @staticmethod
     def _load_namespace_imports(init_file: Path) -> Dict[str, ImportEntry]:
-        """Parse a namespace __init__.py into {alias: ImportEntry}."""
         entries: Dict[str, ImportEntry] = {}
         if not init_file.exists():
             return entries
@@ -229,7 +265,6 @@ class SocaityServiceRegistry(Registry):
 
     @staticmethod
     def _resolve_alias_conflict(alias: str, existing: Dict[str, ImportEntry], module_name: str) -> str:
-        """Return alias unchanged if no conflict, otherwise append _1, _2, etc."""
         if alias not in existing or existing[alias].module_name == module_name:
             return alias
         counter = 1
@@ -265,7 +300,6 @@ class SocaityServiceRegistry(Registry):
         self._write_sdk_init()
 
     def _ensure_namespace_package(self, namespace: str) -> Path:
-        """Ensure every segment of the namespace path is a proper Python package."""
         current = self.SDK_ROOT
         for part in Path(namespace).parts:
             current = current / part
@@ -281,11 +315,20 @@ class SocaityServiceRegistry(Registry):
     def _extract_service_def(item: dict) -> Optional[ServiceDefinition]:
         data = item.get("service_definition")
         if not data:
-            print("  No service definition in update item. Skipping.")
+            print(f"  No service definition in item: {item.get('message', '')}. Skipping.")
             return None
         if isinstance(data, dict):
             return ServiceDefinition(**data)
         return data
+
+    @staticmethod
+    def _extract_creator_display_name(item: dict) -> str:
+        created_by = item.get("created_by")
+        if not created_by:
+            return ""
+        if isinstance(created_by, dict):
+            return created_by.get("display_name", "")
+        return getattr(created_by, "display_name", "")
 
     def _is_cache_stale(self) -> bool:
         if not self.CACHE_DIR.exists():
@@ -305,3 +348,4 @@ class SocaityServiceRegistry(Registry):
 if __name__ == "__main__":
     registry = SocaityServiceRegistry()
     registry.update_package(force=True)
+

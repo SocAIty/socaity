@@ -1,7 +1,7 @@
 import sys
 from socaity.cli import main
 import socaity
-from socaity.sdk import face2face
+
 
 
 def _capture_cli_output(args):
@@ -24,7 +24,10 @@ def _capture_cli_output(args):
         sys.argv = old_argv
 
     val, err = stdout_capture.getvalue(), stderr_capture.getvalue()
-    print(f"stdout: {val}, stderr: {err}")
+    if err:
+        print(f"{val} , stderr: {err}")
+    if val:
+        print(val)
 
     return val, err
 
@@ -52,7 +55,7 @@ def test_install_of_services():
     """
     Services to install
     """
-    services_to_install = ["black-forest-labs/flux-schnell", "deepseek-ai/deepseek-v3", "tencent/hunyuan-video", "prunaai/hunyuan3d-2"]
+    services_to_install = ["black-forest-labs/flux-schnell", "deepseek-ai/deepseek-v3", "tencent/hunyuan-video", "prunaai/hunyuan3d-2", "carlos/face2face"]
     for service in services_to_install:
         captured_out, captured_err = _capture_cli_output(["socaity", "-i", service])
         assert f"Installing service: {service}..." in captured_out or f"Installing service: {service}..." in captured_err
