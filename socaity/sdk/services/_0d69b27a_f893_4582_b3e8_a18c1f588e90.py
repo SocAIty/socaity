@@ -1,7 +1,7 @@
 from fastsdk import FastClient, APISeex
-from typing import Any, List, Literal, Union, Dict
+from typing import Dict, Literal, Union, Any, List
 
-from media_toolkit import VideoFile, MediaFile, ImageFile
+from media_toolkit import ImageFile, VideoFile, MediaFile
 
 
 class face2face(FastClient):
