@@ -16,7 +16,7 @@ dependencies = [
     "tqdm",
     "httpx",
     "fastsdk>=0.2.8",
-    "apipod-registry>=0.0.3"
+    "apipod-registry>=0.0.3",
     "media-toolkit>=00.02.22",
     "singleton_decorator==1.0.0"
 ]
