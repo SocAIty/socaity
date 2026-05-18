@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.ummtushar.pilot import pilot

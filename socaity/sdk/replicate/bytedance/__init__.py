@@ -1,3 +1,1 @@
-from socaity.sdk.replicate.bytedance.hyper_flux_16step import hyper_flux_16step
-from socaity.sdk.replicate.bytedance.hyper_flux_8step import hyper_flux_8step
-from socaity.sdk.replicate.bytedance.sdxl_lightning_4step import sdxl_lightning_4step
+from socaity.sdk.services._512c2660_3fdd_408e_8d24_ff4ba89a2ceb import sdxl_lightning_4step

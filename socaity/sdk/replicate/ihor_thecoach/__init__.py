@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.ihor_thecoach.ihor2 import ihor2

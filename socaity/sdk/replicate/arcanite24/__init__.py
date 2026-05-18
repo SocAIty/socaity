@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.arcanite24.animation2k_flux import animation2k_flux

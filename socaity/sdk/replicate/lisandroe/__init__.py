@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.lisandroe.loralisandro import loralisandro

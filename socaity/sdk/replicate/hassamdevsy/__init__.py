@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.hassamdevsy.mask2former import mask2former

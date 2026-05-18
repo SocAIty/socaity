@@ -1,2 +1,1 @@
-from socaity.sdk.replicate.deepseek_ai.deepseek_r1 import deepseek_r1
-from socaity.sdk.replicate.deepseek_ai.deepseek_v3 import deepseek_v3
+from socaity.sdk.services._50100977_19d8_4d59_8a5a_50d7dbe7ffc7 import deepseek_v3

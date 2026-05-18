@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.wowohello.fat_funjin import fat_funjin

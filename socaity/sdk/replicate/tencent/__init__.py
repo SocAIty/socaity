@@ -1,4 +1,1 @@
-from socaity.sdk.replicate.tencent.hunyuan3d_2mv import hunyuan3d_2mv
-from socaity.sdk.replicate.tencent.hunyuan_video import hunyuan_video
-from socaity.sdk.replicate.tencentarc.animesr import animesr
-from socaity.sdk.replicate.tencentarc.gfpgan import gfpgan
+from socaity.sdk.services.a840f561_6a97_47e5_96f6_b41d8e8749a7 import hunyuan_video

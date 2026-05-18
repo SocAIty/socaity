@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.ludocomito.flux_caravaggio import flux_caravaggio

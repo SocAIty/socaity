@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.cddietz.michael import michael

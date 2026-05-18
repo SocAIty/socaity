@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.enkey08.ganpatibappa import ganpatibappa

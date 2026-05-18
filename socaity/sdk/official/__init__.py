@@ -1,2 +1,1 @@
-from socaity.sdk.official.face2face import face2face
-from socaity.sdk.official.speechcraft import speechcraft
+from socaity.sdk.services._0d69b27a_f893_4582_b3e8_a18c1f588e90 import face2face

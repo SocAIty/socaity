@@ -4,7 +4,8 @@
         "${workspaceFolder}/../fastsdk",
         "${workspaceFolder}/../fastCloud",
         "${workspaceFolder}/../media-toolkit",
-        "${workspaceFolder}/../meseex"
+        "${workspaceFolder}/../meseex",
+        "${workspaceFolder}/../APIPodRegistry"
     ],
     "python.analysis.autoImportCompletions": true,
     "python.analysis.indexing": true,
@@ -23,6 +24,10 @@
         },
         {
             "name": "meseex",
+            "depth": 5
+        }, 
+        {
+            "name": "apipod_registry",
             "depth": 5
         }
     ],

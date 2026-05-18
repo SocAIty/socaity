@@ -21,7 +21,7 @@ Influenced by the artistic styles of Simon Kenny, Giorgetto Giugiaro, Brian Stel
         """
     )
     fj = flux(
-        prompt=prompt, aspect_ratio="9:16", num_outputs=4, num_inference_steps=4, output_format="png",
+        prompt=prompt, aspect_ratio="9:16", num_outputs=1, num_inference_steps=4, output_format="png",
         disable_safety_checker=True, go_fast=False, seed=5
     )
 

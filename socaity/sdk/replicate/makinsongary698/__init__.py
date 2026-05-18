@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.makinsongary698.jh import jh

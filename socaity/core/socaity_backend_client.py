@@ -1,28 +1,48 @@
-import httpx
-from typing import Dict
 import os
+from typing import Dict, List, Optional
+
+import httpx
 
 
 class SocaityBackendClient:
     def __init__(self):
-        self.infer_backend_url = os.getenv("SOCAITY_INFER_BACKEND_URL", "https://api.socaity.ai/v1/")
+        self.backend_url = os.getenv("SOCAITY_BACKEND_URL", "https://webapi.socaity.ai/")
         self.api_key = os.getenv("SOCAITY_API_KEY")
 
-    def parse_api_response(self, response: httpx.Response):
-        if response.status_code == 200:
-            return response.json()
-        else:
-            print(f"API request failed with status code {response.status_code}")
-            return None
-        
-    def update_package(self, model_id_version: Dict[str, str]) -> Dict:
-        """Get comprehensive package update with all necessary information for SDK generation"""
-        client = httpx.Client()
-        headers = {"Authorization": f"Bearer {self.api_key}"} if self.api_key is not None else None
+    @property
+    def _auth_headers(self) -> Optional[Dict]:
+        return {"Authorization": f"Bearer {self.api_key}"} if self.api_key else None
+
+    def _post(self, path: str, payload=None, params: Dict = None) -> Optional[any]:
         try:
-            response = client.post(self.infer_backend_url + "sdk/update_package", json=model_id_version, headers=headers, timeout=400)
-            return self.parse_api_response(response)
-        except Exception as e:
-            print(f"Could not update package: {e}")
+            with httpx.Client() as client:
+                response = client.post(
+                    self.backend_url + path,
+                    json=payload,
+                    params=params,
+                    headers=self._auth_headers,
+                    timeout=400,
+                )
+            if response.status_code == 200:
+                return response.json()
+            print(f"Request to {path} failed with status {response.status_code}")
             return None
-        
+        except Exception as e:
+            print(f"Request to {path} failed: {e}")
+            return None
+
+    def get_service_updates(self, version_index: Dict[str, str]) -> List[Dict]:
+        """Check installed services for updates or deletions.
+
+        Sends the current {service_hosting_id: version} map and receives a list of
+        PackageUpdateItems for services that are outdated or no longer exist.
+        """
+        payload = [
+            {"service_hosting_id": sid, "version": ver}
+            for sid, ver in version_index.items()
+        ]
+        return self._post("v1/sdk/update_package", payload) or []
+
+    def install_service(self, service_identifier: str) -> Optional[Dict]:
+        """Resolve and fetch a service by name, UUID, or 'user/service' identifier."""
+        return self._post("v1/sdk/install_service", params={"service": service_identifier})

@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.karlvann.karl import karl

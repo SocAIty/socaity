@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.ferunelli.chadmeme import chadmeme

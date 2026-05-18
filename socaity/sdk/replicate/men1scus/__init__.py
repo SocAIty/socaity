@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.men1scus.birefnet import birefnet

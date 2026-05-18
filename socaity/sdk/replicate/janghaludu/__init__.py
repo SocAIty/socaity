@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.janghaludu.kocchaga import kocchaga

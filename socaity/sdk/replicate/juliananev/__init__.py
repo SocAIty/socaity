@@ -1,1 +1,0 @@
-from socaity.sdk.replicate.juliananev.frutiger_aero import frutiger_aero

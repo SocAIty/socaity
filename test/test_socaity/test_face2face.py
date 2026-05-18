@@ -74,6 +74,6 @@ def test_face2face():
 
 
 if __name__ == "__main__":
-    # test_single_face_swap()
-    test_video_swap()
-    test_embedding_face_swap()
+    test_single_face_swap()
+    # test_video_swap()
+    # test_embedding_face_swap()
