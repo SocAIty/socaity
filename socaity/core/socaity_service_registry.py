@@ -50,7 +50,6 @@ class SocaityServiceRegistry(Registry):
         self._namespace_additions: Dict[str, List[ImportEntry]] = {}
         self._namespace_deletions: Dict[str, Set[str]] = {}
         self._ensure_sdk_structure()
-        self.update_package()
 
     # ---- Public API ----
 
