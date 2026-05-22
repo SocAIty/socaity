@@ -39,8 +39,10 @@ def test_socaity_cli_help():
     """
     captured_out, captured_err = _capture_cli_output(["socaity", "--help"])
 
-    assert "usage:" in captured_out or "usage:" in captured_err
-    assert "Install a specific AI service or 'all'" in captured_out or "Install a specific AI service or 'all'" in captured_err
+    combined = captured_out + captured_err
+    assert "usage:" in combined
+    assert "login" in combined.lower()
+    assert "scan" in combined.lower()
 
 
 def test_socaity_install_function_exposed():
@@ -51,25 +53,22 @@ def test_socaity_install_function_exposed():
     assert callable(socaity.install), "socaity.install should be callable"
 
 
-def test_install_of_services():
-    """
-    Services to install
-    """
-    services_to_install = [
-        "black-forest-labs/flux-schnell",
-        "deepseek-ai/deepseek-v3",
-        "tencent/hunyuan-video",
-        "prunaai/hunyuan3d-2",
-        "carlos/face2face",
-        "https://socaity.ai/APIs/service/third-party/29e32fbf-5e82-40f3-b4c7-80bd5039c752/baeb143a-882c-473c-a321-d2f13eecc710"
-    ]
-    for service in services_to_install:
-        captured_out, captured_err = _capture_cli_output(["socaity", "-i", service])
-        assert f"Installing service: {service}..." in captured_out or f"Installing service: {service}..." in captured_err
+def test_install_requires_login():
+    captured_out, captured_err = _capture_cli_output(["socaity", "install", "black-forest-labs/flux-schnell"])
+    combined = captured_out + captured_err
+    assert "Not logged in" in combined
+    assert "socaity login" in combined
+
+
+def test_scan_requires_login():
+    captured_out, captured_err = _capture_cli_output(["socaity", "scan"])
+    combined = captured_out + captured_err
+    assert "Not logged in" in combined
 
 
 if __name__ == "__main__":
     test_socaity_cli_help()
     test_socaity_install_function_exposed()
-    test_install_of_services()
+    test_install_requires_login()
+    test_scan_requires_login()
     print("All tests passed")
