@@ -91,7 +91,7 @@ Examples:
     login_parser.add_argument(
         "--frontend-url",
         default=None,
-        help="Web UI base URL for sign-in (default: SOCAITY_FRONTEND_URL or https://www.socaity.ai)",
+        help="Web UI base URL for sign-in (default: SOCAITY_FRONTEND_URL or https://socaity.ai)",
     )
 
     subparsers.add_parser("logout", help="Remove stored credentials")

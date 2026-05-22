@@ -26,7 +26,10 @@ def _backend_base_url() -> str:
     return os.environ.get("SOCAITY_BACKEND_URL", DEFAULT_BACKEND_URL).rstrip("/")
 
 
-def _frontend_base_url() -> str:
+def _frontend_base_url(frontend_url: Optional[str] = None) -> str:
+    if frontend_url is not None:
+        value = frontend_url.strip()
+        return value.rstrip("/") if value else DEFAULT_FRONTEND_URL
     return os.environ.get("SOCAITY_FRONTEND_URL", DEFAULT_FRONTEND_URL).rstrip("/")
 
 
@@ -66,9 +69,7 @@ def start_cli_login(
 ) -> Dict[str, Any]:
     base = (backend_url or _backend_base_url()).rstrip("/")
     payload: Dict[str, Any] = {"expires_in_seconds": expires_in_seconds}
-    frontend = (frontend_url or _frontend_base_url()).strip()
-    if frontend:
-        payload["frontend_base_url"] = frontend.rstrip("/")
+    payload["frontend_base_url"] = _frontend_base_url(frontend_url)
     with httpx.Client(timeout=20.0) as client:
         response = client.post(
             _web_api_url(base) + "cli-auth/start",
@@ -118,12 +119,11 @@ def run_login(
     frontend_url: Optional[str] = None,
 ) -> Credentials:
     base = (backend_url or _backend_base_url()).rstrip("/")
-    frontend = (frontend_url or _frontend_base_url()).rstrip("/")
 
     print("Login to Socaity")
     session = start_cli_login(
         backend_url=base,
-        frontend_url=frontend,
+        frontend_url=frontend_url,
     )
     verification_uri = session["verification_uri"]
     request_id = session["request_id"]
