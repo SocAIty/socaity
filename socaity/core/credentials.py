@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 DEFAULT_BACKEND_URL = "https://webapi.socaity.ai"
-DEFAULT_FRONTEND_URL = "http://localhost:3000"
+DEFAULT_FRONTEND_URL = "https://wonderful-wave-0a392ca03.2.azurestaticapps.net/"
 
 _LEGACY_TOKEN_FILE = Path.home() / ".apipod" / "token"
 
