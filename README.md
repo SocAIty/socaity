@@ -1,197 +1,113 @@
-  <h1 align="center" style="margin-top:-25px">SocAIty SDK</h1>
 <p align="center">
-  <img align="center" src="docs/socaity_icon.png" height="200" />
+  <img src="docs/assets/banner.png" alt="SocAIty SDK. Any AI model. One call." width="100%" />
 </p>
-  <h2 align="center" style="margin-top:-10px">Build AI-powered applications with ease </h2>
 
+<p align="center">
+  <a href="https://pypi.org/project/socaity/"><img src="https://img.shields.io/pypi/v/socaity?labelColor=000000&color=76B900" alt="PyPI version"></a>
+  <a href="https://pypi.org/project/socaity/"><img src="https://img.shields.io/pypi/pyversions/socaity?labelColor=000000&color=76B900" alt="Python versions"></a>
+  <a href="https://www.socaity.ai"><img src="https://img.shields.io/badge/docs-socaity.ai-76B900?labelColor=000000" alt="Docs"></a>
+</p>
 
-The SDK provides generative models and AI tools across all domains including text, audio, image and more. 
-Our APIs and SDK allows you to run models as simple python functions. No GPU or AI knowledge required.
-Build your dream application by composing different models together.
+<h3 align="center">Any AI model. One call. Run AI on your terms.</h3>
 
-If you are a Software Engineer, Game Developer, Artist, Content Creator and you want to automate with AI this SDK is for you.
+<p align="center">
+  441 hosted models across image, audio, video and text, called like plain Python functions.<br>
+  No GPU, no infrastructure, no AI background required.
+</p>
 
-For an overview of all models and to obtain an API key visit [socaity.ai](https://www.socaity.ai)
+## Install
 
-Run models as if they were python functions nomatter where they are deployed:
-
-You can focus on your app, while we handle all the complicated stuff under the hood.
-
-<hr />
-
-Quicklinks:
-- [Quick Start](#quick-start) contains a simple example to get you started
-- [Models Zoo](#model-zoo) an overview of all models.
-- [Working locally or with other providers](#working-locally-or-with-other-providers)
-
-<hr />
-
-# Getting started
-
-## Installation
-Install the package from PyPi
 ```bash
 pip install socaity
 ```
 
-### Installing Models
-The SDK now supports selective installation of models to keep your environment clean.
-By default, only official models are updated/installed. You can install additional models via CLI or Python.
+Grab a key at [socaity.ai](https://www.socaity.ai) and set it once:
 
-**CLI Usage:**
 ```bash
-# Install a specific model
-socaity -install model_name_or_id
-# OR
-socaity -i model_name_or_id
-
-# Install all available models
-socaity -i all
-
-# Install via python module
-python -m socaity install model_name_or_id
+export SOCAITY_API_KEY="sk_..."
 ```
 
-**Python Usage:**
+## Quick start
+
+One call installs the model, runs it, and returns a typed result:
+
 ```python
 import socaity
 
-# Install a specific model
-socaity.install("model_name_or_id")
-
-# Install all models
-socaity.install("all")
+img = socaity.run("black-forest-labs/flux-schnell", prompt="a neon fox")
+img.save("fox.png")
 ```
 
-## Authentication
+That is the whole loop. `socaity.run` reads your key from `SOCAITY_API_KEY`, so there is nothing else to wire up.
 
-For using socaity.ai services you need to set the environment variable `SOCAITY_API_KEY`.
-You can obtain an API key from [socaity.ai](https://www.socaity.ai) after signing up.
-Now you are ready to use the SDK.
+## Working with models directly
 
-**Alternatively** you can set the API key in your code when using the SDK. 
-We don't recommend this, as it a common mistake to push your code including your API key to a public repository.
-```python
-from socaity import face2face
-f2f = face2face(api_key="sk..your_api_key")
-```
-# Quick start
+`run` is the shortcut. When you want the typed client (autocomplete, named parameters, reuse), install the model once and import it:
 
-Import a model from the model-zoo or just use the simple API (text2img, text2speech etc.)
-```python
-from socaity import speechcraft
-audiogen = speechcraft(api_key=os.getenv("SOCAITY_API_KEY"))
-```
-Then you can use it as a function
-```python
-audio_job = audiogen.text2voice(text="welcome to generative ai", voice="hermine")
-audio_job.get_result().save("welcome.mp3")
-```
-
-### Example 1: Combine llm, text2img and text2speech
-
-We will use different models to showcase how to create for example a perfect combination for a blog.
 ```python
 import os
-from socaity import speechcraft
-from socaity.sdk.replicate.deepseek_ai import deepseek_v3
-from socaity.sdk.replicate.black_forest_labs import flux_schnell
+import socaity
 
-sk_api_key = os.getenv("SOCAITY_API_KEY")
+socaity.install("deepseek-ai/deepseek-v3")        # generates the typed client
 
-deepseek = deepseek_v3(api_key=sk_api_key)
-poem = deepseek(prompt="Write a poem with 3 sentences why a SDK is so much better than plain web requests.").get_result()
-poem = "".join(poem)
+from socaity.replicate.deepseek_ai import deepseek_v3
 
-audiogen = speechcraft(api_key=sk_api_key)
-audio = audiogen.text2voice(text=poem, voice="hermine")
-
-my_image_prompt = """
-A robot enjoying a stunning sunset in the alps. In the clouds is written in big letters "SOCAITY SDK".
-The sky is lit with deep purple and lime colors. It is a wide-shot.
-The artwork is striking and cinematic, showcasing a vibrant neon-green lime palette, rendered in an anime-style illustration with 4k detail. 
-Influenced by the artistic styles of Simon Kenny, Giorgetto Giugiaro, Brian Stelfreeze, and Laura Iverson.
-"""
-
-flux = flux_schnell(api_key=sk_api_key)
-images = flux(prompt=my_image_prompt, num_outputs=1, seed=12).get_result()
-for i, img in enumerate(images):
-    img.save(f"sdk_poem_{i}.png")
-
-audio.get_result().save("sdk_poem.mp3")
+llm = deepseek_v3(api_key=os.getenv("SOCAITY_API_KEY"))
+job = llm(prompt="write a haiku about cold starts")   # returns a job, does not block
+text = "".join(str(chunk) for chunk in job.get_result())
 ```
-This results in something like this:
 
-https://github.com/user-attachments/assets/978ee377-3ceb-4a87-add5-daee15306231
+Every call returns a job immediately, so you can start several and collect them later. Hosted models live under `socaity.replicate.<vendor>`, with names normalized to valid Python (for example `black-forest-labs` becomes `black_forest_labs`).
 
-### Jobs vs. Results
+You can also install from the command line (run `socaity login` once first):
 
-When you invoke an service, internally we use threading and asyncio to check the socaity endpoints for the result.
-This makes it possible to run multiple services in parallel and is very efficient.
+```bash
+socaity install black-forest-labs/flux-schnell
+```
+
+## Results and files
+
+A call with a single output returns one typed object. Ask for more and you get a list:
+
 ```python
-# the base method always returns a job
-d_job = deepseek_v3("what a time to be alive")
-# in the meantime you can call other services or do what you want
-... do other things here ... 
-# when you need the result you can call get_result()
-poem = d_job.get_result()
+imgs = socaity.run("black-forest-labs/flux-schnell", prompt="a neon fox", num_outputs=4)
+for i, img in enumerate(imgs):
+    img.save(f"fox_{i}.png")
 ```
 
-# Model zoo
+Inputs and outputs are typed media objects (`ImageFile`, `AudioFile`, `VideoFile`), importable straight from the package:
 
-A curated list of hosted models you always find on [socaity.ai](https://www.socaity.ai).
+```python
+from socaity import ImageFile
 
-To start here's a list of some of the models you can use with the SDK.
-Just import them with ```from socaity import ...``` to use them.
+portrait = ImageFile().from_file("portrait.jpg")
+```
 
-### Text domain
-- DeepSeek models
-- OpenAPI models
-- LLama3 Family (8b, 13b, 70b models)
+## Models
 
-### Image domain
-- FluxSchnell (Text2Image)
-- SAM2 (Image and video segmentation)
-- TencentArc Photomaker
+441 hosted models, Replicate backed, across every domain:
 
-### Audio domain
-- [SpeechCraft](https://github.com/SocAIty/SpeechCraft) (Text2Voice, VoiceCloning)
+| Domain | Examples |
+|--------|----------|
+| Image  | `black-forest-labs/flux-schnell`, `tencentarc/gfpgan` |
+| Text   | `deepseek-ai/deepseek-v3`, `meta/meta-llama-3-70b` |
+| Audio  | `jaaari/kokoro-82m`, `vaibhavs10/incredibly-fast-whisper` |
+| Video  | `tencent/hunyuan-video` |
 
+The full, always current list lives at [socaity.ai](https://www.socaity.ai).
 
-Note that we have just launched the startup. Expect new models coming highly frequently.
+## Local and self hosted
 
+Open source services like [face2face](https://github.com/SocAIty/face2face) and [SpeechCraft](https://github.com/SocAIty/SpeechCraft) are not in the hosted catalog. Run them yourself with [APIPod](https://github.com/SocAIty/APIPod) and drive them through the same SDK. Anything [fastSDK](https://github.com/SocAIty/fastSDK) compatible (OpenAPI, APIPod, Replicate, RunPod) plugs in.
 
-# Working locally or with other providers
+| Where it runs | Trade off |
+|---------------|-----------|
+| Hosted on socaity.ai | zero setup, always current, slight cost |
+| Local on your machine | free and open source, needs a GPU |
+| Hybrid, RunPod or local plus socaity | full control, more effort |
 
-Any service that is [fastSDK](https://github.com/SocAIty/fastsdk) compatible  (openAPI / [APIPOD](https://github.com/SocAIty/APIPod), replicate and [runpod](https://www.runpod.io/)) 
-can be used with this package.
+We handle the DevOps. You ship the app.
 
-Model deployment type    | Description                                                    | Pros                                           | Cons
--------------            |----------------------------------------------------------------|------------------------------------------------| ------------
-Locally         | Install genAI packages on your machine and use it with socaity | Free, Open-Source                              | GPU needed, more effort
-Hosted  | Use the AIs hosted on socaity servers or of another provider.  | Runs everywhere, Ultra-easy, always up to date | Slightly higher cost
-Hybrid | Deploy on runpod, locally and use socaity services.            | Full flexibility                               | Effort
+## Status
 
-
-
-
-### Hosting a service on Socaity.ai
-
-Any service created with [apipod]() can be hosted on socaity.ai for free if made public. You can even earn some credits.
-The service will then be added to the socaity SDK.
-Checkout [https://www.socaity.ai] for more information.
-
-Furthermore: any service that is created with [APIPod](https://github.com/SocAIty/APIPod) can be easily used in combination with [FastSDK](https://github.com/SocaIty/fastsdk).
-Checkout the [FastSDK](https://github.com/SocaIty/fastsdk) documentation for more information.
-
-
-# Important Note
-PACKAGE IS IN ALPHA RELEASE. 
-EXPECT RAPID CHANGES TO SYNTAX AND FUNCTIONALITY.
-
-# Contribute
-
-Any help with maintaining and extending the package is welcome. 
-Feel free to open an issue or a pull request.
-
-## PLEASE LEAVE A :star: TO SUPPORT THIS WORK
+Alpha. Expect rapid changes to syntax and surface. Issues and pull requests are welcome.
