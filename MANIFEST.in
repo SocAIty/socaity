@@ -1,0 +1,4 @@
+# Exclude runtime-generated SDK artifacts (created after install/update).
+recursive-exclude socaity/sdk/cache *
+recursive-exclude socaity/sdk/services *.py
+include socaity/sdk/services/__init__.py
