@@ -1,17 +1,26 @@
-# Examples and Use-Cases
+# Examples and use cases
 
-The future of the Internet and the economy is generative. However, there's not one model that fits all.
-For real world applications, you need to chain different models together combine them with other services.
+Most real applications chain a few models together. With `socaity.run` each step is a single call, so a whole pipeline stays readable.
 
-AI NPC Agents - How to:
-Here's a common example of a game developer who wants to have AI NPC agents in his game. His workflow:
-1. Generate the text the NPC should say.
-2. use a `text2speech` model to synthesize speech for the NPC.
-3. uses the `voice2voice` model to change the voice of the NPC to one of his artists. 
-4. uses `audio2face` model to generate facial animations for the NPC.
+## Narrated explainer
 
-Automated video content - How to:
-1. Create a thumbnail for a video with `text2image`
-2. Swap the faces in the video with `face2face`
-3. Generate a voice-over for the video with `text2voice`
+Write the script with an LLM, generate a cover image, and synthesize a voiceover. Three calls, three models:
 
+```python
+import socaity
+
+script = "".join(str(chunk) for chunk in socaity.run(
+    "deepseek-ai/deepseek-v3",
+    prompt="Write two sentences explaining serverless GPU hosting.",
+))
+
+cover = socaity.run("black-forest-labs/flux-schnell", prompt="abstract lime on black, minimal")
+voice = socaity.run("jaaari/kokoro-82m", text=script, voice="af_bella")
+
+cover.save("cover.png")
+voice.save("voiceover.wav")
+```
+
+`socaity.run` reads your `SOCAITY_API_KEY` from the environment and returns a typed result per model: text chunks from the LLM, an `ImageFile` from flux, an `AudioFile` from kokoro.
+
+Pick any of the 441 models at [socaity.ai](https://www.socaity.ai) and pass its inputs the same way.
