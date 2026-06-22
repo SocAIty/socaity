@@ -1,6 +1,6 @@
   <h1 align="center" style="margin-top:-25px">SocAIty SDK</h1>
 <p align="center">
-  <img align="center" src="docs/socaity_icon.png" height="200" />
+  <img align="center" src="docs/socaity_py_icon.png" height="200" />
 </p>
   <h2 align="center" style="margin-top:-10px">Build AI-powered applications with ease </h2>
 
