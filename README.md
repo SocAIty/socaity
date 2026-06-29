@@ -66,7 +66,7 @@ socaity.install("all")
 ## Authentication
 
 For using socaity.ai services you need to set the environment variable `SOCAITY_API_KEY`.
-You can obtain an API key from [socaity.ai](https://www.socaity.ai) after signing up.
+You can obtain an API key from [socaity.ai](https://www.socaity.ai?utm_source=github&utm_content=socaity-sdk-20-29-06-2026) after signing up.
 Now you are ready to use the SDK.
 
 **Alternatively** you can set the API key in your code when using the SDK. 
