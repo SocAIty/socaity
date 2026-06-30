@@ -134,7 +134,15 @@ job = deepseek_v3("What a time to be alive.")
 result = job.get_result()
 ```
 
-Under the hood, [fastSDK](https://github.com/SocAIty/fastsdk) orchestrates requests through [meseex](https://github.com/SocAIty/meseex), a lightweight job runtime for async I/O and parallel execution.
+**Streaming.** Schema endpoints (chat, TTS, video) accept `stream=True`. Iterate live tokens or bytes, or let `get_result()` assemble the full payload when you skip streaming.
+
+```python
+job = deepseek_v3()(messages=[{"role": "user", "content": "Hello"}], stream=True)
+for chunk in job.stream():
+    print(chunk, end="", flush=True)
+```
+
+Under the hood, [fastSDK](https://github.com/SocAIty/fastsdk) orchestrates requests through [meseex](https://github.com/SocAIty/meseex), a lightweight job runtime for async I/O, parallel execution, and streaming.
 
 ---
 
@@ -211,7 +219,8 @@ Three packages, one pipeline:
 | Package | Role |
 |---|---|
 | **[APIPod](https://github.com/SocAIty/APIPod)** | Build and deploy AI services (server side) |
-| **[fastSDK](https://github.com/SocAIty/fastsdk)** | Connect to any compatible API (client runtime) |
+| **[fastSDK](https://github.com/SocAIty/fastsdk)** | Connect to any compatible API (client runtime, streaming, jobs) |
+| **[socaity-schemas](https://github.com/SocAIty/socaity-schemas)** | Shared Pydantic models for AI payloads and service definitions |
 | **socaity SDK** (this repo) | Curated model zoo + generated clients for socaity.ai |
 
 Build a service with APIPod. Consume it with fastSDK. Import it from socaity when it is in the catalog.
@@ -230,8 +239,9 @@ Build a service with APIPod. Consume it with fastSDK. Import it from socaity whe
 | [fastSDK README](https://github.com/SocAIty/fastsdk) | Generic client: connect, generate stubs, CLI |
 | [APIPod README](https://github.com/SocAIty/APIPod) | Build and deploy your own AI services |
 | [docs/UseCases.md](docs/UseCases.md) | Composition patterns by domain |
+| [TECHNICAL_README.md](TECHNICAL_README.md) | Architecture: catalog sync, namespaces, streaming, schemas |
 
-Deep architecture docs live in each repo's `TECHNICAL_README.md`. The README here stays focused on getting you to a first result.
+Deep architecture docs for fastSDK and APIPod live in each repo's `TECHNICAL_README.md`. The README here stays focused on getting you to a first result.
 
 ---
 

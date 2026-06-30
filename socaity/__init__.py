@@ -1,7 +1,18 @@
 from pathlib import Path
 
 from media_toolkit import MediaFile, ImageFile, VideoFile, AudioFile
-from fastsdk import FastSDK
+from fastsdk import (
+    APISeex,
+    FastClient,
+    FastSDK,
+    connect,
+    gather_results,
+    gather_results_async,
+    generate_stub,
+    inspect_service,
+    register_service,
+)
+from socaity_schemas.service_definitions import ServiceDefinition, SocaityServiceAddress
 from socaity.core.socaity_service_registry import SocaityServiceRegistry
 
 service_registry = FastSDK().service_registry = SocaityServiceRegistry()
@@ -32,4 +43,22 @@ try:
 except ImportError:
     pass
 
-__all__ = ["install", "service_registry", "MediaFile", "ImageFile", "VideoFile", "AudioFile"]
+__all__ = [
+    "install",
+    "service_registry",
+    "MediaFile",
+    "ImageFile",
+    "VideoFile",
+    "AudioFile",
+    "APISeex",
+    "FastClient",
+    "FastSDK",
+    "connect",
+    "gather_results",
+    "gather_results_async",
+    "generate_stub",
+    "inspect_service",
+    "register_service",
+    "ServiceDefinition",
+    "SocaityServiceAddress",
+]

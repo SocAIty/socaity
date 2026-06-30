@@ -4,11 +4,11 @@ from typing import Dict, List, Optional, Set
 from pathlib import Path
 from datetime import datetime, timedelta
 
-from apipod_registry import Registry, ServiceDefinition
-from apipod_registry.definitions.service_definitions import ReplicateServiceAddress
+from apipod_registry import Registry
 from apipod_registry.service_registry.file_system_registry import FileSystemStore
 from apipod_registry.utils.normalization import normalize_name_for_py
-from fastsdk.sdk_factory import create_sdk
+from fastsdk import FastSDK
+from socaity_schemas.service_definitions import ServiceDefinition
 from socaity.core.socaity_backend_client import SocaityBackendClient
 
 IMPORT_PATTERN = re.compile(
@@ -155,11 +155,12 @@ class SocaityServiceRegistry(Registry):
         print(f"  Installing {service_def.display_name} -> {namespace}/{alias}")
 
         try:
-            _, actual_class_name, _ = create_sdk(
-                service_definition=service_def,
+            stub = FastSDK().generate_stub(
+                service_def,
                 save_path=str(save_path),
                 class_name=class_name,
             )
+            actual_class_name = stub.class_name
         except Exception as e:
             print(f"  Error creating SDK for {service_def.id}: {e}")
             return

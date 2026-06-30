@@ -53,7 +53,7 @@ from pathlib import Path
 from typing import Any, List, Literal, Optional, Tuple, Type
 from urllib.parse import urlparse
 
-from apipod_registry.definitions.service_definitions import ServiceDefinition
+from socaity_schemas import ServiceDefinition
 from apipod_registry.parsers.service_adress_parser import create_service_address
 
 JobKind = Literal["flux", "deepseek"]

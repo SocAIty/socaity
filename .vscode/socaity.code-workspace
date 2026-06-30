@@ -20,6 +20,9 @@
 		},
 		{
 			"path": "../../apipod"
+		},
+		{
+			"path": "../../socaity_schemas"
 		}
 	],
 	"settings": {}

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "socaity"
-version = "0.1.13"
+version = "0.2.0"
 description = "Your SDK and model zoo for generative AI. Build AI-powered applications with ease."
 requires-python = ">=3.8"
 authors = [
@@ -15,8 +15,9 @@ readme = "README.md"
 dependencies = [
     "tqdm",
     "httpx",
-    "fastsdk>=0.2.8",
+    "fastsdk>=0.3.0",
     "apipod-registry>=0.0.3",
+    "socaity-schemas>=0.0.1",
     "media-toolkit>=00.02.22",
     "singleton_decorator==1.0.0"
 ]
