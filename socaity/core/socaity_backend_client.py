@@ -3,11 +3,14 @@ from typing import Dict, List, Optional
 
 import httpx
 
+from socaity.core.credentials import DEFAULT_BACKEND_URL, get_api_key
+
 
 class SocaityBackendClient:
     def __init__(self):
-        self.backend_url = os.getenv("SOCAITY_BACKEND_URL", "https://webapi.socaity.ai/")
-        self.api_key = os.getenv("SOCAITY_API_KEY")
+        default_backend = DEFAULT_BACKEND_URL.rstrip("/") + "/"
+        self.backend_url = os.getenv("SOCAITY_BACKEND_URL", default_backend)
+        self.api_key = get_api_key() or os.getenv("SOCAITY_API_KEY")
 
     @property
     def _auth_headers(self) -> Optional[Dict]:

@@ -2,8 +2,18 @@
 test/test_files/output/
 test/output/
 test/test_socaity/output/
-sdk/
-# socaity/sdk/cache/  -- is for now kept inside, to have smaller updates on startup
+# Runtime SDK cache (populated by install/update; never publish)
+socaity/sdk/cache/
+
+# Generated service clients and namespace wiring (socaity install / update)
+socaity/sdk/services/*
+!socaity/sdk/services/__init__.py
+socaity/sdk/replicate/*/
+!socaity/sdk/replicate/__init__.py
+socaity/sdk/community/*/
+!socaity/sdk/community/__init__.py
+socaity/sdk/official/*/
+!socaity/sdk/official/__init__.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
