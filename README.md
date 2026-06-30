@@ -239,8 +239,6 @@ Deep architecture docs live in each repo's `TECHNICAL_README.md`. The README her
 
 **Alpha.** Syntax and APIs will change. Pin your version in production. We ship fast because the catalog and capabilities grows fast.
 
-Track changes via [GitHub releases](https://github.com/SocAIty/socaity/releases) and PyPI.
-
 ---
 
 ## Contribute
@@ -263,5 +261,5 @@ GPL-3.0. See [LICENSE.txt](LICENSE.txt).
 ---
 
 <p align="center">
-  Built by <a href="https://www.socaity.ai?utm_source=github&utm_content=socaity-sdk-footer">SocAIty</a>·
+  Made with ❤️ by <a href="https://www.socaity.ai?utm_source=github&utm_content=socaity-sdk-08-30-06-2026">SocAIty</a>
 </p>
