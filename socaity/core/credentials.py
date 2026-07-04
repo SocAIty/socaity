@@ -24,8 +24,10 @@ class Credentials:
     logged_in_at: Optional[str] = None
 
     def apply_to_env(self) -> None:
-        os.environ["SOCAITY_API_KEY"] = self.api_key
-        os.environ["SOCAITY_BACKEND_URL"] = self.backend_url.rstrip("/") + "/"
+        # setdefault: an explicitly set env var (e.g. pointing at a local
+        # backend) always wins over stored credentials.
+        os.environ.setdefault("SOCAITY_API_KEY", self.api_key)
+        os.environ.setdefault("SOCAITY_BACKEND_URL", self.backend_url.rstrip("/") + "/")
 
 
 def config_dir() -> Path:

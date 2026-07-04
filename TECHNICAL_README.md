@@ -15,19 +15,28 @@ For job execution internals, streaming modes, and provider stacks, see [fastSDK 
 | `socaity.install(name)` | backend fetch + stub write + registry upsert | `None` |
 | `socaity.service_registry` | shared singleton | `SocaityServiceRegistry` |
 | `from socaity import model` | none (import generated stub) | `FastClient` subclass |
-| `socaity.connect(source)` | re-export of `fastsdk.connect` | temporary `FastClient` |
+| `socaity.list_services(...)` | one catalog fetch (slim, sparse fieldset) | `List[LazyAIService]` |
+| `socaity.get_service(id_or_name)` | one catalog fetch (full) | `AIService` |
+| `socaity.list_models(...)` / `get_model(...)` | catalog fetch | `List[AIModel]` / `AIModel` |
+| `socaity.list_categories()` | catalog fetch | `List[ServiceCategory]` |
+| `socaity.search(query)` | backend fuzzy search (typesense) | `List[dict]` hits |
+| `socaity.connect(source)` | resolves socaity identifiers via backend, then `fastsdk.connect` | temporary `FastClient` |
 | `socaity.generate_stub(...)` | re-export of `fastsdk.generate_stub` | `FastStub` |
 | `socaity.APISeex` | re-export | job handle from every model call |
 
-Module-level CLI: `socaity login`, `install`, `update`, plus optional APIPod deploy commands when `[apipod]` is installed.
+Module-level CLI: `socaity login`, `install`, `update`, `list`, `search`, plus optional APIPod deploy commands when `[apipod]` is installed.
+
+### Catalog reads: slim by default, lazy on access
+
+List calls request a sparse fieldset (`select=id,name,display_name,...`), so the wire payload stays small. `list_services` returns `LazyAIService` proxies: accessing `service.models`, `service.endpoints` or `service.deployments` triggers exactly one full fetch, then everything is attribute access on the hydrated `AIService`.
 
 ## Mental Model
 
 Think of socaity as two connected subsystems:
 
 1. **Catalog layer**
-   - Talks to `webapi.socaity.ai` for install/update payloads
-   - Persists `ServiceDefinition` objects (from `socaity-schemas`) in a local cache
+   - Talks to `webapi.socaity.ai`: `v1/catalog/*` for discovery (list, get, search), `v1/sdk/*` for install/update payloads
+   - Persists `AIService` objects (from `socaity_schemas.platform`) in a local cache
    - Generates `FastClient` subclasses under `socaity/sdk/services/`
    - Wires namespace `__init__.py` files so imports resolve cleanly
 
@@ -70,7 +79,9 @@ socaity/
   cli_apipod.py                   # lazy apipod CLI delegation
   core/
     credentials.py                # XDG credentials (~/.config/socaity/)
-    socaity_backend_client.py     # platform HTTP (install/update only)
+    socaity_backend_client.py     # platform HTTP (catalog reads, search, install/update)
+    catalog.py                    # public list/get/search/connect functions
+    lazy.py                       # LazyAIService relation hydration
     socaity_service_registry.py   # catalog sync + stub generation
   sdk/                            # runtime-generated (mostly empty in git)
     services/                     # one FastClient stub per installed service
@@ -119,7 +130,9 @@ Install/update items carry `action` (`install`, `update`, `delete`), `service_de
 
 ### `SocaityBackendClient`
 
-Sync `httpx` client for **platform metadata only** (not inference). Auth via `SOCAITY_API_KEY` or credentials from `socaity login`. Inference traffic goes through fastSDK to `api.socaity.ai`.
+Sync `httpx` client for **platform metadata only** (not inference). Auth via `SOCAITY_API_KEY` or credentials from `socaity login`; an explicitly set `SOCAITY_BACKEND_URL` env var always wins over stored credentials (local backend debugging). Inference traffic goes through fastSDK to `api.socaity.ai`.
+
+Catalog reads use the backend's sparse fieldsets (`select`), relation embedding (`include`) and pagination (`limit`/`offset`).
 
 ### Generated stubs
 
@@ -239,7 +252,7 @@ client = socaity.connect("http://localhost:8009")
 job = client.submit_job("/chat", messages=[...], stream=True)
 ```
 
-`connect()` is `fastsdk.connect()` — temporary registry entry, removed when the client closes. Use `generate_stub()` to persist a `.py` file instead.
+`socaity.connect()` first resolves socaity identifiers (service name, UUID, `user/service`) through the backend, then delegates to `fastsdk.connect()`: temporary registry entry, removed when the client closes. URLs, spec paths and `replicate:` references skip the backend and go straight to fastsdk. Use `generate_stub()` to persist a `.py` file instead.
 
 ## Authentication and credentials
 
@@ -258,6 +271,8 @@ Legacy token migration from `~/.apipod/token` is handled in `credentials.py`.
 | `socaity login` | `cli_auth.py` | browser flow via `v1/cli-auth/start` |
 | `socaity install SERVICE` | `cli.py` | requires login; calls `install_service` |
 | `socaity update` | `cli.py` | syncs installed services |
+| `socaity list services\|models` | `cli.py` | catalog listing, `--category`, `--family`, `--limit` |
+| `socaity search QUERY` | `cli.py` | typo-tolerant fuzzy search over services and models |
 | `socaity scan/build/start` | `cli_apipod.py` | requires `pip install socaity[apipod]` |
 
 The socaity CLI does not duplicate fastSDK's `inspect` / `call` / `registry` commands. Use `fastsdk` for generic OpenAPI/Replicate tooling; use `socaity` for catalog management.
@@ -322,6 +337,5 @@ For context only. These are roadmap items, not current API:
 
 - Native chat helpers and LangChain-style integrations
 - Job cost/runtime estimation endpoints
-- Backend listing of models and personal configurations
 - Standalone CLI package imported by socaity
 - Agentic workflow execution in the framework layer

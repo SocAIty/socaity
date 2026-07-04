@@ -58,6 +58,45 @@ def _run_update() -> None:
     SocaityServiceRegistry().update_package()
 
 
+def _run_list(entity: str, category: str | None, family: str | None, limit: int) -> None:
+    from socaity.core import catalog
+
+    if entity == "services":
+        services = catalog.list_services(category=category, limit=limit)
+        if not services:
+            print("No services found.")
+            return
+        for service in services:
+            raw = service.raw
+            name = raw.display_name or raw.name or raw.id
+            official = " [official]" if raw.is_official else ""
+            desc = f" - {raw.short_desc}" if raw.short_desc else ""
+            print(f"{name}{official}{desc}")
+    else:
+        models = catalog.list_models(family=family, limit=limit)
+        if not models:
+            print("No models found.")
+            return
+        for model in models:
+            name = model.display_name or model.name
+            family_info = f" ({model.family})" if model.family else ""
+            print(f"{name}{family_info}")
+
+
+def _run_search(query: str, collections: str | None, limit: int) -> None:
+    from socaity.core import catalog
+
+    hits = catalog.search(query, collections=collections, limit=limit)
+    if not hits:
+        print("No results.")
+        return
+    for hit in hits:
+        doc = hit.get("document", {})
+        name = doc.get("display_name") or doc.get("name") or hit.get("id")
+        desc = doc.get("short_desc") or doc.get("description") or ""
+        print(f"[{hit.get('collection')}] {name}" + (f" - {desc[:80]}" if desc else ""))
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
         description="Socaity SDK, authentication, and APIPod deployment",
@@ -102,6 +141,17 @@ Examples:
 
     subparsers.add_parser("update", help="Sync installed services with the platform")
 
+    list_parser = subparsers.add_parser("list", help="List catalog entries")
+    list_parser.add_argument("entity", choices=("services", "models"), help="What to list")
+    list_parser.add_argument("--category", default=None, help="Filter services by category id")
+    list_parser.add_argument("--family", default=None, help="Filter models by family")
+    list_parser.add_argument("--limit", type=int, default=50)
+
+    search_parser = subparsers.add_parser("search", help="Fuzzy-search services and models")
+    search_parser.add_argument("query", help="Search text (typo-tolerant)")
+    search_parser.add_argument("--collections", default=None, help="Comma-separated: services,models")
+    search_parser.add_argument("--limit", type=int, default=20)
+
     subparsers.add_parser("scan", help="Scan project and generate apipod.json (requires apipod)")
 
     build_parser = subparsers.add_parser("build", help="Build deployment container (requires apipod)")
@@ -145,6 +195,14 @@ Examples:
 
     if args.command == "update":
         _run_update()
+        return
+
+    if args.command == "list":
+        _run_list(args.entity, args.category, args.family, args.limit)
+        return
+
+    if args.command == "search":
+        _run_search(args.query, args.collections, args.limit)
         return
 
     if args.command == "scan":

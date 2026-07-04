@@ -5,15 +5,23 @@ from fastsdk import (
     APISeex,
     FastClient,
     FastSDK,
-    connect,
     gather_results,
     gather_results_async,
     generate_stub,
     inspect_service,
     register_service,
 )
-from socaity_schemas.service_definitions import ServiceDefinition, SocaityServiceAddress
+from socaity_schemas.platform import AIModel, AIService, Deployment, ServiceCategory
 from socaity.core.socaity_service_registry import SocaityServiceRegistry
+from socaity.core.catalog import (
+    connect,
+    get_model,
+    get_service,
+    list_categories,
+    list_models,
+    list_services,
+    search,
+)
 
 service_registry = FastSDK().service_registry = SocaityServiceRegistry()
 
@@ -46,19 +54,31 @@ except ImportError:
 __all__ = [
     "install",
     "service_registry",
+    # catalog
+    "list_services",
+    "get_service",
+    "list_models",
+    "get_model",
+    "list_categories",
+    "search",
+    "connect",
+    # media
     "MediaFile",
     "ImageFile",
     "VideoFile",
     "AudioFile",
+    # fastsdk
     "APISeex",
     "FastClient",
     "FastSDK",
-    "connect",
     "gather_results",
     "gather_results_async",
     "generate_stub",
     "inspect_service",
     "register_service",
-    "ServiceDefinition",
-    "SocaityServiceAddress",
+    # schemas
+    "AIService",
+    "AIModel",
+    "Deployment",
+    "ServiceCategory",
 ]
