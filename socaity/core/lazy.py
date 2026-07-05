@@ -32,7 +32,10 @@ class LazyAIService:
 
     def _hydrate(self) -> None:
         object.__setattr__(self, "_hydrated", True)
-        full = self._client.get_service(self._service.id or self._service.name)
+        full = self._client.get_service(
+            self._service.id or self._service.name,
+            expand=["deployments", "endpoints", "models"],
+        )
         if full:
             object.__setattr__(self, "_service", full)
 

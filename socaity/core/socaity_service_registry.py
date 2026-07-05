@@ -9,7 +9,7 @@ from apipod_registry.service_registry.file_system_store import FileSystemStore
 from apipod_registry.utils.normalization import normalize_name_for_py
 from fastsdk import generate_stub
 from socaity_schemas.platform import AIService
-from socaity.core.socaity_backend_client import SocaityBackendClient
+from socaity_cli import SocaityBackendClient
 
 IMPORT_PATTERN = re.compile(
     r"^from\s+socaity\.sdk\.services\.(\w+)\s+import\s+(\w+)(?:\s+as\s+(\w+))?$"

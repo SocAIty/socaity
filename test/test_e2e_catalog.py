@@ -11,6 +11,7 @@ and needs valid credentials (socaity login or SOCAITY_API_KEY).
 import io
 import os
 import sys
+import time
 from pathlib import Path
 
 import httpx
@@ -18,7 +19,6 @@ import pytest
 
 
 def _load_repo_env() -> None:
-    """Pick up the repo's .env (API keys); explicit env vars still win."""
     env_file = Path(__file__).resolve().parents[1] / ".env"
     if not env_file.is_file():
         return
@@ -32,8 +32,8 @@ def _load_repo_env() -> None:
 _load_repo_env()
 os.environ.setdefault("SOCAITY_BACKEND_URL", "http://127.0.0.1:8000/")
 
-import socaity  # noqa: E402  (env must be set before the client is built)
-from socaity.cli import main as cli_main  # noqa: E402
+import socaity  # noqa: E402
+from socaity_cli.cli import main as cli_main  # noqa: E402
 
 BACKEND = os.environ["SOCAITY_BACKEND_URL"]
 
@@ -58,7 +58,6 @@ def test_list_services_slim_and_lazy():
     assert slim.id and slim.name
     assert not slim.deployments, "list view should be slim (no relations)"
 
-    # First relation access hydrates the full record through one fetch.
     deployments = services[0].deployments
     assert deployments and deployments[0].provider
 
@@ -77,14 +76,35 @@ def test_pagination_no_overlap():
     assert not page1 & page2
 
 
-def test_sparse_fieldsets_wire_shape():
-    """The raw HTTP response must only carry the selected fields."""
+def test_list_services_slim_no_relation_keys():
     rows = httpx.get(
         BACKEND + "v1/catalog/services",
-        params={"limit": 2, "select": "id,name"},
+        params={"limit": 2, "fields": "id,name"},
         timeout=30,
     ).json()
-    assert rows and all(set(row.keys()) <= {"id", "name"} for row in rows)
+    assert rows and all(
+        set(row.keys()) <= {"id", "name"} and "deployments" not in row
+        for row in rows
+    )
+
+
+def test_filter_provider():
+    rows = httpx.get(
+        BACKEND + "v1/catalog/services",
+        params={"limit": 5, "filter": "provider:eq:replicate", "fields": "id,name"},
+        timeout=30,
+    ).json()
+    assert rows, "expected replicate services when filter applied"
+
+
+def test_expand_contract():
+    name = socaity.list_services(limit=1)[0].raw.name
+    row = httpx.get(
+        BACKEND + f"v1/catalog/services/{name}",
+        params={"expand": "deployments.contract", "fields": "name,deployments(contract)"},
+        timeout=60,
+    ).json()
+    assert row["deployments"][0]["contract"]["specification"]
 
 
 def test_list_and_get_models():
@@ -94,22 +114,44 @@ def test_list_and_get_models():
     assert model and model.id == models[0].id
 
 
+def test_model_filter_family():
+    models = socaity.list_models(filters=["family:eq:flux"], limit=5)
+    if models:
+        assert all(m.family and m.family.lower() == "flux" for m in models)
+
+
 def test_list_categories():
     categories = socaity.list_categories()
     assert categories and all(c.id for c in categories)
 
 
-# ---------------------------------------------------------------- search
+# ---------------------------------------------------------------- search + speed
 
 def test_search_typo_tolerant():
-    hits = socaity.search("flux schnel", collections="services", limit=5)
-    names = [hit["document"].get("name", "") for hit in hits]
+    hits = socaity.search("flux schnel", collection="services", limit=5)
+    names = [item.name for item in hits]
     assert any("flux-schnell" in name for name in names), names
 
 
 def test_search_models_collection():
-    hits = socaity.search("deepseek", collections="models", limit=5)
-    assert hits and all(hit["collection"] == "models" for hit in hits)
+    from socaity_schemas.platform import AIModel
+
+    hits = socaity.search("deepseek", collection="models", limit=5)
+    assert hits and all(isinstance(hit, AIModel) for hit in hits)
+
+
+def test_query_latency_budget():
+    """List + search should stay under a generous local budget (ms)."""
+    start = time.perf_counter()
+    socaity.list_services(limit=20)
+    list_ms = (time.perf_counter() - start) * 1000
+
+    start = time.perf_counter()
+    socaity.search("flux", collection="services", limit=10)
+    search_ms = (time.perf_counter() - start) * 1000
+
+    assert list_ms < 5000, f"list_services too slow: {list_ms:.0f}ms"
+    assert search_ms < 5000, f"search too slow: {search_ms:.0f}ms"
 
 
 # ---------------------------------------------------------------- CLI

@@ -18,6 +18,7 @@ dependencies = [
     "fastsdk>=0.3.0",
     "apipod-registry>=0.0.3",
     "socaity-schemas>=0.0.1",
+    "socaity-cli>=0.1.0",
     "media-toolkit>=00.02.22",
     "singleton_decorator==1.0.0"
 ]
@@ -34,5 +35,9 @@ dev = [
 Repository = "https://github.com/SocAIty/socaity"
 Homepage = "https://www.socaity.ai"
 
-[project.scripts]
-socaity = "socaity.cli:main"
+# The `socaity` console script is provided by the socaity-cli dependency.
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+# Resolve sibling packages in local dev (CI installs from pip).
+pythonpath = [".", "../socaity-cli", "../socaity-schemas", "../fastsdk", "../APIPodRegistry", "../media-toolkit", "../meseex"]
