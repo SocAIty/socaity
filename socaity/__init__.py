@@ -11,7 +11,7 @@ from fastsdk import (
     inspect_service,
     register_service,
 )
-from socaity_schemas.platform import AIModel, AIService, Deployment, ServiceCategory
+from socaity_schemas.platform import AIModel, AIService, Deployment, Job, ServiceCategory
 from socaity.core.socaity_service_registry import SocaityServiceRegistry
 from socaity.core.catalog import (
     connect,
@@ -22,6 +22,7 @@ from socaity.core.catalog import (
     list_services,
     search,
 )
+from socaity.core.jobs import get_job, list_jobs, refresh_job
 
 service_registry = FastSDK().service_registry = SocaityServiceRegistry()
 
@@ -62,6 +63,11 @@ __all__ = [
     "list_categories",
     "search",
     "connect",
+    # jobs
+    "list_jobs",
+    "get_job",
+    "refresh_job",
+    "Job",
     # media
     "MediaFile",
     "ImageFile",

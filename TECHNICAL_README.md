@@ -19,7 +19,9 @@ For job execution internals, streaming modes, and provider stacks, see [fastSDK 
 | `socaity.get_service(id_or_name)` | one catalog fetch (full) | `AIService` |
 | `socaity.list_models(...)` / `get_model(...)` | catalog fetch | `List[AIModel]` / `AIModel` |
 | `socaity.list_categories()` | catalog fetch | `List[ServiceCategory]` |
-| `socaity.search(query, collection=...)` | backend catalog `q` param (typesense) | `List[AIService]` or `List[AIModel]` |
+| `socaity.search(query, collection=...)` | backend `q` param (typesense) | `List[AIService]` / `AIModel` / `Job` |
+| `socaity.list_jobs(...)` / `get_job(...)` | `v1/jobs` list/search/get | `List[Job]` / `Job` |
+| `socaity.refresh_job(job_id)` | finished-job webhook refresh | cache + Typesense upsert |
 | `socaity.connect(source)` | resolves socaity identifiers via backend, then `fastsdk.connect` | temporary `FastClient` |
 | `socaity.generate_stub(...)` | re-export of `fastsdk.generate_stub` | `FastStub` |
 | `socaity.APISeex` | re-export | job handle from every model call |

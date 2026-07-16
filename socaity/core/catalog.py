@@ -7,7 +7,7 @@ any identifier through the backend and returns a ready fastsdk client.
 from typing import List, Optional, Union
 
 import fastsdk
-from socaity_schemas.platform import AIModel, AIService, ServiceCategory
+from socaity_schemas.platform import AIModel, AIService, Job, ServiceCategory
 from socaity_cli import SocaityBackendClient
 
 from socaity.core.lazy import LazyAIService, wrap_services
@@ -77,9 +77,12 @@ def search(
     collection: str = "services",
     filters: Optional[List[str]] = None,
     limit: int = 20,
-) -> List[Union[AIService, AIModel]]:
-    """Fuzzy search over services or models (backend ``q`` param)."""
-    return _backend().search(query, collection=collection, filters=filters, limit=limit)
+    visibility: str = "user_visible",
+) -> List[Union[AIService, AIModel, Job]]:
+    """Fuzzy search over services, models, or jobs (backend ``q`` param)."""
+    return _backend().search(
+        query, collection=collection, filters=filters, limit=limit, visibility=visibility,
+    )
 
 
 def connect(source: Union[str, dict, AIService], api_key: Optional[str] = None, **kwargs) -> "fastsdk.FastClient":
