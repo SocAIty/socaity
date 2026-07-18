@@ -41,3 +41,34 @@ def get_job(job_id: str, expand: Optional[List[str]] = None, fields: Optional[Li
 def refresh_job(job_id: str) -> Optional[dict]:
     """Ask the backend to reload a finished job into cache + Typesense."""
     return _backend().refresh_job(job_id)
+
+
+def update_job(
+    job_id: str,
+    display_name: Optional[str] = None,
+    is_public: Optional[bool] = None,
+) -> bool:
+    """Patch display_name / is_public on a job the caller owns."""
+    return _backend().update_job(job_id, display_name=display_name, is_public=is_public)
+
+
+def delete_job(job_id: str) -> bool:
+    """Hard-delete a job the caller owns."""
+    return _backend().delete_job(job_id)
+
+
+def update_social_metrics(
+    job_id: str,
+    increase_views: Optional[bool] = None,
+    increase_downloads: Optional[bool] = None,
+    increase_shares: Optional[bool] = None,
+    increase_likes: Optional[bool] = None,
+) -> bool:
+    """Bump social counters on a job (public or owned)."""
+    return _backend().update_social_metrics(
+        job_id,
+        increase_views=increase_views,
+        increase_downloads=increase_downloads,
+        increase_shares=increase_shares,
+        increase_likes=increase_likes,
+    )

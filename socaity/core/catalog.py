@@ -72,6 +72,11 @@ def list_categories() -> List[ServiceCategory]:
     return _backend().list_categories()
 
 
+def list_pricing_rules(active_only: bool = True) -> list:
+    """Active hosting pricing rules from the catalog."""
+    return _backend().list_pricing_rules(active_only=active_only)
+
+
 def search(
     query: str,
     collection: str = "services",
