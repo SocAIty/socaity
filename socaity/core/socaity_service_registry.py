@@ -57,8 +57,10 @@ class SocaityServiceRegistry(Registry):
         """Install a service by name, UUID, or 'user/service' identifier."""
         item = self._backend.install_service(service_name_or_id)
         if not item:
-            print(f"Could not resolve service '{service_name_or_id}'.")
-            return
+            raise RuntimeError(
+                f"Could not resolve service '{service_name_or_id}' "
+                "(denied, not found, or backend error)."
+            )
         print(f"Installing {service_name_or_id}...")
         self._dispatch_item(item)
         self._flush_init_files()
@@ -107,15 +109,22 @@ class SocaityServiceRegistry(Registry):
         creator_display_name: str,
         provider: Optional[str] = None,
     ) -> tuple:
-        """Return (namespace_path_relative_to_SDK_ROOT, alias)."""
-        display_name = service.display_name or service.name or service.id
+        """Return (namespace_path_relative_to_SDK_ROOT, alias).
 
-        if provider and provider.lower() != "socaity":
+        Third-party broker layout (``{provider}/{org}/{model}``) is only used when
+        the display name already looks like ``org/model`` (e.g. Replicate). User
+        deploys on RunPod/etc. with a plain title go under ``community/{creator}``.
+        """
+        display_name = service.display_name or service.name or service.id
+        is_brokered = (
+            provider
+            and provider.lower() != "socaity"
+            and "/" in display_name
+        )
+
+        if is_brokered:
             provider_ns = normalize_name_for_py(provider)
-            if "/" in display_name:
-                username, model_name = display_name.split("/", 1)
-            else:
-                username, model_name = "unknown", display_name
+            username, model_name = display_name.split("/", 1)
             return (
                 f"{provider_ns}/{normalize_name_for_py(username)}",
                 normalize_name_for_py(model_name),
@@ -131,7 +140,12 @@ class SocaityServiceRegistry(Registry):
     @staticmethod
     def _derive_class_name(service: AIService, provider: Optional[str] = None) -> str:
         display_name = service.display_name or service.name or service.id
-        if provider and provider.lower() != "socaity" and "/" in display_name:
+        is_brokered = (
+            provider
+            and provider.lower() != "socaity"
+            and "/" in display_name
+        )
+        if is_brokered:
             _, model_name = display_name.split("/", 1)
             return normalize_name_for_py(model_name)
         return normalize_name_for_py(display_name)
