@@ -5,15 +5,52 @@ from fastsdk import (
     APISeex,
     FastClient,
     FastSDK,
-    connect,
     gather_results,
     gather_results_async,
     generate_stub,
     inspect_service,
     register_service,
 )
-from socaity_schemas.service_definitions import ServiceDefinition, SocaityServiceAddress
+from socaity_schemas.platform import (
+    AIModel,
+    AIService,
+    Deployment,
+    Job,
+    PriceEstimate,
+    ServiceCategory,
+)
 from socaity.core.socaity_service_registry import SocaityServiceRegistry
+from socaity.core.catalog import (
+    connect,
+    get_model,
+    get_service,
+    list_categories,
+    list_models,
+    list_pricing_rules,
+    list_services,
+    search,
+)
+from socaity.core.jobs import (
+    delete_job,
+    get_job,
+    list_jobs,
+    refresh_job,
+    update_job,
+    update_social_metrics,
+)
+from socaity.core.projects import (
+    delete_project,
+    get_project,
+    list_projects,
+    modify_project_members,
+    upsert_project,
+)
+from socaity.core.analytics import (
+    estimate,
+    get_service_pricing,
+    get_similar_services,
+    get_stats,
+)
 
 service_registry = FastSDK().service_registry = SocaityServiceRegistry()
 
@@ -46,19 +83,52 @@ except ImportError:
 __all__ = [
     "install",
     "service_registry",
+    # catalog
+    "list_services",
+    "get_service",
+    "list_models",
+    "get_model",
+    "list_categories",
+    "list_pricing_rules",
+    "search",
+    "connect",
+    # jobs
+    "list_jobs",
+    "get_job",
+    "refresh_job",
+    "update_job",
+    "delete_job",
+    "update_social_metrics",
+    "Job",
+    # projects
+    "list_projects",
+    "get_project",
+    "upsert_project",
+    "delete_project",
+    "modify_project_members",
+    # analytics
+    "estimate",
+    "get_stats",
+    "get_similar_services",
+    "get_service_pricing",
+    # media
     "MediaFile",
     "ImageFile",
     "VideoFile",
     "AudioFile",
+    # fastsdk
     "APISeex",
     "FastClient",
     "FastSDK",
-    "connect",
     "gather_results",
     "gather_results_async",
     "generate_stub",
     "inspect_service",
     "register_service",
-    "ServiceDefinition",
-    "SocaityServiceAddress",
+    # schemas
+    "AIService",
+    "AIModel",
+    "Deployment",
+    "ServiceCategory",
+    "PriceEstimate",
 ]

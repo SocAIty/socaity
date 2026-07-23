@@ -6,7 +6,8 @@
         "${workspaceFolder}/../media-toolkit",
         "${workspaceFolder}/../meseex",
         "${workspaceFolder}/../APIPodRegistry",
-        "${workspaceFolder}/../socaity_schemas"
+        "${workspaceFolder}/../socaity_schemas",
+        "${workspaceFolder}/../socaity-cli"
     ],
     "python.analysis.autoImportCompletions": true,
     "python.analysis.indexing": true,
@@ -33,6 +34,10 @@
         },
         {
             "name": "socaity_schemas",
+            "depth": 5
+        },
+        {
+            "name": "socaity_cli",
             "depth": 5
         }
     ],

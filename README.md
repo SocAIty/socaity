@@ -134,6 +134,14 @@ job = deepseek_v3("What a time to be alive.")
 result = job.get_result()
 ```
 
+**Price estimate.** Before you submit, ask for predicted cost and runtime (Socaity-hosted services):
+
+```python
+client = socaity.connect("black-forest-labs-flux-schnell")
+estimate = client.estimate("/predictions", prompt="a lighthouse at sunset")
+print(estimate.estimated_price_eur, estimate.estimated_inference_time_s)
+```
+
 **Streaming.** Schema endpoints (chat, TTS, video) accept `stream=True`. Iterate live tokens or bytes, or let `get_result()` assemble the full payload when you skip streaming.
 
 ```python
