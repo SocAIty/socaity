@@ -58,7 +58,9 @@ def run_call(
     if svc is None:
         raise ValueError(f"Unknown service: {service_ref}")
 
-    client = connect(svc, api_key=ensure_api_key())
+    # Pass the catalog name/id so ``connect`` runs install_service and gets
+    # a deployment address; a bare AIService from get_service often has none.
+    client = connect(service_ref, api_key=ensure_api_key())
     handle = client.submit_job(endpoint, **args)
 
     job_id = _wait_for_job_id(handle, timeout_s=min(timeout_s, 120.0))
@@ -73,19 +75,25 @@ def run_call(
     # Prefer platform job row (URLs in result) over SDK media materialization.
     if job_id:
         job = _poll_platform_job(job_id, timeout_s=timeout_s)
-        return {
-            "status": getattr(job, "status", None) if job else "unknown",
-            "call": f"{service_ref}@{endpoint}",
-            "job_id": job_id,
-            "job": to_jsonable(job),
-            "files": to_jsonable(getattr(job, "files", None) or []),
-        }
+        status = (getattr(job, "status", None) or "").lower() if job else ""
+        if status in {"finished", "failed", "cancelled", "canceled", "error", "completed", "success"}:
+            return {
+                "status": getattr(job, "status", None),
+                "call": f"{service_ref}@{endpoint}",
+                "job_id": job_id,
+                "job": to_jsonable(job),
+                "files": to_jsonable(getattr(job, "files", None) or []),
+            }
 
+    # Fallback when catalog status lags or stays RUNNING past timeout.
     raw = handle.wait_for_result(timeout_s=timeout_s)
+    job = get_job(job_id, expand=["data", "files"]) if job_id else None
     return {
-        "status": "finished",
+        "status": getattr(job, "status", None) or "finished",
         "call": f"{service_ref}@{endpoint}",
         "job_id": job_id,
+        "job": to_jsonable(job),
+        "files": to_jsonable(getattr(job, "files", None) or []),
         "result": to_jsonable(raw),
     }
 

@@ -33,10 +33,15 @@ def whoami() -> Dict[str, Any]:
     email = creds.user_email if creds else None
     user_id = creds.user_id if creds else None
     if not email or not user_id:
-        profile = fetch_profile(api_key=key, backend_url=backend)
-        email = email or profile.get("email") or profile.get("user_email")
-        user_id = user_id or profile.get("id") or profile.get("user_id")
+        try:
+            profile = fetch_profile(api_key=key, backend_url=backend)
+            email = email or profile.get("email") or profile.get("user_email")
+            user_id = user_id or profile.get("id") or profile.get("user_id")
+        except Exception:
+            # Temporary CLI keys sometimes cannot hit /profile; catalog calls still work.
+            pass
     return {
+        "authenticated": True,
         "user_id": user_id,
         "email": email,
         "backend_url": backend,
