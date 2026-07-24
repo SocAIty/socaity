@@ -53,8 +53,7 @@ from pathlib import Path
 from typing import Any, List, Literal, Optional, Tuple, Type
 from urllib.parse import urlparse
 
-from socaity_schemas import ServiceDefinition
-from apipod_registry.parsers.service_adress_parser import create_service_address
+from fastsdk import FastSDK
 
 JobKind = Literal["flux", "deepseek"]
 
@@ -121,11 +120,15 @@ def _bootstrap_registry_from_cache(*, inference_origin: str) -> None:
             new_url = f"{api_base}{path}"
         else:
             new_url = f"{api_base}/services/{api_ver}/{sid}"
-        svc = ServiceDefinition.model_validate(raw)
-        svc.id = sid
-        spec = (svc.specification or "socaity").lower()
-        svc.service_address = create_service_address(new_url, spec)
-        fsdk.add_service(svc)
+        # Cache files may be legacy ServiceDefinition dumps or raw OpenAPI.
+        # Prefer embedded full_schema / raw_schema; otherwise treat the file as a spec.
+        spec = raw.get("full_schema") or raw.get("raw_schema") or raw
+        fsdk.register_service(
+            spec,
+            service_id=sid,
+            service_address=new_url,
+            provider="socaity",
+        )
     _REGISTRY_BOOTSTRAPPED = True
 
 
