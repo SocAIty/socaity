@@ -1,5 +1,5 @@
 from socaity import speechcraft, MediaFile, service_registry
-from fastsdk.service_definition import SocaityServiceAddress
+from socaity_schemas import SocaityServiceAddress
 import os
 
 

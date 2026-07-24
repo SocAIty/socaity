@@ -5,7 +5,9 @@
         "${workspaceFolder}/../fastCloud",
         "${workspaceFolder}/../media-toolkit",
         "${workspaceFolder}/../meseex",
-        "${workspaceFolder}/../APIPodRegistry"
+        "${workspaceFolder}/../APIPodRegistry",
+        "${workspaceFolder}/../socaity_schemas",
+        "${workspaceFolder}/../socaity-cli"
     ],
     "python.analysis.autoImportCompletions": true,
     "python.analysis.indexing": true,
@@ -29,12 +31,24 @@
         {
             "name": "apipod_registry",
             "depth": 5
+        },
+        {
+            "name": "socaity_schemas",
+            "depth": 5
+        },
+        {
+            "name": "socaity_cli",
+            "depth": 5
         }
     ],
     "python.analysis.diagnosticMode": "workspace",
     "python.analysis.autoSearchPaths": true,
-    "flake8.args": [
-        "--max-line-length=120",
-        "--ignore=E203,W503,E501,E261,W293"
+    "ruff.lineLength": 120,
+    "ruff.lint.ignore": [
+        "E203",
+        "W503",
+        "E501",
+        "W293",
+        "W291"
     ]
 } 

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "socaity"
-version = "0.1.14"
+version = "0.2.0"
 description = "Your SDK and model zoo for generative AI. Build AI-powered applications with ease."
 requires-python = ">=3.8"
 authors = [
@@ -15,15 +15,17 @@ readme = "README.md"
 dependencies = [
     "tqdm",
     "httpx",
-    "fastsdk>=0.2.8",
-    "apipod-registry>=0.0.3",
+    "fastsdk>=0.4.1",
+    "apipod-registry>=0.1.1",
+    "socaity-schemas>=0.1.1",
+    "socaity-cli>=0.1.1",
     "media-toolkit>=00.02.22",
     "singleton_decorator==1.0.0"
 ]
 
 [project.optional-dependencies]
 apipod = [
-    "apipod>=1.0.6",
+    "apipod>=1.0.10",
 ]
 dev = [
     "pytest",
@@ -33,5 +35,9 @@ dev = [
 Repository = "https://github.com/SocAIty/socaity"
 Homepage = "https://www.socaity.ai"
 
-[project.scripts]
-socaity = "socaity.cli:main"
+# The `socaity` console script is provided by the socaity-cli dependency.
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+# Resolve sibling packages in local dev (CI installs from pip).
+pythonpath = [".", "../socaity-cli", "../socaity-schemas", "../fastsdk", "../APIPodRegistry", "../media-toolkit", "../meseex"]
