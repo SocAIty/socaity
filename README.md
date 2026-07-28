@@ -22,7 +22,6 @@
   <a href="#key-features">Features</a> ·
   <a href="#compose-models">Compose models</a> ·
   <a href="#langchain">LangChain</a> ·
-  <a href="#mcp">MCP</a> ·
   <a href="#model-zoo">Model zoo</a> ·
   <a href="#ecosystem">Ecosystem</a>
 </p>
@@ -207,31 +206,6 @@ ai = bound.invoke([HumanMessage("Weather in Boston?")])
 ```
 
 Hosted service on socaity.ai, or your own APIPod instance on localhost: same API. See `test/test_langchain_chat.py` for the full matrix (plain, serverless, tools, streaming).
-
----
-
-## MCP
-
-Claude Code and similar hosts can drive the platform through a FastMCP server: search services/models, list jobs/chats/projects, run any endpoint with `service@/endpoint`, then download result files on demand.
-
-```bash
-pip install 'socaity[mcp]'
-# Auth: socaity login   or   export SOCAITY_API_KEY=sk_...
-socaity-mcp
-# equivalent: python -m socaity.integrations.mcp
-```
-
-Agent call shape:
-
-```text
-run_service(
-  call="bytedance/sdxl-lightning-4step@/predict",
-  args={"prompt": "a cute robot dog"},
-)
-get_files(url="<result url>", save_path="./robot-dog.png")
-```
-
-Job tools return file URLs, not downloaded bytes (set by `FASTSDK_MATERIALIZE_MEDIA=0`). Rate limit defaults to 60 tool calls/min (`SOCAITY_MCP_RPM`).
 
 ---
 

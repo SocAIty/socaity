@@ -5,11 +5,12 @@ resolution, job submission, SSE decoding) behind one framework-neutral
 surface. Framework-specific adapters translate message formats only:
 
 - ``socaity.integrations.langchain``: LangChain chat model (``ChatSocaity``).
-- ``socaity.integrations.mcp``: FastMCP server for Claude Code and similar hosts
-  (optional extra: ``pip install 'socaity[mcp]'``).
 
-Framework packages (langchain, fastmcp, ...) are optional dependencies;
-importing a specific integration raises a helpful error when its package is missing.
+The platform MCP server lives in the separate ``socaity-mcp`` package
+(agent ↔ MCP ↔ backend / inference), not in this SDK.
+
+Framework packages (langchain, ...) are optional dependencies; importing a
+specific integration raises a helpful error when its package is missing.
 """
 
 from socaity.integrations.chat_adapter import ChatServiceAdapter

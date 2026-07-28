@@ -27,15 +27,9 @@ dependencies = [
 apipod = [
     "apipod>=1.0.10",
 ]
-mcp = [
-    "fastmcp>=2.0.0",
-]
 dev = [
     "pytest",
 ]
-
-[project.scripts]
-socaity-mcp = "socaity.integrations.mcp.__main__:main"
 
 [project.urls]
 Repository = "https://github.com/SocAIty/socaity"
