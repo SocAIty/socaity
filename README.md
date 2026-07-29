@@ -21,6 +21,7 @@
   <a href="#why-socaity-sdk">Why this</a> ·
   <a href="#key-features">Features</a> ·
   <a href="#compose-models">Compose models</a> ·
+  <a href="#langchain">LangChain</a> ·
   <a href="#model-zoo">Model zoo</a> ·
   <a href="#ecosystem">Ecosystem</a>
 </p>
@@ -151,6 +152,60 @@ for chunk in job.stream():
 ```
 
 Under the hood, [fastSDK](https://github.com/SocAIty/fastsdk) orchestrates requests through [meseex](https://github.com/SocAIty/meseex), a lightweight job runtime for async I/O, parallel execution, and streaming.
+
+---
+
+## LangChain
+
+You already build agents with LangChain or LangGraph. `ChatSocaity` is a LangChain chat model that talks to any Socaity or APIPod chat service: a hosted model slug, a catalog service id, or a local URL while you develop.
+
+Install LangChain separately (`pip install langchain-core`). The socaity package does not pull it in.
+
+```python
+from langchain.agents import create_agent
+from socaity.integrations.langchain import ChatSocaity
+
+def get_weather(city: str) -> str:
+    """Get weather for a given city."""
+    return f"It's always sunny in {city}!"
+
+agent = create_agent(
+    model=ChatSocaity(model="Qwen3.6-27B-FP8"),
+    tools=[get_weather],
+    system_prompt="You are a helpful assistant",
+)
+
+result = agent.invoke({"messages": [{"role": "user", "content": "What's the weather in San Francisco?"}]})
+print(result["messages"][-1].content_blocks)
+```
+
+You can immediately use the model for chatting
+
+```python
+from langchain_core.messages import HumanMessage
+from socaity.integrations.langchain import ChatSocaity
+
+model = ChatSocaity(model="socaity-model-slug")  # Go to the MaaS catalog to find your service.
+
+answer = model.invoke([HumanMessage("Summarize why an SDK beats raw HTTP in one sentence.")])
+print(answer.text)
+```
+
+Stream token by token, bind tools, or force a specific function with `tool_choice`. Conversation history, tool round trips, reasoning blocks, and usage metadata work the same way as with other LangChain chat models. For LangGraph and checkpointers you change nothing on the model side: persist graph state outside the model as you already do.
+
+```python
+for chunk in model.stream([HumanMessage("What color is the sky?")]):
+    print(chunk.text, end="", flush=True)
+
+def get_weather(location: str) -> str:
+    """Current weather for a city."""
+    return "sunny"
+
+bound = model.bind_tools([get_weather])
+ai = bound.invoke([HumanMessage("Weather in Boston?")])
+```
+
+Hosted service on socaity.ai, or your own APIPod instance on localhost: same API. See `test/test_langchain_chat.py` for the full matrix (plain, serverless, tools, streaming).
 
 ---
 
