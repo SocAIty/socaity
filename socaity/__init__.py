@@ -20,6 +20,7 @@ from socaity_schemas.platform import (
     ServiceCategory,
 )
 from socaity.core.socaity_service_registry import SocaityServiceRegistry
+from socaity.core.session import Session, current_session, use_session
 from socaity.core.catalog import (
     connect,
     get_model,
@@ -83,6 +84,10 @@ except ImportError:
 __all__ = [
     "install",
     "service_registry",
+    # session
+    "Session",
+    "current_session",
+    "use_session",
     # catalog
     "list_services",
     "get_service",
