@@ -11,15 +11,12 @@ from socaity_schemas.platform import AIModel, AIService, Job, ServiceCategory
 from socaity_cli import SocaityBackendClient
 
 from socaity.core.lazy import LazyAIService, wrap_services
-
-_client: Optional[SocaityBackendClient] = None
+from socaity.core.session import current_session
 
 
 def _backend() -> SocaityBackendClient:
-    global _client
-    if _client is None:
-        _client = SocaityBackendClient()
-    return _client
+    """Backend client of the active session (see ``socaity.core.session``)."""
+    return current_session().backend
 
 
 def list_services(
@@ -91,12 +88,23 @@ def search(
 
 
 def connect(source: Union[str, dict, AIService], api_key: Optional[str] = None, **kwargs) -> "fastsdk.FastClient":
-    """Use a service without installing a stub."""
-    if isinstance(source, str) and not _looks_like_direct_source(source):
-        item = _backend().install_service(source)
+    """Use a service without installing a stub.
+
+    Platform services resolve through the backend and inherit the session credential,
+    so a multi-tenant host never falls back to a process-wide environment key. Direct
+    sources (URLs, Replicate refs, spec files) keep fastsdk's own key resolution.
+    """
+    session = current_session()
+    is_platform_service = isinstance(source, str) and not _looks_like_direct_source(source)
+
+    if is_platform_service:
+        item = session.backend.install_service(source)
         service_data = (item or {}).get("service")
         if service_data:
             source = AIService(**service_data)
+        api_key = api_key or session.api_key
+
+    kwargs.setdefault("materialize_media", session.materialize_media)
     return fastsdk.connect(source, api_key=api_key, **kwargs)
 
 
