@@ -16,7 +16,7 @@ dependencies = [
     "tqdm",
     "httpx",
     "fastsdk>=0.4.6",
-    "apipod-registry>=0.1.1",
+    "apipod-registry>=0.1.3",
     "socaity-schemas>=0.1.1",
     "socaity-cli>=0.1.1",
     "media-toolkit>=00.02.22",
