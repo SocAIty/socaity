@@ -39,6 +39,14 @@ from socaity.core.jobs import (
     update_job,
     update_social_metrics,
 )
+from socaity.core.files import (
+    delete_file,
+    get_file,
+    get_storage_usage,
+    list_files,
+    update_file,
+    upload_files,
+)
 from socaity.core.projects import (
     delete_project,
     get_project,
@@ -105,6 +113,13 @@ __all__ = [
     "delete_job",
     "update_social_metrics",
     "Job",
+    # files
+    "list_files",
+    "get_file",
+    "get_storage_usage",
+    "upload_files",
+    "update_file",
+    "delete_file",
     # projects
     "list_projects",
     "get_project",
