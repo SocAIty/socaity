@@ -124,8 +124,9 @@ def connect(source: Union[str, dict, AIService], api_key: Optional[str] = None, 
     if is_platform_service:
         item = session.backend.install_service(source)
         service_data = (item or {}).get("service")
-        if service_data:
-            source = AIService(**service_data)
+        if not service_data:
+            raise RuntimeError(f"Platform could not resolve service '{source}'.")
+        source = AIService(**service_data)
         api_key = api_key or session.api_key
 
     kwargs.setdefault("materialize_media", session.materialize_media)

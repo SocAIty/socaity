@@ -99,8 +99,9 @@ class ChatServiceAdapter:
 
     def complete(self, request: Dict[str, Any], timeout_s: Optional[float] = None) -> Dict[str, Any]:
         """Blocking chat completion; returns a ChatCompletionResponse-shaped dict."""
+        wait_s = timeout_s or getattr(self.endpoint, "timeout_hint_s", None)
         job = self.submit({**request, "stream": False})
-        return self._as_response_dict(job.get_result(timeout_s=timeout_s))
+        return self._as_response_dict(job.get_result(timeout_s=wait_s))
 
     def stream_chunks(self, request: Dict[str, Any]) -> Iterator[Dict[str, Any]]:
         """Stream ChatCompletionChunk-shaped dicts (sync)."""
@@ -149,6 +150,8 @@ class ChatServiceAdapter:
     @staticmethod
     def _as_response_dict(result: Any) -> Dict[str, Any]:
         """Normalize a job result into a ChatCompletionResponse-shaped dict."""
+        if isinstance(result, dict) and result.get("status") in {"failed", "error", "cancelled"}:
+            raise RuntimeError(result.get("error") or f"Chat job {result.get('status')}")
         if isinstance(result, dict) and "choices" in result:
             return result
         if hasattr(result, "model_dump"):
@@ -157,7 +160,8 @@ class ChatServiceAdapter:
                 return dumped
         if isinstance(result, str):
             return {"choices": [{"index": 0, "message": {"role": "assistant", "content": result}, "finish_reason": "stop"}]}
-        raise ValueError(f"Unexpected chat result shape: {type(result).__name__}")
+        keys = sorted(result.keys()) if isinstance(result, dict) else None
+        raise ValueError(f"Unexpected chat result shape: {type(result).__name__} keys={keys}")
 
     @staticmethod
     def _as_chunk_dict(chunk: Any) -> Dict[str, Any]:

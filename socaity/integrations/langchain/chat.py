@@ -120,7 +120,20 @@ class ChatSocaity(BaseChatModel):
         request.update({key: value for key, value in defaults.items() if value is not None})
         kwargs.pop("ls_structured_output_format", None)  # tracing-only kwarg from with_structured_output
         request.update({key: value for key, value in kwargs.items() if value is not None})
-        return request
+        # Test/prod vLLM for Qwen3.8 rejects OpenAI tool fields (HTTP 400).
+        # Emulate tool calling in the prompt; create_agent still sees tool_calls.
+        tools = request.pop("tools", None)
+        for key in ("tool_choice", "parallel_tool_calls", "functions", "function_call"):
+            request.pop(key, None)
+        if tools:
+            request["messages"] = _emulate_tool_messages(request["messages"], tools)
+            request["_emulated_tools"] = True
+        allowed = {
+            "messages", "model", "temperature", "max_tokens", "max_completion_tokens",
+            "top_p", "n", "stream", "stop", "seed", "presence_penalty", "frequency_penalty",
+            "reasoning_effort", "_emulated_tools",
+        }
+        return {key: value for key, value in request.items() if key in allowed}
 
     # ------------------------------------------------------------------
     # Generation
@@ -133,7 +146,12 @@ class ChatSocaity(BaseChatModel):
         run_manager: Optional[CallbackManagerForLLMRun] = None,
         **kwargs: Any,
     ) -> ChatResult:
-        response = self.adapter.complete(self._request(messages, stop, **kwargs))
+        request = self._request(messages, stop, **kwargs)
+        emulated = request.pop("_emulated_tools", False)
+        request["messages"] = _coerce_message_content(request["messages"])
+        response = self.adapter.complete(request)
+        if emulated:
+            response = _promote_emulated_tool_calls(response)
         choice = response["choices"][0]
         message = self._ai_message(choice, response.get("usage"))
         return ChatResult(generations=[ChatGeneration(
@@ -147,8 +165,10 @@ class ChatSocaity(BaseChatModel):
         run_manager: Optional[CallbackManagerForLLMRun] = None,
         **kwargs: Any,
     ) -> Iterator[ChatGenerationChunk]:
+        request = self._request(messages, stop, **kwargs)
+        request.pop("_emulated_tools", None)
         translator = _ChunkTranslator(self.model)
-        for chunk in self.adapter.stream_chunks(self._request(messages, stop, **kwargs)):
+        for chunk in self.adapter.stream_chunks(request):
             generation_chunk = translator.translate(chunk)
             if generation_chunk is not None:
                 yield generation_chunk
@@ -160,8 +180,10 @@ class ChatSocaity(BaseChatModel):
         run_manager: Optional[AsyncCallbackManagerForLLMRun] = None,
         **kwargs: Any,
     ) -> AsyncIterator[ChatGenerationChunk]:
+        request = self._request(messages, stop, **kwargs)
+        request.pop("_emulated_tools", None)
         translator = _ChunkTranslator(self.model)
-        async for chunk in self.adapter.astream_chunks(self._request(messages, stop, **kwargs)):
+        async for chunk in self.adapter.astream_chunks(request):
             generation_chunk = translator.translate(chunk)
             if generation_chunk is not None:
                 yield generation_chunk
@@ -175,8 +197,9 @@ class ChatSocaity(BaseChatModel):
         blocks: List[dict] = []
         if message.get("reasoning_content"):
             blocks.append({"type": "reasoning", "reasoning": message["reasoning_content"]})
-        if message.get("content"):
-            blocks.append({"type": "text", "text": message["content"]})
+        text = _content_text(message.get("content"))
+        if text:
+            blocks.append({"type": "text", "text": text})
 
         tool_calls, invalid_tool_calls = [], []
         for call in message.get("tool_calls") or []:
@@ -324,6 +347,160 @@ def _wire_content(content) -> Any:
             parts.append({"type": "image_url", "image_url": {"url": _image_url(block)}})
         # other block types (reasoning etc.) are not user-input content; skip
     return parts
+
+
+_TOOL_PROMPT = (
+    "You can use tools. To call one, reply with ONLY a JSON object and no other text:\n"
+    '{{"name": "<tool_name>", "arguments": {{<args>}}}}\n'
+    "When you do not need a tool, reply in plain language.\n"
+    "Available tools:\n{specs}"
+)
+
+
+def _coerce_message_content(messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Force string content and drop keys the test vLLM 400s on."""
+    coerced = []
+    for message in messages:
+        role = message.get("role") or "user"
+        text = _content_text(message.get("content"))
+        if not text and role == "assistant":
+            text = ""
+        coerced.append({"role": role, "content": text})
+    return coerced
+
+
+def _emulate_tool_messages(messages: List[Dict[str, Any]], tools: List[dict]) -> List[Dict[str, Any]]:
+    """Rewrite native tool turns into text so vLLM never sees `tools` or `role=tool`."""
+    specs = []
+    for tool in tools:
+        function = tool.get("function") or tool
+        params = (function.get("parameters") or {}).get("properties") or {}
+        required = (function.get("parameters") or {}).get("required") or []
+        desc = (function.get("description") or "").split("\n", 1)[0]
+        specs.append(f"- {function.get('name')}({', '.join(required)}): {desc}")
+        if params:
+            specs.append(f"  args: {', '.join(params)}")
+    instruction = {"role": "system", "content": _TOOL_PROMPT.format(specs="\n".join(specs))}
+    rewritten: List[Dict[str, Any]] = []
+    for message in messages:
+        role = message.get("role")
+        if role == "tool":
+            result = _content_text(message.get("content"))
+            if len(result) > 2000:
+                result = result[:2000] + "..."
+            rewritten.append({
+                "role": "user",
+                "content": f"Tool result ({message.get('tool_call_id') or 'tool'}):\n{result}",
+            })
+            continue
+        if role == "assistant" and message.get("tool_calls"):
+            calls = []
+            for call in message["tool_calls"]:
+                function = call.get("function") or {}
+                calls.append(f"{function.get('name')}({function.get('arguments')})")
+            text = message.get("content") or ""
+            rewritten.append({
+                "role": "assistant",
+                "content": ((text + "\n") if text else "") + "Called: " + "; ".join(calls),
+            })
+            continue
+        rewritten.append(message)
+    if rewritten and rewritten[0].get("role") == "system":
+        rewritten[0] = {
+            "role": "system",
+            "content": (rewritten[0].get("content") or "") + "\n\n" + instruction["content"],
+        }
+        return rewritten
+    return [instruction, *rewritten]
+
+
+def _promote_emulated_tool_calls(response: Dict[str, Any]) -> Dict[str, Any]:
+    """If the assistant text is a tool-call JSON, lift it onto ``message.tool_calls``."""
+    choices = response.get("choices") or []
+    if not choices:
+        return response
+    message = dict(choices[0].get("message") or {})
+    calls = _parse_emulated_tool_calls(_content_text(message.get("content")))
+    if not calls:
+        return response
+    message["tool_calls"] = calls
+    message["content"] = None
+    choices[0] = {**choices[0], "message": message, "finish_reason": "tool_calls"}
+    return {**response, "choices": choices}
+
+
+def _content_text(content: Any) -> str:
+    """Flatten OpenAI content (string or typed parts) to plain text."""
+    if content is None:
+        return ""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts = []
+        for block in content:
+            if isinstance(block, str):
+                parts.append(block)
+            elif isinstance(block, dict):
+                parts.append(block.get("text") or block.get("content") or "")
+        return "".join(parts)
+    if isinstance(content, dict):
+        return content.get("text") or content.get("content") or json.dumps(content, ensure_ascii=False)
+    return str(content)
+
+
+def _parse_emulated_tool_calls(text: str) -> List[dict]:
+    """Read a JSON tool call from model text. Empty when the reply is prose."""
+    payload = _first_json_value(text)
+    if payload is None:
+        return []
+    items = payload if isinstance(payload, list) else [payload]
+    calls = []
+    for index, item in enumerate(items):
+        if not isinstance(item, dict):
+            return []
+        name = item.get("name") or (item.get("function") or {}).get("name")
+        arguments = item.get("arguments")
+        if arguments is None and isinstance(item.get("function"), dict):
+            arguments = item["function"].get("arguments")
+        if not name or arguments is None:
+            return []
+        if not isinstance(arguments, str):
+            arguments = json.dumps(arguments, ensure_ascii=False)
+        calls.append({
+            "id": item.get("id") or f"call_{index}",
+            "type": "function",
+            "function": {"name": name, "arguments": arguments},
+        })
+    return calls
+
+
+def _first_json_value(text: str) -> Any:
+    stripped = (text or "").strip()
+    if not stripped:
+        return None
+    if stripped.startswith("```"):
+        stripped = stripped.strip("`")
+        if stripped.lower().startswith("json"):
+            stripped = stripped[4:].strip()
+    try:
+        return json.loads(stripped)
+    except ValueError:
+        pass
+    start = stripped.find("{")
+    if start < 0:
+        return None
+    depth = 0
+    for index, char in enumerate(stripped[start:], start):
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                try:
+                    return json.loads(stripped[start : index + 1])
+                except ValueError:
+                    return None
+    return None
 
 
 def _image_url(block: dict) -> str:

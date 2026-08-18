@@ -54,6 +54,7 @@ from socaity.core.projects import (
     modify_project_members,
     upsert_project,
 )
+from socaity.core.conversations import update_conversation
 from socaity.core.analytics import (
     estimate,
     get_service_pricing,
@@ -126,6 +127,7 @@ __all__ = [
     "upsert_project",
     "delete_project",
     "modify_project_members",
+    "update_conversation",
     # analytics
     "estimate",
     "get_stats",

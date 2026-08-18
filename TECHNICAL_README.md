@@ -135,7 +135,7 @@ Install/update items carry `action` (`install`, `update`, `delete`), `service_de
 
 ### `SocaityBackendClient`
 
-Sync `httpx` client for **platform metadata only** (not inference). Auth via `SOCAITY_API_KEY` or credentials from `socaity login`; an explicitly set `SOCAITY_BACKEND_URL` env var always wins over stored credentials (local backend debugging). Inference traffic goes through fastSDK to `api.socaity.ai`.
+Sync `httpx` client for **platform metadata only** (not inference). Auth via `SOCAITY_API_KEY` or credentials from `socaity login`. Backend URL is resolved per client (constructor, then `SOCAITY_BACKEND_URL`, then the login file, then prod). Looking up an API key never writes `SOCAITY_BACKEND_URL` into the process. Inference traffic goes through fastSDK to `api.socaity.ai`.
 
 Catalog reads use the backend's sparse fieldsets (`select`), relation embedding (`include`) and pagination (`limit`/`offset`).
 

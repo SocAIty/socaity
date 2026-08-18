@@ -88,11 +88,35 @@ def test_upload_wav_sets_expires_at_and_expand_references():
     assert any(ref.get("purpose") == "USER_UPLOAD" for ref in refs)
 
 
+def test_storage_usage_and_permanent_upload():
+    """Quota RPC + a keep-file upload (expires_at null). Cleans up the uploaded row."""
+    usage = socaity.get_storage_usage()
+    assert usage is not None
+    assert usage.get("user_id")
+    assert int(usage["storage_space_bytes"]) > 0
+    assert int(usage["free_storage_bytes"]) >= 0
+
+    tmp = Path(__file__).resolve().parent / "test_files" / "_phase0_keep.txt"
+    tmp.write_text("phase0 permanent upload probe\n", encoding="utf-8")
+    try:
+        rows = socaity.upload_files(tmp, purpose="USER_UPLOAD")
+        assert rows, "permanent upload returned no file records"
+        uploaded = rows[0]
+        assert uploaded.get("id") is not None
+        assert uploaded.get("expires_at") in (None, "")
+        after = socaity.get_storage_usage()
+        assert int(after["used_storage_bytes"]) >= int(usage["used_storage_bytes"])
+        assert socaity.delete_file(uploaded["id"]) is True
+    finally:
+        tmp.unlink(missing_ok=True)
+
+
 if __name__ == "__main__":
     failures = 0
     for name, fn in (
         ("test_malware_upload_rejected", test_malware_upload_rejected),
         ("test_upload_wav_sets_expires_at_and_expand_references", test_upload_wav_sets_expires_at_and_expand_references),
+        ("test_storage_usage_and_permanent_upload", test_storage_usage_and_permanent_upload),
     ):
         if name.startswith("test_upload") and not WAV_PATH.is_file():
             print(f"SKIP {name}: missing {WAV_PATH}")
