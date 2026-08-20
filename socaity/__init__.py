@@ -55,6 +55,7 @@ from socaity.core.projects import (
     upsert_project,
 )
 from socaity.core.conversations import update_conversation
+from socaity.core.interrupts import get_interrupt, list_interrupts, resolve_interrupt
 from socaity.core.analytics import (
     estimate,
     get_service_pricing,
@@ -128,6 +129,10 @@ __all__ = [
     "delete_project",
     "modify_project_members",
     "update_conversation",
+    # interrupts (HITL)
+    "list_interrupts",
+    "get_interrupt",
+    "resolve_interrupt",
     # analytics
     "estimate",
     "get_stats",

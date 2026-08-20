@@ -13,6 +13,7 @@ model: LangGraph persists graph state outside of it.
 from __future__ import annotations
 
 import json
+import re
 from typing import Any, AsyncIterator, Dict, Iterator, List, Mapping, Optional
 
 from langchain_core.callbacks import AsyncCallbackManagerForLLMRun, CallbackManagerForLLMRun
@@ -166,12 +167,15 @@ class ChatSocaity(BaseChatModel):
         **kwargs: Any,
     ) -> Iterator[ChatGenerationChunk]:
         request = self._request(messages, stop, **kwargs)
-        request.pop("_emulated_tools", None)
+        emulated = request.pop("_emulated_tools", False)
+        request["messages"] = _coerce_message_content(request["messages"])
         translator = _ChunkTranslator(self.model)
+        tool_filter = _EmulatedToolStream() if emulated else None
         for chunk in self.adapter.stream_chunks(request):
-            generation_chunk = translator.translate(chunk)
-            if generation_chunk is not None:
-                yield generation_chunk
+            for raw in (tool_filter.feed(chunk) if tool_filter else (chunk,)):
+                generation_chunk = translator.translate(raw)
+                if generation_chunk is not None:
+                    yield generation_chunk
 
     async def _astream(
         self,
@@ -181,12 +185,15 @@ class ChatSocaity(BaseChatModel):
         **kwargs: Any,
     ) -> AsyncIterator[ChatGenerationChunk]:
         request = self._request(messages, stop, **kwargs)
-        request.pop("_emulated_tools", None)
+        emulated = request.pop("_emulated_tools", False)
+        request["messages"] = _coerce_message_content(request["messages"])
         translator = _ChunkTranslator(self.model)
+        tool_filter = _EmulatedToolStream() if emulated else None
         async for chunk in self.adapter.astream_chunks(request):
-            generation_chunk = translator.translate(chunk)
-            if generation_chunk is not None:
-                yield generation_chunk
+            for raw in (tool_filter.feed(chunk) if tool_filter else (chunk,)):
+                generation_chunk = translator.translate(raw)
+                if generation_chunk is not None:
+                    yield generation_chunk
 
     # ------------------------------------------------------------------
     # Response translation (wire -> LangChain)
@@ -293,6 +300,66 @@ class _ChunkTranslator:
             },
         )
         return ChatGenerationChunk(message=message, generation_info={"finish_reason": finish_reason})
+
+
+class _EmulatedToolStream:
+    """Promote prompt-emulated tool calls on streamed turns.
+
+    With emulated tools (see ``_TOOL_PROMPT``) the model answers a tool call as
+    a bare JSON object in ``delta.content``. This filter holds text back while
+    it may be such a JSON payload and, on the finish chunk, re-emits it as an
+    OpenAI ``tool_calls`` delta so ``create_agent`` executes tools (and HITL
+    middleware can interrupt) on streamed turns, matching ``_generate``.
+    Prose replies flow through unchanged once the first characters rule out JSON.
+    """
+
+    def __init__(self):
+        self._buffer: List[str] = []
+        self._holding: Optional[bool] = None  # None = undecided
+
+    def feed(self, chunk: Dict[str, Any]) -> Iterator[Dict[str, Any]]:
+        choices = chunk.get("choices") or []
+        if not choices:
+            yield chunk
+            return
+        choice = choices[0]
+        delta = choice.get("delta") or {}
+
+        content = delta.get("content")
+        if content and not delta.get("tool_calls"):
+            if self._holding is False:
+                yield chunk
+                return
+            self._buffer.append(content)
+            if self._holding is None:
+                head = "".join(self._buffer).lstrip()
+                if not head or (len(head) < 7 and "Called:".startswith(head)):
+                    return  # not enough characters to decide yet
+                self._holding = head[0] in "{[`" or head.startswith("Called:")
+                if not self._holding:
+                    yield self._text_chunk()
+            return
+
+        if choice.get("finish_reason") and self._holding:
+            text = "".join(self._buffer)
+            self._buffer.clear()
+            calls = _parse_emulated_tool_calls(text)
+            if calls:
+                yield {"choices": [{
+                    "index": 0,
+                    "delta": {"tool_calls": [{"index": i, **call} for i, call in enumerate(calls)]},
+                    "finish_reason": None,
+                }]}
+                yield {**chunk, "choices": [{**choice, "finish_reason": "tool_calls"}]}
+                return
+            # Looked like JSON but was not a tool call: release it as plain text.
+            yield {"choices": [{"index": 0, "delta": {"content": text}, "finish_reason": None}]}
+        yield chunk
+
+    def _text_chunk(self) -> Dict[str, Any]:
+        text = "".join(self._buffer)
+        self._buffer.clear()
+        return {"choices": [{"index": 0, "delta": {"content": text}, "finish_reason": None}]}
 
 
 # ---------------------------------------------------------------------------
@@ -448,8 +515,21 @@ def _content_text(content: Any) -> str:
     return str(content)
 
 
+# Models mimic the "Called: name({args})" transcript format that
+# _coerce_message_content writes for past tool calls; accept it as a call.
+_CALLED_LINE = re.compile(r"^Called:\s*([\w.-]+)\((.*)\)\s*$", re.DOTALL)
+
+
 def _parse_emulated_tool_calls(text: str) -> List[dict]:
     """Read a JSON tool call from model text. Empty when the reply is prose."""
+    match = _CALLED_LINE.match((text or "").strip())
+    if match:
+        raw_args = match.group(2).strip() or "{}"
+        try:
+            json.loads(raw_args)
+        except ValueError:
+            return []
+        return [{"id": "call_0", "type": "function", "function": {"name": match.group(1), "arguments": raw_args}}]
     payload = _first_json_value(text)
     if payload is None:
         return []
