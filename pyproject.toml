@@ -25,7 +25,7 @@ dependencies = [
 
 [project.optional-dependencies]
 apipod = [
-    "apipod>=1.0.20",
+    "apipod>=1.0.24",
 ]
 dev = [
     "pytest",
