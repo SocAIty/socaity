@@ -1,29 +1,24 @@
 """Agent tools over the socaity SDK. Assembly is in ``registry``; execution in ``run``."""
 
+from socaity.tools.json import dump_entity, page
 from socaity.tools.mcp import to_fastmcp
 from socaity.tools.registry import (
-    ENDPOINT_EXPAND,
-    JOB_EXPAND,
+    JOB_DETAIL_EXPAND,
     REGISTRY,
+    SERVICE_DETAIL_EXPAND,
     TOOLS,
-    get_job,
-    get_service,
-    list_files,
-    search_services,
 )
 from socaity.tools.run import estimate_price, execute_service, run_service
 
 __all__ = [
     "REGISTRY",
     "TOOLS",
-    "ENDPOINT_EXPAND",
-    "JOB_EXPAND",
-    "search_services",
-    "get_service",
+    "SERVICE_DETAIL_EXPAND",
+    "JOB_DETAIL_EXPAND",
+    "dump_entity",
+    "page",
     "run_service",
     "execute_service",
     "estimate_price",
-    "get_job",
-    "list_files",
     "to_fastmcp",
 ]

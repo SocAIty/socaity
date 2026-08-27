@@ -356,3 +356,4 @@ For context only. These are roadmap items, not current API:
 - Job cost/runtime estimation endpoints
 - Standalone CLI package imported by socaity
 - Agentic workflow execution in the framework layer
+- Connectors as catalog services (`Service.kind=connector`). CLI connect (GitHub seed). `AIService` → `Service`. See `socaity_backend/agents/SPAINE/connectors_concept.md`.

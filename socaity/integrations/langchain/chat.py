@@ -384,7 +384,10 @@ def _wire_message(message: BaseMessage) -> Dict[str, Any]:
     if isinstance(message, HumanMessage):
         return {"role": "user", "content": _wire_content(message.content)}
     if isinstance(message, ToolMessage):
-        return {"role": "tool", "content": message.text, "tool_call_id": message.tool_call_id}
+        content = message.content
+        if not isinstance(content, str):
+            content = _content_text(content)
+        return {"role": "tool", "content": content, "tool_call_id": message.tool_call_id}
     if isinstance(message, AIMessage):
         wire: Dict[str, Any] = {"role": "assistant", "content": message.text or None}
         if message.tool_calls:
@@ -487,11 +490,15 @@ def _promote_emulated_tool_calls(response: Dict[str, Any]) -> Dict[str, Any]:
     if not choices:
         return response
     message = dict(choices[0].get("message") or {})
-    calls = _parse_emulated_tool_calls(_content_text(message.get("content")))
+    text = _content_text(message.get("content"))
+    calls = _parse_emulated_tool_calls(text)
     if not calls:
         return response
+    # Keep narration written before a "Called:" line as regular content.
+    match = _CALLED_LINE.search(text.strip())
+    prose = text.strip()[: match.start()].strip() if match else ""
     message["tool_calls"] = calls
-    message["content"] = None
+    message["content"] = prose or None
     choices[0] = {**choices[0], "message": message, "finish_reason": "tool_calls"}
     return {**response, "choices": choices}
 
@@ -503,6 +510,13 @@ def _content_text(content: Any) -> str:
     if isinstance(content, str):
         return content
     if isinstance(content, list):
+        # Tool results are often a list of dicts (catalog rows). Chat content
+        # blocks have ``type``/``text``. Treating rows as blocks yielded "".
+        if content and all(
+            isinstance(block, dict) and block.get("type") not in ("text", "image", "image_url", "output_text")
+            for block in content
+        ):
+            return json.dumps(content, ensure_ascii=False, default=str)
         parts = []
         for block in content:
             if isinstance(block, str):
@@ -511,25 +525,42 @@ def _content_text(content: Any) -> str:
                 parts.append(block.get("text") or block.get("content") or "")
         return "".join(parts)
     if isinstance(content, dict):
+        if content.get("type") in (None, "") and "text" not in content:
+            return json.dumps(content, ensure_ascii=False, default=str)
         return content.get("text") or content.get("content") or json.dumps(content, ensure_ascii=False)
     return str(content)
 
 
 # Models mimic the "Called: name({args})" transcript format that
 # _coerce_message_content writes for past tool calls; accept it as a call.
-_CALLED_LINE = re.compile(r"^Called:\s*([\w.-]+)\((.*)\)\s*$", re.DOTALL)
+# Models often narrate before the call ("Let me search...\n\nCalled: ..."),
+# so the line may appear anywhere in the reply, not only at its start.
+_CALLED_LINE = re.compile(r"^Called:\s*([\w.-]+)\((.*)\)\s*$", re.DOTALL | re.MULTILINE)
 
 
 def _parse_emulated_tool_calls(text: str) -> List[dict]:
-    """Read a JSON tool call from model text. Empty when the reply is prose."""
-    match = _CALLED_LINE.match((text or "").strip())
+    """Read a JSON tool call from model text. Empty when the reply is prose.
+
+    ``Called:`` after a real answer (the model echoing the transcript) must not
+    start another tool loop. Only a short preamble before ``Called:`` counts
+    as an intended call. Embedded JSON in a prose answer is ignored.
+    """
+    stripped = (text or "").strip()
+    if not stripped:
+        return []
+    match = _CALLED_LINE.search(stripped)
     if match:
+        preamble = stripped[: match.start()].strip()
+        if preamble and (preamble.count("\n") > 2 or len(preamble) > 240):
+            return []
         raw_args = match.group(2).strip() or "{}"
         try:
             json.loads(raw_args)
         except ValueError:
             return []
         return [{"id": "call_0", "type": "function", "function": {"name": match.group(1), "arguments": raw_args}}]
+    if not stripped.startswith(("{", "[", "`")):
+        return []
     payload = _first_json_value(text)
     if payload is None:
         return []
