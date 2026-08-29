@@ -8,7 +8,9 @@ from socaity.tools.registry import (
     SERVICE_DETAIL_EXPAND,
     TOOLS,
 )
+from socaity.tools.agents import execute_agent, run_agent
 from socaity.tools.run import estimate_price, execute_service, run_service
+from socaity.tools.workflows import execute_workflow, run_workflow
 
 __all__ = [
     "REGISTRY",
@@ -20,5 +22,9 @@ __all__ = [
     "run_service",
     "execute_service",
     "estimate_price",
+    "execute_agent",
+    "run_agent",
+    "execute_workflow",
+    "run_workflow",
     "to_fastmcp",
 ]

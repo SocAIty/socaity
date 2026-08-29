@@ -56,6 +56,18 @@ from socaity.core.projects import (
 )
 from socaity.core.conversations import update_conversation
 from socaity.core.interrupts import get_interrupt, list_interrupts, resolve_interrupt
+from socaity.core.workflows import (
+    delete_workflow,
+    estimate_workflow,
+    get_workflow,
+    get_workflow_run,
+    list_workflow_revisions,
+    list_workflow_runs,
+    list_workflows,
+    publish_workflow,
+    revert_workflow,
+    save_workflow,
+)
 from socaity.core.analytics import (
     estimate,
     get_service_pricing,
@@ -133,6 +145,17 @@ __all__ = [
     "list_interrupts",
     "get_interrupt",
     "resolve_interrupt",
+    # workflows
+    "list_workflows",
+    "get_workflow",
+    "save_workflow",
+    "delete_workflow",
+    "publish_workflow",
+    "revert_workflow",
+    "list_workflow_revisions",
+    "list_workflow_runs",
+    "get_workflow_run",
+    "estimate_workflow",
     # analytics
     "estimate",
     "get_stats",

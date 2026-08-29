@@ -9,8 +9,11 @@ from socaity.core.session import current_session
 from socaity_cli.clients.catalog import CatalogClient
 from socaity_cli.clients.files import FilesClient
 from socaity_cli.clients.jobs import JobsClient
+from socaity_cli.clients.workflows import WorkflowsClient
+from socaity.tools.agents import run_agent
 from socaity.tools.json import dump_entity
 from socaity.tools.run import estimate_price, run_service
+from socaity.tools.workflows import run_workflow
 
 SERVICE_DETAIL_EXPAND = CatalogClient.SERVICE_DETAIL_EXPAND
 JOB_DETAIL_EXPAND = JobsClient.JOB_DETAIL_EXPAND
@@ -58,6 +61,13 @@ REGISTRY: dict[str, Callable] = {
     "get_storage_usage": _tool("get_storage_usage", FilesClient),
     "update_file": _tool("update_file", FilesClient),
     "delete_file": _tool("delete_file", FilesClient),
+    "search_workflows": _tool("search_workflows", WorkflowsClient),
+    "get_workflow": _tool("get_workflow", WorkflowsClient),
+    "save_workflow": _tool("save_workflow", WorkflowsClient, "upsert_workflow"),
+    "run_workflow": run_workflow,
+    "get_workflow_run": _tool("get_workflow_run", WorkflowsClient),
+    "estimate_workflow": _tool("estimate_workflow", WorkflowsClient),
+    "run_agent": run_agent,
 }
 
 TOOLS: tuple[Callable, ...] = tuple(REGISTRY.values())
