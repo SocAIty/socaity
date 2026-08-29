@@ -38,6 +38,35 @@ def poll_url(origin: str, envelope: dict, job_id: str) -> str:
     return f"{origin}/status/{job_id}"
 
 
+def cancel_job_run(job_id: str, action: str = "cancel") -> dict:
+    """Stop a running gateway job (``POST /cancel/{job_id}?action=...``).
+
+    Args:
+        job_id: Platform job id from a submit envelope.
+        action: ``cancel`` (default, user stop: child jobs cancelled) or
+            ``interrupt`` (HIT: child jobs keep running, resumable checkpoint).
+
+    Returns:
+        The gateway cancel summary.
+
+    Raises:
+        RuntimeError: Non-2xx cancel response.
+        ValueError: No API key in the active session.
+    """
+    api_key = current_session().backend.api_key
+    if not api_key:
+        raise ValueError("No API key. Run `socaity login` or set SOCAITY_API_KEY.")
+    response = httpx.post(
+        f"{inference_origin()}/cancel/{job_id}",
+        params={"action": action},
+        headers={"x-api-key": api_key},
+        timeout=60,
+    )
+    if response.status_code not in (200, 202):
+        raise RuntimeError(f"Job cancel failed ({response.status_code}): {response.text[:300]}")
+    return response.json() if response.content else {}
+
+
 def submit_and_poll(
     path: str,
     body: dict,

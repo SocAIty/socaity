@@ -54,7 +54,13 @@ from socaity.core.projects import (
     modify_project_members,
     upsert_project,
 )
-from socaity.core.conversations import update_conversation
+from socaity.core.conversations import (
+    delete_conversation,
+    get_conversation,
+    list_conversation_items,
+    list_conversations,
+    update_conversation,
+)
 from socaity.core.interrupts import get_interrupt, list_interrupts, resolve_interrupt
 from socaity.core.workflows import (
     delete_workflow,
@@ -140,7 +146,12 @@ __all__ = [
     "upsert_project",
     "delete_project",
     "modify_project_members",
+    # conversations
+    "list_conversations",
+    "get_conversation",
+    "list_conversation_items",
     "update_conversation",
+    "delete_conversation",
     # interrupts (HITL)
     "list_interrupts",
     "get_interrupt",

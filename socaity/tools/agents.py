@@ -44,6 +44,7 @@ def execute_agent(
     mode: Optional[str] = None,
     model: Optional[str] = None,
     decisions: Optional[List[dict]] = None,
+    continue_turn: bool = False,
     workflow: Optional[dict] = None,
     timeout_s: Optional[float] = None,
     poll_interval_s: float = DEFAULT_POLL_INTERVAL_S,
@@ -60,6 +61,9 @@ def execute_agent(
         mode: Agent mode (SPAINE: chat | plan | agent | repair).
         model: Model override passed through to the agent.
         decisions: HIT decisions answering a previous ``pending_actions`` batch.
+        continue_turn: After a cancel, invoke from the last checkpoint on the
+            same thread and append to the cancelled assistant item (wire field
+            ``continue``). Requires ``thread_id``; no message, no decisions.
         workflow: Workflow document draft to seed the agent with.
         timeout_s: Give up waiting after this many seconds (job keeps running).
         poll_interval_s: Delay between progress samples of the running job.
@@ -78,13 +82,20 @@ def execute_agent(
     turn_messages = list(messages or [])
     if message:
         turn_messages.append({"role": "user", "content": message})
-    if not turn_messages and not decisions:
+    if continue_turn:
+        if not thread_id:
+            raise ValueError("continue_turn requires the thread_id of the cancelled turn.")
+        if turn_messages or decisions:
+            raise ValueError("continue_turn takes no messages and no decisions.")
+    elif not turn_messages and not decisions:
         raise ValueError("execute_agent needs a message, messages, or decisions to resume with.")
 
     agent_config = {key: value for key, value in (("mode", mode), ("model", model)) if value}
     body: Dict[str, Any] = {"messages": turn_messages, "stream": False}
     if agent_config:
         body["agent"] = agent_config
+    if continue_turn:
+        body["continue"] = True
     for key, value in (("thread_id", thread_id), ("decisions", decisions), ("workflow", workflow)):
         if value:
             body[key] = value

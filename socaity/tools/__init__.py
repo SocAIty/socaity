@@ -9,6 +9,7 @@ from socaity.tools.registry import (
     TOOLS,
 )
 from socaity.tools.agents import execute_agent, run_agent
+from socaity.tools.jobs import cancel_job_run
 from socaity.tools.run import estimate_price, execute_service, run_service
 from socaity.tools.workflows import execute_workflow, run_workflow
 
@@ -24,6 +25,7 @@ __all__ = [
     "estimate_price",
     "execute_agent",
     "run_agent",
+    "cancel_job_run",
     "execute_workflow",
     "run_workflow",
     "to_fastmcp",
