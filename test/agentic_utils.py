@@ -1,55 +1,38 @@
 """Shared plumbing for the SPAINE agent / workflow e2e tests.
 
 These tests need the local platform stack: socaity_backend (:8000), the
-inference gateway + orchestrator + engines (:8001), and the SPAINE agent in
-the catalog. Import this module before ``socaity`` so the URL defaults land
-first.
+inference gateway + orchestrator + engines, and SPAINE in the catalog.
+Import this module before ``socaity`` so the URL defaults land first.
 
-Credentials: ``SOCAITY_TEST_RICH_KEY`` / ``SOCAITY_TEST_POOR_KEY`` env vars,
-else the SPAINE dev keys file (``SPAINE_KEYS_FILE`` or the sibling
-``socaity_backend/agents/SPAINE/second_user_api_keys.txt``), else the regular
-``SOCAITY_API_KEY`` for the rich user.
+Credentials are env-only: ``SOCAITY_TEST_RICH_KEY`` / ``SOCAITY_TEST_POOR_KEY``,
+else ``SOCAITY_API_KEY`` for the rich user. Inference URL is
+``SOCAITY_INFER_BACKEND_URL`` (aliased to ``INFERENCE_BACKEND_URL`` for the SDK).
 """
 from __future__ import annotations
 
 import os
 import time
-from pathlib import Path
 from typing import Optional
 
 import httpx
 
 os.environ.setdefault("SOCAITY_BACKEND_URL", "http://127.0.0.1:8000")
-os.environ.setdefault("INFERENCE_BACKEND_URL", "http://127.0.0.1:8001")
+os.environ.setdefault("SOCAITY_INFER_BACKEND_URL", "http://127.0.0.1:8001")
+os.environ.setdefault("INFERENCE_BACKEND_URL", os.environ["SOCAITY_INFER_BACKEND_URL"])
 
 BACKEND = os.environ["SOCAITY_BACKEND_URL"].rstrip("/")
-INFERENCE = os.environ["INFERENCE_BACKEND_URL"].rstrip("/")
-PROJECTS_ROOT = Path(__file__).resolve().parents[2]
-KEYS_FILE = Path(
-    os.getenv("SPAINE_KEYS_FILE")
-    or PROJECTS_ROOT / "socaity_backend" / "agents" / "SPAINE" / "second_user_api_keys.txt"
-)
+INFERENCE = os.environ["SOCAITY_INFER_BACKEND_URL"].rstrip("/")
 TERMINAL = ("finished", "failed", "timeout", "cancelled", "rejected")
-
-
-def _key_from_file(label: str) -> Optional[str]:
-    if not KEYS_FILE.is_file():
-        return None
-    lines = [line.strip() for line in KEYS_FILE.read_text().splitlines()]
-    for index, line in enumerate(lines):
-        if line.startswith(f"# {label}") and index + 1 < len(lines):
-            return lines[index + 1]
-    return None
 
 
 def rich_key() -> Optional[str]:
     """Funded test user (owns the runs)."""
-    return os.getenv("SOCAITY_TEST_RICH_KEY") or _key_from_file("Rich") or os.getenv("SOCAITY_API_KEY")
+    return os.getenv("SOCAITY_TEST_RICH_KEY") or os.getenv("SOCAITY_API_KEY")
 
 
 def poor_key() -> Optional[str]:
     """Second, low-credit test user (fork / permission scenarios)."""
-    return os.getenv("SOCAITY_TEST_POOR_KEY") or _key_from_file("Poor")
+    return os.getenv("SOCAITY_TEST_POOR_KEY")
 
 
 def backend_up() -> bool:

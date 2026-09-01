@@ -33,7 +33,7 @@ pytestmark = [
     pytest.mark.skipif(not env.backend_up(), reason=f"backend not reachable at {env.BACKEND}"),
     pytest.mark.skipif(not env.inference_up(), reason=f"inference gateway not reachable at {env.INFERENCE}"),
     pytest.mark.skipif(not env.rich_key(), reason="no test API key (SOCAITY_TEST_RICH_KEY / SOCAITY_API_KEY)"),
-    pytest.mark.skipif(not env.poor_key(), reason="no second-user key (SOCAITY_TEST_POOR_KEY / keys file)"),
+    pytest.mark.skipif(not env.poor_key(), reason="no second-user key (SOCAITY_TEST_POOR_KEY)"),
 ]
 
 TITLE = f"Publish fork probe {int(time.time())}"
