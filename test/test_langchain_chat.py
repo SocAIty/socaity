@@ -263,7 +263,7 @@ def test_langchain_tool_choice(chat_service):
 def test_langchain_streamed_tool_call(chat_service):
     from langchain_core.messages import HumanMessage
 
-    model = My goal is, that users easily can use an MCP server I wrote with LangGraph and any Agenet framework. I have a CLI Auth in place with supabase. Now I want to(chat_service)
+    model = _langchain_model(chat_service)
     bound = model.bind_tools([WEATHER_TOOL])
     chunks = list(bound.stream([HumanMessage("What is the weather in Boston?")]))
 

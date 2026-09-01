@@ -13,6 +13,7 @@ model: LangGraph persists graph state outside of it.
 from __future__ import annotations
 
 import json
+import re
 from typing import Any, AsyncIterator, Dict, Iterator, List, Mapping, Optional
 
 from langchain_core.callbacks import AsyncCallbackManagerForLLMRun, CallbackManagerForLLMRun
@@ -120,7 +121,20 @@ class ChatSocaity(BaseChatModel):
         request.update({key: value for key, value in defaults.items() if value is not None})
         kwargs.pop("ls_structured_output_format", None)  # tracing-only kwarg from with_structured_output
         request.update({key: value for key, value in kwargs.items() if value is not None})
-        return request
+        # Test/prod vLLM for Qwen3.8 rejects OpenAI tool fields (HTTP 400).
+        # Emulate tool calling in the prompt; create_agent still sees tool_calls.
+        tools = request.pop("tools", None)
+        for key in ("tool_choice", "parallel_tool_calls", "functions", "function_call"):
+            request.pop(key, None)
+        if tools:
+            request["messages"] = _emulate_tool_messages(request["messages"], tools)
+            request["_emulated_tools"] = True
+        allowed = {
+            "messages", "model", "temperature", "max_tokens", "max_completion_tokens",
+            "top_p", "n", "stream", "stop", "seed", "presence_penalty", "frequency_penalty",
+            "reasoning_effort", "_emulated_tools",
+        }
+        return {key: value for key, value in request.items() if key in allowed}
 
     # ------------------------------------------------------------------
     # Generation
@@ -133,7 +147,12 @@ class ChatSocaity(BaseChatModel):
         run_manager: Optional[CallbackManagerForLLMRun] = None,
         **kwargs: Any,
     ) -> ChatResult:
-        response = self.adapter.complete(self._request(messages, stop, **kwargs))
+        request = self._request(messages, stop, **kwargs)
+        emulated = request.pop("_emulated_tools", False)
+        request["messages"] = _coerce_message_content(request["messages"])
+        response = self.adapter.complete(request)
+        if emulated:
+            response = _promote_emulated_tool_calls(response)
         choice = response["choices"][0]
         message = self._ai_message(choice, response.get("usage"))
         return ChatResult(generations=[ChatGeneration(
@@ -147,11 +166,16 @@ class ChatSocaity(BaseChatModel):
         run_manager: Optional[CallbackManagerForLLMRun] = None,
         **kwargs: Any,
     ) -> Iterator[ChatGenerationChunk]:
+        request = self._request(messages, stop, **kwargs)
+        emulated = request.pop("_emulated_tools", False)
+        request["messages"] = _coerce_message_content(request["messages"])
         translator = _ChunkTranslator(self.model)
-        for chunk in self.adapter.stream_chunks(self._request(messages, stop, **kwargs)):
-            generation_chunk = translator.translate(chunk)
-            if generation_chunk is not None:
-                yield generation_chunk
+        tool_filter = _EmulatedToolStream() if emulated else None
+        for chunk in self.adapter.stream_chunks(request):
+            for raw in (tool_filter.feed(chunk) if tool_filter else (chunk,)):
+                generation_chunk = translator.translate(raw)
+                if generation_chunk is not None:
+                    yield generation_chunk
 
     async def _astream(
         self,
@@ -160,11 +184,16 @@ class ChatSocaity(BaseChatModel):
         run_manager: Optional[AsyncCallbackManagerForLLMRun] = None,
         **kwargs: Any,
     ) -> AsyncIterator[ChatGenerationChunk]:
+        request = self._request(messages, stop, **kwargs)
+        emulated = request.pop("_emulated_tools", False)
+        request["messages"] = _coerce_message_content(request["messages"])
         translator = _ChunkTranslator(self.model)
-        async for chunk in self.adapter.astream_chunks(self._request(messages, stop, **kwargs)):
-            generation_chunk = translator.translate(chunk)
-            if generation_chunk is not None:
-                yield generation_chunk
+        tool_filter = _EmulatedToolStream() if emulated else None
+        async for chunk in self.adapter.astream_chunks(request):
+            for raw in (tool_filter.feed(chunk) if tool_filter else (chunk,)):
+                generation_chunk = translator.translate(raw)
+                if generation_chunk is not None:
+                    yield generation_chunk
 
     # ------------------------------------------------------------------
     # Response translation (wire -> LangChain)
@@ -175,8 +204,9 @@ class ChatSocaity(BaseChatModel):
         blocks: List[dict] = []
         if message.get("reasoning_content"):
             blocks.append({"type": "reasoning", "reasoning": message["reasoning_content"]})
-        if message.get("content"):
-            blocks.append({"type": "text", "text": message["content"]})
+        text = _content_text(message.get("content"))
+        if text:
+            blocks.append({"type": "text", "text": text})
 
         tool_calls, invalid_tool_calls = [], []
         for call in message.get("tool_calls") or []:
@@ -272,6 +302,66 @@ class _ChunkTranslator:
         return ChatGenerationChunk(message=message, generation_info={"finish_reason": finish_reason})
 
 
+class _EmulatedToolStream:
+    """Promote prompt-emulated tool calls on streamed turns.
+
+    With emulated tools (see ``_TOOL_PROMPT``) the model answers a tool call as
+    a bare JSON object in ``delta.content``. This filter holds text back while
+    it may be such a JSON payload and, on the finish chunk, re-emits it as an
+    OpenAI ``tool_calls`` delta so ``create_agent`` executes tools (and HITL
+    middleware can interrupt) on streamed turns, matching ``_generate``.
+    Prose replies flow through unchanged once the first characters rule out JSON.
+    """
+
+    def __init__(self):
+        self._buffer: List[str] = []
+        self._holding: Optional[bool] = None  # None = undecided
+
+    def feed(self, chunk: Dict[str, Any]) -> Iterator[Dict[str, Any]]:
+        choices = chunk.get("choices") or []
+        if not choices:
+            yield chunk
+            return
+        choice = choices[0]
+        delta = choice.get("delta") or {}
+
+        content = delta.get("content")
+        if content and not delta.get("tool_calls"):
+            if self._holding is False:
+                yield chunk
+                return
+            self._buffer.append(content)
+            if self._holding is None:
+                head = "".join(self._buffer).lstrip()
+                if not head or (len(head) < 7 and "Called:".startswith(head)):
+                    return  # not enough characters to decide yet
+                self._holding = head[0] in "{[`" or head.startswith("Called:")
+                if not self._holding:
+                    yield self._text_chunk()
+            return
+
+        if choice.get("finish_reason") and self._holding:
+            text = "".join(self._buffer)
+            self._buffer.clear()
+            calls = _parse_emulated_tool_calls(text)
+            if calls:
+                yield {"choices": [{
+                    "index": 0,
+                    "delta": {"tool_calls": [{"index": i, **call} for i, call in enumerate(calls)]},
+                    "finish_reason": None,
+                }]}
+                yield {**chunk, "choices": [{**choice, "finish_reason": "tool_calls"}]}
+                return
+            # Looked like JSON but was not a tool call: release it as plain text.
+            yield {"choices": [{"index": 0, "delta": {"content": text}, "finish_reason": None}]}
+        yield chunk
+
+    def _text_chunk(self) -> Dict[str, Any]:
+        text = "".join(self._buffer)
+        self._buffer.clear()
+        return {"choices": [{"index": 0, "delta": {"content": text}, "finish_reason": None}]}
+
+
 # ---------------------------------------------------------------------------
 # Message translation helpers
 # ---------------------------------------------------------------------------
@@ -294,7 +384,10 @@ def _wire_message(message: BaseMessage) -> Dict[str, Any]:
     if isinstance(message, HumanMessage):
         return {"role": "user", "content": _wire_content(message.content)}
     if isinstance(message, ToolMessage):
-        return {"role": "tool", "content": message.text, "tool_call_id": message.tool_call_id}
+        content = message.content
+        if not isinstance(content, str):
+            content = _content_text(content)
+        return {"role": "tool", "content": content, "tool_call_id": message.tool_call_id}
     if isinstance(message, AIMessage):
         wire: Dict[str, Any] = {"role": "assistant", "content": message.text or None}
         if message.tool_calls:
@@ -324,6 +417,201 @@ def _wire_content(content) -> Any:
             parts.append({"type": "image_url", "image_url": {"url": _image_url(block)}})
         # other block types (reasoning etc.) are not user-input content; skip
     return parts
+
+
+_TOOL_PROMPT = (
+    "You can use tools. To call one, reply with ONLY a JSON object and no other text:\n"
+    '{{"name": "<tool_name>", "arguments": {{<args>}}}}\n'
+    "When you do not need a tool, reply in plain language.\n"
+    "Available tools:\n{specs}"
+)
+
+
+def _coerce_message_content(messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Force string content and drop keys the test vLLM 400s on."""
+    coerced = []
+    for message in messages:
+        role = message.get("role") or "user"
+        text = _content_text(message.get("content"))
+        if not text and role == "assistant":
+            text = ""
+        coerced.append({"role": role, "content": text})
+    return coerced
+
+
+def _emulate_tool_messages(messages: List[Dict[str, Any]], tools: List[dict]) -> List[Dict[str, Any]]:
+    """Rewrite native tool turns into text so vLLM never sees `tools` or `role=tool`."""
+    specs = []
+    for tool in tools:
+        function = tool.get("function") or tool
+        params = (function.get("parameters") or {}).get("properties") or {}
+        required = (function.get("parameters") or {}).get("required") or []
+        desc = (function.get("description") or "").split("\n", 1)[0]
+        specs.append(f"- {function.get('name')}({', '.join(required)}): {desc}")
+        if params:
+            specs.append(f"  args: {', '.join(params)}")
+    instruction = {"role": "system", "content": _TOOL_PROMPT.format(specs="\n".join(specs))}
+    rewritten: List[Dict[str, Any]] = []
+    for message in messages:
+        role = message.get("role")
+        if role == "tool":
+            result = _content_text(message.get("content"))
+            if len(result) > 2000:
+                result = result[:2000] + "..."
+            rewritten.append({
+                "role": "user",
+                "content": f"Tool result ({message.get('tool_call_id') or 'tool'}):\n{result}",
+            })
+            continue
+        if role == "assistant" and message.get("tool_calls"):
+            calls = []
+            for call in message["tool_calls"]:
+                function = call.get("function") or {}
+                calls.append(f"{function.get('name')}({function.get('arguments')})")
+            text = message.get("content") or ""
+            rewritten.append({
+                "role": "assistant",
+                "content": ((text + "\n") if text else "") + "Called: " + "; ".join(calls),
+            })
+            continue
+        rewritten.append(message)
+    if rewritten and rewritten[0].get("role") == "system":
+        rewritten[0] = {
+            "role": "system",
+            "content": (rewritten[0].get("content") or "") + "\n\n" + instruction["content"],
+        }
+        return rewritten
+    return [instruction, *rewritten]
+
+
+def _promote_emulated_tool_calls(response: Dict[str, Any]) -> Dict[str, Any]:
+    """If the assistant text is a tool-call JSON, lift it onto ``message.tool_calls``."""
+    choices = response.get("choices") or []
+    if not choices:
+        return response
+    message = dict(choices[0].get("message") or {})
+    text = _content_text(message.get("content"))
+    calls = _parse_emulated_tool_calls(text)
+    if not calls:
+        return response
+    # Keep narration written before a "Called:" line as regular content.
+    match = _CALLED_LINE.search(text.strip())
+    prose = text.strip()[: match.start()].strip() if match else ""
+    message["tool_calls"] = calls
+    message["content"] = prose or None
+    choices[0] = {**choices[0], "message": message, "finish_reason": "tool_calls"}
+    return {**response, "choices": choices}
+
+
+def _content_text(content: Any) -> str:
+    """Flatten OpenAI content (string or typed parts) to plain text."""
+    if content is None:
+        return ""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        # Tool results are often a list of dicts (catalog rows). Chat content
+        # blocks have ``type``/``text``. Treating rows as blocks yielded "".
+        if content and all(
+            isinstance(block, dict) and block.get("type") not in ("text", "image", "image_url", "output_text")
+            for block in content
+        ):
+            return json.dumps(content, ensure_ascii=False, default=str)
+        parts = []
+        for block in content:
+            if isinstance(block, str):
+                parts.append(block)
+            elif isinstance(block, dict):
+                parts.append(block.get("text") or block.get("content") or "")
+        return "".join(parts)
+    if isinstance(content, dict):
+        if content.get("type") in (None, "") and "text" not in content:
+            return json.dumps(content, ensure_ascii=False, default=str)
+        return content.get("text") or content.get("content") or json.dumps(content, ensure_ascii=False)
+    return str(content)
+
+
+# Models mimic the "Called: name({args})" transcript format that
+# _coerce_message_content writes for past tool calls; accept it as a call.
+# Models often narrate before the call ("Let me search...\n\nCalled: ..."),
+# so the line may appear anywhere in the reply, not only at its start.
+_CALLED_LINE = re.compile(r"^Called:\s*([\w.-]+)\((.*)\)\s*$", re.DOTALL | re.MULTILINE)
+
+
+def _parse_emulated_tool_calls(text: str) -> List[dict]:
+    """Read a JSON tool call from model text. Empty when the reply is prose.
+
+    ``Called:`` after a real answer (the model echoing the transcript) must not
+    start another tool loop. Only a short preamble before ``Called:`` counts
+    as an intended call. Embedded JSON in a prose answer is ignored.
+    """
+    stripped = (text or "").strip()
+    if not stripped:
+        return []
+    match = _CALLED_LINE.search(stripped)
+    if match:
+        preamble = stripped[: match.start()].strip()
+        if preamble and (preamble.count("\n") > 2 or len(preamble) > 240):
+            return []
+        raw_args = match.group(2).strip() or "{}"
+        try:
+            json.loads(raw_args)
+        except ValueError:
+            return []
+        return [{"id": "call_0", "type": "function", "function": {"name": match.group(1), "arguments": raw_args}}]
+    if not stripped.startswith(("{", "[", "`")):
+        return []
+    payload = _first_json_value(text)
+    if payload is None:
+        return []
+    items = payload if isinstance(payload, list) else [payload]
+    calls = []
+    for index, item in enumerate(items):
+        if not isinstance(item, dict):
+            return []
+        name = item.get("name") or (item.get("function") or {}).get("name")
+        arguments = item.get("arguments")
+        if arguments is None and isinstance(item.get("function"), dict):
+            arguments = item["function"].get("arguments")
+        if not name or arguments is None:
+            return []
+        if not isinstance(arguments, str):
+            arguments = json.dumps(arguments, ensure_ascii=False)
+        calls.append({
+            "id": item.get("id") or f"call_{index}",
+            "type": "function",
+            "function": {"name": name, "arguments": arguments},
+        })
+    return calls
+
+
+def _first_json_value(text: str) -> Any:
+    stripped = (text or "").strip()
+    if not stripped:
+        return None
+    if stripped.startswith("```"):
+        stripped = stripped.strip("`")
+        if stripped.lower().startswith("json"):
+            stripped = stripped[4:].strip()
+    try:
+        return json.loads(stripped)
+    except ValueError:
+        pass
+    start = stripped.find("{")
+    if start < 0:
+        return None
+    depth = 0
+    for index, char in enumerate(stripped[start:], start):
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                try:
+                    return json.loads(stripped[start : index + 1])
+                except ValueError:
+                    return None
+    return None
 
 
 def _image_url(block: dict) -> str:

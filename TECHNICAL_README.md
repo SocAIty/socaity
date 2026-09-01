@@ -26,11 +26,15 @@ For job execution internals, streaming modes, and provider stacks, see [fastSDK 
 | `socaity.update_job(...)` / `delete_job(...)` | job mutations | `bool` |
 | `socaity.list_projects(...)` / `upsert_project(...)` / … | `v1/projects` | `List[Project]` / ids / `bool` |
 | `socaity.estimate(...)` / `get_stats(...)` / `get_similar_services(...)` | `v1/analytics` | estimate / stats / similar |
+| `socaity.list_interrupts(...)` / `get_interrupt(...)` | `v1/interrupts` HIT inbox (pending by default) | `List[Interrupt]` / `Interrupt` |
+| `socaity.resolve_interrupt(id, decision, ...)` | records decision; `continue_run=True` enqueues the agent continue job | `InterruptResolveResult` |
 | `socaity.connect(source)` | resolves socaity identifiers via backend, then `fastsdk.connect` | temporary `FastClient` |
 | `socaity.generate_stub(...)` | re-export of `fastsdk.generate_stub` | `FastStub` |
 | `socaity.APISeex` | re-export | job handle from every model call |
 
-Module-level CLI: `socaity login`, `install`, `update`, `list`, `search`, plus optional APIPod deploy commands when `[apipod]` is installed.
+Module-level CLI: `socaity login`, `install`, `update`, `list`, `search`, `jobs`, `projects`, `interrupts`, plus optional APIPod deploy commands when `[apipod]` is installed.
+
+`ChatSocaity` (LangChain) emulates tool calls in the prompt for catalog models whose vLLM rejects OpenAI tool fields. Promotion to `AIMessage.tool_calls` runs on blocking and streamed turns (streamed JSON or `Called: name({args})` replies are buffered and re-emitted as tool-call deltas), so `create_agent` tool loops and HITL interrupts work under streaming.
 
 ### Catalog reads: slim by default, lazy on access
 
@@ -135,7 +139,7 @@ Install/update items carry `action` (`install`, `update`, `delete`), `service_de
 
 ### `SocaityBackendClient`
 
-Sync `httpx` client for **platform metadata only** (not inference). Auth via `SOCAITY_API_KEY` or credentials from `socaity login`; an explicitly set `SOCAITY_BACKEND_URL` env var always wins over stored credentials (local backend debugging). Inference traffic goes through fastSDK to `api.socaity.ai`.
+Sync `httpx` client for **platform metadata only** (not inference). Auth via `SOCAITY_API_KEY` or credentials from `socaity login`. Backend URL is resolved per client (constructor, then `SOCAITY_BACKEND_URL`, then the login file, then prod). Looking up an API key never writes `SOCAITY_BACKEND_URL` into the process. Inference traffic goes through fastSDK to `api.socaity.ai`.
 
 Catalog reads use the backend's sparse fieldsets (`select`), relation embedding (`include`) and pagination (`limit`/`offset`).
 
@@ -352,3 +356,4 @@ For context only. These are roadmap items, not current API:
 - Job cost/runtime estimation endpoints
 - Standalone CLI package imported by socaity
 - Agentic workflow execution in the framework layer
+- Connectors as catalog services (`Service.kind=connector`). CLI connect (GitHub seed). `AIService` → `Service`. See `socaity_backend/agents/SPAINE/connectors_concept.md`.

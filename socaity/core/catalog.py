@@ -27,20 +27,37 @@ def list_services(
     filters: Optional[List[str]] = None,
     expand: Optional[List[str]] = None,
     fields: Optional[List[str]] = None,
+    sort: Optional[str] = None,
+    mine: bool = False,
 ) -> List[LazyAIService]:
     """List public services (slim by default; relations load lazily on attribute access)."""
-    if q or filters or expand or fields:
+    if q or filters or expand or fields or sort or mine:
+        service_filters = list(filters or [])
+        if category:
+            service_filters.append(f"categories:contains:{category}")
         services = _backend().query_services(
-            q=q, filters=filters, expand=expand, fields=fields, limit=limit, offset=offset,
+            q=q,
+            filters=service_filters or None,
+            expand=expand,
+            fields=fields,
+            sort=sort,
+            limit=limit,
+            offset=offset,
+            mine=mine,
         )
     else:
         services = _backend().list_services(category=category, limit=limit, offset=offset)
     return wrap_services(services, _backend())
 
 
-def get_service(id_or_name: str, expand: Optional[List[str]] = None) -> Optional[AIService]:
+def get_service(
+    id_or_name: str,
+    expand: Optional[List[str]] = None,
+    fields: Optional[List[str]] = None,
+    filters: Optional[List[str]] = None,
+) -> Optional[AIService]:
     """Fetch one service; default expand embeds deployments, endpoints and models."""
-    return _backend().get_service(id_or_name, expand=expand)
+    return _backend().get_service(id_or_name, expand=expand, fields=fields, filters=filters)
 
 
 def list_models(
@@ -52,11 +69,18 @@ def list_models(
     filters: Optional[List[str]] = None,
     expand: Optional[List[str]] = None,
     fields: Optional[List[str]] = None,
+    sort: Optional[str] = None,
 ) -> List[AIModel]:
     """List AI models from the catalog."""
-    if q or filters or expand or fields:
+    if q or filters or expand or fields or sort:
         return _backend().query_models(
-            q=q, filters=filters, expand=expand, fields=fields, limit=limit, offset=offset,
+            q=q,
+            filters=filters,
+            expand=expand,
+            fields=fields,
+            sort=sort,
+            limit=limit,
+            offset=offset,
         )
     return _backend().list_models(family=family, task=task, limit=limit, offset=offset)
 
@@ -100,8 +124,9 @@ def connect(source: Union[str, dict, AIService], api_key: Optional[str] = None, 
     if is_platform_service:
         item = session.backend.install_service(source)
         service_data = (item or {}).get("service")
-        if service_data:
-            source = AIService(**service_data)
+        if not service_data:
+            raise RuntimeError(f"Platform could not resolve service '{source}'.")
+        source = AIService(**service_data)
         api_key = api_key or session.api_key
 
     kwargs.setdefault("materialize_media", session.materialize_media)

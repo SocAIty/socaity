@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from contextvars import ContextVar
+from pathlib import Path
 from typing import Iterator, Optional
 
 from socaity_cli import SocaityBackendClient
@@ -27,6 +28,10 @@ class Session:
         backend_url: Override the backend base URL (tests, self-hosted deployments).
         materialize_media: Default for clients created through ``connect``. ``False``
             keeps file results as URL references instead of downloading the bytes.
+        user_id: Caller id when the host already knows it (SPAINE, MCP).
+        user_name: Display name for prompts. Never send ``api_key`` to a model.
+        conversation_id: Current chat id, if the host has one.
+        local_root: User-local sandbox root on the host. Local tools must stay inside it.
     """
 
     def __init__(
@@ -34,10 +39,18 @@ class Session:
         api_key: Optional[str] = None,
         backend_url: Optional[str] = None,
         materialize_media: bool = True,
+        user_id: Optional[str] = None,
+        user_name: str = "user",
+        conversation_id: Optional[str] = None,
+        local_root: Optional[Path] = None,
     ):
         self.api_key = api_key
         self.materialize_media = materialize_media
         self.backend = SocaityBackendClient(backend_url=backend_url, api_key=api_key)
+        self.user_id = user_id
+        self.user_name = user_name
+        self.conversation_id = conversation_id
+        self.local_root = local_root
 
 
 _current: ContextVar[Optional[Session]] = ContextVar("socaity_session", default=None)
@@ -62,4 +75,10 @@ def use_session(session: Session) -> Iterator[Session]:
     try:
         yield session
     finally:
-        _current.reset(token)
+        try:
+            _current.reset(token)
+        except ValueError:
+            # Generator finalized in a different context than it started in
+            # (threadpool-iterated SSE streams). The context copy that held
+            # the token is already gone; there is nothing to reset.
+            pass

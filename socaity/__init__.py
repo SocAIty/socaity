@@ -39,12 +39,40 @@ from socaity.core.jobs import (
     update_job,
     update_social_metrics,
 )
+from socaity.core.files import (
+    delete_file,
+    get_file,
+    get_storage_usage,
+    list_files,
+    update_file,
+    upload_files,
+)
 from socaity.core.projects import (
     delete_project,
     get_project,
     list_projects,
     modify_project_members,
     upsert_project,
+)
+from socaity.core.conversations import (
+    delete_conversation,
+    get_conversation,
+    list_conversation_items,
+    list_conversations,
+    update_conversation,
+)
+from socaity.core.interrupts import get_interrupt, list_interrupts, resolve_interrupt
+from socaity.core.workflows import (
+    delete_workflow,
+    estimate_workflow,
+    get_workflow,
+    get_workflow_run,
+    list_workflow_revisions,
+    list_workflow_runs,
+    list_workflows,
+    publish_workflow,
+    revert_workflow,
+    save_workflow,
 )
 from socaity.core.analytics import (
     estimate,
@@ -105,12 +133,40 @@ __all__ = [
     "delete_job",
     "update_social_metrics",
     "Job",
+    # files
+    "list_files",
+    "get_file",
+    "get_storage_usage",
+    "upload_files",
+    "update_file",
+    "delete_file",
     # projects
     "list_projects",
     "get_project",
     "upsert_project",
     "delete_project",
     "modify_project_members",
+    # conversations
+    "list_conversations",
+    "get_conversation",
+    "list_conversation_items",
+    "update_conversation",
+    "delete_conversation",
+    # interrupts (HITL)
+    "list_interrupts",
+    "get_interrupt",
+    "resolve_interrupt",
+    # workflows
+    "list_workflows",
+    "get_workflow",
+    "save_workflow",
+    "delete_workflow",
+    "publish_workflow",
+    "revert_workflow",
+    "list_workflow_revisions",
+    "list_workflow_runs",
+    "get_workflow_run",
+    "estimate_workflow",
     # analytics
     "estimate",
     "get_stats",
