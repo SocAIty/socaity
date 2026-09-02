@@ -22,6 +22,9 @@ from socaity.tools.jobs import DEFAULT_POLL_INTERVAL_S, submit_and_poll
 def agent_payload(job: dict) -> dict:
     """Uniform agent-turn envelope from a ``job_payload`` dict."""
     response = job.get("result") if isinstance(job.get("result"), dict) else {}
+    # Gateway stores the completion; some envelopes still wrap it as ``output``.
+    if "choices" not in response and isinstance(response.get("output"), dict):
+        response = response["output"]
     choices = response.get("choices") or []
     text = (choices[0].get("message") or {}).get("content") if choices else None
     return {
@@ -45,6 +48,7 @@ def execute_agent(
     model: Optional[str] = None,
     decisions: Optional[List[dict]] = None,
     continue_turn: bool = False,
+    parent_item_id: Optional[str] = None,
     workflow: Optional[dict] = None,
     timeout_s: Optional[float] = None,
     poll_interval_s: float = DEFAULT_POLL_INTERVAL_S,
@@ -64,6 +68,9 @@ def execute_agent(
         continue_turn: After a cancel, invoke from the last checkpoint on the
             same thread and append to the cancelled assistant item (wire field
             ``continue``). Requires ``thread_id``; no message, no decisions.
+        parent_item_id: Edit-and-fork: parent of the new user message (sibling
+            branch). First-class request field. The orchestrator resolves the
+            LangGraph checkpoint from that chat item. Empty string is root.
         workflow: Workflow document draft to seed the agent with.
         timeout_s: Give up waiting after this many seconds (job keeps running).
         poll_interval_s: Delay between progress samples of the running job.
@@ -96,6 +103,8 @@ def execute_agent(
         body["agent"] = agent_config
     if continue_turn:
         body["continue"] = True
+    if parent_item_id is not None:
+        body["parent_item_id"] = parent_item_id
     for key, value in (("thread_id", thread_id), ("decisions", decisions), ("workflow", workflow)):
         if value:
             body[key] = value

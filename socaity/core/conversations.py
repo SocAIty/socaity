@@ -57,9 +57,17 @@ def update_conversation(
     conversation_id: str,
     title: Optional[str] = None,
     status: Optional[str] = None,
+    active_item_id: Optional[str] = None,
 ) -> Optional[Chat]:
-    """Rename or archive a conversation the caller owns."""
-    return _backend().update_conversation(conversation_id, title=title, status=status)
+    """Rename, archive, or switch the active branch (``active_item_id``)."""
+    return _backend().update_conversation(
+        conversation_id, title=title, status=status, active_item_id=active_item_id,
+    )
+
+
+def fork_conversation(conversation_id: str) -> Optional[Chat]:
+    """Copy the conversation tree into a new ``chats.id`` (new tab)."""
+    return _backend().fork_conversation(conversation_id)
 
 
 def delete_conversation(conversation_id: str) -> bool:

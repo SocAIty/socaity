@@ -182,7 +182,21 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
                 break
             time.sleep(0.2)
         job_id = state["job_id"]
+        run_row = None
+        for _ in range(30):
+            runs = socaity.list_workflow_runs(wf_id)
+            run_row = next((row for row in runs if row.job_id == job_id), None)
+            if run_row is not None:
+                break
+            time.sleep(0.2)
+        assert run_row is not None, f"workflow_runs row with job_id={job_id} missing at intake"
+        env.log("T2A", f"intake run={run_row.id} status={run_row.status} job_id={run_row.job_id}")
+        traces_before = len((socaity.get_workflow_run(run_row.id, expand=["traces"]) or run_row).traces or [])
         time.sleep(2.0)  # let the run reach the wait node
+        live = socaity.get_workflow_run(run_row.id, expand=["traces"])
+        traces_live = len((live.traces if live else None) or [])
+        env.log("T2A", f"traces before={traces_before} live={traces_live}")
+        assert traces_live >= traces_before, (traces_before, traces_live)
         summary = cancel_job_run(job_id, action="cancel")
         env.log("T2A", f"cancel {job_id} -> {json.dumps(summary, default=str)[:200]}")
         done.wait(timeout=90)

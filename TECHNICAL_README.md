@@ -80,7 +80,7 @@ speechcraft().text2voice(...) → APISeex
 fastSDK ApiJobManager → inference at api.socaity.ai
 ```
 
-On import, `socaity/__init__.py` replaces fastSDK's default registry with `SocaityServiceRegistry` backed by `FileSystemStore` at `socaity/sdk/cache/`. Every generated stub and ad-hoc client in the process shares that registry and the same `ApiJobManager`.
+On import, `socaity/__init__.py` installs `SocaityServiceRegistry` (FileSystemStore at `socaity/sdk/cache/`) only when FastSDK still has its default registry. Host processes that already assigned a store-backed `Registry` (workers, gate) keep that catalog. `FileSystemStore.load` resolves by id or slug, so SDK stubs do not need an eager `list_all` at `Registry` construction.
 
 ## Package Layout
 
@@ -107,10 +107,16 @@ PyPI ships the skeleton `sdk/` tree. Installed models appear after `socaity logi
 ### Registry swap (`socaity/__init__.py`)
 
 ```python
+from apipod_registry.registry import Registry
 from fastsdk import FastSDK
 from socaity.core.socaity_service_registry import SocaityServiceRegistry
 
-service_registry = FastSDK().service_registry = SocaityServiceRegistry()
+_sdk = FastSDK()
+_host = getattr(_sdk, "_service_registry", None)
+if type(_host) is Registry and _host.service_store is not None:
+    service_registry = _host
+else:
+    service_registry = _sdk.service_registry = SocaityServiceRegistry()
 ```
 
 This is the single wiring point. Generated stubs use `service_name_or_id="<service-id>"` and resolve definitions from this registry. Override inference URLs at runtime:

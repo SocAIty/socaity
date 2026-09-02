@@ -56,6 +56,7 @@ from socaity.core.projects import (
 )
 from socaity.core.conversations import (
     delete_conversation,
+    fork_conversation,
     get_conversation,
     list_conversation_items,
     list_conversations,
@@ -151,6 +152,7 @@ __all__ = [
     "get_conversation",
     "list_conversation_items",
     "update_conversation",
+    "fork_conversation",
     "delete_conversation",
     # interrupts (HITL)
     "list_interrupts",

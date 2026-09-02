@@ -4,7 +4,7 @@ Mimics a real client that:
   1. authenticates against the platform API
   2. discovers a chat-capable catalog service
   3. completes + streams without persistence
-  4. starts a conversation with ``store=true`` (client-owned conversation_id)
+  4. starts a conversation with ``store=true`` (client-owned ``thread_id``)
   5. continues the thread, optionally branches, searches, patches, deletes
   6. links jobs back via ``expand=chat_item``
 
@@ -579,7 +579,7 @@ def run_scenario(
                 }
             ],
             "store": True,
-            "metadata": {"conversation_id": result.conversation_id},
+            "thread_id": result.conversation_id,
             "max_tokens": 128,
             "temperature": 0.2,
         },
@@ -624,7 +624,7 @@ def run_scenario(
                 },
             ],
             "store": True,
-            "metadata": {"conversation_id": result.conversation_id},
+            "thread_id": result.conversation_id,
             "max_tokens": 64,
             "temperature": 0,
         },
@@ -650,7 +650,7 @@ def run_scenario(
                 "tools": [WEATHER_TOOL],
                 "tool_choice": "auto",
                 "store": True,
-                "metadata": {"conversation_id": result.conversation_id},
+                "thread_id": result.conversation_id,
                 "max_tokens": 256,
                 "temperature": 0,
             },
@@ -681,7 +681,7 @@ def run_scenario(
                     ],
                     "tools": [WEATHER_TOOL],
                     "store": True,
-                    "metadata": {"conversation_id": result.conversation_id},
+                    "thread_id": result.conversation_id,
                     "max_tokens": 128,
                     "temperature": 0,
                 },
@@ -722,10 +722,8 @@ def run_scenario(
                 }
             ],
             "store": True,
-            "metadata": {
-                "conversation_id": result.conversation_id,
-                "parent_item_id": parent_item_id,
-            },
+            "thread_id": result.conversation_id,
+            "parent_item_id": parent_item_id,
             "max_tokens": 64,
             "temperature": 0,
         },

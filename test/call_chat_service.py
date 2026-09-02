@@ -326,7 +326,7 @@ def step_persist(client) -> None:
                 }
             ],
             "store": True,
-            "metadata": {"conversation_id": conversation_id},
+            "thread_id": conversation_id,
             "max_tokens": 128,
             "temperature": 0.2,
         }
@@ -369,7 +369,7 @@ def step_persist(client) -> None:
                 },
             ],
             "store": True,
-            "metadata": {"conversation_id": conversation_id},
+            "thread_id": conversation_id,
             "max_tokens": 64,
             "temperature": 0,
         }
@@ -397,7 +397,7 @@ def step_tools(client) -> None:
             "tools": [WEATHER_TOOL],
             "tool_choice": "auto",
             "store": True,
-            "metadata": {"conversation_id": conversation_id},
+            "thread_id": conversation_id,
             "max_tokens": 256,
             "temperature": 0,
         }
@@ -430,7 +430,7 @@ def step_tools(client) -> None:
             ],
             "tools": [WEATHER_TOOL],
             "store": True,
-            "metadata": {"conversation_id": conversation_id},
+            "thread_id": conversation_id,
             "max_tokens": 128,
             "temperature": 0,
         }
