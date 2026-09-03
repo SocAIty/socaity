@@ -56,6 +56,7 @@ REGISTRY: dict[str, Callable] = {
     "run_service": run_service,
     "estimate_price": estimate_price,
     "get_job": _tool("get_job", JobsClient),
+    "query_jobs": _tool("query_jobs", JobsClient),
     "list_files": _tool("list_files", FilesClient),
     "get_file": _tool("get_file", FilesClient),
     "get_storage_usage": _tool("get_storage_usage", FilesClient),

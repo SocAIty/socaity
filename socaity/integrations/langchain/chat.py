@@ -427,12 +427,77 @@ _TOOL_PROMPT = (
 )
 
 
+_VIDEO_AUDIO_EXT = (".mp4", ".webm", ".mov", ".mkv", ".wav", ".mp3", ".ogg", ".flac", ".m4a")
+
+
+def _image_url_parts(content: Any) -> List[Dict[str, Any]]:
+    """OpenAI ``image_url`` / ``image`` blocks already on a message."""
+    if not isinstance(content, list):
+        return []
+    parts = []
+    for block in content:
+        if not isinstance(block, dict) or block.get("type") not in ("image", "image_url"):
+            continue
+        try:
+            url = _image_url(block)
+        except ValueError:
+            continue
+        if url:
+            parts.append({"type": "image_url", "image_url": {"url": url}})
+    return parts
+
+
+def _is_image_url(url: str) -> bool:
+    path = url.split("?", 1)[0].lower()
+    return not any(path.endswith(ext) for ext in _VIDEO_AUDIO_EXT)
+
+
+def _tool_image_urls(content: Any) -> List[str]:
+    """Image URLs from a ``run_service`` tool result (``files`` / result URL)."""
+    payload = content
+    if isinstance(content, str):
+        try:
+            payload = json.loads(content)
+        except ValueError:
+            return []
+    urls: List[str] = []
+    if isinstance(payload, dict):
+        files = payload.get("files")
+        if isinstance(files, list):
+            for item in files:
+                if isinstance(item, str) and item.startswith("http"):
+                    urls.append(item)
+                elif isinstance(item, dict):
+                    url = item.get("url")
+                    if isinstance(url, str) and url.startswith("http"):
+                        urls.append(url)
+        result = payload.get("result")
+        if isinstance(result, str) and result.startswith("http"):
+            urls.append(result)
+    seen: set[str] = set()
+    out: List[str] = []
+    for url in urls:
+        if url not in seen and _is_image_url(url):
+            seen.add(url)
+            out.append(url)
+    return out
+
+
 def _coerce_message_content(messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Force string content and drop keys the test vLLM 400s on."""
+    """String content for text turns. Keep ``image_url`` parts so the VLM sees them."""
     coerced = []
     for message in messages:
         role = message.get("role") or "user"
-        text = _content_text(message.get("content"))
+        content = message.get("content")
+        images = _image_url_parts(content)
+        text = _content_text(content)
+        if images:
+            parts: List[Dict[str, Any]] = []
+            if text:
+                parts.append({"type": "text", "text": text})
+            parts.extend(images)
+            coerced.append({"role": role, "content": parts})
+            continue
         if not text and role == "assistant":
             text = ""
         coerced.append({"role": role, "content": text})
@@ -455,13 +520,22 @@ def _emulate_tool_messages(messages: List[Dict[str, Any]], tools: List[dict]) ->
     for message in messages:
         role = message.get("role")
         if role == "tool":
-            result = _content_text(message.get("content"))
+            raw = message.get("content")
+            result = _content_text(raw)
             if len(result) > 2000:
                 result = result[:2000] + "..."
-            rewritten.append({
-                "role": "user",
-                "content": f"Tool result ({message.get('tool_call_id') or 'tool'}):\n{result}",
-            })
+            text = f"Tool result ({message.get('tool_call_id') or 'tool'}):\n{result}"
+            images = _tool_image_urls(raw)
+            if images:
+                rewritten.append({
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": text},
+                        *[{"type": "image_url", "image_url": {"url": url}} for url in images],
+                    ],
+                })
+            else:
+                rewritten.append({"role": "user", "content": text})
             continue
         if role == "assistant" and message.get("tool_calls"):
             calls = []

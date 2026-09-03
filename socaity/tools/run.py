@@ -103,11 +103,11 @@ def execute_service(
             as the gateway assigned an id. Hosts use it to register live jobs.
 
     Returns:
-        ``job_payload`` dict: job_id, status ("finished" or "running" on timeout),
-        result, files (result URLs), queue_time_s, execution_time_s.
+        ``job_payload`` dict: job_id, status ("finished", "running" on timeout,
+        or "failed"), result, files (result URLs), queue_time_s, execution_time_s.
+        Failed jobs include ``error``. The agent persists this as a tool_result.
 
     Raises:
-        RuntimeError: When the job reaches a terminal error state.
         ValueError: When the service or endpoint cannot be resolved.
     """
     deadline = time.monotonic() + (timeout_s or DEFAULT_JOB_TIMEOUT_S)
@@ -139,7 +139,9 @@ def execute_service(
 
     job_id = job_id or platform_job_id(job)
     if job.error is not None:
-        raise RuntimeError(f"Job failed: {job.error}")
+        payload = job_payload(job, job_id, "failed")
+        payload["error"] = str(job.error)
+        return payload
 
     if on_progress:
         on_progress(1.0, "finished")

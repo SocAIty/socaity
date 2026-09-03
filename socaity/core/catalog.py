@@ -7,6 +7,7 @@ any identifier through the backend and returns a ready fastsdk client.
 from typing import List, Optional, Union
 
 import fastsdk
+from fastsdk.fastClient import FastClient
 from socaity_schemas.platform import AIModel, AIService, Job, ServiceCategory
 from socaity_cli import SocaityBackendClient
 
@@ -130,7 +131,10 @@ def connect(source: Union[str, dict, AIService], api_key: Optional[str] = None, 
         api_key = api_key or session.api_key
 
     kwargs.setdefault("materialize_media", session.materialize_media)
-    return fastsdk.connect(source, api_key=api_key, **kwargs)
+    # install_service already points the deployment at the gateway
+    # (`/services/v1/{deployment.id}`). Keep the client in the registry:
+    # fastsdk.connect() is temporary and used to persist-delete the cache row.
+    return FastClient(source, api_key=api_key, temporary=False, **kwargs)
 
 
 def _looks_like_direct_source(source: str) -> bool:

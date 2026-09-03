@@ -12,13 +12,33 @@ from __future__ import annotations
 
 import os
 import time
+from pathlib import Path
 from typing import Optional
 
 import httpx
 
-os.environ.setdefault("SOCAITY_BACKEND_URL", "http://127.0.0.1:8000")
-os.environ.setdefault("SOCAITY_INFER_BACKEND_URL", "http://127.0.0.1:8001")
-os.environ.setdefault("INFERENCE_BACKEND_URL", os.environ["SOCAITY_INFER_BACKEND_URL"])
+
+_CRED_KEYS = ("SOCAITY_API_KEY", "SOCAITY_TEST_RICH_KEY", "SOCAITY_TEST_POOR_KEY")
+
+
+def _load_repo_env() -> None:
+    """Load test credentials from the SDK .env. Do not inherit cloud URLs."""
+    env_file = Path(__file__).resolve().parents[1] / ".env"
+    if not env_file.is_file():
+        return
+    for line in env_file.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            key, _, value = line.partition("=")
+            name = key.strip()
+            if name in _CRED_KEYS:
+                os.environ.setdefault(name, value.strip().strip('"').strip("'"))
+
+
+_load_repo_env()
+os.environ["SOCAITY_BACKEND_URL"] = "http://127.0.0.1:8000"
+os.environ["SOCAITY_INFER_BACKEND_URL"] = "http://127.0.0.1:8001"
+os.environ["INFERENCE_BACKEND_URL"] = "http://127.0.0.1:8001"
 
 BACKEND = os.environ["SOCAITY_BACKEND_URL"].rstrip("/")
 INFERENCE = os.environ["SOCAITY_INFER_BACKEND_URL"].rstrip("/")
