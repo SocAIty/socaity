@@ -8,10 +8,10 @@ from socaity.tools.registry import (
     SERVICE_DETAIL_EXPAND,
     TOOLS,
 )
-from socaity.tools.agents import execute_agent, run_agent
-from socaity.tools.jobs import cancel_job_run
-from socaity.tools.run import estimate_price, execute_service, run_service
-from socaity.tools.workflows import execute_workflow, run_workflow
+from socaity.tools.agents import run_agent
+from socaity.tools.jobs import cancel_job_run, interrupt_job, wait_for_job
+from socaity.tools.run import estimate_price, run_service
+from socaity.tools.workflows import run_workflow
 
 __all__ = [
     "REGISTRY",
@@ -21,12 +21,11 @@ __all__ = [
     "dump_entity",
     "page",
     "run_service",
-    "execute_service",
     "estimate_price",
-    "execute_agent",
     "run_agent",
     "cancel_job_run",
-    "execute_workflow",
+    "interrupt_job",
+    "wait_for_job",
     "run_workflow",
     "to_fastmcp",
 ]

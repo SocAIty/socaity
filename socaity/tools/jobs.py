@@ -1,12 +1,11 @@
 """Shared gateway submit/poll for first-party jobs (workflows, agents).
 
-Catalog service jobs stay on FastSDK (``execute_service``). Workflow runs and
+Catalog service jobs stay on FastSDK (``run_service``). Workflow runs and
 agent turns post to gateway factories and poll ``GET /status/{job_id}``.
 """
 
 from __future__ import annotations
 
-import os
 import time
 from typing import Any, Callable, Dict, Optional
 
@@ -16,17 +15,20 @@ from socaity.core.session import current_session
 
 DEFAULT_JOB_TIMEOUT_S = 1800.0
 DEFAULT_POLL_INTERVAL_S = 1.0
-DEFAULT_INFERENCE_URL = "https://api.socaity.ai"
 TERMINAL_STATUSES = frozenset({"finished", "failed", "timeout", "cancelled", "rejected"})
+_ERROR_STATUSES = frozenset({"failed", "timeout", "rejected"})
 
 
-def inference_origin() -> str:
-    """Gateway origin. Same env names as ``socaity_backend`` and the frontend."""
-    for key in ("INFERENCE_BACKEND_URL", "NUXT_PUBLIC_INFER_API_BASE_URL", "SOCAITY_API_BASE"):
-        value = (os.environ.get(key) or "").strip()
-        if value:
-            return value.rstrip("/")
-    return DEFAULT_INFERENCE_URL
+def _api_key() -> str:
+    api_key = current_session().backend.api_key
+    if not api_key:
+        raise ValueError("No API key. Run `socaity login` or set SOCAITY_API_KEY.")
+    return api_key
+
+
+def gate_origin() -> str:
+    """APIPod gate origin from the active session (``APIPOD_GATE_URL``)."""
+    return current_session().gate_url
 
 
 def poll_url(origin: str, envelope: dict, job_id: str) -> str:
@@ -53,18 +55,92 @@ def cancel_job_run(job_id: str, action: str = "cancel") -> dict:
         RuntimeError: Non-2xx cancel response.
         ValueError: No API key in the active session.
     """
-    api_key = current_session().backend.api_key
-    if not api_key:
-        raise ValueError("No API key. Run `socaity login` or set SOCAITY_API_KEY.")
     response = httpx.post(
-        f"{inference_origin()}/cancel/{job_id}",
+        f"{gate_origin()}/cancel/{job_id}",
         params={"action": action},
-        headers={"x-api-key": api_key},
+        headers={"x-api-key": _api_key()},
         timeout=60,
     )
     if response.status_code not in (200, 202):
         raise RuntimeError(f"Job cancel failed ({response.status_code}): {response.text[:300]}")
     return response.json() if response.content else {}
+
+
+def wait_for_job(
+    job_id: str,
+    *,
+    timeout_s: Optional[float] = None,
+    poll_interval_s: float = DEFAULT_POLL_INTERVAL_S,
+) -> dict:
+    """Wait on a running gateway job until it is terminal.
+
+    Args:
+        job_id: Platform job id from a submit envelope.
+        timeout_s: Give up waiting after this many seconds (job keeps running).
+        poll_interval_s: Delay between status polls.
+
+    Returns:
+        Status envelope with ``job_id``. On timeout the status is ``running``.
+        ``cancelled`` is a normal terminal (not an error).
+
+    Raises:
+        RuntimeError: The job reached a terminal error state.
+        ValueError: No API key in the active session.
+    """
+    origin = gate_origin()
+    headers = {"x-api-key": _api_key()}
+    deadline = time.monotonic() + (timeout_s or DEFAULT_JOB_TIMEOUT_S)
+    status_url = f"{origin}/status/{job_id}"
+    envelope: Dict[str, Any] = {"job_id": job_id, "status": "queued"}
+
+    with httpx.Client(headers=headers, timeout=60) as client:
+        while True:
+            poll = client.get(status_url)
+            if poll.status_code == 200:
+                envelope = poll.json()
+                status_url = poll_url(origin, envelope, job_id)
+            status = (envelope.get("status") or "").lower()
+            if status in TERMINAL_STATUSES:
+                break
+            if time.monotonic() > deadline:
+                return {**envelope, "job_id": job_id, "status": "running"}
+            time.sleep(poll_interval_s)
+
+    status = (envelope.get("status") or "").lower()
+    if envelope.get("error") or status in _ERROR_STATUSES:
+        raise RuntimeError(f"Job failed: {envelope.get('error') or status}")
+    return {**envelope, "job_id": job_id}
+
+
+def interrupt_job(
+    job_id: str,
+    *,
+    timeout_s: Optional[float] = None,
+    poll_interval_s: float = DEFAULT_POLL_INTERVAL_S,
+) -> dict:
+    """Graceful stop (``action=interrupt``) then wait until the job is terminal.
+
+    Checkpoint stays. Call before a follow-up ``run_agent`` on the same thread
+    so ``begin_turn`` sees one leaf.
+
+    Args:
+        job_id: Live agent (or other gateway) job to stop.
+        timeout_s: Give up waiting after this many seconds (job keeps running).
+        poll_interval_s: Delay between status polls.
+
+    Returns:
+        Terminal status envelope. ``cancelled`` is success for this path.
+
+    Raises:
+        RuntimeError: Cancel failed, or the job errored / did not stop in time.
+        ValueError: No API key in the active session.
+    """
+    cancel_job_run(job_id, action="interrupt")
+    envelope = wait_for_job(job_id, timeout_s=timeout_s, poll_interval_s=poll_interval_s)
+    status = (envelope.get("status") or "").lower()
+    if status not in TERMINAL_STATUSES:
+        raise RuntimeError(f"Previous turn did not stop in time | job_id={job_id} status={status}")
+    return envelope
 
 
 def submit_and_poll(
@@ -80,7 +156,7 @@ def submit_and_poll(
     """POST a first-party gateway factory and poll until terminal.
 
     Args:
-        path: Path under the inference origin, e.g. ``/v1/workflows/{id}/run``.
+        path: Path under the gate origin, e.g. ``/v1/workflows/{id}/run``.
         body: JSON body. ``None`` values are dropped.
         timeout_s: Give up waiting after this many seconds (job keeps running).
         poll_interval_s: Delay between status polls.
@@ -95,12 +171,8 @@ def submit_and_poll(
         RuntimeError: Submit failed or the job reached a terminal error state.
         ValueError: No API key in the active session.
     """
-    api_key = current_session().backend.api_key
-    if not api_key:
-        raise ValueError("No API key. Run `socaity login` or set SOCAITY_API_KEY.")
-
-    origin = inference_origin()
-    headers = {"x-api-key": api_key}
+    origin = gate_origin()
+    headers = {"x-api-key": _api_key()}
     deadline = time.monotonic() + (timeout_s or DEFAULT_JOB_TIMEOUT_S)
 
     with httpx.Client(headers=headers, timeout=60) as client:
@@ -133,9 +205,10 @@ def submit_and_poll(
             poll = client.get(status_url)
             if poll.status_code == 200:
                 envelope = poll.json()
+                status_url = poll_url(origin, envelope, job_id)
 
     status = (envelope.get("status") or "").lower()
-    if envelope.get("error") or status in ("failed", "timeout", "rejected"):
+    if envelope.get("error") or status in _ERROR_STATUSES:
         raise RuntimeError(f"Job failed: {envelope.get('error') or status}")
 
     if on_progress:

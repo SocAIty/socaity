@@ -127,7 +127,7 @@ https://github.com/user-attachments/assets/978ee377-3ceb-4a87-add5-daee15306231
 
 ### Jobs vs. results
 
-Calls return a **job** handle, not a blocked connection. Poll when ready, cancel when not, run hundreds in parallel.
+Calls return a **job** handle, not a blocked connection. Poll when ready, cancel when not, run hundreds in parallel. Agent turns and workflow runs use the same handle via ``submit_agent_chat`` / ``submit_workflow_run``. To cut in on a live agent turn, pass ``supersedes_job_id`` to ``run_agent`` so the previous job is interrupted and settled before the next POST.
 
 ```python
 job = deepseek_v3("What a time to be alive.")

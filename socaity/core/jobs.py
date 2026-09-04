@@ -1,6 +1,6 @@
 """Public jobs helpers of the socaity SDK.
 
-Thin layer over ``GET /v1/jobs`` (list/search/get) and the finished-job webhook
+Thin layer over ``GET /v1/jobs`` (query/get) and the finished-job webhook
 used to refresh the jobs catalog index after inference completes.
 """
 from typing import List, Optional
@@ -10,7 +10,7 @@ from socaity_schemas.platform import Job
 from socaity.core.catalog import _backend
 
 
-def list_jobs(
+def query_jobs(
     q: Optional[str] = None,
     filters: Optional[List[str]] = None,
     expand: Optional[List[str]] = None,
@@ -20,7 +20,7 @@ def list_jobs(
     limit: int = 100,
     offset: int = 0,
 ) -> List[Job]:
-    """List or fuzzy-search jobs visible to the authenticated caller."""
+    """Query jobs visible to the authenticated caller."""
     return _backend().query_jobs(
         q=q,
         filters=filters,

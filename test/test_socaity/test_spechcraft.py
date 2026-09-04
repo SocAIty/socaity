@@ -14,7 +14,8 @@ TEST_FILE_2 = f'{INPUT_DIR}/voice_clone_test_voice_2.wav'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 speechcraft = speechcraft(api_key=os.getenv("SOCAITY_API_KEY"))
 
-local_url = os.getenv("SOCAITY_INFER_BACKEND_URL", "https://api.socaity.ai/v1/") + "speechcraft"
+_gate = os.getenv("APIPOD_GATE_URL", "https://api.socaity.ai").rstrip("/")
+local_url = f"{_gate}/services/v1/{speechcraft.service_definition.id}"
 service_registry.update_service(speechcraft.service_definition.id, service_address=SocaityServiceAddress(url=local_url))
 
 

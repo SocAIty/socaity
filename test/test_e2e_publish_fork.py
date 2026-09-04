@@ -24,14 +24,14 @@ import agentic_utils as env  # noqa: E402  (sets URL defaults before socaity imp
 
 import socaity  # noqa: E402
 from socaity.core.session import Session, use_session  # noqa: E402
-from socaity.tools.agents import execute_agent  # noqa: E402
+from socaity.tools.agents import run_agent  # noqa: E402
 from socaity.tools.workflows import run_workflow  # noqa: E402
 
 AGENT = "spaine"
 
 pytestmark = [
     pytest.mark.skipif(not env.backend_up(), reason=f"backend not reachable at {env.BACKEND}"),
-    pytest.mark.skipif(not env.inference_up(), reason=f"inference gateway not reachable at {env.INFERENCE}"),
+    pytest.mark.skipif(not env.inference_up(), reason=f"APIPod gate not reachable at {env.GATE}"),
     pytest.mark.skipif(not env.rich_key(), reason="no test API key (SOCAITY_TEST_RICH_KEY / SOCAITY_API_KEY)"),
     pytest.mark.skipif(not env.poor_key(), reason="no second-user key (SOCAITY_TEST_POOR_KEY)"),
 ]
@@ -72,7 +72,7 @@ def run() -> None:
         document = fetched.document.model_dump(mode="json", exclude_none=True)
         env.log("T2B", f"second user fetched published workflow: {fetched.title}")
 
-        turn = execute_agent(
+        turn = run_agent(
             AGENT,
             message=(
                 "Modify the draft workflow with exactly one tool call and nothing else: "
@@ -89,14 +89,14 @@ def run() -> None:
 
         fork = None
         for _ in range(15):
-            mine = socaity.list_workflows(filters=["visibility:eq:mine"], limit=50)
+            mine = socaity.query_workflows(filters=["visibility:eq:mine"], limit=50)
             fork = next((w for w in mine if w.title == TITLE and w.id != wf_id), None)
             if fork is not None:
                 break
             time.sleep(2)
         assert fork is not None, "no fork appeared for the second user"
         env.log("T2B", f"fork id={fork.id}")
-        fork_revisions = socaity.list_workflow_revisions(fork.id)
+        fork_revisions = socaity.query_workflow_revisions(fork.id)
         env.log("T2B", f"fork revisions: {[(r.id, r.message) for r in fork_revisions]}")
         fork_doc = socaity.get_workflow(fork.id).document
         env.log("T2B", f"fork nodes: {[n.id for n in fork_doc.nodes]}")

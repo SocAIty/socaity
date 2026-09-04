@@ -1,9 +1,4 @@
-"""Execution tools: run a service endpoint and estimate what it will cost.
-
-``execute_service`` is the full-control core (progress and job-start hooks for
-hosts that surface live progress, e.g. an MCP server or a terminal agent).
-``run_service`` is the agent-facing tool with a schema-clean signature.
-"""
+"""Execution tools: run a service endpoint and estimate what it will cost."""
 
 from __future__ import annotations
 
@@ -62,7 +57,7 @@ def platform_job_id(job: APISeex) -> Optional[str]:
 
 
 def job_payload(job: APISeex, job_id: Optional[str], status: str) -> dict:
-    """Uniform result envelope shared by every host of ``run_service``."""
+    """Uniform result envelope of ``run_service``."""
     urls: List[str] = []
     result = job.result if status == "finished" else None
     _collect_urls(result, urls)
@@ -77,7 +72,7 @@ def job_payload(job: APISeex, job_id: Optional[str], status: str) -> dict:
     }
 
 
-def execute_service(
+def run_service(
     service: str,
     endpoint: Optional[str] = None,
     params: Optional[dict] = None,
@@ -88,27 +83,34 @@ def execute_service(
     on_progress: Optional[Callable[[float, str], None]] = None,
     on_job_start: Optional[Callable[[str, APISeex], None]] = None,
 ) -> dict:
-    """Submit a service job and wait for its result (blocking core of ``run_service``).
+    """Run an AI service and wait for its result. This is how work gets done here.
+
+    Call get_service (with ``expand`` including ``deployments.contract``) or
+    query_services with the same expand when you do not know the parameter names:
+    ``params`` keys must match that endpoint's parameters exactly.
+
+    File results come back as URLs, never as bytes. Hand those URLs to the user or
+    download them yourself; the platform deliberately does not move the data twice.
 
     Args:
-        service: Service id, name, "owner/service" or model slug.
-        endpoint: Endpoint path. Defaults to the service's first endpoint.
-        params: Endpoint arguments.
-        is_public: Publish the job and its results in the socaity feed.
-        expires_at: Optional ISO timestamp for produced files.
-        timeout_s: Give up waiting after this many seconds (job keeps running).
+        service: Service id, name, "owner/service" or model slug, as returned by
+            query_services. The service is resolved through the catalog.
+        endpoint: Endpoint path such as "/predictions". Defaults to the service's
+            first endpoint, which is the right one for single-purpose services.
+        params: Endpoint arguments, e.g. {"prompt": "a cute robot dog"}.
+        is_public: Publish the job and its results in the socaity feed. Default private.
+        expires_at: Optional ISO timestamp for produced files. Null keeps them permanently.
+        timeout_s: Give up waiting after this many seconds. The job keeps running on
+            the platform; poll it with get_job.
         poll_interval_s: Delay between progress samples of the running job.
         on_progress: Called with (progress 0..1, message) whenever progress changes.
         on_job_start: Called once with (platform job id, fastsdk job handle) as soon
             as the gateway assigned an id. Hosts use it to register live jobs.
 
     Returns:
-        ``job_payload`` dict: job_id, status ("finished", "running" on timeout,
-        or "failed"), result, files (result URLs), queue_time_s, execution_time_s.
-        Failed jobs include ``error``. The agent persists this as a tool_result.
-
-    Raises:
-        ValueError: When the service or endpoint cannot be resolved.
+        job_id, status, result, and a ``files`` list of result URLs. On timeout the
+        status is "running" and the job_id is still valid for get_job. Failed jobs
+        include ``error``.
     """
     deadline = time.monotonic() + (timeout_s or DEFAULT_JOB_TIMEOUT_S)
     job_id: Optional[str] = None
@@ -146,48 +148,6 @@ def execute_service(
     if on_progress:
         on_progress(1.0, "finished")
     return job_payload(job, job_id, "finished")
-
-
-def run_service(
-    service: str,
-    endpoint: Optional[str] = None,
-    params: Optional[dict] = None,
-    is_public: bool = False,
-    expires_at: Optional[str] = None,
-    timeout_s: Optional[float] = None,
-) -> dict:
-    """Run an AI service and wait for its result. This is how work gets done here.
-
-    Call get_service (with ``expand`` including ``deployments.contract``) or
-    search_services with the same expand when you do not know the parameter names:
-    ``params`` keys must match that endpoint's parameters exactly.
-
-    File results come back as URLs, never as bytes. Hand those URLs to the user or
-    download them yourself; the platform deliberately does not move the data twice.
-
-    Args:
-        service: Service id, name, "owner/service" or model slug, as returned by
-            search_services. The service is resolved through the catalog.
-        endpoint: Endpoint path such as "/predictions". Defaults to the service's
-            first endpoint, which is the right one for single-purpose services.
-        params: Endpoint arguments, e.g. {"prompt": "a cute robot dog"}.
-        is_public: Publish the job and its results in the socaity feed. Default private.
-        expires_at: Optional ISO timestamp for produced files. Null keeps them permanently.
-        timeout_s: Give up waiting after this many seconds. The job keeps running on
-            the platform; poll it with get_job.
-
-    Returns:
-        job_id, status, result, and a ``files`` list of result URLs. On timeout the
-        status is "running" and the job_id is still valid for get_job.
-    """
-    return execute_service(
-        service,
-        endpoint=endpoint,
-        params=params,
-        is_public=is_public,
-        expires_at=expires_at,
-        timeout_s=timeout_s,
-    )
 
 
 def estimate_price(

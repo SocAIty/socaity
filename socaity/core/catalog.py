@@ -1,14 +1,14 @@
 """Public catalog functions of the socaity SDK.
 
-Thin layer over the backend catalog API: list, get, search, connect.
-List results are lazy (relations hydrate on first access). ``connect`` resolves
+Thin layer over the backend catalog API: query, get, connect.
+Query results are lazy (relations hydrate on first access). ``connect`` resolves
 any identifier through the backend and returns a ready fastsdk client.
 """
 from typing import List, Optional, Union
 
 import fastsdk
 from fastsdk.fastClient import FastClient
-from socaity_schemas.platform import AIModel, AIService, Job, ServiceCategory
+from socaity_schemas.platform import AIModel, AIService, ServiceCategory
 from socaity_cli import SocaityBackendClient
 
 from socaity.core.lazy import LazyAIService, wrap_services
@@ -20,7 +20,7 @@ def _backend() -> SocaityBackendClient:
     return current_session().backend
 
 
-def list_services(
+def query_services(
     category: Optional[str] = None,
     limit: int = 100,
     offset: int = 0,
@@ -31,23 +31,20 @@ def list_services(
     sort: Optional[str] = None,
     mine: bool = False,
 ) -> List[LazyAIService]:
-    """List public services (slim by default; relations load lazily on attribute access)."""
-    if q or filters or expand or fields or sort or mine:
-        service_filters = list(filters or [])
-        if category:
-            service_filters.append(f"categories:contains:{category}")
-        services = _backend().query_services(
-            q=q,
-            filters=service_filters or None,
-            expand=expand,
-            fields=fields,
-            sort=sort,
-            limit=limit,
-            offset=offset,
-            mine=mine,
-        )
-    else:
-        services = _backend().list_services(category=category, limit=limit, offset=offset)
+    """Query public services (slim by default; relations load lazily on attribute access)."""
+    service_filters = list(filters or [])
+    if category:
+        service_filters.append(f"categories:contains:{category}")
+    services = _backend().query_services(
+        q=q,
+        filters=service_filters or None,
+        expand=expand,
+        fields=fields,
+        sort=sort,
+        limit=limit,
+        offset=offset,
+        mine=mine,
+    )
     return wrap_services(services, _backend())
 
 
@@ -61,7 +58,7 @@ def get_service(
     return _backend().get_service(id_or_name, expand=expand, fields=fields, filters=filters)
 
 
-def list_models(
+def query_models(
     family: Optional[str] = None,
     task: Optional[str] = None,
     limit: int = 100,
@@ -72,44 +69,31 @@ def list_models(
     fields: Optional[List[str]] = None,
     sort: Optional[str] = None,
 ) -> List[AIModel]:
-    """List AI models from the catalog."""
-    if q or filters or expand or fields or sort:
-        return _backend().query_models(
-            q=q,
-            filters=filters,
-            expand=expand,
-            fields=fields,
-            sort=sort,
-            limit=limit,
-            offset=offset,
-        )
-    return _backend().list_models(family=family, task=task, limit=limit, offset=offset)
+    """Query AI models from the catalog."""
+    return _backend().query_models(
+        q=q,
+        family=family,
+        task=task,
+        filters=filters,
+        expand=expand,
+        fields=fields,
+        sort=sort,
+        limit=limit,
+        offset=offset,
+    )
 
 
 def get_model(id_or_name: str, expand: Optional[List[str]] = None) -> Optional[AIModel]:
     return _backend().get_model(id_or_name, expand=expand)
 
 
-def list_categories() -> List[ServiceCategory]:
-    return _backend().list_categories()
+def query_categories() -> List[ServiceCategory]:
+    return _backend().query_categories()
 
 
 def list_pricing_rules(active_only: bool = True) -> list:
     """Active hosting pricing rules from the catalog."""
     return _backend().list_pricing_rules(active_only=active_only)
-
-
-def search(
-    query: str,
-    collection: str = "services",
-    filters: Optional[List[str]] = None,
-    limit: int = 20,
-    visibility: str = "user_visible",
-) -> List[Union[AIService, AIModel, Job]]:
-    """Fuzzy search over services, models, or jobs (backend ``q`` param)."""
-    return _backend().search(
-        query, collection=collection, filters=filters, limit=limit, visibility=visibility,
-    )
 
 
 def connect(source: Union[str, dict, AIService], api_key: Optional[str] = None, **kwargs) -> "fastsdk.FastClient":

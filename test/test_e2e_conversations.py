@@ -25,13 +25,13 @@ import agentic_utils as env  # noqa: E402  (sets URL defaults before socaity imp
 
 import socaity  # noqa: E402
 from socaity.core.session import Session, use_session  # noqa: E402
-from socaity.tools.agents import execute_agent, run_agent  # noqa: E402
+from socaity.tools.agents import run_agent  # noqa: E402
 
 PERSIST_TIMEOUT_S = 120.0
 
 pytestmark = [
     pytest.mark.skipif(not env.backend_up(), reason=f"backend not reachable at {env.BACKEND}"),
-    pytest.mark.skipif(not env.inference_up(), reason=f"inference gateway not reachable at {env.INFERENCE}"),
+    pytest.mark.skipif(not env.inference_up(), reason=f"APIPod gate not reachable at {env.GATE}"),
     pytest.mark.skipif(not env.rich_key(), reason="no test API key (SOCAITY_TEST_RICH_KEY / SOCAITY_API_KEY)"),
 ]
 
@@ -92,17 +92,17 @@ def run() -> None:
         chat = socaity.get_conversation(thread_id)
         assert chat is not None and chat.id == thread_id, chat
 
-        env.log("3", "list_conversations includes the thread")
-        listed = socaity.list_conversations(limit=50)
+        env.log("3", "query_conversations includes the thread")
+        listed = socaity.query_conversations(limit=50)
         assert any(row.id == thread_id for row in listed), [row.id for row in listed[:10]]
 
         env.log("4", "items contain the turn")
-        items = socaity.list_conversation_items(thread_id, branch="active")
+        items = socaity.query_conversation_items(thread_id, branch="active")
         roles = [item.role for item in items]
         assert "user" in roles and "assistant" in roles, roles
         texts = _items_text(items)
         assert MARKER in texts, f"turn text missing marker {MARKER}: {texts[:300]!r}"
-        all_items = socaity.list_conversation_items(thread_id, branch="all")
+        all_items = socaity.query_conversation_items(thread_id, branch="all")
         assert len(all_items) >= len(items), (len(all_items), len(items))
 
         env.log("5", "auto-title after first reply (do not PATCH title first)")
@@ -116,7 +116,7 @@ def run() -> None:
         assistants = _role_items(all_items, "assistant")
         first_user = users[0]
         first_asst = assistants[0]
-        ping = execute_agent(
+        ping = run_agent(
             "spaine",
             message=PING,
             thread_id=thread_id,
@@ -125,11 +125,11 @@ def run() -> None:
         )
         assert ping["agent_status"] == "completed", ping["response"]
         _wait_conversation(thread_id)
-        after_ping = socaity.list_conversation_items(thread_id, branch="all")
+        after_ping = socaity.query_conversation_items(thread_id, branch="all")
         ping_users = [item for item in _role_items(after_ping, "user") if MARKER + "-ping" in _item_text(item)]
         assert ping_users, _items_text(after_ping)
         ping_user = ping_users[0]
-        pong = execute_agent(
+        pong = run_agent(
             "spaine",
             message=PONG,
             thread_id=thread_id,
@@ -139,7 +139,7 @@ def run() -> None:
         )
         assert pong["agent_status"] == "completed", pong["response"]
         _wait_conversation(thread_id)
-        tree = socaity.list_conversation_items(thread_id, branch="all")
+        tree = socaity.query_conversation_items(thread_id, branch="all")
         ping_leaves = [item for item in _role_items(tree, "assistant") if MARKER + "-ping" in _item_text(item)]
         pong_leaves = [item for item in _role_items(tree, "assistant") if MARKER + "-pong" in _item_text(item)]
         assert ping_leaves and pong_leaves, _items_text(tree)
@@ -147,18 +147,18 @@ def run() -> None:
         env.log("7", "switch active leaf ping <-> pong")
         switched = socaity.update_conversation(thread_id, active_item_id=ping_leaves[0].id)
         assert switched is not None and switched.active_item_id == ping_leaves[0].id, switched
-        active_ping = _items_text(socaity.list_conversation_items(thread_id, branch="active"))
+        active_ping = _items_text(socaity.query_conversation_items(thread_id, branch="active"))
         assert MARKER + "-ping" in active_ping
         assert MARKER + "-pong" not in active_ping
         socaity.update_conversation(thread_id, active_item_id=pong_leaves[0].id)
-        active_pong = _items_text(socaity.list_conversation_items(thread_id, branch="active"))
+        active_pong = _items_text(socaity.query_conversation_items(thread_id, branch="active"))
         assert MARKER + "-pong" in active_pong
 
         env.log("8", "fork conversation from the sibling tree")
         forked = socaity.fork_conversation(thread_id)
         assert forked is not None and forked.id and forked.id != thread_id, forked
         _wait_conversation(forked.id)
-        forked_items = socaity.list_conversation_items(forked.id, branch="all")
+        forked_items = socaity.query_conversation_items(forked.id, branch="all")
         assert len(forked_items) >= 2, len(forked_items)
 
         env.log("9", "PATCH title still works, then delete both chats")
@@ -183,10 +183,10 @@ def test_mid_turn_stub_and_tool_parts() -> None:
 
     def _turn() -> None:
         with use_session(session):
-            finished["turn"] = execute_agent(
+            finished["turn"] = run_agent(
                 "spaine",
                 message=(
-                    "Search the catalog for image upscale services using search_services. "
+                    "Search the catalog for image upscale services using query_services. "
                     f"Then reply in one short sentence that includes {MARKER}-tools."
                 ),
                 thread_id=thread_id,
@@ -210,7 +210,7 @@ def test_mid_turn_stub_and_tool_parts() -> None:
         stub = None
         deadline = time.monotonic() + 60
         while time.monotonic() < deadline:
-            items = socaity.list_conversation_items(thread_id, branch="active")
+            items = socaity.query_conversation_items(thread_id, branch="active")
             stub = next(
                 (
                     item
@@ -232,13 +232,13 @@ def test_mid_turn_stub_and_tool_parts() -> None:
         turn = finished.get("turn")
         assert turn and turn["agent_status"] == "completed", turn
         _wait_conversation(thread_id)
-        items = socaity.list_conversation_items(thread_id, branch="active")
+        items = socaity.query_conversation_items(thread_id, branch="active")
         assistant = next((item for item in items if item.role == "assistant" and item.job_id == job_id), None)
         assert assistant is not None and assistant.status == "completed", assistant
         part_types = {getattr(part, "type", None) for part in (assistant.parts or [])}
         part_names = {getattr(part, "name", None) for part in (assistant.parts or [])}
         env.log("T2", f"completed parts types={part_types} names={part_names}")
-        assert "tool_call" in part_types or "search_services" in part_names, (part_types, part_names)
+        assert "tool_call" in part_types or "query_services" in part_names, (part_types, part_names)
         socaity.delete_conversation(thread_id)
     env.log("T2", "PASS")
 

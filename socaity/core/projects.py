@@ -6,7 +6,7 @@ from socaity_schemas.platform import Project
 from socaity.core.catalog import _backend
 
 
-def list_projects(
+def query_projects(
     filters: Optional[List[str]] = None,
     expand: Optional[List[str]] = None,
     fields: Optional[List[str]] = None,
@@ -14,7 +14,7 @@ def list_projects(
     limit: int = 100,
     offset: int = 0,
 ) -> List[Project]:
-    """List projects owned by the authenticated caller."""
+    """Query projects owned by the authenticated caller."""
     return _backend().query_projects(
         filters=filters,
         expand=expand,

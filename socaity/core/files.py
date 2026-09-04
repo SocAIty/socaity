@@ -13,7 +13,7 @@ def get_storage_usage() -> Optional[Dict]:
     return _backend().get_storage_usage()
 
 
-def list_files(
+def query_files(
     purpose: Union[str, List[str]] = "USER_UPLOAD",
     include_expired: bool = False,
     include_deleted: bool = False,
@@ -22,8 +22,8 @@ def list_files(
     limit: int = 25,
     offset: int = 0,
 ) -> List[Dict]:
-    """List stored files visible to the authenticated caller."""
-    return _backend().list_files(
+    """Query stored files visible to the authenticated caller."""
+    return _backend().query_files(
         purpose=purpose,
         include_expired=include_expired,
         include_deleted=include_deleted,

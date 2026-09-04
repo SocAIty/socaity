@@ -18,7 +18,7 @@ from socaity_schemas.platform.workflow import (
 from socaity.core.catalog import _backend
 
 
-def list_workflows(
+def query_workflows(
     q: Optional[str] = None,
     filters: Optional[List[str]] = None,
     expand: Optional[List[str]] = None,
@@ -27,13 +27,13 @@ def list_workflows(
     limit: int = 50,
     offset: int = 0,
 ) -> List[Workflow]:
-    """List or fuzzy-search workflows (your own plus public ones).
+    """Query workflows (your own plus public ones).
 
     Filters use the platform query grammar (``field:operator:value``), e.g.
     ``["slug:eq:my-flow"]`` or ``["visibility:eq:mine"]``.
     """
-    return _backend().search_workflows(
-        query=q, filters=filters, expand=expand, fields=fields, sort=sort, limit=limit, offset=offset,
+    return _backend().query_workflows(
+        q=q, filters=filters, expand=expand, fields=fields, sort=sort, limit=limit, offset=offset,
     )
 
 
@@ -77,24 +77,24 @@ def revert_workflow(
     return _backend().revert_workflow(workflow_id, revision_id=revision_id, version=version)
 
 
-def list_workflow_revisions(
+def query_workflow_revisions(
     workflow_id: str,
     expand: Optional[List[str]] = None,
     limit: int = 50,
     offset: int = 0,
 ) -> List[WorkflowRevision]:
     """Revision history of one workflow, newest first."""
-    return _backend().list_workflow_revisions(workflow_id, expand=expand, limit=limit, offset=offset)
+    return _backend().query_workflow_revisions(workflow_id, expand=expand, limit=limit, offset=offset)
 
 
-def list_workflow_runs(
+def query_workflow_runs(
     workflow_id: Optional[str] = None,
     filters: Optional[List[str]] = None,
     expand: Optional[List[str]] = None,
     limit: int = 50,
     offset: int = 0,
 ) -> List[WorkflowRun]:
-    """List the caller's workflow runs, optionally scoped to one workflow."""
+    """Query the caller's workflow runs, optionally scoped to one workflow."""
     return _backend().query_workflow_runs(
         workflow_id=workflow_id, filters=filters, expand=expand, limit=limit, offset=offset,
     )

@@ -32,7 +32,7 @@ INPUTS = {"text": "hello"}
 
 pytestmark = [
     pytest.mark.skipif(not env.backend_up(), reason=f"backend not reachable at {env.BACKEND}"),
-    pytest.mark.skipif(not env.inference_up(), reason=f"inference gateway not reachable at {env.INFERENCE}"),
+    pytest.mark.skipif(not env.inference_up(), reason=f"APIPod gate not reachable at {env.GATE}"),
     pytest.mark.skipif(not env.rich_key(), reason="no test API key (SOCAITY_TEST_RICH_KEY / SOCAITY_API_KEY)"),
     pytest.mark.skipif(not DOC_FILE.is_file(), reason=f"missing workflow fixture {DOC_FILE}"),
 ]
@@ -57,7 +57,7 @@ def run() -> None:
         assert run1["status"] == "finished", run1
         assert result1.get("status") in ("interrupted", "completed"), result1
 
-        revisions = socaity.list_workflow_revisions(wf_id)
+        revisions = socaity.query_workflow_revisions(wf_id)
         env.log("T1", f"revisions after run1: {len(revisions)} -> {[(r.version, r.message) for r in revisions]}")
 
         if result1.get("status") == "interrupted":
@@ -73,7 +73,7 @@ def run() -> None:
             assert len(revisions) >= 2, "repair must persist a new revision"
             env.log("T1", f"outputs={json.dumps(result1.get('outputs'), default=str)[:400]}")
 
-        runs = socaity.list_workflow_runs(wf_id)
+        runs = socaity.query_workflow_runs(wf_id)
         env.log("T1", f"runs recorded: {[(r.id, r.status) for r in runs]}")
     env.log("done", "PASS")
 

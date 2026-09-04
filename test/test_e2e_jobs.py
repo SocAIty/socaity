@@ -102,9 +102,9 @@ def created_job_id() -> str:
     return job_id
 
 
-def test_list_jobs_returns_visible_jobs(created_job_id):
-    jobs = socaity.list_jobs(limit=20, expand=["data"])
-    assert jobs, "list_jobs returned no jobs for the authenticated user"
+def test_query_jobs_returns_visible_jobs(created_job_id):
+    jobs = socaity.query_jobs(limit=20, expand=["data"])
+    assert jobs, "query_jobs returned no jobs for the authenticated user"
     assert any(job.id == created_job_id for job in jobs), [job.id for job in jobs[:10]]
 
 
@@ -118,13 +118,13 @@ def test_get_job_by_id(created_job_id):
 
 
 def test_search_jobs_by_prompt_keyword(created_job_id):
-    hits = socaity.search(PROMPT_TOKEN, collection="jobs", limit=10)
+    hits = socaity.query_jobs(q=PROMPT_TOKEN, limit=10)
     ids = [job.id for job in hits]
     assert created_job_id in ids, ids
 
 
-def test_search_jobs_via_list_jobs_q(created_job_id):
-    hits = socaity.list_jobs(q="lighthouse watercolor", expand=["data"], limit=20)
+def test_query_jobs_by_q(created_job_id):
+    hits = socaity.query_jobs(q="lighthouse watercolor", expand=["data"], limit=20)
     ids = [job.id for job in hits]
     assert created_job_id in ids, ids
 

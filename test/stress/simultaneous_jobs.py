@@ -8,14 +8,13 @@ mix of DeepSeek V3) and measures wall time plus per-job latency.
 Requirements
 ------------
 - ``SOCAITY_API_KEY`` in the environment (same as other ``socaity`` tests).
-- **Inference API** (this script only submits jobs here): set
-  ``INFERENCE_BACKEND_URL`` to match ``socaity_backend`` / the inference gateway,
-  e.g. ``http://localhost:8001``. Fallbacks: ``NUXT_PUBLIC_INFER_API_BASE_URL``,
-  then legacy ``SOCAITY_API_BASE``; if none are set, production
+- **APIPod gate** (this script only submits jobs here): set
+  ``APIPOD_GATE_URL`` to match ``socaity_backend`` / the APIPod gate,
+  e.g. ``http://localhost:8001``. If unset, production
   ``https://api.socaity.ai`` is used.
 - **Service URL layout**: by default the registry uses
-  ``{INFERENCE_BACKEND_URL}/services/{INFERENCE_API_VERSION}/{service_id}`` (APIPod
-  gateway). Set ``INFERENCE_API_VERSION`` if not ``v1``. Use
+  ``{APIPOD_GATE_URL}/services/{INFERENCE_API_VERSION}/{service_id}`` (APIPod
+  gate). Set ``INFERENCE_API_VERSION`` if not ``v1``. Use
   ``SOCAITY_INFERENCE_ADDRESS_STYLE=cache_path`` only if you must keep the legacy
   ``/v1/{org}/{model}`` path from ``sdk/cache/*.json``.
 - **SocAIty web backend** (accounts, webapi, orchestrator callbacks): run at
@@ -23,7 +22,7 @@ Requirements
   in the rest of your stack; this stress harness does not call it for Flux /
   DeepSeek predictions, but you should point those services at the same local
   URLs so the full platform stays consistent.
-- Network reachability from this machine to the inference base URL.
+- Network reachability from this machine to the APIPod gate URL.
 
 Run (from the ``socaity`` package directory, with the package on PYTHONPATH)::
 
@@ -68,36 +67,31 @@ _CLIENT_CLASS_CACHE: dict[Tuple[str, ...], Type[Any]] = {}
 _REGISTRY_BOOTSTRAPPED = False
 
 
-def _inference_api_origin() -> str:
-    """Resolve inference gateway origin (same env names as ``socaity_backend`` / Nuxt)."""
-    for key in (
-        "INFERENCE_BACKEND_URL",
-        "NUXT_PUBLIC_INFER_API_BASE_URL",
-        "SOCAITY_API_BASE",
-    ):
-        v = os.environ.get(key)
-        if v and v.strip():
-            return v.strip().rstrip("/")
+def _gate_api_origin() -> str:
+    """Resolve APIPod gate origin (``APIPOD_GATE_URL``)."""
+    value = os.environ.get("APIPOD_GATE_URL")
+    if value and value.strip():
+        return value.strip().rstrip("/")
     return "https://api.socaity.ai"
 
 
-def _bootstrap_registry_from_cache(*, inference_origin: str) -> None:
+def _bootstrap_registry_from_cache(*, gate_origin: str) -> None:
     """
     Register Flux / DeepSeek service definitions from ``socaity/sdk/cache/*.json``.
 
-    Cache files may use a legacy ``/v1/{org}/{model}`` path; the APIPod gateway
+    Cache files may use a legacy ``/v1/{org}/{model}`` path; the APIPod gate
     mounts SocAIty services at ``/services/{api_version}/{service_id}``. Default
     is that layout (aligned with ``socaity_backend`` and ``apipodgate``).
 
     Set ``SOCAITY_INFERENCE_ADDRESS_STYLE=cache_path`` to keep only the cache
-    file's URL path and swap in ``inference_origin`` as the host.
+    file's URL path and swap in ``gate_origin`` as the host.
     """
     global _REGISTRY_BOOTSTRAPPED
     if _REGISTRY_BOOTSTRAPPED:
         return
     from fastsdk import FastSDK
 
-    api_base = inference_origin.rstrip("/")
+    api_base = gate_origin.rstrip("/")
     fsdk = FastSDK()
     style = os.environ.get("SOCAITY_INFERENCE_ADDRESS_STYLE", "services").strip().lower()
     api_ver = os.environ.get("INFERENCE_API_VERSION", "v1").strip().strip("/")
@@ -331,14 +325,14 @@ def main(argv: Optional[List[str]] = None) -> int:
         print("--mixed-fraction must be between 0 and 1", file=sys.stderr)
         return 2
 
-    infer_origin = _inference_api_origin()
+    gate_origin = _gate_api_origin()
     print(
-        f"Starting stress | inference_base={infer_origin} | jobs={args.jobs} "
+        f"Starting stress | gate={gate_origin} | jobs={args.jobs} "
         f"concurrency={args.concurrency} mixed_fraction={mixed_fraction} "
         f"timeout={args.timeout}"
     )
 
-    _bootstrap_registry_from_cache(inference_origin=infer_origin)
+    _bootstrap_registry_from_cache(gate_origin=gate_origin)
 
     t0 = time.perf_counter()
     outcomes = asyncio.run(

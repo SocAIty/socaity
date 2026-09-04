@@ -7,7 +7,7 @@ from socaity_schemas.platform import Interrupt, InterruptResolveResult
 from socaity.core.catalog import _backend
 
 
-def list_interrupts(
+def query_interrupts(
     filters: Optional[List[str]] = None,
     expand: Optional[List[str]] = None,
     fields: Optional[List[str]] = None,
@@ -15,7 +15,7 @@ def list_interrupts(
     limit: int = 100,
     offset: int = 0,
 ) -> List[Interrupt]:
-    """List your HIT action inbox. Pending rows by default; filter ``status`` for history.
+    """Query your HIT action inbox. Pending rows by default; filter ``status`` for history.
 
     Filters use the platform query grammar (``field:operator:value``), e.g.
     ``["chat_id:eq:<uuid>"]`` or ``["status:eq:answered"]``.

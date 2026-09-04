@@ -31,7 +31,7 @@ def _tool(name: str, mixin: Type, method_name: str | None = None) -> Callable:
     def wrapper(*args, **kwargs):
         result = getattr(current_session().backend, method_name)(*args, **kwargs)
         dumped = dump_entity(result)
-        if name == "search_services" and isinstance(dumped, list):
+        if name == "query_services" and isinstance(dumped, list):
             dumped = [_slim_service(item) for item in dumped]
         return dumped
 
@@ -51,18 +51,18 @@ def _tool(name: str, mixin: Type, method_name: str | None = None) -> Callable:
 
 
 REGISTRY: dict[str, Callable] = {
-    "search_services": _tool("search_services", CatalogClient),
+    "query_services": _tool("query_services", CatalogClient),
     "get_service": _tool("get_service", CatalogClient),
     "run_service": run_service,
     "estimate_price": estimate_price,
     "get_job": _tool("get_job", JobsClient),
     "query_jobs": _tool("query_jobs", JobsClient),
-    "list_files": _tool("list_files", FilesClient),
+    "query_files": _tool("query_files", FilesClient),
     "get_file": _tool("get_file", FilesClient),
     "get_storage_usage": _tool("get_storage_usage", FilesClient),
     "update_file": _tool("update_file", FilesClient),
     "delete_file": _tool("delete_file", FilesClient),
-    "search_workflows": _tool("search_workflows", WorkflowsClient),
+    "query_workflows": _tool("query_workflows", WorkflowsClient),
     "get_workflow": _tool("get_workflow", WorkflowsClient),
     "save_workflow": _tool("save_workflow", WorkflowsClient, "upsert_workflow"),
     "run_workflow": run_workflow,

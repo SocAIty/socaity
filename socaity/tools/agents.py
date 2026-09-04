@@ -2,7 +2,7 @@
 
 Base layer for remote agent usage: an agent is a catalog service
 (``kind=agent``, ``execution=platform``), one turn is one job.
-``execute_agent`` posts to the gateway factory ``POST /v1/agents/{id}/chat``
+``run_agent`` posts to the gateway factory ``POST /v1/agents/{id}/chat``
 and polls the same ``GET /status/{job_id}`` as workflow and catalog jobs.
 Higher layers (an ``Agent`` class, LangGraph adapters, the workflow engine
 escalation) build on this without new transport.
@@ -16,7 +16,7 @@ from __future__ import annotations
 
 from typing import Any, Callable, Dict, List, Optional
 
-from socaity.tools.jobs import DEFAULT_POLL_INTERVAL_S, submit_and_poll
+from socaity.tools.jobs import DEFAULT_POLL_INTERVAL_S, interrupt_job, submit_and_poll
 
 
 def agent_payload(job: dict) -> dict:
@@ -39,7 +39,7 @@ def agent_payload(job: dict) -> dict:
     }
 
 
-def execute_agent(
+def run_agent(
     agent: str,
     message: Optional[str] = None,
     messages: Optional[List[dict]] = None,
@@ -48,6 +48,7 @@ def execute_agent(
     model: Optional[str] = None,
     decisions: Optional[List[dict]] = None,
     continue_turn: bool = False,
+    supersedes_job_id: Optional[str] = None,
     parent_item_id: Optional[str] = None,
     workflow: Optional[dict] = None,
     timeout_s: Optional[float] = None,
@@ -55,7 +56,7 @@ def execute_agent(
     on_progress: Optional[Callable[[float, str], None]] = None,
     on_job_start: Optional[Callable[[str, Any], None]] = None,
 ) -> dict:
-    """Run one agent turn as a platform job and wait for it (blocking core).
+    """Talk to a deployed agent and wait for its reply.
 
     Args:
         agent: Agent service id, name or "owner/service" (catalog-resolved).
@@ -68,6 +69,8 @@ def execute_agent(
         continue_turn: After a cancel, invoke from the last checkpoint on the
             same thread and append to the cancelled assistant item (wire field
             ``continue``). Requires ``thread_id``; no message, no decisions.
+        supersedes_job_id: Live agent job this turn replaces. Interrupted and
+            awaited, then this turn POSTs. Do not combine with ``continue_turn``.
         parent_item_id: Edit-and-fork: parent of the new user message (sibling
             branch). First-class request field. The orchestrator resolves the
             LangGraph checkpoint from that chat item. Empty string is root.
@@ -94,8 +97,10 @@ def execute_agent(
             raise ValueError("continue_turn requires the thread_id of the cancelled turn.")
         if turn_messages or decisions:
             raise ValueError("continue_turn takes no messages and no decisions.")
+        if supersedes_job_id:
+            raise ValueError("continue_turn cannot supersede a live job; omit supersedes_job_id.")
     elif not turn_messages and not decisions:
-        raise ValueError("execute_agent needs a message, messages, or decisions to resume with.")
+        raise ValueError("run_agent needs a message, messages, or decisions to resume with.")
 
     agent_config = {key: value for key, value in (("mode", mode), ("model", model)) if value}
     body: Dict[str, Any] = {"messages": turn_messages, "stream": False}
@@ -109,6 +114,13 @@ def execute_agent(
         if value:
             body[key] = value
 
+    if supersedes_job_id:
+        interrupt_job(
+            supersedes_job_id,
+            timeout_s=timeout_s,
+            poll_interval_s=poll_interval_s,
+        )
+
     job = submit_and_poll(
         f"/v1/agents/{agent}/chat",
         body,
@@ -119,44 +131,3 @@ def execute_agent(
         submit_error="Agent turn submit failed",
     )
     return agent_payload(job)
-
-
-def run_agent(
-    agent: str,
-    message: Optional[str] = None,
-    thread_id: Optional[str] = None,
-    mode: Optional[str] = None,
-    decisions: Optional[List[dict]] = None,
-    timeout_s: Optional[float] = None,
-) -> dict:
-    """Talk to a deployed agent and wait for its reply.
-
-    One call is one agent turn. Start a conversation with just a message; the
-    reply carries a ``thread_id``. Pass that same ``thread_id`` on the next call
-    to continue, or together with ``decisions`` to answer the agent's
-    ``pending_actions`` when it paused for approval (status "interrupted").
-
-    Args:
-        agent: Agent service id or name, e.g. "spaine", as found in the catalog.
-        message: What you want the agent to do, as one user message.
-        thread_id: Thread of an earlier turn to continue or resume.
-        mode: Agent mode. SPAINE supports "chat" (answers), "plan" (designs a
-            workflow), "agent" (acts with tools). Default is the agent's choice.
-        decisions: Answers to a previous pending_actions batch, e.g.
-            [{"interrupt_id": "...", "action": "approve"}].
-        timeout_s: Give up waiting after this many seconds; the turn keeps
-            running on the platform and its job stays pollable with get_job.
-
-    Returns:
-        status, agent_status ("completed" or "interrupted"), thread_id, text
-        (the assistant reply), pending_actions (when interrupted), workflow
-        (when the agent produced one), and job_id.
-    """
-    return execute_agent(
-        agent,
-        message=message,
-        thread_id=thread_id,
-        mode=mode,
-        decisions=decisions,
-        timeout_s=timeout_s,
-    )

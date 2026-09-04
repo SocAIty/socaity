@@ -7,7 +7,7 @@ from socaity_schemas.platform import Chat, ChatItem
 from socaity.core.catalog import _backend
 
 
-def list_conversations(
+def query_conversations(
     q: Optional[str] = None,
     filters: Optional[List[str]] = None,
     expand: Optional[List[str]] = None,
@@ -16,12 +16,12 @@ def list_conversations(
     limit: int = 100,
     offset: int = 0,
 ) -> List[Chat]:
-    """List your conversations, newest activity first.
+    """Query your conversations, newest activity first.
 
     ``q`` is fuzzy full-text search (title, summary, message text). Filters use
     the platform query grammar, e.g. ``["status:eq:archived"]``.
     """
-    return _backend().list_conversations(
+    return _backend().query_conversations(
         q=q, filters=filters, expand=expand, fields=fields, sort=sort, limit=limit, offset=offset,
     )
 
@@ -35,7 +35,7 @@ def get_conversation(
     return _backend().get_conversation(conversation_id, expand=expand, fields=fields)
 
 
-def list_conversation_items(
+def query_conversation_items(
     conversation_id: str,
     branch: str = "active",
     after: Optional[str] = None,
@@ -48,7 +48,7 @@ def list_conversation_items(
     ``branch="active"`` walks the active parent chain; ``branch="all"`` returns
     the full tree. ``after`` is an item-id cursor for pagination.
     """
-    return _backend().list_conversation_items(
+    return _backend().query_conversation_items(
         conversation_id, branch=branch, after=after, order=order, filters=filters, limit=limit,
     )
 

@@ -15,20 +15,22 @@ For job execution internals, streaming modes, and provider stacks, see [fastSDK 
 | `socaity.install(name)` | backend fetch + stub write + registry upsert | `None` |
 | `socaity.service_registry` | shared singleton | `SocaityServiceRegistry` |
 | `from socaity import model` | none (import generated stub) | `FastClient` subclass |
-| `socaity.list_services(...)` | one catalog fetch (slim, sparse fieldset) | `List[LazyAIService]` |
+| `socaity.query_services(...)` | one catalog fetch (slim, sparse fieldset) | `List[LazyAIService]` |
 | `socaity.get_service(id_or_name)` | one catalog fetch (full) | `AIService` |
-| `socaity.list_models(...)` / `get_model(...)` | catalog fetch | `List[AIModel]` / `AIModel` |
-| `socaity.list_categories()` | catalog fetch | `List[ServiceCategory]` |
+| `socaity.query_models(...)` / `get_model(...)` | catalog fetch | `List[AIModel]` / `AIModel` |
+| `socaity.query_categories()` | catalog fetch | `List[ServiceCategory]` |
 | `socaity.list_pricing_rules()` | catalog fetch | pricing rule rows |
-| `socaity.search(query, collection=...)` | backend `q` param (typesense) | `List[AIService]` / `AIModel` / `Job` |
-| `socaity.list_jobs(...)` / `get_job(...)` | `v1/jobs` list/search/get | `List[Job]` / `Job` |
+| `socaity.query_jobs(...)` / `get_job(...)` | `v1/jobs` query/get | `List[Job]` / `Job` |
 | `socaity.refresh_job(job_id)` | finished-job webhook refresh | cache + Typesense upsert |
 | `socaity.update_job(...)` / `delete_job(...)` | job mutations | `bool` |
-| `socaity.list_projects(...)` / `upsert_project(...)` / … | `v1/projects` | `List[Project]` / ids / `bool` |
+| `socaity.query_projects(...)` / `upsert_project(...)` / … | `v1/projects` | `List[Project]` / ids / `bool` |
 | `socaity.estimate(...)` / `get_stats(...)` / `get_similar_services(...)` | `v1/analytics` | estimate / stats / similar |
-| `socaity.list_interrupts(...)` / `get_interrupt(...)` | `v1/interrupts` HIT inbox (pending by default) | `List[Interrupt]` / `Interrupt` |
+| `socaity.query_interrupts(...)` / `get_interrupt(...)` | `v1/interrupts` HIT inbox (pending by default) | `List[Interrupt]` / `Interrupt` |
 | `socaity.resolve_interrupt(id, decision, ...)` | records decision; `continue_run=True` enqueues the agent continue job | `InterruptResolveResult` |
 | `socaity.connect(source)` | resolves socaity identifiers via backend, then `fastsdk.connect` | temporary `FastClient` |
+| `socaity.submit_agent_chat(id, body)` | gateway `POST /v1/agents/{id}/chat` | `APISeex` |
+| `socaity.submit_workflow_run(id, body)` | gateway `POST /v1/workflows/{id}/run` | `APISeex` |
+| `socaity.track_job(job_id)` | re-attach to a running gateway job | `APISeex` |
 | `socaity.generate_stub(...)` | re-export of `fastsdk.generate_stub` | `FastStub` |
 | `socaity.APISeex` | re-export | job handle from every model call |
 
@@ -39,7 +41,7 @@ Module-level CLI: `socaity login`, `install`, `update`, `list`, `search`, `jobs`
 ### Catalog reads: slim by default, lazy on access
 
 List calls request a sparse fieldset (`fields=id,name,display_name,...`) and optional
-`filter` / `q`. `list_services` returns `LazyAIService` proxies: accessing
+`filter` / `q`. `query_services` returns `LazyAIService` proxies: accessing
 `service.models`, `service.endpoints` or `service.deployments` triggers exactly one
 full fetch with `expand=deployments,endpoints,models`, then everything is attribute
 access on the hydrated `AIService`.
@@ -56,6 +58,7 @@ Think of socaity as two connected subsystems:
 
 2. **Runtime layer (delegated to fastSDK)**
    - Generated stubs call `FastClient.submit_job(endpoint, **params)` → `APISeex`
+   - First-party factories (`submit_agent_chat`, `submit_workflow_run`) call `fastsdk.submit_factory` → the same `APISeex`
    - Jobs poll, cancel, and stream through fastSDK's `JobRuntime` + meseex pipeline
    - Media results deserialize via `media-toolkit`
 
@@ -90,8 +93,10 @@ socaity/
   __main__.py                     # python -m socaity (delegates to socaity_cli.cli)
   core/
     catalog.py                    # public list/get/search/connect functions
+    factories.py                  # submit_agent_chat / submit_workflow_run / track_job
     lazy.py                       # LazyAIService relation hydration
     socaity_service_registry.py   # catalog sync + stub generation
+    session.py                    # ContextVar credentials + inference origin
   sdk/                            # runtime-generated (mostly empty in git)
     services/                     # one FastClient stub per installed service
     official/                     # re-exports for platform models
@@ -338,7 +343,7 @@ test/
   stress/simultaneous_jobs.py  # concurrent get_result() from cache bootstrap
 ```
 
-Integration tests override inference URL via `SOCAITY_INFER_BACKEND_URL`. CI-friendly tests: `test_cli.py`, `test_credentials.py`.
+Integration tests override the APIPod gate URL via ``APIPOD_GATE_URL``. CI-friendly tests: `test_cli.py`, `test_credentials.py`.
 
 Run with project venv: `pytest` (after `pip install -e ".[dev]"`).
 

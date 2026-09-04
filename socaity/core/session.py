@@ -1,6 +1,6 @@
 """Credential-scoped access to the socaity backend.
 
-The public helpers (``socaity.list_services``, ``socaity.connect``, ...) run against
+The public helpers (``socaity.query_services``, ``socaity.connect``, ...) run against
 the *current* session. In a single-user process that is the default session, which
 picks up the API key from the environment or the stored CLI login, so nothing changes
 for scripts and notebooks.
@@ -11,12 +11,15 @@ tasks cannot observe or reuse each other's credentials.
 """
 from __future__ import annotations
 
+import os
 from contextlib import contextmanager
 from contextvars import ContextVar
 from pathlib import Path
 from typing import Iterator, Optional
 
 from socaity_cli import SocaityBackendClient
+
+DEFAULT_APIPOD_GATE_URL = "https://api.socaity.ai"
 
 
 class Session:
@@ -32,6 +35,8 @@ class Session:
         user_name: Display name for prompts. Never send ``api_key`` to a model.
         conversation_id: Current chat id, if the host has one.
         local_root: User-local sandbox root on the host. Local tools must stay inside it.
+        gate_url: APIPod gate origin for factory jobs (agent chat, workflow run).
+            ``None`` reads ``APIPOD_GATE_URL``, then production.
     """
 
     def __init__(
@@ -43,6 +48,7 @@ class Session:
         user_name: str = "user",
         conversation_id: Optional[str] = None,
         local_root: Optional[Path] = None,
+        gate_url: Optional[str] = None,
     ):
         self.api_key = api_key
         self.materialize_media = materialize_media
@@ -51,6 +57,7 @@ class Session:
         self.user_name = user_name
         self.conversation_id = conversation_id
         self.local_root = local_root
+        self.gate_url = (gate_url or os.environ.get("APIPOD_GATE_URL") or DEFAULT_APIPOD_GATE_URL).rstrip("/")
 
 
 _current: ContextVar[Optional[Session]] = ContextVar("socaity_session", default=None)

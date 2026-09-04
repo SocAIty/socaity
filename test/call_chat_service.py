@@ -47,11 +47,7 @@ WEATHER_TOOL = {
 
 def _bootstrap_env() -> None:
     os.environ.setdefault("SOCAITY_BACKEND_URL", TEST_BACKEND)
-    os.environ.setdefault("INFERENCE_BACKEND_URL", TEST_INFER)
-    os.environ.setdefault(
-        "SOCAITY_INFER_BACKEND_URL",
-        os.environ["INFERENCE_BACKEND_URL"].rstrip("/") + "/v1/",
-    )
+    os.environ.setdefault("APIPOD_GATE_URL", TEST_INFER)
     here = Path(__file__).resolve()
     for candidate in (
         here.parent / ".env",
@@ -250,19 +246,19 @@ def step_basic(client) -> None:
     except Exception as exc:
         if "cancelled" in type(exc).__name__.lower() or "cancelled" in str(exc).lower():
             job_id = _platform_job_id(job)
-            gate = None
+            gate_url = os.environ.get("APIPOD_GATE_URL", TEST_INFER).rstrip("/")
+            gate_status = None
             try:
-                infer = os.environ.get("INFERENCE_BACKEND_URL", TEST_INFER).rstrip("/")
                 with httpx.Client(timeout=30) as http:
-                    gate = http.get(
-                        f"{infer}/status/{job_id}",
+                    gate_status = http.get(
+                        f"{gate_url}/status/{job_id}",
                         headers=_auth_headers(),
                     ).json()
             except Exception:
-                gate = None
+                gate_status = None
             raise AssertionError(
                 f"job cancelled while waiting | platform_job={job_id!r} "
-                f"gate_status={gate!r}. Message 'Job cancelled by user request' "
+                f"gate_status={gate_status!r}. Message 'Job cancelled by user request' "
                 f"means POST /cancel was sent (UI, another client, or Ctrl+C path)."
             ) from exc
         raise
@@ -469,7 +465,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     args = parser.parse_args(argv)
 
     _log("env", f"backend={BACKEND}")
-    _log("env", f"infer={os.environ.get('INFERENCE_BACKEND_URL')}")
+    _log("env", f"APIPOD_GATE_URL={os.environ.get('APIPOD_GATE_URL')}")
     client = _client()
 
     selected = args.only or list(STEPS)

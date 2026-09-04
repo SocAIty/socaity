@@ -19,7 +19,7 @@ is mostly Replicate ``/predictions`` models — those cannot exercise
     #   CHAT_SERVICE=<catalog-name>
     #   CHAT_SERVICE_URL=http://127.0.0.1:8010
     #   SOCAITY_BACKEND_URL=...
-    #   INFERENCE_BACKEND_URL=https://test.api.socaity.ai
+    #   APIPOD_GATE_URL=https://test.api.socaity.ai
 
     python test/test_e2e_agentic_chat.py
     python test/test_e2e_agentic_chat.py --diagnose
@@ -72,8 +72,7 @@ def _load_repo_env() -> None:
 _load_repo_env()
 os.environ.setdefault("SOCAITY_BACKEND_URL", TEST_BACKEND)
 os.environ.setdefault("SOCAITY_FRONTEND_URL", TEST_FRONTEND)
-os.environ.setdefault("INFERENCE_BACKEND_URL", TEST_INFER)
-os.environ.setdefault("SOCAITY_INFER_BACKEND_URL", TEST_INFER.rstrip("/") + "/v1/")
+os.environ.setdefault("APIPOD_GATE_URL", TEST_INFER)
 
 import socaity  # noqa: E402
 import socaity.core.catalog as catalog_mod  # noqa: E402
@@ -276,7 +275,7 @@ def _diagnose_catalog() -> str:
     samples: List[str] = []
     for q in ("gpt-4o", "instruct", "claude", "llama", "qwen"):
         try:
-            hits = socaity.list_services(q=q, expand=["endpoints"], limit=5)
+            hits = socaity.query_services(q=q, expand=["endpoints"], limit=5)
         except Exception:
             continue
         for hit in hits:
@@ -331,7 +330,7 @@ def discover_chat_service(
     seen: set[str] = set()
     candidates: List[Tuple[str, str, int, bool]] = []
     for q in queries:
-        for hit in socaity.list_services(q=q, expand=["endpoints"], limit=15):
+        for hit in socaity.query_services(q=q, expand=["endpoints"], limit=15):
             raw = getattr(hit, "raw", hit)
             name = _attr(raw, "name", "id")
             if not name or name in seen:
@@ -498,7 +497,7 @@ def run_scenario(
     _log("0a", "checking credentials + catalog")
     key = get_api_key()
     assert key, "missing API key"
-    services = socaity.list_services(limit=1)
+    services = socaity.query_services(limit=1)
     assert services, "catalog returned no services"
 
     conv_smoke = _platform("GET", "v1/conversations", params={"limit": 1})

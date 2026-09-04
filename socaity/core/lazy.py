@@ -4,7 +4,7 @@ List calls return slim objects (sparse fieldsets keep the wire light).
 ``LazyAIService`` wraps such a slim ``AIService`` and fetches the full record
 once a relation (models, endpoints, deployments) is accessed:
 
-    services = socaity.list_services()
+    services = socaity.query_services()
     services[0].models   # -> triggers one catalog fetch, then cached
 """
 from typing import List
