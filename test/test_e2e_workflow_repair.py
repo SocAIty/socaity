@@ -25,7 +25,6 @@ import agentic_utils as env  # noqa: E402  (sets URL defaults before socaity imp
 
 import socaity  # noqa: E402
 from socaity.core.session import Session, use_session  # noqa: E402
-from socaity.tools.workflows import run_workflow  # noqa: E402
 
 DOC_FILE = env.PROJECTS_ROOT / "socaity-workflows" / "tests" / "workflows" / "missing_field.json"
 INPUTS = {"text": "hello"}
@@ -45,24 +44,24 @@ def run() -> None:
 
     session = Session(api_key=env.rich_key(), backend_url=env.BACKEND)
     with use_session(session):
-        saved = socaity.save_workflow(document, slug=slug, message="workflow repair e2e broken doc")
+        saved = env.sdk().upsert_workflow(document, slug=slug, message="workflow repair e2e broken doc")
         assert saved and saved.workflow, "workflow upsert failed"
         wf_id = saved.workflow.id
         env.log("T1", f"saved workflow id={wf_id} slug={slug} revision={saved.revision.id if saved.revision else None}")
 
-        run1 = run_workflow(wf_id, inputs=INPUTS, timeout_s=900)
+        run1 = env.run_workflow(wf_id, inputs=INPUTS, timeout_s=900)
         result1 = run1.get("result") or {}
         env.log("T1", f"run1 job={run1['job_id']} status={run1['status']} run_status={result1.get('status')}")
         env.log("T1", f"run1 result={json.dumps(result1, default=str)[:600]}")
         assert run1["status"] == "finished", run1
         assert result1.get("status") in ("interrupted", "completed"), result1
 
-        revisions = socaity.query_workflow_revisions(wf_id)
+        revisions = env.sdk().query_workflow_revisions(wf_id)
         env.log("T1", f"revisions after run1: {len(revisions)} -> {[(r.version, r.message) for r in revisions]}")
 
         if result1.get("status") == "interrupted":
             assert len(revisions) >= 2, "HIT pause must persist the repaired revision"
-            run2 = run_workflow(wf_id, inputs=INPUTS, timeout_s=900)
+            run2 = env.run_workflow(wf_id, inputs=INPUTS, timeout_s=900)
             result2 = run2.get("result") or {}
             env.log("T1", f"run2 job={run2['job_id']} status={run2['status']} run_status={result2.get('status')}")
             env.log("T1", f"run2 outputs={json.dumps(result2.get('outputs'), default=str)[:400]}")
@@ -73,7 +72,7 @@ def run() -> None:
             assert len(revisions) >= 2, "repair must persist a new revision"
             env.log("T1", f"outputs={json.dumps(result1.get('outputs'), default=str)[:400]}")
 
-        runs = socaity.query_workflow_runs(wf_id)
+        runs = env.sdk().query_workflow_runs(wf_id)
         env.log("T1", f"runs recorded: {[(r.id, r.status) for r in runs]}")
     env.log("done", "PASS")
 

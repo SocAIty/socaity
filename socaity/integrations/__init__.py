@@ -14,5 +14,6 @@ specific integration raises a helpful error when its package is missing.
 """
 
 from socaity.integrations.chat_adapter import ChatServiceAdapter
+from socaity.integrations.fastmcp import to_fastmcp
 
-__all__ = ["ChatServiceAdapter"]
+__all__ = ["ChatServiceAdapter", "to_fastmcp"]

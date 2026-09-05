@@ -75,11 +75,13 @@ os.environ.setdefault("SOCAITY_FRONTEND_URL", TEST_FRONTEND)
 os.environ.setdefault("APIPOD_GATE_URL", TEST_INFER)
 
 import socaity  # noqa: E402
-import socaity.core.catalog as catalog_mod  # noqa: E402
+from socaity.core.session import current_session  # noqa: E402
 from socaity.integrations import ChatServiceAdapter  # noqa: E402
 from socaity_cli.credentials import get_api_key  # noqa: E402
 
-catalog_mod._client = None
+
+def sdk():
+    return current_session().client
 
 BACKEND = os.environ["SOCAITY_BACKEND_URL"].rstrip("/") + "/"
 TOKEN = f"agentic-e2e-{uuid.uuid4().hex[:10]}"
@@ -275,11 +277,11 @@ def _diagnose_catalog() -> str:
     samples: List[str] = []
     for q in ("gpt-4o", "instruct", "claude", "llama", "qwen"):
         try:
-            hits = socaity.query_services(q=q, expand=["endpoints"], limit=5)
+            hits = sdk().query_services(q=q, expand=["endpoints"], limit=5)
         except Exception:
             continue
         for hit in hits:
-            raw = getattr(hit, "raw", hit)
+            raw = hit
             name = _attr(raw, "name", "id")
             if not name or name in samples:
                 continue
@@ -315,7 +317,7 @@ def discover_chat_service(
 
     expand = ["endpoints", "deployments", "deployments.contract"]
     if override:
-        svc = socaity.get_service(override, expand=expand)
+        svc = sdk().get_service(override, expand=expand)
         if svc is None:
             raise AssertionError(f"CHAT_SERVICE={override!r} not found in catalog")
         path = _chat_path(svc)
@@ -330,13 +332,13 @@ def discover_chat_service(
     seen: set[str] = set()
     candidates: List[Tuple[str, str, int, bool]] = []
     for q in queries:
-        for hit in socaity.query_services(q=q, expand=["endpoints"], limit=15):
-            raw = getattr(hit, "raw", hit)
+        for hit in sdk().query_services(q=q, expand=["endpoints"], limit=15):
+            raw = hit
             name = _attr(raw, "name", "id")
             if not name or name in seen:
                 continue
             seen.add(name)
-            svc = socaity.get_service(name, expand=expand)
+            svc = sdk().get_service(name, expand=expand)
             if svc is None:
                 continue
             path = _chat_path(svc)
@@ -497,7 +499,7 @@ def run_scenario(
     _log("0a", "checking credentials + catalog")
     key = get_api_key()
     assert key, "missing API key"
-    services = socaity.query_services(limit=1)
+    services = sdk().query_services(limit=1)
     assert services, "catalog returned no services"
 
     conv_smoke = _platform("GET", "v1/conversations", params={"limit": 1})
@@ -596,7 +598,7 @@ def run_scenario(
 
     # --- job ↔ chat_item link -------------------------------------------------
     _log("4b", "GET job expand=chat_item")
-    linked = socaity.get_job(first_job_id, expand=["chat_item", "data"])
+    linked = sdk().get_job(first_job_id, expand=["chat_item", "data"])
     assert linked is not None, first_job_id
     chat_item = getattr(linked, "chat_item", None)
     assert chat_item is not None, (

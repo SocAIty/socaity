@@ -70,6 +70,7 @@ from socaity.sdk.community._6b398a33_0e5e_440b_89dc_5dfde43654a4 import (  # noq
     qwen39_1,
 )
 import socaity  # noqa: E402
+from socaity.core.session import current_session  # noqa: E402
 
 BACKEND = os.environ["SOCAITY_BACKEND_URL"].rstrip("/") + "/"
 
@@ -340,7 +341,7 @@ def step_persist(client) -> None:
         f"items={len(conversation.get('items') or [])}",
     )
 
-    linked = socaity.get_job(job1_id, expand=["chat_item", "data"])
+    linked = current_session().client.get_job(job1_id, expand=["chat_item", "data"])
     chat_item = getattr(linked, "chat_item", None) if linked is not None else None
     _log(
         "persist",

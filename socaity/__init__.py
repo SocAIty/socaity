@@ -19,67 +19,9 @@ from socaity_schemas.platform import (
     PriceEstimate,
     ServiceCategory,
 )
+from socaity.client import SocaityClient
 from socaity.core.socaity_service_registry import SocaityServiceRegistry
 from socaity.core.session import Session, current_session, use_session
-from socaity.core.catalog import (
-    connect,
-    get_model,
-    get_service,
-    list_pricing_rules,
-    query_categories,
-    query_models,
-    query_services,
-)
-from socaity.core.jobs import (
-    delete_job,
-    get_job,
-    query_jobs,
-    refresh_job,
-    update_job,
-    update_social_metrics,
-)
-from socaity.core.files import (
-    delete_file,
-    get_file,
-    get_storage_usage,
-    query_files,
-    update_file,
-    upload_files,
-)
-from socaity.core.projects import (
-    delete_project,
-    get_project,
-    modify_project_members,
-    query_projects,
-    upsert_project,
-)
-from socaity.core.conversations import (
-    delete_conversation,
-    fork_conversation,
-    get_conversation,
-    query_conversation_items,
-    query_conversations,
-    update_conversation,
-)
-from socaity.core.interrupts import get_interrupt, query_interrupts, resolve_interrupt
-from socaity.core.workflows import (
-    delete_workflow,
-    estimate_workflow,
-    get_workflow,
-    get_workflow_run,
-    publish_workflow,
-    query_workflow_revisions,
-    query_workflow_runs,
-    query_workflows,
-    revert_workflow,
-    save_workflow,
-)
-from socaity.core.analytics import (
-    estimate,
-    get_service_pricing,
-    get_similar_services,
-    get_stats,
-)
 
 service_registry = FastSDK().service_registry = SocaityServiceRegistry()
 
@@ -112,72 +54,15 @@ except ImportError:
 __all__ = [
     "install",
     "service_registry",
-    # session
+    "SocaityClient",
     "Session",
     "current_session",
     "use_session",
-    # catalog
-    "query_services",
-    "get_service",
-    "query_models",
-    "get_model",
-    "query_categories",
-    "list_pricing_rules",
-    "connect",
-    # jobs
-    "query_jobs",
-    "get_job",
-    "refresh_job",
-    "update_job",
-    "delete_job",
-    "update_social_metrics",
     "Job",
-    # files
-    "query_files",
-    "get_file",
-    "get_storage_usage",
-    "upload_files",
-    "update_file",
-    "delete_file",
-    # projects
-    "query_projects",
-    "get_project",
-    "upsert_project",
-    "delete_project",
-    "modify_project_members",
-    # conversations
-    "query_conversations",
-    "get_conversation",
-    "query_conversation_items",
-    "update_conversation",
-    "fork_conversation",
-    "delete_conversation",
-    # interrupts (HITL)
-    "query_interrupts",
-    "get_interrupt",
-    "resolve_interrupt",
-    # workflows
-    "query_workflows",
-    "get_workflow",
-    "save_workflow",
-    "delete_workflow",
-    "publish_workflow",
-    "revert_workflow",
-    "query_workflow_revisions",
-    "query_workflow_runs",
-    "get_workflow_run",
-    "estimate_workflow",
-    # analytics
-    "estimate",
-    "get_stats",
-    "get_similar_services",
-    "get_service_pricing",
-    # media
     "MediaFile",
     "ImageFile",
     "VideoFile",
     "AudioFile",
-    # fastsdk
     "APISeex",
     "FastClient",
     "FastSDK",
@@ -186,7 +71,6 @@ __all__ = [
     "generate_stub",
     "inspect_service",
     "register_service",
-    # schemas
     "AIService",
     "AIModel",
     "Deployment",

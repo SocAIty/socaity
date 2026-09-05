@@ -28,9 +28,6 @@ import agentic_utils as env  # noqa: E402  (sets URL defaults before socaity imp
 
 import socaity  # noqa: E402
 from socaity.core.session import Session, use_session  # noqa: E402
-from socaity.tools.agents import run_agent  # noqa: E402
-from socaity.tools.jobs import cancel_job_run  # noqa: E402
-from socaity.tools.workflows import run_workflow  # noqa: E402
 
 AGENT = "spaine"
 
@@ -59,12 +56,12 @@ BASE_DOC = {
 def run() -> None:  # noqa: PLR0915 - linear e2e scenario
     session = Session(api_key=env.rich_key(), backend_url=env.BACKEND)
     with use_session(session):
-        saved = socaity.save_workflow(BASE_DOC, slug=f"wait-cancel-{int(time.time())}", message="wait-cancel base")
+        saved = env.sdk().upsert_workflow(BASE_DOC, slug=f"wait-cancel-{int(time.time())}", message="wait-cancel base")
         wf_id = saved.workflow.id
         env.log("T2A", f"saved workflow {wf_id}")
-        document = socaity.get_workflow(wf_id).document.model_dump(mode="json", exclude_none=True)
+        document = env.sdk().get_workflow(wf_id).document.model_dump(mode="json", exclude_none=True)
 
-        turn = run_agent(
+        turn = env.run_agent(
             AGENT,
             message=(
                 "Modify the draft workflow with exactly these three tool calls and nothing else: "
@@ -85,7 +82,7 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
 
         revisions = []
         for _ in range(15):
-            revisions = socaity.query_workflow_revisions(wf_id)
+            revisions = env.sdk().query_workflow_revisions(wf_id)
             if len(revisions) >= 2:
                 break
             time.sleep(2)
@@ -95,7 +92,7 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
         # The small qwen sometimes emits incomplete tool calls; send corrective
         # plan turns (same thread, re-seeded latest doc) until the draft is right.
         for attempt in range(1):
-            latest_doc = socaity.get_workflow(wf_id).document
+            latest_doc = env.sdk().get_workflow(wf_id).document
             nodes = {n.id: n for n in latest_doc.nodes}
             edges = {e.id: e for e in latest_doc.edges}
             fixes = []
@@ -117,7 +114,7 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
             if not fixes:
                 break
             env.log("T2A", f"corrective turn {attempt + 1}: {len(fixes)} fixes")
-            run_agent(
+            env.run_agent(
                 AGENT,
                 message=(
                     "Apply exactly these tool calls to the draft, then reply done: "
@@ -130,14 +127,14 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
             )
             time.sleep(3)
 
-        latest = socaity.get_workflow(wf_id)
+        latest = env.sdk().get_workflow(wf_id)
         latest_doc = latest.document
         wait_ok = any((n.config or {}).get("op") == "wait" for n in latest_doc.nodes)
         wired_ok = any(e.source == "nd_wait" for e in latest_doc.edges)
         if not (wait_ok and wired_ok):
-            # Known gap: the 8k qwen in emulated-tool mode no-ops config edits it
-            # cannot see in the draft summary. Complete the document user-side so
-            # the cancel path still gets exercised (model gap noted in handoff).
+            # Known gap: small catalog models can still drop complex dict
+            # arguments on plan turns. Complete the document user-side so
+            # the cancel path still gets exercised.
             env.log("T2A", "model left the draft incomplete; saving corrected document user-side")
             doc = latest_doc.model_dump(mode="json", exclude_none=True)
             nodes = {n["id"]: n for n in doc["nodes"]}
@@ -150,8 +147,8 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
                     edge["source"], edge["target"] = "nd_echo", "nd_wait"
             doc["edges"].append({"id": "ed_wait_out", "source": "nd_wait", "target": "nd_output"})
             doc.get("metadata", {}).pop("content_hash", None)
-            socaity.save_workflow(doc, message="wait-cancel wait completion")
-            latest_doc = socaity.get_workflow(wf_id).document
+            env.sdk().upsert_workflow(doc, message="wait-cancel wait completion")
+            latest_doc = env.sdk().get_workflow(wf_id).document
         node_ops = [(n.id, (n.config or {}).get("op")) for n in latest_doc.nodes]
         env.log("T2A", f"latest document nodes: {node_ops}")
         env.log("T2A", f"latest edges: {[(e.id, e.source, e.target) for e in latest_doc.edges]}")
@@ -165,12 +162,19 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
             try:
                 # Threads do not inherit the use_session contextvar; rebind.
                 with use_session(session):
-                    state["job"] = run_workflow(
-                        wf_id,
-                        inputs={"text": "hello"},
-                        timeout_s=120,
-                        on_job_start=lambda job_id, _env: state.__setitem__("job_id", job_id),
-                    )
+                    handle = env.sdk().run_workflow(wf_id, inputs={"text": "hello"})
+
+                    def on_started(event) -> None:
+                        state["job_id"] = event.job_id
+
+                    unsub = handle.subscribe(on_started=on_started, replay=True)
+                    try:
+                        handle.get_result(timeout_s=120)
+                        from socaity.core.serialize import serialize_job
+
+                        state["job"] = serialize_job(handle)
+                    finally:
+                        unsub()
             except Exception as exc:  # noqa: BLE001 - cancelled jobs may raise terminal errors
                 state["error"] = str(exc)
             finally:
@@ -184,27 +188,27 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
         job_id = state["job_id"]
         run_row = None
         for _ in range(30):
-            runs = socaity.query_workflow_runs(wf_id)
+            runs = env.sdk().query_workflow_runs(wf_id)
             run_row = next((row for row in runs if row.job_id == job_id), None)
             if run_row is not None:
                 break
             time.sleep(0.2)
         assert run_row is not None, f"workflow_runs row with job_id={job_id} missing at intake"
         env.log("T2A", f"intake run={run_row.id} status={run_row.status} job_id={run_row.job_id}")
-        traces_before = len((socaity.get_workflow_run(run_row.id, expand=["traces"]) or run_row).traces or [])
+        traces_before = len((env.sdk().get_workflow_run(run_row.id, expand=["traces"]) or run_row).traces or [])
         time.sleep(2.0)  # let the run reach the wait node
-        live = socaity.get_workflow_run(run_row.id, expand=["traces"])
+        live = env.sdk().get_workflow_run(run_row.id, expand=["traces"])
         traces_live = len((live.traces if live else None) or [])
         env.log("T2A", f"traces before={traces_before} live={traces_live}")
         assert traces_live >= traces_before, (traces_before, traces_live)
-        summary = cancel_job_run(job_id, action="cancel")
+        summary = env.cancel_job_run(job_id, action="cancel")
         env.log("T2A", f"cancel {job_id} -> {json.dumps(summary, default=str)[:200]}")
         done.wait(timeout=90)
         env.log("T2A", f"run thread finished | job={json.dumps(state.get('job'), default=str)[:300]} error={state.get('error')}")
 
         run_row = None
         for _ in range(15):
-            runs = socaity.query_workflow_runs(wf_id)
+            runs = env.sdk().query_workflow_runs(wf_id)
             run_row = runs[0] if runs else None
             if run_row is not None and run_row.status in ("cancelled", "failed", "completed"):
                 break
@@ -213,7 +217,7 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
         env.log("T2A", f"run row: id={run_row.id} status={run_row.status}")
         assert run_row.status == "cancelled", f"expected cancelled run, got {run_row.status}"
 
-        follow_up = run_agent(
+        follow_up = env.run_agent(
             AGENT,
             message="Briefly: what change did you make to my workflow in this conversation?",
             mode="chat",

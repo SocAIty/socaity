@@ -53,7 +53,7 @@ class SocaityServiceRegistry(Registry):
     @property
     def _backend(self):
         """Active session client. Never a process-wide import-time prod client."""
-        return current_session().backend
+        return current_session().client
 
     # ---- Public API ----
 

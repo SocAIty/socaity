@@ -23,7 +23,6 @@ import agentic_utils as env  # noqa: E402  (sets URL defaults before socaity imp
 
 import socaity  # noqa: E402
 from socaity.core.session import Session, use_session  # noqa: E402
-from socaity.tools.agents import run_agent  # noqa: E402
 
 PERSIST_TIMEOUT_S = 120.0
 GENERATE_TIMEOUT_S = 1800.0
@@ -71,7 +70,7 @@ pytestmark = [
 def _wait_conversation(thread_id: str) -> None:
     deadline = time.monotonic() + PERSIST_TIMEOUT_S
     while time.monotonic() < deadline:
-        if socaity.get_conversation(thread_id) is not None:
+        if env.sdk().get_conversation(thread_id) is not None:
             return
         time.sleep(2)
     raise AssertionError(f"conversation {thread_id} did not persist within {PERSIST_TIMEOUT_S}s")
@@ -130,21 +129,21 @@ def run() -> None:
     session = Session(api_key=env.rich_key(), backend_url=env.BACKEND)
     with use_session(session):
         env.log("T3.1", f"generate monkey clipart via {FLUX}")
-        first = run_agent("spaine", message=GENERATE, mode="agent", timeout_s=GENERATE_TIMEOUT_S)
+        first = env.run_agent("spaine", message=GENERATE, mode="agent", timeout_s=GENERATE_TIMEOUT_S)
         thread_id = first["thread_id"]
         env.log("T3.1", f"job={first['job_id']} agent_status={first['agent_status']} thread={thread_id}")
         assert first["agent_status"] == "completed", first["response"]
         assert thread_id, "agent turn returned no thread_id"
         _wait_conversation(thread_id)
 
-        items = socaity.query_conversation_items(thread_id, branch="active")
+        items = env.sdk().query_conversation_items(thread_id, branch="active")
         results = _run_service_results(items)
         assert results, f"no run_service tool_result with job_id (bubble/panel data missing): {items}"
         _item, _part, output = results[0]
         child_job_id = output["job_id"]
         env.log("T3.1", f"child_job={child_job_id} status={output.get('status')}")
 
-        tracked = socaity.get_job(child_job_id)
+        tracked = env.sdk().get_job(child_job_id)
         assert tracked is not None, f"get_job missed child {child_job_id}"
         status = (getattr(tracked, "status", None) or output.get("status") or "").lower()
         assert status in ("finished", "completed", "success"), (
@@ -158,7 +157,7 @@ def run() -> None:
         env.log("T3.1", f"tracked status={status} files={len(files)}")
 
         env.log("T3.2", "list last 10 jobs via query_jobs")
-        listed = run_agent(
+        listed = env.run_agent(
             "spaine",
             message=LIST,
             thread_id=thread_id,
@@ -167,7 +166,7 @@ def run() -> None:
         )
         assert listed["agent_status"] == "completed", listed["response"]
         _wait_conversation(thread_id)
-        after_list = socaity.query_conversation_items(thread_id, branch="active")
+        after_list = env.sdk().query_conversation_items(thread_id, branch="active")
         list_parts = _tool_results(after_list, "query_jobs")
         assert list_parts, f"query_jobs tool_result missing (tool not bound or call failed): {after_list}"
         list_output = list_parts[0][2]
@@ -175,12 +174,12 @@ def run() -> None:
         env.log("T3.2", f"query_jobs n={len(listed_ids)}")
         assert listed_ids, f"query_jobs returned no jobs: {list_output!r}"
         assert child_job_id in listed_ids, (child_job_id, listed_ids)
-        sdk_jobs = socaity.query_jobs(limit=10)
+        sdk_jobs = env.sdk().query_jobs(limit=10)
         sdk_ids = {getattr(job, "id", None) for job in sdk_jobs}
         assert child_job_id in sdk_ids, (child_job_id, sdk_ids)
 
         env.log("T3.3", "describe composition (qwen3.8 VLM on the image URL)")
-        second = run_agent(
+        second = env.run_agent(
             "spaine",
             message=DESCRIBE,
             thread_id=thread_id,
@@ -189,7 +188,7 @@ def run() -> None:
         )
         assert second["agent_status"] == "completed", second["response"]
         _wait_conversation(thread_id)
-        after = socaity.query_conversation_items(thread_id, branch="active")
+        after = env.sdk().query_conversation_items(thread_id, branch="active")
         assistants = [item for item in after if item.role == "assistant" and item.kind == "message"]
         describe_text = " ".join(_item_text(item) for item in assistants[-1:])
         if MARKER + "-vlm" not in describe_text:
@@ -201,7 +200,7 @@ def run() -> None:
         visual = ("monkey", "color", "colour", "composition", "background", "clipart", "subject")
         assert any(word in lowered for word in visual), f"reply is not a visual description: {describe_text!r}"
 
-        socaity.delete_conversation(thread_id)
+        env.sdk().delete_conversation(thread_id)
     env.log("T3", "PASS")
 
 

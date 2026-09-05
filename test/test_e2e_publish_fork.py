@@ -24,8 +24,6 @@ import agentic_utils as env  # noqa: E402  (sets URL defaults before socaity imp
 
 import socaity  # noqa: E402
 from socaity.core.session import Session, use_session  # noqa: E402
-from socaity.tools.agents import run_agent  # noqa: E402
-from socaity.tools.workflows import run_workflow  # noqa: E402
 
 AGENT = "spaine"
 
@@ -56,23 +54,23 @@ BASE_DOC = {
 def run() -> None:
     owner = Session(api_key=env.rich_key(), backend_url=env.BACKEND)
     with use_session(owner):
-        saved = socaity.save_workflow(BASE_DOC, slug=f"publish-fork-{int(time.time())}", message="publish-fork base")
+        saved = env.sdk().upsert_workflow(BASE_DOC, slug=f"publish-fork-{int(time.time())}", message="publish-fork base")
         wf_id = saved.workflow.id
         # Publish requires a validated revision; a completed run validates it.
-        warmup = run_workflow(wf_id, inputs={"text": "warmup"}, timeout_s=180)
+        warmup = env.run_workflow(wf_id, inputs={"text": "warmup"}, timeout_s=180)
         env.log("T2B", f"owner warmup run status={(warmup.get('result') or {}).get('status')}")
-        published = socaity.publish_workflow(wf_id)
+        published = env.sdk().publish_workflow(wf_id)
         env.log("T2B", f"owner saved+published {wf_id} (published={published is not None})")
         assert published is not None, "publish failed"
 
     second = Session(api_key=env.poor_key(), backend_url=env.BACKEND)
     with use_session(second):
-        fetched = socaity.get_workflow(wf_id)
+        fetched = env.sdk().get_workflow(wf_id)
         assert fetched is not None, "second user cannot see the published workflow"
         document = fetched.document.model_dump(mode="json", exclude_none=True)
         env.log("T2B", f"second user fetched published workflow: {fetched.title}")
 
-        turn = run_agent(
+        turn = env.run_agent(
             AGENT,
             message=(
                 "Modify the draft workflow with exactly one tool call and nothing else: "
@@ -89,28 +87,28 @@ def run() -> None:
 
         fork = None
         for _ in range(15):
-            mine = socaity.query_workflows(filters=["visibility:eq:mine"], limit=50)
+            mine = env.sdk().query_workflows(filters=["visibility:eq:mine"], limit=50)
             fork = next((w for w in mine if w.title == TITLE and w.id != wf_id), None)
             if fork is not None:
                 break
             time.sleep(2)
         assert fork is not None, "no fork appeared for the second user"
         env.log("T2B", f"fork id={fork.id}")
-        fork_revisions = socaity.query_workflow_revisions(fork.id)
+        fork_revisions = env.sdk().query_workflow_revisions(fork.id)
         env.log("T2B", f"fork revisions: {[(r.id, r.message) for r in fork_revisions]}")
-        fork_doc = socaity.get_workflow(fork.id).document
+        fork_doc = env.sdk().get_workflow(fork.id).document
         env.log("T2B", f"fork nodes: {[n.id for n in fork_doc.nodes]}")
 
-        fork_run = run_workflow(fork.id, inputs={"text": "hello"}, timeout_s=180)
+        fork_run = env.run_workflow(fork.id, inputs={"text": "hello"}, timeout_s=180)
         result = fork_run.get("result") or {}
         env.log("T2B", f"fork run job={fork_run['job_id']} status={fork_run['status']} run_status={result.get('status')}")
         assert result.get("status") == "completed", result
 
         # Revert to the fork's base revision (the copied original content).
         base_revision = fork_revisions[-1]
-        reverted = socaity.revert_workflow(fork.id, revision_id=base_revision.id)
+        reverted = env.sdk().revert_workflow(fork.id, revision_id=base_revision.id)
         assert reverted is not None, "revert failed"
-        after = socaity.get_workflow(fork.id).document
+        after = env.sdk().get_workflow(fork.id).document
         env.log("T2B", f"after revert nodes: {[n.id for n in after.nodes]}")
         original_ids = sorted(n["id"] for n in BASE_DOC["nodes"])
         assert sorted(n.id for n in after.nodes) == original_ids, "revert did not restore the original document"

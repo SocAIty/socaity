@@ -1,42 +1,36 @@
 """Credential-scoped access to the socaity backend.
 
-The public helpers (``socaity.query_services``, ``socaity.connect``, ...) run against
-the *current* session. In a single-user process that is the default session, which
-picks up the API key from the environment or the stored CLI login, so nothing changes
-for scripts and notebooks.
-
-Hosts that serve several callers from one process (the MCP server) open one session
-per request with ``use_session``. The session lives in a ``ContextVar``, so concurrent
-tasks cannot observe or reuse each other's credentials.
+Hosts that serve several callers from one process (the MCP server, SPAINE)
+open one session per request with ``use_session``. The session lives in a
+``ContextVar``, so concurrent tasks cannot observe or reuse each other's
+credentials. Scripts and notebooks use the process-wide default session.
 """
 from __future__ import annotations
 
-import os
 from contextlib import contextmanager
 from contextvars import ContextVar
 from pathlib import Path
 from typing import Iterator, Optional
 
-from socaity_cli import SocaityBackendClient
+from socaity.client import DEFAULT_APIPOD_GATE_URL, SocaityClient
 
-DEFAULT_APIPOD_GATE_URL = "https://api.socaity.ai"
+DEFAULT_APIPOD_GATE_URL = DEFAULT_APIPOD_GATE_URL
 
 
 class Session:
-    """One caller's credentials plus the backend client bound to them.
+    """One caller's credentials plus the ``SocaityClient`` bound to them.
 
     Args:
-        api_key: Socaity API key. ``None`` falls back to ``SOCAITY_API_KEY`` or the
-            credentials written by ``socaity login``.
-        backend_url: Override the backend base URL (tests, self-hosted deployments).
-        materialize_media: Default for clients created through ``connect``. ``False``
-            keeps file results as URL references instead of downloading the bytes.
+        api_key: Socaity API key. ``None`` falls back to ``SOCAITY_API_KEY`` or
+            the credentials written by ``socaity login``.
+        backend_url: Override the backend base URL (tests, self-hosted).
+        materialize_media: Default for clients created through ``connect``.
+            ``False`` keeps file results as URL references.
         user_id: Caller id when the host already knows it (SPAINE, MCP).
         user_name: Display name for prompts. Never send ``api_key`` to a model.
         conversation_id: Current chat id, if the host has one.
-        local_root: User-local sandbox root on the host. Local tools must stay inside it.
+        local_root: User-local sandbox root on the host.
         gate_url: APIPod gate origin for factory jobs (agent chat, workflow run).
-            ``None`` reads ``APIPOD_GATE_URL``, then production.
     """
 
     def __init__(
@@ -50,14 +44,19 @@ class Session:
         local_root: Optional[Path] = None,
         gate_url: Optional[str] = None,
     ):
-        self.api_key = api_key
+        self.client = SocaityClient(
+            api_key=api_key,
+            backend_url=backend_url,
+            gate_url=gate_url,
+            materialize_media=materialize_media,
+        )
+        self.api_key = self.client.api_key
         self.materialize_media = materialize_media
-        self.backend = SocaityBackendClient(backend_url=backend_url, api_key=api_key)
         self.user_id = user_id
         self.user_name = user_name
         self.conversation_id = conversation_id
         self.local_root = local_root
-        self.gate_url = (gate_url or os.environ.get("APIPOD_GATE_URL") or DEFAULT_APIPOD_GATE_URL).rstrip("/")
+        self.gate_url = self.client.gate_url
 
 
 _current: ContextVar[Optional[Session]] = ContextVar("socaity_session", default=None)

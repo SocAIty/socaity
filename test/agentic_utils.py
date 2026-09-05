@@ -69,11 +69,42 @@ def inference_up() -> bool:
 
 
 def poll_job(job_id: str, api_key: Optional[str] = None, timeout_s: float = 600) -> dict:
-    """Wait until the gateway job is terminal. Uses the SDK wait helper."""
-    from socaity.tools.jobs import wait_for_job
+    """Wait until the gateway job is terminal."""
+    from socaity.core.serialize import serialize_job
+    from socaity.core.session import current_session
 
     _ = api_key
-    return wait_for_job(job_id, timeout_s=timeout_s)
+    job = current_session().client.track_job(job_id)
+    job.get_result(timeout_s=timeout_s)
+    return serialize_job(job)
+
+
+def sdk():
+    """Active session's ``SocaityClient``."""
+    from socaity.core.session import current_session
+    return current_session().client
+
+
+def run_agent(*args, timeout_s: float = 600, **kwargs) -> dict:
+    """Submit an agent turn and wait for the serializable terminal payload."""
+    from socaity.core.serialize import agent_turn_from_job
+
+    job = sdk().run_agent(*args, **kwargs)
+    job.get_result(timeout_s=timeout_s)
+    return agent_turn_from_job(job)
+
+
+def run_workflow(*args, timeout_s: float = 1800, **kwargs) -> dict:
+    """Submit a workflow run and wait for the serializable terminal payload."""
+    from socaity.core.serialize import serialize_job
+
+    job = sdk().run_workflow(*args, **kwargs)
+    job.get_result(timeout_s=timeout_s)
+    return serialize_job(job)
+
+
+def cancel_job_run(job_id: str, action: str = "cancel") -> dict:
+    return sdk().cancel_job(job_id, action=action)
 
 
 def log(tag: str, msg: str) -> None:
