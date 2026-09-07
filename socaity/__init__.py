@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from media_toolkit import MediaFile, ImageFile, VideoFile, AudioFile
 from fastsdk import (
@@ -21,7 +22,15 @@ from socaity_schemas.platform import (
 )
 from socaity.client import SocaityClient
 from socaity.core.socaity_service_registry import SocaityServiceRegistry
-from socaity.core.session import Session, current_session, use_session
+from socaity.core.session import Session, current_session
+
+Client = SocaityClient
+
+if TYPE_CHECKING:
+    client: SocaityClient
+else:
+    from socaity.core.session import ActiveClient
+    client = ActiveClient()
 
 service_registry = FastSDK().service_registry = SocaityServiceRegistry()
 
@@ -54,10 +63,11 @@ except ImportError:
 __all__ = [
     "install",
     "service_registry",
+    "client",
+    "Client",
     "SocaityClient",
     "Session",
     "current_session",
-    "use_session",
     "Job",
     "MediaFile",
     "ImageFile",

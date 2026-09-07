@@ -27,7 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import agentic_utils as env  # noqa: E402  (sets URL defaults before socaity import)
 
 import socaity  # noqa: E402
-from socaity.core.session import Session, use_session  # noqa: E402
+from socaity import Session, client  # noqa: E402
 
 AGENT = "spaine"
 
@@ -55,11 +55,11 @@ BASE_DOC = {
 
 def run() -> None:  # noqa: PLR0915 - linear e2e scenario
     session = Session(api_key=env.rich_key(), backend_url=env.BACKEND)
-    with use_session(session):
-        saved = env.sdk().upsert_workflow(BASE_DOC, slug=f"wait-cancel-{int(time.time())}", message="wait-cancel base")
+    with session:
+        saved = client.upsert_workflow(BASE_DOC, slug=f"wait-cancel-{int(time.time())}", message="wait-cancel base")
         wf_id = saved.workflow.id
         env.log("T2A", f"saved workflow {wf_id}")
-        document = env.sdk().get_workflow(wf_id).document.model_dump(mode="json", exclude_none=True)
+        document = client.get_workflow(wf_id).document.model_dump(mode="json", exclude_none=True)
 
         turn = env.run_agent(
             AGENT,
@@ -82,7 +82,7 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
 
         revisions = []
         for _ in range(15):
-            revisions = env.sdk().query_workflow_revisions(wf_id)
+            revisions = client.query_workflow_revisions(wf_id)
             if len(revisions) >= 2:
                 break
             time.sleep(2)
@@ -92,7 +92,7 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
         # The small qwen sometimes emits incomplete tool calls; send corrective
         # plan turns (same thread, re-seeded latest doc) until the draft is right.
         for attempt in range(1):
-            latest_doc = env.sdk().get_workflow(wf_id).document
+            latest_doc = client.get_workflow(wf_id).document
             nodes = {n.id: n for n in latest_doc.nodes}
             edges = {e.id: e for e in latest_doc.edges}
             fixes = []
@@ -127,7 +127,7 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
             )
             time.sleep(3)
 
-        latest = env.sdk().get_workflow(wf_id)
+        latest = client.get_workflow(wf_id)
         latest_doc = latest.document
         wait_ok = any((n.config or {}).get("op") == "wait" for n in latest_doc.nodes)
         wired_ok = any(e.source == "nd_wait" for e in latest_doc.edges)
@@ -147,8 +147,8 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
                     edge["source"], edge["target"] = "nd_echo", "nd_wait"
             doc["edges"].append({"id": "ed_wait_out", "source": "nd_wait", "target": "nd_output"})
             doc.get("metadata", {}).pop("content_hash", None)
-            env.sdk().upsert_workflow(doc, message="wait-cancel wait completion")
-            latest_doc = env.sdk().get_workflow(wf_id).document
+            client.upsert_workflow(doc, message="wait-cancel wait completion")
+            latest_doc = client.get_workflow(wf_id).document
         node_ops = [(n.id, (n.config or {}).get("op")) for n in latest_doc.nodes]
         env.log("T2A", f"latest document nodes: {node_ops}")
         env.log("T2A", f"latest edges: {[(e.id, e.source, e.target) for e in latest_doc.edges]}")
@@ -160,9 +160,9 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
 
         def _run() -> None:
             try:
-                # Threads do not inherit the use_session contextvar; rebind.
-                with use_session(session):
-                    handle = env.sdk().run_workflow(wf_id, inputs={"text": "hello"})
+                # Threads do not inherit the Session contextvar; rebind.
+                with session:
+                    handle = client.run_workflow(wf_id, inputs={"text": "hello"})
 
                     def on_event(event) -> None:
                         job_id = handle.platform_job_id
@@ -190,16 +190,16 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
         job_id = state["job_id"]
         run_row = None
         for _ in range(30):
-            runs = env.sdk().query_workflow_runs(wf_id)
+            runs = client.query_workflow_runs(wf_id)
             run_row = next((row for row in runs if row.job_id == job_id), None)
             if run_row is not None:
                 break
             time.sleep(0.2)
         assert run_row is not None, f"workflow_runs row with job_id={job_id} missing at intake"
         env.log("T2A", f"intake run={run_row.id} status={run_row.status} job_id={run_row.job_id}")
-        traces_before = len((env.sdk().get_workflow_run(run_row.id, expand=["traces"]) or run_row).traces or [])
+        traces_before = len((client.get_workflow_run(run_row.id, expand=["traces"]) or run_row).traces or [])
         time.sleep(2.0)  # let the run reach the wait node
-        live = env.sdk().get_workflow_run(run_row.id, expand=["traces"])
+        live = client.get_workflow_run(run_row.id, expand=["traces"])
         traces_live = len((live.traces if live else None) or [])
         env.log("T2A", f"traces before={traces_before} live={traces_live}")
         assert traces_live >= traces_before, (traces_before, traces_live)
@@ -210,7 +210,7 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
 
         run_row = None
         for _ in range(15):
-            runs = env.sdk().query_workflow_runs(wf_id)
+            runs = client.query_workflow_runs(wf_id)
             run_row = runs[0] if runs else None
             if run_row is not None and run_row.status in ("cancelled", "failed", "completed"):
                 break

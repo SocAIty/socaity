@@ -19,7 +19,7 @@ from fastsdk.service_access import service_contract
 from socaity_schemas.contract import Endpoint
 from socaity_schemas.platform import AIService
 
-from socaity.core.session import current_session
+from socaity import client
 
 CHAT_SCHEMA_NAME = "ChatCompletionRequest"
 
@@ -43,7 +43,7 @@ class ChatServiceAdapter:
     ):
         self.client = (
             service if isinstance(service, FastClient)
-            else current_session().client.connect(service, api_key=api_key)
+            else client.connect(service, api_key=api_key)
         )
         self.endpoint = self._resolve_chat_endpoint(endpoint_path)
         self.jobs: List[APISeex] = []

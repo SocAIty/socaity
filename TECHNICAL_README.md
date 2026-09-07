@@ -10,41 +10,43 @@ For job execution internals, streaming modes, and provider stacks, see [fastSDK 
 
 ## Public API Surface
 
-Backend methods live on ``SocaityClient`` (inherited from ``socaity-cli`` mixins).
-There is no module-level function facade. Use ``SocaityClient()`` or
-``current_session().client``.
+Backend methods live on ``Client`` (``SocaityClient``, inherited from ``socaity-cli`` mixins).
+There is no module-level function facade. Use the active ``client`` proxy, an
+explicit ``Client(...)``, or ``with Session(api_key=...)``.
 
 | Symbol | Side effects | Returns |
 |---|---|---|
 | ``socaity.install(name)`` | backend fetch + stub write + registry upsert | ``None`` |
 | ``socaity.service_registry`` | shared singleton | ``SocaityServiceRegistry`` |
 | ``from socaity import model`` | none (import generated stub) | ``FastClient`` subclass |
-| ``SocaityClient.query_services(...)`` | one catalog fetch (slim, sparse fieldset) | ``List[AIService]`` |
-| ``SocaityClient.get_service(id_or_name)`` | one catalog fetch (full) | ``AIService`` |
-| ``SocaityClient.query_models(...)`` / ``get_model(...)`` | catalog fetch | ``List[AIModel]`` / ``AIModel`` |
-| ``SocaityClient.query_categories()`` | catalog fetch | ``List[ServiceCategory]`` |
-| ``SocaityClient.list_pricing_rules()`` | catalog fetch | pricing rule rows |
-| ``SocaityClient.query_jobs(...)`` / ``get_job(...)`` | ``v1/jobs`` query/get | ``List[Job]`` / ``Job`` |
-| ``SocaityClient.refresh_job(job_id)`` | finished-job webhook refresh | cache + Typesense upsert |
-| ``SocaityClient.update_job(...)`` / ``delete_job(...)`` | job mutations | ``bool`` |
-| ``SocaityClient.query_projects(...)`` / ``upsert_project(...)`` / … | ``v1/projects`` | ``List[Project]`` / ids / ``bool`` |
-| ``SocaityClient.estimate(...)`` / ``get_stats(...)`` / ``get_similar_services(...)`` | ``v1/analytics`` | estimate / stats / similar |
-| ``SocaityClient.query_interrupts(...)`` / ``get_interrupt(...)`` | ``v1/interrupts`` HIT inbox (pending by default) | ``List[Interrupt]`` / ``Interrupt`` |
-| ``SocaityClient.resolve_interrupt(id, decision, ...)`` | records decision; ``continue_run=True`` enqueues the agent continue job | ``InterruptResolveResult`` |
-| ``SocaityClient.connect(source)`` | resolves platform identifiers via backend, then FastSDK | ``FastClient`` |
-| ``SocaityClient.run_service(...)`` | catalog job via FastSDK | ``APISeex`` |
-| ``SocaityClient.run_agent(...)`` | gateway ``POST /v1/agents/{id}/chat`` | ``APISeex`` |
-| ``SocaityClient.run_workflow(...)`` | gateway ``POST /v1/workflows/{id}/run`` | ``APISeex`` |
-| ``SocaityClient.track_job(job_id)`` | re-attach to a running gateway job | ``APISeex`` |
-| ``SocaityClient.cancel_job(job_id)`` | ``APISeex.cancel`` on an attached job | cancel summary |
+| ``client`` / ``Client(...)`` | active session proxy, or an explicit credential-bound handle | ``Client`` |
+| ``Session(...)`` | bind credentials for a block; ``with Session(api_key=...)`` | ``Session`` |
+| ``Client.query_services(...)`` | one catalog fetch (slim, sparse fieldset) | ``List[AIService]`` |
+| ``Client.get_service(id_or_name)`` | one catalog fetch (full) | ``AIService`` |
+| ``Client.query_models(...)`` / ``get_model(...)`` | catalog fetch | ``List[AIModel]`` / ``AIModel`` |
+| ``Client.query_categories()`` | catalog fetch | ``List[ServiceCategory]`` |
+| ``Client.list_pricing_rules()`` | catalog fetch | pricing rule rows |
+| ``Client.query_jobs(...)`` / ``get_job(...)`` | ``v1/jobs`` query/get | ``List[Job]`` / ``Job`` |
+| ``Client.refresh_job(job_id)`` | finished-job webhook refresh | cache + Typesense upsert |
+| ``Client.update_job(...)`` / ``delete_job(...)`` | job mutations | ``bool`` |
+| ``Client.query_projects(...)`` / ``upsert_project(...)`` / … | ``v1/projects`` | ``List[Project]`` / ids / ``bool`` |
+| ``Client.estimate(...)`` / ``get_stats(...)`` / ``get_similar_services(...)`` | ``v1/analytics`` | estimate / stats / similar |
+| ``Client.query_interrupts(...)`` / ``get_interrupt(...)`` | ``v1/interrupts`` HIT inbox (pending by default) | ``List[Interrupt]`` / ``Interrupt`` |
+| ``Client.resolve_interrupt(id, decision, ...)`` | records decision; ``continue_run=True`` enqueues the agent continue job | ``InterruptResolveResult`` |
+| ``Client.connect(source)`` | resolves platform identifiers via backend, then FastSDK | ``FastClient`` |
+| ``Client.run_service(...)`` | catalog job via FastSDK | ``APISeex`` |
+| ``Client.run_agent(...)`` | gateway ``POST /v1/agents/{id}/chat`` | ``APISeex`` |
+| ``Client.run_workflow(...)`` | gateway ``POST /v1/workflows/{id}/run`` | ``APISeex`` |
+| ``Client.track_job(job_id)`` | re-attach to a running gateway job | ``APISeex`` |
+| ``Client.cancel_job(job_id)`` | ``APISeex.cancel`` on an attached job | cancel summary |
 | ``socaity.generate_stub(...)`` | re-export of ``fastsdk.generate_stub`` | ``FastStub`` |
 | ``socaity.APISeex`` | re-export | job handle from every model call |
 
 ``socaity-cli`` owns all backend HTTP. FastSDK and Meseex own job submission,
 polling, streaming, cancellation, and ``APISeex.subscribe``. Eligible
-``SocaityClient`` methods become FastMCP / LangChain tools through
+``Client`` methods become FastMCP / LangChain tools through
 ``to_fastmcp`` / ``to_langchain`` (function-identity policy). MCP and SPAINE
-do not redefine those methods. The workflow engine calls ``SocaityClient``
+do not redefine those methods. The workflow engine calls ``Client``
 directly.
 
 Module-level CLI: `socaity login`, `install`, `update`, `list`, `search`, `jobs`, `projects`, `interrupts`, plus optional APIPod deploy commands when `[apipod]` is installed.
@@ -71,7 +73,7 @@ Think of socaity as two connected subsystems:
 
 2. **Runtime layer (delegated to fastSDK)**
    - Generated stubs call `FastClient.submit_job(endpoint, **params)` → `APISeex`
-   - `SocaityClient.run_agent` / `run_workflow` call `fastsdk.submit_factory` → the same `APISeex`
+   - `Client.run_agent` / `run_workflow` call `fastsdk.submit_factory` → the same `APISeex`
    - Jobs poll, cancel, stream, and notify subscribers through fastSDK's `JobRuntime` + meseex pipeline
    - Media results deserialize via `media-toolkit`
 
@@ -279,13 +281,16 @@ Details: fastSDK TECHNICAL_README (Cancellation, JobRuntime).
 For services not in the catalog, or local APIPod dev servers:
 
 ```python
-from socaity import SocaityClient
+from socaity import client, Client, Session
 
-client = SocaityClient().connect("http://localhost:8009")
-job = client.submit_job("/chat", messages=[...], stream=True)
+job = client.connect("http://localhost:8009").submit_job("/chat", messages=[...], stream=True)
+
+mine = Client(api_key=key)
+with Session(api_key=other_key):
+    client.query_categories()
 ```
 
-``SocaityClient.connect()`` first resolves platform identifiers (service name, UUID, `user/service`) through the backend, then builds a FastSDK client. URLs, spec paths and `replicate:` references skip the backend and go straight to fastsdk. Use `generate_stub()` to persist a `.py` file instead.
+``Client.connect()`` first resolves platform identifiers (service name, UUID, `user/service`) through the backend, then builds a FastSDK client. URLs, spec paths and `replicate:` references skip the backend and go straight to fastsdk. Use `generate_stub()` to persist a `.py` file instead. The package-level ``client`` forwards to the active session. Explicit ``Client(...)`` handles ignore it.
 
 ## Authentication and credentials
 

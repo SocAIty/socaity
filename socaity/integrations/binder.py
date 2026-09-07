@@ -19,14 +19,16 @@ from socaity.core.serialize import agent_turn_from_job, serialize_job, serialize
 
 
 def _session_scope(session):
-    """Accept a Session, a session factory, or a context-manager factory."""
+    """Enter an optional Session, factory, or context-manager factory.
+
+    ``None`` keeps the already-active session. MCP passes ``required_session``.
+    """
     if session is None:
-        from socaity.core.session import current_session
-        return nullcontext(current_session())
+        return nullcontext()
     acquired = session() if callable(session) else session
     if hasattr(acquired, "__enter__"):
         return acquired
-    return nullcontext(acquired)
+    return nullcontext()
 
 
 _LIFECYCLE_KIND = {
@@ -108,8 +110,10 @@ def bind_method(method: Callable, session: Optional[Callable] = None):
     """Bind an unbound client method to the active session and expose it without ``self``."""
 
     def invoke_sync(**arguments):
-        with _session_scope(session) as active:
-            result = method(active.client, **arguments)
+        from socaity import client
+
+        with _session_scope(session):
+            result = getattr(client, method.__name__)(**arguments)
             return consume_or_serialize(method, result)
 
     async def invoke_async(**arguments):

@@ -30,7 +30,7 @@ _load_repo_env()
 os.environ.setdefault("SOCAITY_BACKEND_URL", "http://127.0.0.1:8000/")
 
 import socaity  # noqa: E402
-from socaity.core.session import current_session  # noqa: E402
+from socaity import client  # noqa: E402
 from socaity_cli.errors import BackendApiError, BackendTransportError  # noqa: E402
 
 BACKEND = os.environ["SOCAITY_BACKEND_URL"].rstrip("/") + "/"
@@ -72,7 +72,6 @@ def _platform_job_id(handle) -> str:
 
 @pytest.fixture(scope="module")
 def created_job_id() -> str:
-    client = current_session().client
     handle = client.connect("black-forest-labs-flux-schnell").submit_job("/predictions", prompt=PROMPT)
     result = handle.get_result()
     assert result is not None, "flux-schnell returned no result"
@@ -111,13 +110,13 @@ def created_job_id() -> str:
 
 
 def test_query_jobs_returns_visible_jobs(created_job_id):
-    jobs = current_session().client.query_jobs(limit=20, expand=["data"])
+    jobs = client.query_jobs(limit=20, expand=["data"])
     assert jobs, "query_jobs returned no jobs for the authenticated user"
     assert any(job.id == created_job_id for job in jobs), [job.id for job in jobs[:10]]
 
 
 def test_get_job_by_id(created_job_id):
-    job = current_session().client.get_job(created_job_id, expand=["data"])
+    job = client.get_job(created_job_id, expand=["data"])
     assert job is not None
     assert job.id == created_job_id
     if not job.data or not job.data.input_data:
@@ -127,25 +126,25 @@ def test_get_job_by_id(created_job_id):
 
 
 def test_search_jobs_by_prompt_keyword(created_job_id):
-    job = current_session().client.get_job(created_job_id, expand=["data"])
+    job = client.get_job(created_job_id, expand=["data"])
     if not job or not job.data or not job.data.input_data:
         pytest.skip("job catalog data was not hydrated; Typesense cannot search the prompt")
-    hits = current_session().client.query_jobs(q=PROMPT_TOKEN, limit=10)
+    hits = client.query_jobs(q=PROMPT_TOKEN, limit=10)
     ids = [job.id for job in hits]
     assert created_job_id in ids, ids
 
 
 def test_query_jobs_by_q(created_job_id):
-    job = current_session().client.get_job(created_job_id, expand=["data"])
+    job = client.get_job(created_job_id, expand=["data"])
     if not job or not job.data or not job.data.input_data:
         pytest.skip("job catalog data was not hydrated; Typesense cannot search the prompt")
-    hits = current_session().client.query_jobs(q="lighthouse watercolor", expand=["data"], limit=20)
+    hits = client.query_jobs(q="lighthouse watercolor", expand=["data"], limit=20)
     ids = [job.id for job in hits]
     assert created_job_id in ids, ids
 
 
 def test_webhook_refresh_indexes_job(created_job_id):
-    again = current_session().client.refresh_job(created_job_id)
+    again = client.refresh_job(created_job_id)
     assert again and again.get("job_id") == created_job_id
     if not again.get("indexed"):
         pytest.skip("jobs webhook returned ok but Typesense did not index (no persistent job_data)")

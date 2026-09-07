@@ -1,16 +1,18 @@
 """Credential-scoped access to the socaity backend.
 
 Hosts that serve several callers from one process (the MCP server, SPAINE)
-open one session per request with ``use_session``. The session lives in a
-``ContextVar``, so concurrent tasks cannot observe or reuse each other's
-credentials. Scripts and notebooks use the process-wide default session.
+open one session per request. The session lives in a ``ContextVar``, so
+concurrent tasks cannot observe or reuse each other's credentials. Scripts
+and notebooks use the process-wide default session.
+
+The package-level ``client`` object forwards to the active session's
+``Client``. Explicit ``Client(...)`` handles ignore the ContextVar.
 """
 from __future__ import annotations
 
-from contextlib import contextmanager
-from contextvars import ContextVar
+from contextvars import ContextVar, Token
 from pathlib import Path
-from typing import Iterator, Optional
+from typing import List, Optional
 
 from socaity.client import DEFAULT_APIPOD_GATE_URL, SocaityClient
 
@@ -18,7 +20,12 @@ DEFAULT_APIPOD_GATE_URL = DEFAULT_APIPOD_GATE_URL
 
 
 class Session:
-    """One caller's credentials plus the ``SocaityClient`` bound to them.
+    """One caller's credentials plus the ``Client`` bound to them.
+
+    Use as a context manager to switch the active ``client``:
+
+        with Session(api_key=key):
+            client.run_service(...)
 
     Args:
         api_key: Socaity API key. ``None`` falls back to ``SOCAITY_API_KEY`` or
@@ -57,6 +64,36 @@ class Session:
         self.conversation_id = conversation_id
         self.local_root = local_root
         self.gate_url = self.client.gate_url
+        self._tokens: List[Token] = []
+
+    def __enter__(self) -> Session:
+        self._tokens.append(_current.set(self))
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        if not self._tokens:
+            return
+        token = self._tokens.pop()
+        try:
+            _current.reset(token)
+        except ValueError:
+            # Generator finalized in a different context than it started in
+            # (threadpool-iterated SSE streams). The context copy that held
+            # the token is already gone; there is nothing to reset.
+            pass
+
+
+class ActiveClient:
+    """Forwards attribute access to the ``Client`` of the active session."""
+
+    def __getattr__(self, name: str):
+        return getattr(current_session().client, name)
+
+    def __dir__(self) -> List[str]:
+        return sorted(set(dir(type(self))) | set(dir(current_session().client)))
+
+    def __repr__(self) -> str:
+        return f"<ActiveClient of {current_session().client!r}>"
 
 
 _current: ContextVar[Optional[Session]] = ContextVar("socaity_session", default=None)
@@ -72,19 +109,3 @@ def current_session() -> Session:
     if _default is None:
         _default = Session()
     return _default
-
-
-@contextmanager
-def use_session(session: Session) -> Iterator[Session]:
-    """Bind ``session`` for the duration of the block, including awaited code."""
-    token = _current.set(session)
-    try:
-        yield session
-    finally:
-        try:
-            _current.reset(token)
-        except ValueError:
-            # Generator finalized in a different context than it started in
-            # (threadpool-iterated SSE streams). The context copy that held
-            # the token is already gone; there is nothing to reset.
-            pass

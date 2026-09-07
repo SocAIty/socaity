@@ -21,7 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import agentic_utils as env  # noqa: E402  (sets URL defaults before socaity import)
 
 import socaity  # noqa: E402
-from socaity.core.session import Session, use_session  # noqa: E402
+from socaity import Session, client  # noqa: E402
 
 PROMPT = "Give me a multiple choice with 5 recipes and let me pick one."
 
@@ -67,14 +67,14 @@ def part_a_resume_with_decisions() -> None:
 def part_b_backend_interrupts() -> None:
     env.log("B", "start second turn, resolve via backend interrupt endpoint")
     first = start_interrupted_turn("B")
-    pending = env.sdk().query_interrupts()
+    pending = client.query_interrupts()
     env.log("B", f"backend pending interrupts: {len(pending)}")
     row_ids = {a["id"] for a in first["pending_actions"]}
     mine = [r for r in pending if str(r.id) in row_ids]
     assert mine, f"stream row ids {row_ids} not in backend pending list {[str(r.id) for r in pending]}"
     row = mine[0]
     decision = "respond" if "respond" in (row.allowed_decisions or []) else "approve"
-    result = env.sdk().resolve_interrupt(
+    result = client.resolve_interrupt(
         str(row.id),
         decision=decision,
         message="I pick option 3." if decision == "respond" else None,
@@ -94,7 +94,7 @@ def part_b_backend_interrupts() -> None:
 
 def run() -> None:
     session = Session(api_key=env.rich_key(), backend_url=env.BACKEND)
-    with use_session(session):
+    with session:
         part_a_resume_with_decisions()
         part_b_backend_interrupts()
     env.log("done", "PASS")

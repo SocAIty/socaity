@@ -8,6 +8,7 @@ From the ``socaity`` package dir:
   python test/call_chat_service.py --only stream
   python test/call_chat_service.py --only persist
   python test/call_chat_service.py --only tools
+  python test/call_chat_service.py --only context
   python test/call_chat_service.py --skip tools
 """
 from __future__ import annotations
@@ -70,7 +71,7 @@ from socaity.sdk.community._6b398a33_0e5e_440b_89dc_5dfde43654a4 import (  # noq
     qwen39_1,
 )
 import socaity  # noqa: E402
-from socaity.core.session import current_session  # noqa: E402
+from socaity import client  # noqa: E402
 
 BACKEND = os.environ["SOCAITY_BACKEND_URL"].rstrip("/") + "/"
 
@@ -341,7 +342,7 @@ def step_persist(client) -> None:
         f"items={len(conversation.get('items') or [])}",
     )
 
-    linked = current_session().client.get_job(job1_id, expand=["chat_item", "data"])
+    linked = client.get_job(job1_id, expand=["chat_item", "data"])
     chat_item = getattr(linked, "chat_item", None) if linked is not None else None
     _log(
         "persist",
@@ -440,11 +441,55 @@ def step_tools(client) -> None:
     )
 
 
+def step_context(client) -> None:
+    """Prompt longer than the old 8192 serve cap, with no framework max_tokens."""
+    words = 9000
+    filler = ("alpha " * words).strip()
+    prompt = (
+        f"The word alpha appears exactly {words} times below. "
+        "Reply with that integer only.\n\n"
+        f"{filler}"
+    )
+    _log("context", f"long prompt words={words} without max_tokens")
+    job = client.chat(
+        request={
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0,
+        }
+    )
+    try:
+        completion = job.get_result(timeout_s=CHAT_TIMEOUT_S)
+    except Exception as exc:
+        text = str(exc)
+        if "8192" in text and "maximum context length" in text.lower():
+            raise AssertionError(
+                "served context is still capped at 8192; redeploy after the "
+                "APIPod Phase 1 default fix"
+            ) from exc
+        raise
+    text = _assistant_text(completion)
+    assert text.strip(), f"empty assistant content: {completion!r}"
+    _log("context", f"job={_platform_job_id(job)} text={text[:120]!r}")
+
+    _log("context", "explicit max_tokens=8 still applies")
+    limited = client.chat(
+        request={
+            "messages": [{"role": "user", "content": "Count from 1 to 20 in words."}],
+            "max_tokens": 8,
+            "temperature": 0,
+        }
+    )
+    limited_text = _assistant_text(limited.get_result(timeout_s=CHAT_TIMEOUT_S))
+    assert limited_text.strip(), limited_text
+    _log("context", f"limited job={_platform_job_id(limited)} text={limited_text[:80]!r}")
+
+
 STEPS = {
     "basic": step_basic,
     "stream": step_stream,
     "persist": step_persist,
     "tools": step_tools,
+    "context": step_context,
 }
 
 

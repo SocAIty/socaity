@@ -9,7 +9,6 @@ from apipod_registry.service_registry.file_system_store import FileSystemStore
 from apipod_registry.utils.normalization import normalize_name_for_py
 from fastsdk import generate_stub
 from socaity_schemas.platform import AIService
-from socaity.core.session import current_session
 
 IMPORT_PATTERN = re.compile(
     r"^from\s+socaity\.sdk\.services\.(\w+)\s+import\s+(\w+)(?:\s+as\s+(\w+))?$"
@@ -53,7 +52,9 @@ class SocaityServiceRegistry(Registry):
     @property
     def _backend(self):
         """Active session client. Never a process-wide import-time prod client."""
-        return current_session().client
+        from socaity import client
+
+        return client
 
     # ---- Public API ----
 
