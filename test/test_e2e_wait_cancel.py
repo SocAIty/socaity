@@ -164,10 +164,12 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
                 with use_session(session):
                     handle = env.sdk().run_workflow(wf_id, inputs={"text": "hello"})
 
-                    def on_started(event) -> None:
-                        state["job_id"] = event.job_id
+                    def on_event(event) -> None:
+                        job_id = handle.platform_job_id
+                        if job_id:
+                            state["job_id"] = job_id
 
-                    unsub = handle.subscribe(on_started=on_started, replay=True)
+                    unsub = handle.subscribe(on_event, replay=True)
                     try:
                         handle.get_result(timeout_s=120)
                         from socaity.core.serialize import serialize_job

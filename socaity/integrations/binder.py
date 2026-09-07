@@ -7,7 +7,8 @@ import queue
 from contextlib import nullcontext
 from typing import Any, Callable, Optional
 
-from fastsdk.service_interaction.api_seex import APISeex, JobEvent
+from meseex import EventKind, MeseexEvent
+from fastsdk.service_interaction.api_seex import APISeex
 
 from socaity.integrations.policy import (
     DESTRUCTIVE_METHODS,
@@ -28,7 +29,17 @@ def _session_scope(session):
     return nullcontext(acquired)
 
 
-def _publish_runtime_event(event: JobEvent, tool_name: str) -> None:
+_LIFECYCLE_KIND = {
+    EventKind.STARTED: "start",
+    EventKind.TASK_CHANGED: "progress",
+    EventKind.PROGRESS: "progress",
+    EventKind.SUCCEEDED: "end",
+    EventKind.FAILED: "error",
+    EventKind.CANCELLED: "end",
+}
+
+
+def _publish_runtime_event(event: MeseexEvent, tool_name: str, job: APISeex) -> None:
     """LangGraph custom stream: tool start / progress / end / error."""
     try:
         from langgraph.config import get_stream_writer
@@ -37,21 +48,18 @@ def _publish_runtime_event(event: JobEvent, tool_name: str) -> None:
         return
     if writer is None:
         return
-    kind_map = {
-        "started": "start",
-        "progress": "progress",
-        "finished": "end",
-        "error": "error",
-    }
+    message = event.message
+    if event.kind is EventKind.TASK_CHANGED and event.task and not message:
+        message = f"Task: {event.task}"
     payload = {
         "object": "tool.lifecycle",
-        "event": kind_map.get(event.kind, event.kind),
+        "event": _LIFECYCLE_KIND.get(event.kind, event.kind.value),
         "tool": tool_name,
-        "job_id": event.job_id,
-        "message": event.message,
-        "progress": event.progress,
+        "job_id": job.platform_job_id,
+        "message": message,
+        "progress": event.task_progress if event.task_progress is not None else event.progress,
     }
-    if event.kind == "error" and event.error is not None:
+    if event.kind is EventKind.FAILED and event.error is not None:
         payload["error"] = str(event.error)
     writer(payload)
 
@@ -60,16 +68,10 @@ def consume_job_sync(job: APISeex, tool_name: str) -> dict:
     """Wait for the terminal job event and return a JSON-serializable result."""
     events: queue.Queue = queue.Queue()
 
-    def enqueue(event: JobEvent) -> None:
+    def enqueue(event: MeseexEvent) -> None:
         events.put(event)
 
-    unsubscribe = job.subscribe(
-        on_started=enqueue,
-        on_progress=enqueue,
-        on_finished=enqueue,
-        on_error=enqueue,
-        replay=True,
-    )
+    unsubscribe = job.subscribe(enqueue, replay=True)
     try:
         while True:
             try:
@@ -83,13 +85,15 @@ def consume_job_sync(job: APISeex, tool_name: str) -> dict:
                         return agent_turn_from_job(job)
                     return result
                 continue
-            _publish_runtime_event(event, tool_name)
-            if event.kind == "finished":
+            _publish_runtime_event(event, tool_name, job)
+            if event.kind is EventKind.SUCCEEDED:
                 if tool_name == "run_agent":
                     return agent_turn_from_job(job)
                 return serialize_job(job, event.result)
-            if event.kind == "error":
+            if event.kind is EventKind.FAILED:
                 raise event.error or RuntimeError("Job failed")
+            if event.kind is EventKind.CANCELLED:
+                return serialize_job(job)
     finally:
         unsubscribe()
 

@@ -194,10 +194,12 @@ def test_mid_turn_stub_and_tool_parts() -> None:
                 mode="agent",
             )
 
-            def on_started(event) -> None:
-                started["job_id"] = event.job_id
+            def on_event(event) -> None:
+                job_id = handle.platform_job_id
+                if job_id:
+                    started["job_id"] = job_id
 
-            unsub = handle.subscribe(on_started=on_started, replay=True)
+            unsub = handle.subscribe(on_event, replay=True)
             try:
                 handle.get_result(timeout_s=600)
                 finished["turn"] = agent_turn_from_job(handle)
