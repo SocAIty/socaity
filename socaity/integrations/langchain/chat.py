@@ -40,6 +40,7 @@ class ChatSocaity(BaseChatModel):
         endpoint_path: Chat endpoint override (default: auto-resolved).
         temperature / max_tokens / top_p / seed: Default sampling parameters,
             overridable per call via ``.bind(...)`` or invoke kwargs.
+        reasoning_effort: Forwarded to the catalog chat service (Qwen think).
     """
 
     model: str
@@ -49,6 +50,7 @@ class ChatSocaity(BaseChatModel):
     max_tokens: Optional[int] = None
     top_p: Optional[float] = None
     seed: Optional[int] = None
+    reasoning_effort: Optional[str] = None
     output_version: str = "v1"  # store standard content blocks in .content
 
     _adapter: Optional[ChatServiceAdapter] = PrivateAttr(default=None)
@@ -128,6 +130,7 @@ class ChatSocaity(BaseChatModel):
             "max_tokens": self.max_tokens,
             "top_p": self.top_p,
             "seed": self.seed,
+            "reasoning_effort": self.reasoning_effort,
             "stop": stop,
         }
         request.update({key: value for key, value in defaults.items() if value is not None})
