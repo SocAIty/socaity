@@ -73,7 +73,7 @@ Think of socaity as two connected subsystems:
 
 2. **Runtime layer (delegated to fastSDK)**
    - Generated stubs call `FastClient.submit_job(endpoint, **params)` → `APISeex`
-   - `Client.run_agent` / `run_workflow` call `fastsdk.submit_factory` → the same `APISeex`
+   - `Client.run_agent` / `run_workflow` build a local gateway `AIService` (`core/gateway.py`) and call `FastClient.submit_job` → the same `APISeex`
    - Jobs poll, cancel, stream, and notify subscribers through fastSDK's `JobRuntime` + meseex pipeline
    - Media results deserialize via `media-toolkit`
 
@@ -108,7 +108,7 @@ socaity/
   __main__.py                     # python -m socaity (delegates to socaity_cli.cli)
   core/
     catalog.py                    # public list/get/search/connect functions
-    factories.py                  # submit_agent_chat / submit_workflow_run / track_job
+    gateway.py                    # local AIService for agent/workflow factory paths
     lazy.py                       # LazyAIService relation hydration
     socaity_service_registry.py   # catalog sync + stub generation
     session.py                    # ContextVar credentials + inference origin

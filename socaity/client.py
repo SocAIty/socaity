@@ -11,6 +11,7 @@ from fastsdk.service_access import service_contract
 from socaity_cli import SocaityBackendClient
 from socaity_schemas.platform import AIService
 
+from socaity.core.gateway import gateway_client
 from socaity.core.serialize import serialize_value
 
 DEFAULT_APIPOD_GATE_URL = "https://api.socaity.ai"
@@ -207,13 +208,9 @@ class SocaityClient(SocaityBackendClient):
                 if not prior.is_terminal:
                     raise
 
-        return fastsdk.submit_factory(
-            f"/v1/agents/{agent}/chat",
-            {key: value for key, value in body.items() if value is not None},
-            address=self.gate_url,
-            api_key=self.api_key,
-            materialize_media=self.materialize_media,
-        )
+        path = f"/v1/agents/{agent}/chat"
+        client = gateway_client(self.gate_url, self.api_key, path, self.materialize_media)
+        return client.submit_job(path, **{key: value for key, value in body.items() if value is not None})
 
     def run_workflow(
         self,
@@ -223,42 +220,47 @@ class SocaityClient(SocaityBackendClient):
         version: Optional[int] = None,
         workflow_run_id: Optional[str] = None,
         stream: bool = False,
+        entry_nodes: Optional[list] = None,
+        scope_nodes: Optional[list] = None,
+        seed_outputs: Optional[dict] = None,
     ) -> fastsdk.APISeex:
         """Submit a workflow run to ``POST /v1/workflows/{id}/run``.
 
         Args:
             workflow: Workflow id (``wf_...``) or slug.
-            inputs: Workflow input values. Keys must match the document's inputs.
+            inputs: Root node parameters. A flat dict applies to every entry node;
+                nest a dict under a node id to target that node alone.
             revision_id: Revision to run (``rv_...``). Defaults to the latest valid.
             version: Valid version number as an alternative to ``revision_id``.
             workflow_run_id: Earlier run id (``wr_...``) to continue or resume.
             stream: Stream run events over the job SSE channel.
+            entry_nodes: Enter the graph at these node ids instead of the roots (partial run).
+            scope_nodes: Limit the walk to these node ids; one id is a single-step run.
+            seed_outputs: Outputs keyed by node id for upstream nodes that do not run.
 
         Returns:
             FastSDK job handle for the gateway factory job.
         """
-        return fastsdk.submit_factory(
-            f"/v1/workflows/{workflow}/run",
-            {
-                "inputs": inputs or {},
-                "revision_id": revision_id,
-                "version": version,
-                "workflow_run_id": workflow_run_id,
-                "stream": stream,
-            },
-            address=self.gate_url,
-            api_key=self.api_key,
-            materialize_media=self.materialize_media,
-        )
+        path = f"/v1/workflows/{workflow}/run"
+        client = gateway_client(self.gate_url, self.api_key, path, self.materialize_media)
+        body = {
+            "inputs": inputs or {},
+            "revision_id": revision_id,
+            "version": version,
+            "workflow_run_id": workflow_run_id,
+            "stream": stream,
+            "entry_nodes": entry_nodes,
+            "scope_nodes": scope_nodes,
+            "seed_outputs": seed_outputs,
+        }
+        return client.submit_job(path, **{key: value for key, value in body.items() if value is not None})
 
     def track_job(self, job_id: str) -> fastsdk.APISeex:
         """Re-attach to a running gateway job by id."""
-        return fastsdk.track_job(
-            job_id,
-            address=self.gate_url,
-            api_key=self.api_key,
-            materialize_media=self.materialize_media,
+        client = gateway_client(
+            self.gate_url, self.api_key, f"/status/{job_id}", self.materialize_media
         )
+        return client.track_job(job_id)
 
     def cancel_job(self, job_id: str, action: str = "cancel") -> dict:
         """Cancel or interrupt a running gateway job.
