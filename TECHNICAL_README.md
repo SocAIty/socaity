@@ -10,39 +10,56 @@ For job execution internals, streaming modes, and provider stacks, see [fastSDK 
 
 ## Public API Surface
 
+Backend methods live on ``Client`` (``SocaityClient``, inherited from ``socaity-cli`` mixins).
+There is no module-level function facade. Use the active ``client`` proxy, an
+explicit ``Client(...)``, or ``with Session(api_key=...)``.
+
 | Symbol | Side effects | Returns |
 |---|---|---|
-| `socaity.install(name)` | backend fetch + stub write + registry upsert | `None` |
-| `socaity.service_registry` | shared singleton | `SocaityServiceRegistry` |
-| `from socaity import model` | none (import generated stub) | `FastClient` subclass |
-| `socaity.list_services(...)` | one catalog fetch (slim, sparse fieldset) | `List[LazyAIService]` |
-| `socaity.get_service(id_or_name)` | one catalog fetch (full) | `AIService` |
-| `socaity.list_models(...)` / `get_model(...)` | catalog fetch | `List[AIModel]` / `AIModel` |
-| `socaity.list_categories()` | catalog fetch | `List[ServiceCategory]` |
-| `socaity.list_pricing_rules()` | catalog fetch | pricing rule rows |
-| `socaity.search(query, collection=...)` | backend `q` param (typesense) | `List[AIService]` / `AIModel` / `Job` |
-| `socaity.list_jobs(...)` / `get_job(...)` | `v1/jobs` list/search/get | `List[Job]` / `Job` |
-| `socaity.refresh_job(job_id)` | finished-job webhook refresh | cache + Typesense upsert |
-| `socaity.update_job(...)` / `delete_job(...)` | job mutations | `bool` |
-| `socaity.list_projects(...)` / `upsert_project(...)` / … | `v1/projects` | `List[Project]` / ids / `bool` |
-| `socaity.estimate(...)` / `get_stats(...)` / `get_similar_services(...)` | `v1/analytics` | estimate / stats / similar |
-| `socaity.list_interrupts(...)` / `get_interrupt(...)` | `v1/interrupts` HIT inbox (pending by default) | `List[Interrupt]` / `Interrupt` |
-| `socaity.resolve_interrupt(id, decision, ...)` | records decision; `continue_run=True` enqueues the agent continue job | `InterruptResolveResult` |
-| `socaity.connect(source)` | resolves socaity identifiers via backend, then `fastsdk.connect` | temporary `FastClient` |
-| `socaity.generate_stub(...)` | re-export of `fastsdk.generate_stub` | `FastStub` |
-| `socaity.APISeex` | re-export | job handle from every model call |
+| ``socaity.install(name)`` | backend fetch + stub write + registry upsert | ``None`` |
+| ``socaity.service_registry`` | shared singleton | ``SocaityServiceRegistry`` |
+| ``from socaity import model`` | none (import generated stub) | ``FastClient`` subclass |
+| ``client`` / ``Client(...)`` | active session proxy, or an explicit credential-bound handle | ``Client`` |
+| ``Session(...)`` | bind credentials for a block; ``with Session(api_key=...)`` | ``Session`` |
+| ``Client.query_services(...)`` | one catalog fetch (slim, sparse fieldset) | ``List[AIService]`` |
+| ``Client.get_service(id_or_name)`` | one catalog fetch (full) | ``AIService`` |
+| ``Client.query_models(...)`` / ``get_model(...)`` | catalog fetch | ``List[AIModel]`` / ``AIModel`` |
+| ``Client.query_categories()`` | catalog fetch | ``List[ServiceCategory]`` |
+| ``Client.list_pricing_rules()`` | catalog fetch | pricing rule rows |
+| ``Client.query_jobs(...)`` / ``get_job(...)`` | ``v1/jobs`` query/get | ``List[Job]`` / ``Job`` |
+| ``Client.refresh_job(job_id)`` | finished-job webhook refresh | cache + Typesense upsert |
+| ``Client.update_job(...)`` / ``delete_job(...)`` | job mutations | ``bool`` |
+| ``Client.query_projects(...)`` / ``upsert_project(...)`` / … | ``v1/projects`` | ``List[Project]`` / ids / ``bool`` |
+| ``Client.estimate(...)`` / ``get_stats(...)`` / ``get_similar_services(...)`` | ``v1/analytics`` | estimate / stats / similar |
+| ``Client.query_interrupts(...)`` / ``get_interrupt(...)`` | ``v1/interrupts`` HIT inbox (pending by default) | ``List[Interrupt]`` / ``Interrupt`` |
+| ``Client.resolve_interrupt(id, decision, ...)`` | records decision; ``continue_run=True`` enqueues the agent continue job | ``InterruptResolveResult`` |
+| ``Client.connect(source)`` | resolves platform identifiers via backend, then FastSDK | ``FastClient`` |
+| ``Client.run_service(...)`` | catalog job via FastSDK | ``APISeex`` |
+| ``Client.run_agent(...)`` | gateway ``POST /v1/agents/{id}/chat`` | ``APISeex`` |
+| ``Client.run_workflow(...)`` | gateway ``POST /v1/workflows/{id}/run`` | ``APISeex`` |
+| ``Client.track_job(job_id)`` | re-attach to a running gateway job | ``APISeex`` |
+| ``Client.cancel_job(job_id)`` | ``APISeex.cancel`` on an attached job | cancel summary |
+| ``socaity.generate_stub(...)`` | re-export of ``fastsdk.generate_stub`` | ``FastStub`` |
+| ``socaity.APISeex`` | re-export | job handle from every model call |
+
+``socaity-cli`` owns all backend HTTP. FastSDK and Meseex own job submission,
+polling, streaming, cancellation, and ``APISeex.subscribe``. Eligible
+``Client`` methods become FastMCP / LangChain tools through
+``to_fastmcp`` / ``to_langchain`` (function-identity policy). MCP and SPAINE
+do not redefine those methods. The workflow engine calls ``Client``
+directly.
 
 Module-level CLI: `socaity login`, `install`, `update`, `list`, `search`, `jobs`, `projects`, `interrupts`, plus optional APIPod deploy commands when `[apipod]` is installed.
 
-`ChatSocaity` (LangChain) emulates tool calls in the prompt for catalog models whose vLLM rejects OpenAI tool fields. Promotion to `AIMessage.tool_calls` runs on blocking and streamed turns (streamed JSON or `Called: name({args})` replies are buffered and re-emitted as tool-call deltas), so `create_agent` tool loops and HITL interrupts work under streaming.
+`ChatSocaity` (LangChain) forwards OpenAI ``tools``, ``tool_choice``, and
+``parallel_tool_calls`` to the catalog chat service. Native ``tool_calls`` on
+blocking and streamed turns drive ``create_agent`` tool loops and HITL interrupts.
 
-### Catalog reads: slim by default, lazy on access
+### Catalog reads: slim by default
 
 List calls request a sparse fieldset (`fields=id,name,display_name,...`) and optional
-`filter` / `q`. `list_services` returns `LazyAIService` proxies: accessing
-`service.models`, `service.endpoints` or `service.deployments` triggers exactly one
-full fetch with `expand=deployments,endpoints,models`, then everything is attribute
-access on the hydrated `AIService`.
+`filter` / `q`. Results are schema models (`AIService`, `Job`, …), not lazy proxies.
+Call ``get_service`` with expand when you need deployments, endpoints, or contracts.
 
 ## Mental Model
 
@@ -56,7 +73,8 @@ Think of socaity as two connected subsystems:
 
 2. **Runtime layer (delegated to fastSDK)**
    - Generated stubs call `FastClient.submit_job(endpoint, **params)` → `APISeex`
-   - Jobs poll, cancel, and stream through fastSDK's `JobRuntime` + meseex pipeline
+   - `Client.run_agent` / `run_workflow` build a local gateway `AIService` (`core/gateway.py`) and call `FastClient.submit_job` → the same `APISeex`
+   - Jobs poll, cancel, stream, and notify subscribers through fastSDK's `JobRuntime` + meseex pipeline
    - Media results deserialize via `media-toolkit`
 
 Generated model imports and `connect()` are two entry points into the same runtime.
@@ -80,7 +98,7 @@ speechcraft().text2voice(...) → APISeex
 fastSDK ApiJobManager → inference at api.socaity.ai
 ```
 
-On import, `socaity/__init__.py` replaces fastSDK's default registry with `SocaityServiceRegistry` backed by `FileSystemStore` at `socaity/sdk/cache/`. Every generated stub and ad-hoc client in the process shares that registry and the same `ApiJobManager`.
+On import, `socaity/__init__.py` installs `SocaityServiceRegistry` (FileSystemStore at `socaity/sdk/cache/`) only when FastSDK still has its default registry. Host processes that already assigned a store-backed `Registry` (workers, gate) keep that catalog. `FileSystemStore.load` resolves by id or slug, so SDK stubs do not need an eager `list_all` at `Registry` construction.
 
 ## Package Layout
 
@@ -90,8 +108,10 @@ socaity/
   __main__.py                     # python -m socaity (delegates to socaity_cli.cli)
   core/
     catalog.py                    # public list/get/search/connect functions
+    gateway.py                    # local AIService for agent/workflow factory paths
     lazy.py                       # LazyAIService relation hydration
     socaity_service_registry.py   # catalog sync + stub generation
+    session.py                    # ContextVar credentials + inference origin
   sdk/                            # runtime-generated (mostly empty in git)
     services/                     # one FastClient stub per installed service
     official/                     # re-exports for platform models
@@ -107,10 +127,16 @@ PyPI ships the skeleton `sdk/` tree. Installed models appear after `socaity logi
 ### Registry swap (`socaity/__init__.py`)
 
 ```python
+from apipod_registry.registry import Registry
 from fastsdk import FastSDK
 from socaity.core.socaity_service_registry import SocaityServiceRegistry
 
-service_registry = FastSDK().service_registry = SocaityServiceRegistry()
+_sdk = FastSDK()
+_host = getattr(_sdk, "_service_registry", None)
+if type(_host) is Registry and _host.service_store is not None:
+    service_registry = _host
+else:
+    service_registry = _sdk.service_registry = SocaityServiceRegistry()
 ```
 
 This is the single wiring point. Generated stubs use `service_name_or_id="<service-id>"` and resolve definitions from this registry. Override inference URLs at runtime:
@@ -255,13 +281,16 @@ Details: fastSDK TECHNICAL_README (Cancellation, JobRuntime).
 For services not in the catalog, or local APIPod dev servers:
 
 ```python
-import socaity
+from socaity import client, Client, Session
 
-client = socaity.connect("http://localhost:8009")
-job = client.submit_job("/chat", messages=[...], stream=True)
+job = client.connect("http://localhost:8009").submit_job("/chat", messages=[...], stream=True)
+
+mine = Client(api_key=key)
+with Session(api_key=other_key):
+    client.query_categories()
 ```
 
-`socaity.connect()` first resolves socaity identifiers (service name, UUID, `user/service`) through the backend, then delegates to `fastsdk.connect()`: temporary registry entry, removed when the client closes. URLs, spec paths and `replicate:` references skip the backend and go straight to fastsdk. Use `generate_stub()` to persist a `.py` file instead.
+``Client.connect()`` first resolves platform identifiers (service name, UUID, `user/service`) through the backend, then builds a FastSDK client. URLs, spec paths and `replicate:` references skip the backend and go straight to fastsdk. Use `generate_stub()` to persist a `.py` file instead. The package-level ``client`` forwards to the active session. Explicit ``Client(...)`` handles ignore it.
 
 ## Authentication and credentials
 
@@ -332,7 +361,7 @@ test/
   stress/simultaneous_jobs.py  # concurrent get_result() from cache bootstrap
 ```
 
-Integration tests override inference URL via `SOCAITY_INFER_BACKEND_URL`. CI-friendly tests: `test_cli.py`, `test_credentials.py`.
+Integration tests override the APIPod gate URL via ``APIPOD_GATE_URL``. CI-friendly tests: `test_cli.py`, `test_credentials.py`.
 
 Run with project venv: `pytest` (after `pip install -e ".[dev]"`).
 

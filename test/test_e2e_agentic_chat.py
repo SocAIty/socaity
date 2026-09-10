@@ -4,7 +4,7 @@ Mimics a real client that:
   1. authenticates against the platform API
   2. discovers a chat-capable catalog service
   3. completes + streams without persistence
-  4. starts a conversation with ``store=true`` (client-owned conversation_id)
+  4. starts a conversation with ``store=true`` (client-owned ``thread_id``)
   5. continues the thread, optionally branches, searches, patches, deletes
   6. links jobs back via ``expand=chat_item``
 
@@ -19,7 +19,7 @@ is mostly Replicate ``/predictions`` models — those cannot exercise
     #   CHAT_SERVICE=<catalog-name>
     #   CHAT_SERVICE_URL=http://127.0.0.1:8010
     #   SOCAITY_BACKEND_URL=...
-    #   INFERENCE_BACKEND_URL=https://test.api.socaity.ai
+    #   APIPOD_GATE_URL=https://test.api.socaity.ai
 
     python test/test_e2e_agentic_chat.py
     python test/test_e2e_agentic_chat.py --diagnose
@@ -72,15 +72,12 @@ def _load_repo_env() -> None:
 _load_repo_env()
 os.environ.setdefault("SOCAITY_BACKEND_URL", TEST_BACKEND)
 os.environ.setdefault("SOCAITY_FRONTEND_URL", TEST_FRONTEND)
-os.environ.setdefault("INFERENCE_BACKEND_URL", TEST_INFER)
-os.environ.setdefault("SOCAITY_INFER_BACKEND_URL", TEST_INFER.rstrip("/") + "/v1/")
+os.environ.setdefault("APIPOD_GATE_URL", TEST_INFER)
 
 import socaity  # noqa: E402
-import socaity.core.catalog as catalog_mod  # noqa: E402
+from socaity import client  # noqa: E402
 from socaity.integrations import ChatServiceAdapter  # noqa: E402
 from socaity_cli.credentials import get_api_key  # noqa: E402
-
-catalog_mod._client = None
 
 BACKEND = os.environ["SOCAITY_BACKEND_URL"].rstrip("/") + "/"
 TOKEN = f"agentic-e2e-{uuid.uuid4().hex[:10]}"
@@ -276,11 +273,11 @@ def _diagnose_catalog() -> str:
     samples: List[str] = []
     for q in ("gpt-4o", "instruct", "claude", "llama", "qwen"):
         try:
-            hits = socaity.list_services(q=q, expand=["endpoints"], limit=5)
+            hits = client.query_services(q=q, expand=["endpoints"], limit=5)
         except Exception:
             continue
         for hit in hits:
-            raw = getattr(hit, "raw", hit)
+            raw = hit
             name = _attr(raw, "name", "id")
             if not name or name in samples:
                 continue
@@ -316,7 +313,7 @@ def discover_chat_service(
 
     expand = ["endpoints", "deployments", "deployments.contract"]
     if override:
-        svc = socaity.get_service(override, expand=expand)
+        svc = client.get_service(override, expand=expand)
         if svc is None:
             raise AssertionError(f"CHAT_SERVICE={override!r} not found in catalog")
         path = _chat_path(svc)
@@ -331,13 +328,13 @@ def discover_chat_service(
     seen: set[str] = set()
     candidates: List[Tuple[str, str, int, bool]] = []
     for q in queries:
-        for hit in socaity.list_services(q=q, expand=["endpoints"], limit=15):
-            raw = getattr(hit, "raw", hit)
+        for hit in client.query_services(q=q, expand=["endpoints"], limit=15):
+            raw = hit
             name = _attr(raw, "name", "id")
             if not name or name in seen:
                 continue
             seen.add(name)
-            svc = socaity.get_service(name, expand=expand)
+            svc = client.get_service(name, expand=expand)
             if svc is None:
                 continue
             path = _chat_path(svc)
@@ -498,7 +495,7 @@ def run_scenario(
     _log("0a", "checking credentials + catalog")
     key = get_api_key()
     assert key, "missing API key"
-    services = socaity.list_services(limit=1)
+    services = client.query_services(limit=1)
     assert services, "catalog returned no services"
 
     conv_smoke = _platform("GET", "v1/conversations", params={"limit": 1})
@@ -579,7 +576,7 @@ def run_scenario(
                 }
             ],
             "store": True,
-            "metadata": {"conversation_id": result.conversation_id},
+            "thread_id": result.conversation_id,
             "max_tokens": 128,
             "temperature": 0.2,
         },
@@ -597,7 +594,7 @@ def run_scenario(
 
     # --- job ↔ chat_item link -------------------------------------------------
     _log("4b", "GET job expand=chat_item")
-    linked = socaity.get_job(first_job_id, expand=["chat_item", "data"])
+    linked = client.get_job(first_job_id, expand=["chat_item", "data"])
     assert linked is not None, first_job_id
     chat_item = getattr(linked, "chat_item", None)
     assert chat_item is not None, (
@@ -624,7 +621,7 @@ def run_scenario(
                 },
             ],
             "store": True,
-            "metadata": {"conversation_id": result.conversation_id},
+            "thread_id": result.conversation_id,
             "max_tokens": 64,
             "temperature": 0,
         },
@@ -650,7 +647,7 @@ def run_scenario(
                 "tools": [WEATHER_TOOL],
                 "tool_choice": "auto",
                 "store": True,
-                "metadata": {"conversation_id": result.conversation_id},
+                "thread_id": result.conversation_id,
                 "max_tokens": 256,
                 "temperature": 0,
             },
@@ -681,7 +678,7 @@ def run_scenario(
                     ],
                     "tools": [WEATHER_TOOL],
                     "store": True,
-                    "metadata": {"conversation_id": result.conversation_id},
+                    "thread_id": result.conversation_id,
                     "max_tokens": 128,
                     "temperature": 0,
                 },
@@ -722,10 +719,8 @@ def run_scenario(
                 }
             ],
             "store": True,
-            "metadata": {
-                "conversation_id": result.conversation_id,
-                "parent_item_id": parent_item_id,
-            },
+            "thread_id": result.conversation_id,
+            "parent_item_id": parent_item_id,
             "max_tokens": 64,
             "temperature": 0,
         },

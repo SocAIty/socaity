@@ -11,10 +11,11 @@ Requires ``langchain-core>=1.0`` (optional dependency)::
 
 try:
     from socaity.integrations.langchain.chat import ChatSocaity
+    from socaity.integrations.langchain.tools import to_langchain
 except ImportError as error:
     raise ImportError(
         "The LangChain integration needs langchain-core>=1.0. "
         "Install it with: pip install langchain-core"
     ) from error
 
-__all__ = ["ChatSocaity"]
+__all__ = ["ChatSocaity", "to_langchain"]

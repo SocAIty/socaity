@@ -5,24 +5,42 @@ inference gateway + orchestrator + engines, and SPAINE in the catalog.
 Import this module before ``socaity`` so the URL defaults land first.
 
 Credentials are env-only: ``SOCAITY_TEST_RICH_KEY`` / ``SOCAITY_TEST_POOR_KEY``,
-else ``SOCAITY_API_KEY`` for the rich user. Inference URL is
-``SOCAITY_INFER_BACKEND_URL`` (aliased to ``INFERENCE_BACKEND_URL`` for the SDK).
+else ``SOCAITY_API_KEY`` for the rich user. Gate origin is ``APIPOD_GATE_URL``.
 """
 from __future__ import annotations
 
 import os
-import time
+from pathlib import Path
 from typing import Optional
 
 import httpx
 
-os.environ.setdefault("SOCAITY_BACKEND_URL", "http://127.0.0.1:8000")
-os.environ.setdefault("SOCAITY_INFER_BACKEND_URL", "http://127.0.0.1:8001")
-os.environ.setdefault("INFERENCE_BACKEND_URL", os.environ["SOCAITY_INFER_BACKEND_URL"])
+
+_CRED_KEYS = ("SOCAITY_API_KEY", "SOCAITY_TEST_RICH_KEY", "SOCAITY_TEST_POOR_KEY")
+
+
+def _load_repo_env() -> None:
+    """Load test credentials from the SDK .env. Do not inherit cloud URLs."""
+    env_file = Path(__file__).resolve().parents[1] / ".env"
+    if not env_file.is_file():
+        return
+    for line in env_file.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            key, _, value = line.partition("=")
+            name = key.strip()
+            if name in _CRED_KEYS:
+                os.environ.setdefault(name, value.strip().strip('"').strip("'"))
+
+
+_load_repo_env()
+os.environ["SOCAITY_BACKEND_URL"] = "http://127.0.0.1:8000"
+os.environ["APIPOD_GATE_URL"] = "http://127.0.0.1:8001"
 
 BACKEND = os.environ["SOCAITY_BACKEND_URL"].rstrip("/")
-INFERENCE = os.environ["SOCAITY_INFER_BACKEND_URL"].rstrip("/")
+GATE = os.environ["APIPOD_GATE_URL"].rstrip("/")
 TERMINAL = ("finished", "failed", "timeout", "cancelled", "rejected")
+PROJECTS_ROOT = Path(__file__).resolve().parents[2]
 
 
 def rich_key() -> Optional[str]:
@@ -44,24 +62,45 @@ def backend_up() -> bool:
 
 def inference_up() -> bool:
     try:
-        httpx.get(f"{INFERENCE}/openapi.json", timeout=10)
+        httpx.get(f"{GATE}/openapi.json", timeout=10)
         return True
     except httpx.HTTPError:
         return False
 
 
-def poll_job(job_id: str, api_key: str, timeout_s: float = 600) -> dict:
-    """Poll gateway ``GET /status/{job_id}`` until terminal."""
-    deadline = time.monotonic() + timeout_s
-    with httpx.Client(headers={"x-api-key": api_key}, timeout=60) as client:
-        while time.monotonic() < deadline:
-            response = client.get(f"{INFERENCE}/status/{job_id}")
-            if response.status_code == 200:
-                envelope = response.json()
-                if (envelope.get("status") or "").lower() in TERMINAL:
-                    return envelope
-            time.sleep(2)
-    raise TimeoutError(f"job {job_id} not terminal within {timeout_s}s")
+from socaity import client  # noqa: E402
+
+
+def poll_job(job_id: str, api_key: Optional[str] = None, timeout_s: float = 600) -> dict:
+    """Wait until the gateway job is terminal."""
+    from socaity.core.serialize import serialize_job
+
+    _ = api_key
+    job = client.track_job(job_id)
+    job.get_result(timeout_s=timeout_s)
+    return serialize_job(job)
+
+
+def run_agent(*args, timeout_s: float = 600, **kwargs) -> dict:
+    """Submit an agent turn and wait for the serializable terminal payload."""
+    from socaity.core.serialize import agent_turn_from_job
+
+    job = client.run_agent(*args, **kwargs)
+    job.get_result(timeout_s=timeout_s)
+    return agent_turn_from_job(job)
+
+
+def run_workflow(*args, timeout_s: float = 1800, **kwargs) -> dict:
+    """Submit a workflow run and wait for the serializable terminal payload."""
+    from socaity.core.serialize import serialize_job
+
+    job = client.run_workflow(*args, **kwargs)
+    job.get_result(timeout_s=timeout_s)
+    return serialize_job(job)
+
+
+def cancel_job_run(job_id: str, action: str = "cancel") -> dict:
+    return client.cancel_job(job_id, action=action)
 
 
 def log(tag: str, msg: str) -> None:

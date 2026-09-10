@@ -127,7 +127,7 @@ https://github.com/user-attachments/assets/978ee377-3ceb-4a87-add5-daee15306231
 
 ### Jobs vs. results
 
-Calls return a **job** handle, not a blocked connection. Poll when ready, cancel when not, run hundreds in parallel.
+Calls return a **job** handle, not a blocked connection. Poll when ready, cancel when not, run hundreds in parallel. Agent turns and workflow runs use the same handle via ``client.run_agent`` / ``client.run_workflow``. To cut in on a live agent turn, pass ``supersedes_job_id`` to ``run_agent`` so the previous job is interrupted and settled before the next POST.
 
 ```python
 job = deepseek_v3("What a time to be alive.")
@@ -138,8 +138,11 @@ result = job.get_result()
 **Price estimate.** Before you submit, ask for predicted cost and runtime (Socaity-hosted services):
 
 ```python
-client = socaity.connect("black-forest-labs-flux-schnell")
-estimate = client.estimate("/predictions", prompt="a lighthouse at sunset")
+from socaity import client
+
+estimate = client.connect("black-forest-labs-flux-schnell").estimate(
+    "/predictions", prompt="a lighthouse at sunset"
+)
 print(estimate.estimated_price_eur, estimate.estimated_inference_time_s)
 ```
 

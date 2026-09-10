@@ -19,7 +19,7 @@ from fastsdk.service_access import service_contract
 from socaity_schemas.contract import Endpoint
 from socaity_schemas.platform import AIService
 
-from socaity.core.catalog import connect
+from socaity import client
 
 CHAT_SCHEMA_NAME = "ChatCompletionRequest"
 
@@ -41,7 +41,10 @@ class ChatServiceAdapter:
         api_key: Optional[str] = None,
         endpoint_path: Optional[str] = None,
     ):
-        self.client = service if isinstance(service, FastClient) else connect(service, api_key=api_key)
+        self.client = (
+            service if isinstance(service, FastClient)
+            else client.connect(service, api_key=api_key)
+        )
         self.endpoint = self._resolve_chat_endpoint(endpoint_path)
         self.jobs: List[APISeex] = []
 
@@ -103,10 +106,13 @@ class ChatServiceAdapter:
         job = self.submit({**request, "stream": False})
         return self._as_response_dict(job.get_result(timeout_s=wait_s))
 
+    def _stream_wait_s(self) -> Optional[float]:
+        return getattr(self.endpoint, "timeout_hint_s", None)
+
     def stream_chunks(self, request: Dict[str, Any]) -> Iterator[Dict[str, Any]]:
         """Stream ChatCompletionChunk-shaped dicts (sync)."""
         job = self.submit({**request, "stream": True})
-        session = job.stream()
+        session = job.stream(timeout_s=self._stream_wait_s())
         try:
             for chunk in session.iter_chunks():
                 yield self._as_chunk_dict(chunk)
@@ -116,7 +122,7 @@ class ChatServiceAdapter:
     async def astream_chunks(self, request: Dict[str, Any]) -> AsyncIterator[Dict[str, Any]]:
         """Stream ChatCompletionChunk-shaped dicts (async)."""
         job = self.submit({**request, "stream": True})
-        session = job.stream()
+        session = job.stream(timeout_s=self._stream_wait_s())
         try:
             async for chunk in session.aiter_chunks():
                 yield self._as_chunk_dict(chunk)

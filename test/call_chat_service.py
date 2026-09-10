@@ -8,6 +8,7 @@ From the ``socaity`` package dir:
   python test/call_chat_service.py --only stream
   python test/call_chat_service.py --only persist
   python test/call_chat_service.py --only tools
+  python test/call_chat_service.py --only context
   python test/call_chat_service.py --skip tools
 """
 from __future__ import annotations
@@ -47,11 +48,7 @@ WEATHER_TOOL = {
 
 def _bootstrap_env() -> None:
     os.environ.setdefault("SOCAITY_BACKEND_URL", TEST_BACKEND)
-    os.environ.setdefault("INFERENCE_BACKEND_URL", TEST_INFER)
-    os.environ.setdefault(
-        "SOCAITY_INFER_BACKEND_URL",
-        os.environ["INFERENCE_BACKEND_URL"].rstrip("/") + "/v1/",
-    )
+    os.environ.setdefault("APIPOD_GATE_URL", TEST_INFER)
     here = Path(__file__).resolve()
     for candidate in (
         here.parent / ".env",
@@ -74,6 +71,7 @@ from socaity.sdk.community._6b398a33_0e5e_440b_89dc_5dfde43654a4 import (  # noq
     qwen39_1,
 )
 import socaity  # noqa: E402
+from socaity import client  # noqa: E402
 
 BACKEND = os.environ["SOCAITY_BACKEND_URL"].rstrip("/") + "/"
 
@@ -250,19 +248,19 @@ def step_basic(client) -> None:
     except Exception as exc:
         if "cancelled" in type(exc).__name__.lower() or "cancelled" in str(exc).lower():
             job_id = _platform_job_id(job)
-            gate = None
+            gate_url = os.environ.get("APIPOD_GATE_URL", TEST_INFER).rstrip("/")
+            gate_status = None
             try:
-                infer = os.environ.get("INFERENCE_BACKEND_URL", TEST_INFER).rstrip("/")
                 with httpx.Client(timeout=30) as http:
-                    gate = http.get(
-                        f"{infer}/status/{job_id}",
+                    gate_status = http.get(
+                        f"{gate_url}/status/{job_id}",
                         headers=_auth_headers(),
                     ).json()
             except Exception:
-                gate = None
+                gate_status = None
             raise AssertionError(
                 f"job cancelled while waiting | platform_job={job_id!r} "
-                f"gate_status={gate!r}. Message 'Job cancelled by user request' "
+                f"gate_status={gate_status!r}. Message 'Job cancelled by user request' "
                 f"means POST /cancel was sent (UI, another client, or Ctrl+C path)."
             ) from exc
         raise
@@ -326,7 +324,7 @@ def step_persist(client) -> None:
                 }
             ],
             "store": True,
-            "metadata": {"conversation_id": conversation_id},
+            "thread_id": conversation_id,
             "max_tokens": 128,
             "temperature": 0.2,
         }
@@ -344,7 +342,7 @@ def step_persist(client) -> None:
         f"items={len(conversation.get('items') or [])}",
     )
 
-    linked = socaity.get_job(job1_id, expand=["chat_item", "data"])
+    linked = client.get_job(job1_id, expand=["chat_item", "data"])
     chat_item = getattr(linked, "chat_item", None) if linked is not None else None
     _log(
         "persist",
@@ -369,7 +367,7 @@ def step_persist(client) -> None:
                 },
             ],
             "store": True,
-            "metadata": {"conversation_id": conversation_id},
+            "thread_id": conversation_id,
             "max_tokens": 64,
             "temperature": 0,
         }
@@ -397,7 +395,7 @@ def step_tools(client) -> None:
             "tools": [WEATHER_TOOL],
             "tool_choice": "auto",
             "store": True,
-            "metadata": {"conversation_id": conversation_id},
+            "thread_id": conversation_id,
             "max_tokens": 256,
             "temperature": 0,
         }
@@ -430,7 +428,7 @@ def step_tools(client) -> None:
             ],
             "tools": [WEATHER_TOOL],
             "store": True,
-            "metadata": {"conversation_id": conversation_id},
+            "thread_id": conversation_id,
             "max_tokens": 128,
             "temperature": 0,
         }
@@ -443,11 +441,55 @@ def step_tools(client) -> None:
     )
 
 
+def step_context(client) -> None:
+    """Prompt longer than the old 8192 serve cap, with no framework max_tokens."""
+    words = 9000
+    filler = ("alpha " * words).strip()
+    prompt = (
+        f"The word alpha appears exactly {words} times below. "
+        "Reply with that integer only.\n\n"
+        f"{filler}"
+    )
+    _log("context", f"long prompt words={words} without max_tokens")
+    job = client.chat(
+        request={
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0,
+        }
+    )
+    try:
+        completion = job.get_result(timeout_s=CHAT_TIMEOUT_S)
+    except Exception as exc:
+        text = str(exc)
+        if "8192" in text and "maximum context length" in text.lower():
+            raise AssertionError(
+                "served context is still capped at 8192; redeploy after the "
+                "APIPod Phase 1 default fix"
+            ) from exc
+        raise
+    text = _assistant_text(completion)
+    assert text.strip(), f"empty assistant content: {completion!r}"
+    _log("context", f"job={_platform_job_id(job)} text={text[:120]!r}")
+
+    _log("context", "explicit max_tokens=8 still applies")
+    limited = client.chat(
+        request={
+            "messages": [{"role": "user", "content": "Count from 1 to 20 in words."}],
+            "max_tokens": 8,
+            "temperature": 0,
+        }
+    )
+    limited_text = _assistant_text(limited.get_result(timeout_s=CHAT_TIMEOUT_S))
+    assert limited_text.strip(), limited_text
+    _log("context", f"limited job={_platform_job_id(limited)} text={limited_text[:80]!r}")
+
+
 STEPS = {
     "basic": step_basic,
     "stream": step_stream,
     "persist": step_persist,
     "tools": step_tools,
+    "context": step_context,
 }
 
 
@@ -469,7 +511,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     args = parser.parse_args(argv)
 
     _log("env", f"backend={BACKEND}")
-    _log("env", f"infer={os.environ.get('INFERENCE_BACKEND_URL')}")
+    _log("env", f"APIPOD_GATE_URL={os.environ.get('APIPOD_GATE_URL')}")
     client = _client()
 
     selected = args.only or list(STEPS)

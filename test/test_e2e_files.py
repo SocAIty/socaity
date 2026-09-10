@@ -31,6 +31,7 @@ _load_repo_env()
 os.environ.setdefault("SOCAITY_BACKEND_URL", "http://127.0.0.1:8000/")
 
 import socaity  # noqa: E402
+from socaity import client  # noqa: E402
 
 BACKEND = os.environ["SOCAITY_BACKEND_URL"]
 TEST_FILES = Path(__file__).resolve().parent / "test_files"
@@ -53,7 +54,6 @@ def _has_credentials() -> bool:
     creds = Path.home() / ".config" / "socaity" / "credentials.json"
     return creds.is_file()
 
-
 pytestmark = [
     pytest.mark.skipif(not _backend_up(), reason=f"backend not reachable at {BACKEND}"),
     pytest.mark.skipif(not _has_credentials(), reason="no SOCAITY_API_KEY or CLI credentials"),
@@ -63,7 +63,7 @@ pytestmark = [
 def test_malware_upload_rejected():
     assert MW_PATH.is_file(), f"missing malware fixture: {MW_PATH}"
     with pytest.raises(httpx.HTTPStatusError) as exc_info:
-        socaity.upload_files(MW_PATH, purpose="USER_UPLOAD")
+        client.upload_files(MW_PATH, purpose="USER_UPLOAD")
     response = exc_info.value.response
     assert response.status_code == 400
     body = response.text
@@ -73,13 +73,13 @@ def test_malware_upload_rejected():
 @pytest.mark.skipif(not WAV_PATH.is_file(), reason=f"missing wav fixture: {WAV_PATH}")
 def test_upload_wav_sets_expires_at_and_expand_references():
     expires_at = (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat()
-    rows = socaity.upload_files(WAV_PATH, purpose="USER_UPLOAD", expires_at=expires_at)
+    rows = client.upload_files(WAV_PATH, purpose="USER_UPLOAD", expires_at=expires_at)
     assert rows, "upload returned no file records"
     uploaded = rows[0]
     assert uploaded.get("id") is not None
     assert uploaded.get("expires_at")
 
-    fetched = socaity.get_file(uploaded["id"], expand=["references"])
+    fetched = client.get_file(uploaded["id"], expand=["references"])
     assert fetched is not None
     assert fetched.get("id") == uploaded["id"]
     assert fetched.get("expires_at")
@@ -90,7 +90,7 @@ def test_upload_wav_sets_expires_at_and_expand_references():
 
 def test_storage_usage_and_permanent_upload():
     """Quota RPC + a keep-file upload (expires_at null). Cleans up the uploaded row."""
-    usage = socaity.get_storage_usage()
+    usage = client.get_storage_usage()
     assert usage is not None
     assert usage.get("user_id")
     assert int(usage["storage_space_bytes"]) > 0
@@ -99,14 +99,14 @@ def test_storage_usage_and_permanent_upload():
     tmp = Path(__file__).resolve().parent / "test_files" / "_phase0_keep.txt"
     tmp.write_text("phase0 permanent upload probe\n", encoding="utf-8")
     try:
-        rows = socaity.upload_files(tmp, purpose="USER_UPLOAD")
+        rows = client.upload_files(tmp, purpose="USER_UPLOAD")
         assert rows, "permanent upload returned no file records"
         uploaded = rows[0]
         assert uploaded.get("id") is not None
         assert uploaded.get("expires_at") in (None, "")
-        after = socaity.get_storage_usage()
+        after = client.get_storage_usage()
         assert int(after["used_storage_bytes"]) >= int(usage["used_storage_bytes"])
-        assert socaity.delete_file(uploaded["id"]) is True
+        assert client.delete_file(uploaded["id"]) is True
     finally:
         tmp.unlink(missing_ok=True)
 

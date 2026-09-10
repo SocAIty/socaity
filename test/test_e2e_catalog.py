@@ -33,6 +33,7 @@ _load_repo_env()
 os.environ.setdefault("SOCAITY_BACKEND_URL", "http://127.0.0.1:8000/")
 
 import socaity  # noqa: E402
+from socaity import client  # noqa: E402
 from socaity_cli.cli import main as cli_main  # noqa: E402
 
 BACKEND = os.environ["SOCAITY_BACKEND_URL"]
@@ -47,36 +48,35 @@ def _backend_up() -> bool:
 
 pytestmark = pytest.mark.skipif(not _backend_up(), reason=f"backend not reachable at {BACKEND}")
 
-
 # ---------------------------------------------------------------- catalog
 
-def test_list_services_slim_and_lazy():
-    services = socaity.list_services(limit=5)
+def test_query_services_slim():
+    services = client.query_services(limit=5)
     assert services, "catalog returned no services"
 
-    slim = services[0].raw
+    slim = services[0]
     assert slim.id and slim.name
     assert not slim.deployments, "list view should be slim (no relations)"
 
-    deployments = services[0].deployments
-    assert deployments and deployments[0].provider
+    full = client.get_service(slim.name)
+    assert full.deployments and full.deployments[0].provider
 
 
 def test_get_service_full():
-    name = socaity.list_services(limit=1)[0].raw.name
-    service = socaity.get_service(name)
+    name = client.query_services(limit=1)[0].name
+    service = client.get_service(name)
     assert service.name == name
     assert service.deployments and service.endpoints
 
 
 def test_pagination_no_overlap():
-    page1 = {s.raw.id for s in socaity.list_services(limit=3, offset=0)}
-    page2 = {s.raw.id for s in socaity.list_services(limit=3, offset=3)}
+    page1 = {s.id for s in client.query_services(limit=3, offset=0)}
+    page2 = {s.id for s in client.query_services(limit=3, offset=3)}
     assert len(page1) == 3
     assert not page1 & page2
 
 
-def test_list_services_slim_no_relation_keys():
+def test_query_services_slim_no_relation_keys():
     rows = httpx.get(
         BACKEND + "v1/catalog/services",
         params={"limit": 2, "fields": "id,name"},
@@ -98,7 +98,7 @@ def test_filter_provider():
 
 
 def test_expand_contract():
-    name = socaity.list_services(limit=1)[0].raw.name
+    name = client.query_services(limit=1)[0].name
     row = httpx.get(
         BACKEND + f"v1/catalog/services/{name}",
         params={"expand": "deployments.contract", "fields": "name,deployments(contract)"},
@@ -108,27 +108,27 @@ def test_expand_contract():
 
 
 def test_list_and_get_models():
-    models = socaity.list_models(limit=10)
+    models = client.query_models(limit=10)
     assert models, "no AIModels in catalog; run the scraping pipeline first"
-    model = socaity.get_model(models[0].name)
+    model = client.get_model(models[0].name)
     assert model and model.id == models[0].id
 
 
 def test_model_filter_family():
-    models = socaity.list_models(filters=["family:eq:flux"], limit=5)
+    models = client.query_models(filters=["family:eq:flux"], limit=5)
     if models:
         assert all(m.family and m.family.lower() == "flux" for m in models)
 
 
 def test_list_categories():
-    categories = socaity.list_categories()
+    categories = client.query_categories()
     assert categories and all(c.id for c in categories)
 
 
 # ---------------------------------------------------------------- search + speed
 
 def test_search_typo_tolerant():
-    hits = socaity.search("flux schnel", collection="services", limit=5)
+    hits = client.query_services(q="flux schnel", limit=5)
     names = [item.name for item in hits]
     assert any("flux-schnell" in name for name in names), names
 
@@ -136,22 +136,22 @@ def test_search_typo_tolerant():
 def test_search_models_collection():
     from socaity_schemas.platform import AIModel
 
-    hits = socaity.search("deepseek", collection="models", limit=5)
+    hits = client.query_models(q="deepseek", limit=5)
     assert hits and all(isinstance(hit, AIModel) for hit in hits)
 
 
 def test_query_latency_budget():
     """List + search should stay under a generous local budget (ms)."""
     start = time.perf_counter()
-    socaity.list_services(limit=20)
+    client.query_services(limit=20)
     list_ms = (time.perf_counter() - start) * 1000
 
     start = time.perf_counter()
-    socaity.search("flux", collection="services", limit=10)
+    client.query_services(q="flux", limit=10)
     search_ms = (time.perf_counter() - start) * 1000
 
-    assert list_ms < 5000, f"list_services too slow: {list_ms:.0f}ms"
-    assert search_ms < 5000, f"search too slow: {search_ms:.0f}ms"
+    assert list_ms < 5000, f"query_services too slow: {list_ms:.0f}ms"
+    assert search_ms < 5000, f"query_services(q) too slow: {search_ms:.0f}ms"
 
 
 # ---------------------------------------------------------------- CLI
@@ -187,8 +187,8 @@ def test_cli_search():
     os.path.join(os.path.expanduser("~"), ".config", "socaity", "credentials.json")),
     reason="no credentials for inference")
 def test_connect_flux_schnell_creates_image(tmp_path):
-    client = socaity.connect("black-forest-labs-flux-schnell")
-    job = client.submit_job("/predictions", prompt="a lighthouse on a cliff at sunset, watercolor")
+    flux = client.connect("black-forest-labs-flux-schnell")
+    job = flux.submit_job("/predictions", prompt="a lighthouse on a cliff at sunset, watercolor")
     result = job.get_result()
     assert result is not None
 

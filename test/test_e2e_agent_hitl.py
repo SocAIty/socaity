@@ -21,20 +21,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import agentic_utils as env  # noqa: E402  (sets URL defaults before socaity import)
 
 import socaity  # noqa: E402
-from socaity.core.session import Session, use_session  # noqa: E402
-from socaity.tools.agents import execute_agent  # noqa: E402
+from socaity import Session, client  # noqa: E402
 
 PROMPT = "Give me a multiple choice with 5 recipes and let me pick one."
 
 pytestmark = [
     pytest.mark.skipif(not env.backend_up(), reason=f"backend not reachable at {env.BACKEND}"),
-    pytest.mark.skipif(not env.inference_up(), reason=f"inference gateway not reachable at {env.INFERENCE}"),
+    pytest.mark.skipif(not env.inference_up(), reason=f"APIPod gate not reachable at {env.GATE}"),
     pytest.mark.skipif(not env.rich_key(), reason="no test API key (SOCAITY_TEST_RICH_KEY / SOCAITY_API_KEY)"),
 ]
 
 
 def start_interrupted_turn(tag: str) -> dict:
-    result = execute_agent("spaine", message=PROMPT, mode="chat", timeout_s=600)
+    result = env.run_agent("spaine", message=PROMPT, mode="chat", timeout_s=600)
     env.log(tag, f"job={result['job_id']} status={result['status']} agent_status={result['agent_status']}")
     env.log(tag, f"thread={result['thread_id']} text={str(result['text'])[:200]!r}")
     assert result["agent_status"] == "interrupted", f"expected interrupted turn, got: {result['response']}"
@@ -57,7 +56,7 @@ def part_a_resume_with_decisions() -> None:
     }]
     decisions = [{k: v for k, v in d.items() if v is not None} for d in decisions]
     env.log("A", f"resume thread={first['thread_id']} decision={decisions[0]}")
-    second = execute_agent("spaine", thread_id=first["thread_id"], decisions=decisions, timeout_s=600)
+    second = env.run_agent("spaine", thread_id=first["thread_id"], decisions=decisions, timeout_s=600)
     env.log("A", f"resumed job={second['job_id']} agent_status={second['agent_status']}")
     env.log("A", f"text={str(second['text'])[:400]!r}")
     assert second["agent_status"] == "completed", f"resume did not complete: {second['response']}"
@@ -68,14 +67,14 @@ def part_a_resume_with_decisions() -> None:
 def part_b_backend_interrupts() -> None:
     env.log("B", "start second turn, resolve via backend interrupt endpoint")
     first = start_interrupted_turn("B")
-    pending = socaity.list_interrupts()
+    pending = client.query_interrupts()
     env.log("B", f"backend pending interrupts: {len(pending)}")
     row_ids = {a["id"] for a in first["pending_actions"]}
     mine = [r for r in pending if str(r.id) in row_ids]
     assert mine, f"stream row ids {row_ids} not in backend pending list {[str(r.id) for r in pending]}"
     row = mine[0]
     decision = "respond" if "respond" in (row.allowed_decisions or []) else "approve"
-    result = socaity.resolve_interrupt(
+    result = client.resolve_interrupt(
         str(row.id),
         decision=decision,
         message="I pick option 3." if decision == "respond" else None,
@@ -95,7 +94,7 @@ def part_b_backend_interrupts() -> None:
 
 def run() -> None:
     session = Session(api_key=env.rich_key(), backend_url=env.BACKEND)
-    with use_session(session):
+    with session:
         part_a_resume_with_decisions()
         part_b_backend_interrupts()
     env.log("done", "PASS")
