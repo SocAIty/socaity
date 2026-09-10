@@ -16,6 +16,37 @@ from socaity.core.serialize import serialize_value
 DEFAULT_APIPOD_GATE_URL = "https://api.socaity.ai"
 
 
+def _retarget_socaity_deployments(service: AIService, gate_url: str) -> AIService:
+    """Point gateway deployments at this session's gate origin.
+
+    ``install_service`` copies ``APIPOD_GATE_URL`` from the *backend* process.
+    A local engines container talking to a backend whose .env still names
+    production would otherwise POST nested /chat to api.socaity.ai.
+    """
+    origin = gate_url.rstrip("/")
+    deployments = []
+    changed = False
+    for deployment in service.deployments or []:
+        address = getattr(deployment, "address", None)
+        if (
+            address is None
+            or not getattr(address, "base_url", None)
+            or getattr(deployment, "provider", None) not in (None, "socaity")
+        ):
+            deployments.append(deployment)
+            continue
+        if address.base_url.rstrip("/") == origin:
+            deployments.append(deployment)
+            continue
+        deployments.append(
+            deployment.model_copy(
+                update={"address": address.model_copy(update={"base_url": origin})}
+            )
+        )
+        changed = True
+    return service.model_copy(update={"deployments": deployments}) if changed else service
+
+
 def _looks_like_direct_source(source: str) -> bool:
     lowered = source.lower()
     return lowered.startswith(("http://", "https://", "replicate:")) or lowered.endswith(".json")
@@ -60,7 +91,9 @@ class SocaityClient(SocaityBackendClient):
         materialize_media: bool = True,
     ):
         super().__init__(backend_url=backend_url, api_key=api_key)
-        self.gate_url = (gate_url or os.environ.get("APIPOD_GATE_URL") or DEFAULT_APIPOD_GATE_URL).rstrip("/")
+        env_gate = (os.environ.get("APIPOD_GATE_URL") or "").strip()
+        self._gate_url_explicit = gate_url is not None or bool(env_gate)
+        self.gate_url = (gate_url or env_gate or DEFAULT_APIPOD_GATE_URL).rstrip("/")
         self.materialize_media = materialize_media
 
     def connect(self, source: Union[str, dict, AIService, Path], api_key: Optional[str] = None, **kwargs) -> FastClient:
@@ -84,6 +117,8 @@ class SocaityClient(SocaityBackendClient):
             if not service_data:
                 raise RuntimeError(f"Platform could not resolve service '{source}'.")
             source = AIService(**service_data)
+            if self._gate_url_explicit:
+                source = _retarget_socaity_deployments(source, self.gate_url)
         kwargs.setdefault("materialize_media", self.materialize_media)
         return FastClient(source, api_key=resolved_key, temporary=False, **kwargs)
 

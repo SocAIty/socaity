@@ -118,10 +118,21 @@ def _job_ids(output) -> list[str]:
 
 def _files_of(output: dict) -> list[str]:
     files = output.get("files") or []
-    urls = [item for item in files if isinstance(item, str) and item.startswith("http")]
+    urls = []
+    for item in files:
+        if isinstance(item, str) and item.startswith("http"):
+            urls.append(item)
+        elif isinstance(item, dict):
+            url = item.get("content") or item.get("url")
+            if isinstance(url, str) and url.startswith("http"):
+                urls.append(url)
     result = output.get("result")
     if isinstance(result, str) and result.startswith("http"):
         urls.append(result)
+    elif isinstance(result, dict):
+        url = result.get("content") or result.get("url")
+        if isinstance(url, str) and url.startswith("http"):
+            urls.append(url)
     return urls
 
 

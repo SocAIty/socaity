@@ -175,10 +175,14 @@ class ChatSocaity(BaseChatModel):
         request = self._request(messages, stop, **kwargs)
         request["messages"] = _coerce_message_content(request["messages"])
         translator = _ChunkTranslator(self.model)
+        yielded = False
         for chunk in self.adapter.stream_chunks(request):
             generation_chunk = translator.translate(chunk)
             if generation_chunk is not None:
+                yielded = True
                 yield generation_chunk
+        if not yielded:
+            raise _empty_stream_error(self.adapter)
 
     async def _astream(
         self,
@@ -190,10 +194,14 @@ class ChatSocaity(BaseChatModel):
         request = self._request(messages, stop, **kwargs)
         request["messages"] = _coerce_message_content(request["messages"])
         translator = _ChunkTranslator(self.model)
+        yielded = False
         async for chunk in self.adapter.astream_chunks(request):
             generation_chunk = translator.translate(chunk)
             if generation_chunk is not None:
+                yielded = True
                 yield generation_chunk
+        if not yielded:
+            raise _empty_stream_error(self.adapter)
 
     # ------------------------------------------------------------------
     # Response translation (wire -> LangChain)
@@ -232,6 +240,28 @@ class ChatSocaity(BaseChatModel):
                 "finish_reason": choice.get("finish_reason"),
             },
         )
+
+
+def _empty_stream_error(adapter: ChatServiceAdapter) -> RuntimeError:
+    """LangChain raises 'No generations found in stream' when we yield nothing.
+
+    Nested catalog jobs can finish with 0 SSE chunks (vLLM 400 closed as a
+    successful empty RunPod stream). Surface the platform job error instead.
+    """
+    job = adapter.last_job()
+    if job is None:
+        return RuntimeError("Chat stream produced no tokens.")
+    try:
+        snapshot = ChatServiceAdapter.job_status(job)
+    except Exception:
+        snapshot = {}
+    error = snapshot.get("error") or getattr(job, "error", None)
+    status = snapshot.get("status")
+    if error:
+        return RuntimeError(f"Chat stream produced no tokens: {error}")
+    if status:
+        return RuntimeError(f"Chat stream produced no tokens (job status={status})")
+    return RuntimeError("Chat stream produced no tokens.")
 
 
 class _ChunkTranslator:
@@ -371,13 +401,21 @@ def _image_url_parts(content: Any) -> List[Dict[str, Any]]:
             url = _image_url(block)
         except ValueError:
             continue
-        if url:
+        if url and _is_inline_image_url(url):
             parts.append({"type": "image_url", "image_url": {"url": url}})
     return parts
 
 
+def _is_inline_image_url(url: str) -> bool:
+    """vLLM rejects remote http(s) ``image_url`` parts (HTTP 400). Data URIs only."""
+    return url.startswith("data:image/")
+
+
 def _coerce_message_content(messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Normalize content; keep ``image_url`` parts and tool wire fields intact."""
+    """Normalize content; keep inline ``image_url`` data URIs for VLMs.
+
+    Remote http(s) image URLs stay as text. vLLM returns HTTP 400 on them.
+    """
     coerced = []
     for message in messages:
         role = message.get("role") or "user"
@@ -423,6 +461,16 @@ def _content_text(content: Any) -> str:
             if isinstance(block, str):
                 parts.append(block)
             elif isinstance(block, dict):
+                if block.get("type") in ("image", "image_url"):
+                    try:
+                        url = _image_url(block)
+                    except ValueError:
+                        url = ""
+                    if url and not _is_inline_image_url(url):
+                        if parts:
+                            parts.append(" ")
+                        parts.append(url)
+                    continue
                 parts.append(block.get("text") or block.get("content") or "")
         return "".join(parts)
     if isinstance(content, dict):
