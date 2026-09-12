@@ -47,7 +47,7 @@ def _has_credentials() -> bool:
 def _backend_up() -> bool:
     try:
         return httpx.get(BACKEND + "v1/catalog/services", params={"limit": 1}, timeout=10).status_code == 200
-    except httpx.HTTPError:
+    except (httpx.HTTPError, httpx.InvalidURL):
         return False
 
 
@@ -70,15 +70,18 @@ def _platform_job_id(handle) -> str:
     raise AssertionError(f"could not resolve platform job id from handle={type(handle)} response={resp!r}")
 
 
-@pytest.fixture(scope="module")
-def created_job_id() -> str:
-    handle = client.connect("black-forest-labs-flux-schnell").submit_job("/predictions", prompt=PROMPT)
+def create_and_index_job() -> str:
+    """One flux job through ``run_service``, then wait until the jobs catalog sees it."""
+    handle = client.run_service(
+        "black-forest-labs-flux-schnell",
+        "/predictions",
+        {"prompt": PROMPT},
+    )
     result = handle.get_result()
     assert result is not None, "flux-schnell returned no result"
 
     job_id = _platform_job_id(handle)
 
-    # Inference writes the row; webhook loads it into JobCache + Typesense.
     deadline = time.time() + 180
     data_deadline = None
     row = None
@@ -101,12 +104,16 @@ def created_job_id() -> str:
                 break
         time.sleep(2)
     if row is None or (row.status or "").upper() != "FINISHED":
-        pytest.fail(
+        raise AssertionError(
             f"job {job_id} did not become FINISHED in time "
             f"(last_row={row!r}, hint: check SOCAITY_API_KEY owns the job)"
         )
-
     return job_id
+
+
+@pytest.fixture(scope="module")
+def created_job_id() -> str:
+    return create_and_index_job()
 
 
 def test_query_jobs_returns_visible_jobs(created_job_id):
@@ -149,3 +156,22 @@ def test_webhook_refresh_indexes_job(created_job_id):
     if not again.get("indexed"):
         pytest.skip("jobs webhook returned ok but Typesense did not index (no persistent job_data)")
     assert again.get("indexed") is True
+
+
+def run() -> None:
+    job_id = create_and_index_job()
+    test_query_jobs_returns_visible_jobs(job_id)
+    for check in (
+        test_get_job_by_id,
+        test_search_jobs_by_prompt_keyword,
+        test_query_jobs_by_q,
+        test_webhook_refresh_indexes_job,
+    ):
+        try:
+            check(job_id)
+        except pytest.skip.Exception as exc:
+            print(f"skip {check.__name__}: {exc}", flush=True)
+
+
+if __name__ == "__main__":
+    run()

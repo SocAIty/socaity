@@ -33,7 +33,7 @@ os.environ.setdefault("SOCAITY_BACKEND_URL", "http://127.0.0.1:8000/")
 import socaity  # noqa: E402
 from socaity import client  # noqa: E402
 
-BACKEND = os.environ["SOCAITY_BACKEND_URL"]
+BACKEND = os.environ["SOCAITY_BACKEND_URL"].rstrip("/") + "/"
 TEST_FILES = Path(__file__).resolve().parent / "test_files"
 MW_PATH = TEST_FILES / "mw-test.txt"
 WAV_PATH = TEST_FILES / "audio" / "potter_to_hermine.wav"
@@ -44,7 +44,7 @@ if not WAV_PATH.is_file():
 def _backend_up() -> bool:
     try:
         return httpx.get(BACKEND + "v1/catalog/services", params={"limit": 1}, timeout=10).status_code == 200
-    except httpx.HTTPError:
+    except (httpx.HTTPError, httpx.InvalidURL):
         return False
 
 
@@ -111,20 +111,17 @@ def test_storage_usage_and_permanent_upload():
         tmp.unlink(missing_ok=True)
 
 
+def run() -> None:
+    test_malware_upload_rejected()
+    if WAV_PATH.is_file():
+        test_upload_wav_sets_expires_at_and_expand_references()
+    test_storage_usage_and_permanent_upload()
+
+
 if __name__ == "__main__":
-    failures = 0
-    for name, fn in (
-        ("test_malware_upload_rejected", test_malware_upload_rejected),
-        ("test_upload_wav_sets_expires_at_and_expand_references", test_upload_wav_sets_expires_at_and_expand_references),
-        ("test_storage_usage_and_permanent_upload", test_storage_usage_and_permanent_upload),
-    ):
-        if name.startswith("test_upload") and not WAV_PATH.is_file():
-            print(f"SKIP {name}: missing {WAV_PATH}")
-            continue
-        try:
-            fn()
-            print(f"PASS {name}")
-        except Exception as exc:
-            failures += 1
-            print(f"FAIL {name}: {exc}")
-    sys.exit(1 if failures else 0)
+    try:
+        run()
+    except Exception as exc:
+        print(f"FAIL: {exc}")
+        sys.exit(1)
+    print("PASS")

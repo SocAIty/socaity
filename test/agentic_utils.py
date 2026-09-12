@@ -4,8 +4,9 @@ These tests need the local platform stack: socaity_backend (:8000), the
 inference gateway + orchestrator + engines, and SPAINE in the catalog.
 Import this module before ``socaity`` so the URL defaults land first.
 
-Credentials are env-only: ``SOCAITY_TEST_RICH_KEY`` / ``SOCAITY_TEST_POOR_KEY``,
-else ``SOCAITY_API_KEY`` for the rich user. Gate origin is ``APIPOD_GATE_URL``.
+Credentials are env-only, from this repo's ``.env``:
+``SOCAITY_API_KEY`` (funded user) and ``SOCAITY_POOR_API_KEY`` (second user).
+Gate origin is forced to local ``APIPOD_GATE_URL``.
 """
 from __future__ import annotations
 
@@ -16,15 +17,15 @@ from typing import Optional
 import httpx
 
 
-_CRED_KEYS = ("SOCAITY_API_KEY", "SOCAITY_TEST_RICH_KEY", "SOCAITY_TEST_POOR_KEY")
+_ENV_FILE = Path(__file__).resolve().parents[1] / ".env"
+_CRED_KEYS = ("SOCAITY_API_KEY", "SOCAITY_POOR_API_KEY")
 
 
 def _load_repo_env() -> None:
-    """Load test credentials from the SDK .env. Do not inherit cloud URLs."""
-    env_file = Path(__file__).resolve().parents[1] / ".env"
-    if not env_file.is_file():
+    """Load test credentials from this repo's .env. Do not inherit cloud URLs."""
+    if not _ENV_FILE.is_file():
         return
-    for line in env_file.read_text(encoding="utf-8").splitlines():
+    for line in _ENV_FILE.read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if line and not line.startswith("#") and "=" in line:
             key, _, value = line.partition("=")
@@ -43,14 +44,27 @@ TERMINAL = ("finished", "failed", "timeout", "cancelled", "rejected")
 PROJECTS_ROOT = Path(__file__).resolve().parents[2]
 
 
-def rich_key() -> Optional[str]:
+def missing_env(*names: str) -> str:
+    """Skip reason that names the missing keys and this repo's ``.env``."""
+    missing = [name for name in names if not os.getenv(name)]
+    if not missing:
+        return ""
+    return f"set {', '.join(missing)} in {_ENV_FILE}"
+
+
+def api_key() -> Optional[str]:
     """Funded test user (owns the runs)."""
-    return os.getenv("SOCAITY_TEST_RICH_KEY") or os.getenv("SOCAITY_API_KEY")
+    return os.getenv("SOCAITY_API_KEY")
 
 
 def poor_key() -> Optional[str]:
     """Second, low-credit test user (fork / permission scenarios)."""
-    return os.getenv("SOCAITY_TEST_POOR_KEY")
+    return os.getenv("SOCAITY_POOR_API_KEY")
+
+
+_missing_api = missing_env("SOCAITY_API_KEY")
+if _missing_api:
+    print(f"socaity e2e: {_missing_api}", flush=True)
 
 
 def backend_up() -> bool:

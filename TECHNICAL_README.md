@@ -354,16 +354,39 @@ Re-running install for the same service upserts (same service ID from backend). 
 
 ```
 test/
-  test_cli.py              # CLI wiring, login gate
-  test_credentials.py      # credential paths
-  test_socaity/            # official model integration (needs SOCAITY_API_KEY)
-  test_replicate/          # Replicate namespace models
-  stress/simultaneous_jobs.py  # concurrent get_result() from cache bootstrap
+  bundle/test_core.py      # PyPI publish gate: invariants + stacked platform e2e
+  test_e2e_catalog.py      # catalog list/get/search
+  test_e2e_files.py        # file_service
+  test_e2e_jobs.py         # one flux via run_service + jobs catalog
+  test_e2e_conversations.py
+  test_e2e_agent_hitl.py
+  test_e2e_wait_cancel.py
+  test_e2e_workflow_repair.py
+  test_e2e_publish_fork.py # two-user (not in the core bundle)
+  test_e2e_agent_image_vlm.py
+  test_replicate.py        # platform-mediated Replicate (marker: replicate)
+  test_chat_socaity_request.py
+  test_langchain_chat.py   # ChatServiceAdapter vs APIPod debug services
+  manual/                  # face2face + speechcraft; run as scripts
+  stress/simultaneous_jobs.py
 ```
 
-Integration tests override the APIPod gate URL via ``APIPOD_GATE_URL``. CI-friendly tests: `test_cli.py`, `test_credentials.py`.
+Default ``pytest`` collects the e2e files (they skip when the stack is down) and skips ``manual``, ``replicate``, and the core bundle. Official hosted services are manual:
 
-Run with project venv: `pytest` (after `pip install -e ".[dev]"`).
+    python test/manual/test_face2face.py
+    python test/manual/test_speechcraft.py
+
+Replicate through the platform (not the default suite):
+
+    pytest test/test_replicate.py -v -s
+
+PyPI publish gate (local stack required: backend :8000, gate :8001, SPAINE in catalog):
+
+    pytest test/bundle/test_core.py -v -s
+
+Integration tests force the local gate via ``agentic_utils`` (``APIPOD_GATE_URL=http://127.0.0.1:8001``). Credentials: ``SOCAITY_API_KEY`` / ``SOCAITY_POOR_API_KEY`` in the repo ``.env``.
+
+Run with the project venv: `pytest` (after `pip install -e ".[dev]"`).
 
 ## Why the Architecture Looks Like This
 

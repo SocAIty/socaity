@@ -41,3 +41,9 @@ Homepage = "https://www.socaity.ai"
 testpaths = ["test"]
 # Resolve sibling packages in local dev (CI installs from pip).
 pythonpath = [".", "../socaity-cli", "../socaity-schemas", "../fastsdk", "../APIPodRegistry", "../media-toolkit", "../meseex"]
+norecursedirs = ["manual", "stress", "bundle", "output", "test_files"]
+markers = [
+    "manual: official hosted services (face2face, speechcraft); run the scripts by hand",
+    "replicate: platform-mediated Replicate jobs (separate from the core stack)",
+]
+addopts = ["-m", "not manual"]

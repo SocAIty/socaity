@@ -63,7 +63,7 @@ BLIND = (
 pytestmark = [
     pytest.mark.skipif(not env.backend_up(), reason=f"backend not reachable at {env.BACKEND}"),
     pytest.mark.skipif(not env.inference_up(), reason=f"APIPod gate not reachable at {env.GATE}"),
-    pytest.mark.skipif(not env.rich_key(), reason="no test API key (SOCAITY_TEST_RICH_KEY / SOCAITY_API_KEY)"),
+    pytest.mark.skipif(not env.api_key(), reason=env.missing_env("SOCAITY_API_KEY") or "no SOCAITY_API_KEY"),
 ]
 
 
@@ -137,7 +137,7 @@ def _files_of(output: dict) -> list[str]:
 
 
 def run() -> None:
-    session = Session(api_key=env.rich_key(), backend_url=env.BACKEND)
+    session = Session(api_key=env.api_key(), backend_url=env.BACKEND)
     with session:
         env.log("T3.1", f"generate monkey clipart via {FLUX}")
         first = env.run_agent("spaine", message=GENERATE, mode="agent", timeout_s=GENERATE_TIMEOUT_S)

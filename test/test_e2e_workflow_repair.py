@@ -32,7 +32,7 @@ INPUTS = {"text": "hello"}
 pytestmark = [
     pytest.mark.skipif(not env.backend_up(), reason=f"backend not reachable at {env.BACKEND}"),
     pytest.mark.skipif(not env.inference_up(), reason=f"APIPod gate not reachable at {env.GATE}"),
-    pytest.mark.skipif(not env.rich_key(), reason="no test API key (SOCAITY_TEST_RICH_KEY / SOCAITY_API_KEY)"),
+    pytest.mark.skipif(not env.api_key(), reason=env.missing_env("SOCAITY_API_KEY") or "no SOCAITY_API_KEY"),
     pytest.mark.skipif(not DOC_FILE.is_file(), reason=f"missing workflow fixture {DOC_FILE}"),
 ]
 
@@ -42,7 +42,7 @@ def run() -> None:
     document["id"] = f"wf_{uuid4()}"
     slug = f"missing-field-{int(time.time())}"
 
-    session = Session(api_key=env.rich_key(), backend_url=env.BACKEND)
+    session = Session(api_key=env.api_key(), backend_url=env.BACKEND)
     with session:
         saved = client.upsert_workflow(document, slug=slug, message="workflow repair e2e broken doc")
         assert saved and saved.workflow, "workflow upsert failed"

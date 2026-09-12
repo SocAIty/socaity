@@ -31,7 +31,7 @@ PERSIST_TIMEOUT_S = 120.0
 pytestmark = [
     pytest.mark.skipif(not env.backend_up(), reason=f"backend not reachable at {env.BACKEND}"),
     pytest.mark.skipif(not env.inference_up(), reason=f"APIPod gate not reachable at {env.GATE}"),
-    pytest.mark.skipif(not env.rich_key(), reason="no test API key (SOCAITY_TEST_RICH_KEY / SOCAITY_API_KEY)"),
+    pytest.mark.skipif(not env.api_key(), reason=env.missing_env("SOCAITY_API_KEY") or "no SOCAITY_API_KEY"),
 ]
 
 MARKER = f"conversations-e2e-{int(time.time())}"
@@ -77,7 +77,7 @@ def _role_items(items, role: str):
 
 
 def run() -> None:
-    session = Session(api_key=env.rich_key(), backend_url=env.BACKEND)
+    session = Session(api_key=env.api_key(), backend_url=env.BACKEND)
     with session:
         env.log("1", "run one agent turn (chat mode)")
         turn = env.run_agent("spaine", message=PROMPT, mode="chat", timeout_s=600)
@@ -175,7 +175,7 @@ def test_conversations_end_to_end() -> None:
 
 def test_mid_turn_stub_and_tool_parts() -> None:
     """Intake stub is visible while the job runs; completed parts include tools."""
-    session = Session(api_key=env.rich_key(), backend_url=env.BACKEND)
+    session = Session(api_key=env.api_key(), backend_url=env.BACKEND)
     thread_id = str(uuid4())
     started: dict = {}
     finished: dict = {}

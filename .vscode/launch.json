@@ -12,64 +12,46 @@
             }
         },
         {
-            "name": "socaity_sdk: Test CLI",
+            "name": "socaity_sdk: Core bundle",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/test/test_cli.py",
+            "module": "pytest",
+            "args": ["test/bundle/test_core.py", "-v", "-s"],
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex;${workspaceFolder}/../APIPodRegistry;${workspaceFolder}/../socaity_schemas;${workspaceFolder}/../socaity-cli"
             }
         },
         {
-            "name": "socaity_sdk: Test SDK",
+            "name": "socaity_sdk: Replicate (platform)",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/test/test_models.py",
+            "module": "pytest",
+            "args": ["test/test_replicate.py", "-v", "-s"],
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex;${workspaceFolder}/../APIPodRegistry;${workspaceFolder}/../socaity_schemas;${workspaceFolder}/../socaity-cli"
             }
         },
         {
-            "name": "Python: Test Flux Schnell",
+            "name": "Python: Test Speechcraft (manual)",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/test/test_replicate/test_flux_schnell.py",
+            "program": "${workspaceFolder}/test/manual/test_speechcraft.py",
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex;${workspaceFolder}/../APIPodRegistry;${workspaceFolder}/../socaity_schemas;${workspaceFolder}/../socaity-cli"
             }
         },
         {
-            "name": "Python: Test SpeechCraft",
+            "name": "Python: Test Face2Face (manual)",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/test/test_socaity/test_spechcraft.py",
-            "console": "integratedTerminal",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex;${workspaceFolder}/../APIPodRegistry;${workspaceFolder}/../socaity_schemas;${workspaceFolder}/../socaity-cli"
-            }
-        },
-        {
-            "name": "Python: Test DeepSeek",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/test/test_replicate/test_deepseek.py",
-            "console": "integratedTerminal",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex;${workspaceFolder}/../APIPodRegistry;${workspaceFolder}/../socaity_schemas;${workspaceFolder}/../socaity-cli"
-            }
-        },
-        {
-            "name": "Python: Test Face2Face",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/test/test_socaity/test_face2face.py",
+            "program": "${workspaceFolder}/test/manual/test_face2face.py",
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex;${workspaceFolder}/../APIPodRegistry;${workspaceFolder}/../socaity_schemas;${workspaceFolder}/../socaity-cli"
             }
         }
     ]
-} 
+}

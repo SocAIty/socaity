@@ -28,7 +28,7 @@ PROMPT = "Give me a multiple choice with 5 recipes and let me pick one."
 pytestmark = [
     pytest.mark.skipif(not env.backend_up(), reason=f"backend not reachable at {env.BACKEND}"),
     pytest.mark.skipif(not env.inference_up(), reason=f"APIPod gate not reachable at {env.GATE}"),
-    pytest.mark.skipif(not env.rich_key(), reason="no test API key (SOCAITY_TEST_RICH_KEY / SOCAITY_API_KEY)"),
+    pytest.mark.skipif(not env.api_key(), reason=env.missing_env("SOCAITY_API_KEY") or "no SOCAITY_API_KEY"),
 ]
 
 
@@ -82,7 +82,7 @@ def part_b_backend_interrupts() -> None:
     env.log("B", f"resolved batch_complete={result.batch_complete} job={getattr(result.job, 'id', None)}")
     assert result.batch_complete, "batch not complete after resolving the only action"
     assert result.job is not None, "no continue job enqueued"
-    job = env.poll_job(str(result.job.id), api_key=env.rich_key())
+    job = env.poll_job(str(result.job.id), api_key=env.api_key())
     env.log("B", f"continue job status={job.get('status')}")
     response = job.get("result") if isinstance(job.get("result"), dict) else {}
     text = ((response.get("choices") or [{}])[0].get("message") or {}).get("content")
@@ -93,7 +93,7 @@ def part_b_backend_interrupts() -> None:
 
 
 def run() -> None:
-    session = Session(api_key=env.rich_key(), backend_url=env.BACKEND)
+    session = Session(api_key=env.api_key(), backend_url=env.BACKEND)
     with session:
         part_a_resume_with_decisions()
         part_b_backend_interrupts()
