@@ -40,12 +40,6 @@ LIST = (
     "Reply with each job id and status. "
     f"Include the token {MARKER}-jobs."
 )
-DESCRIBE = (
-    "Describe the composition of the image you just generated. "
-    "Name the subject, layout, and colors. "
-    "Do not say you cannot see the image. "
-    f"Include the token {MARKER}-vlm in the reply."
-)
 BLIND = (
     "cannot see",
     "can't see",
@@ -136,6 +130,18 @@ def _files_of(output: dict) -> list[str]:
     return urls
 
 
+def _describe_prompt(image_url: str) -> str:
+    return (
+        "Use run_service on qwen3-8-official with endpoint /chat. "
+        "Pass params with messages=[{'role': 'user', 'content': "
+        "'Describe this image composition. Name the subject, layout, and colors.'}] "
+        f"and images=['{image_url}']. "
+        "Use the service result to answer. Do not search for another vision service. "
+        "Do not say you cannot see the image. "
+        f"Include the token {MARKER}-vlm in the reply."
+    )
+
+
 def run() -> None:
     session = Session(api_key=env.api_key(), backend_url=env.BACKEND)
     with session:
@@ -182,17 +188,18 @@ def run() -> None:
         assert list_parts, f"query_jobs tool_result missing (tool not bound or call failed): {after_list}"
         list_output = list_parts[0][2]
         listed_ids = _job_ids(list_output)
-        env.log("T3.2", f"query_jobs n={len(listed_ids)}")
+        env.log("T3.2", f"query_jobs n={len(listed_ids)} ids={listed_ids}")
         assert listed_ids, f"query_jobs returned no jobs: {list_output!r}"
         assert child_job_id in listed_ids, (child_job_id, listed_ids)
         sdk_jobs = client.query_jobs(limit=10)
         sdk_ids = {getattr(job, "id", None) for job in sdk_jobs}
+        env.log("T3.2", f"sdk ids={sorted(job_id for job_id in sdk_ids if job_id)}")
         assert child_job_id in sdk_ids, (child_job_id, sdk_ids)
 
         env.log("T3.3", "describe composition (qwen3.8 VLM on the image URL)")
         second = env.run_agent(
             "spaine",
-            message=DESCRIBE,
+            message=_describe_prompt(files[0]),
             thread_id=thread_id,
             mode="agent",
             timeout_s=DESCRIBE_TIMEOUT_S,

@@ -76,8 +76,7 @@ def backend_up() -> bool:
 
 def inference_up() -> bool:
     try:
-        httpx.get(f"{GATE}/openapi.json", timeout=10)
-        return True
+        return httpx.get(f"{GATE}/health", timeout=30).status_code == 200
     except httpx.HTTPError:
         return False
 

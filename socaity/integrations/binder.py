@@ -7,8 +7,9 @@ import queue
 from contextlib import nullcontext
 from typing import Any, Callable, Optional
 
-from meseex import EventKind, MeseexEvent
 from fastsdk.service_interaction.api_seex import APISeex
+from langchain_core.tools import ToolException
+from meseex import EventKind, MeseexEvent
 
 from socaity.integrations.policy import (
     DESTRUCTIVE_METHODS,
@@ -112,9 +113,12 @@ def bind_method(method: Callable, session: Optional[Callable] = None):
     def invoke_sync(**arguments):
         from socaity import client
 
-        with _session_scope(session):
-            result = getattr(client, method.__name__)(**arguments)
-            return consume_or_serialize(method, result)
+        try:
+            with _session_scope(session):
+                result = getattr(client, method.__name__)(**arguments)
+                return consume_or_serialize(method, result)
+        except Exception as exc:
+            raise ToolException(f"{method.__name__} failed: {exc}") from exc
 
     async def invoke_async(**arguments):
         return await asyncio.to_thread(invoke_sync, **arguments)

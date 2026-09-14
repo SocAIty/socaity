@@ -77,11 +77,12 @@ def test_pagination_no_overlap():
 
 
 def test_query_services_slim_no_relation_keys():
-    rows = httpx.get(
+    response = httpx.get(
         BACKEND + "v1/catalog/services",
         params={"limit": 2, "fields": "id,name"},
         timeout=30,
     ).json()
+    rows = response["entities"]
     assert rows and all(
         set(row.keys()) <= {"id", "name"} and "deployments" not in row
         for row in rows

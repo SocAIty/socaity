@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from contextvars import ContextVar, Token
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from socaity.client import DEFAULT_APIPOD_GATE_URL, SocaityClient
 
@@ -38,6 +38,7 @@ class Session:
         conversation_id: Current chat id, if the host has one.
         local_root: User-local sandbox root on the host.
         gate_url: APIPod gate origin for factory jobs (agent chat, workflow run).
+        socaity_options: Inherited platform options for nested catalog jobs.
     """
 
     def __init__(
@@ -50,6 +51,7 @@ class Session:
         conversation_id: Optional[str] = None,
         local_root: Optional[Path] = None,
         gate_url: Optional[str] = None,
+        socaity_options: Optional[Dict[str, Any]] = None,
     ):
         self.client = SocaityClient(
             api_key=api_key,
@@ -64,6 +66,7 @@ class Session:
         self.conversation_id = conversation_id
         self.local_root = local_root
         self.gate_url = self.client.gate_url
+        self.socaity_options = socaity_options
         self._tokens: List[Token] = []
 
     def __enter__(self) -> Session:

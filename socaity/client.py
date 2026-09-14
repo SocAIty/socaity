@@ -128,30 +128,39 @@ class SocaityClient(SocaityBackendClient):
         service: str,
         endpoint: Optional[str] = None,
         params: Optional[dict] = None,
-        is_public: bool = False,
-        expires_at: Optional[str] = None,
+        socaity_options: Optional[dict] = None,
     ) -> fastsdk.APISeex:
         """Submit a catalog service job. Returns an ``APISeex`` handle immediately.
 
         Call ``get_service`` (expand ``deployments.contract``) when you do not know
         the parameter names. ``params`` keys must match that endpoint exactly.
 
+        Nested jobs inside an agent or workflow inherit ``socaity_options`` from
+        the active session when the caller omits them.
+
         Args:
             service: Service id, name, ``owner/service``, or model slug.
             endpoint: Endpoint path such as ``/predictions``. Defaults to the first.
             params: Endpoint arguments, e.g. ``{"prompt": "a cute robot dog"}``.
-            is_public: Publish the job in the socaity feed. Default private.
-            expires_at: Optional ISO timestamp for produced files.
+            socaity_options: Platform retention and visibility. Default: session inherit.
 
         Returns:
             FastSDK job handle. Call ``get_result()`` or ``subscribe`` yourself.
             LLM tool conversion waits for the terminal event and serializes it.
         """
+        from socaity.core.session import current_session
+
         client = self.connect(service)
         target = _resolve_endpoint(client, endpoint)
+        options = socaity_options
+        if options is None:
+            options = getattr(current_session(), "socaity_options", None)
+        flags: Dict[str, Any] = {}
+        if options:
+            flags["socaity_options"] = options
         return client.submit_job(
             target.path,
-            **_call_params(target, params, {"is_public": is_public, "expires_at": expires_at}),
+            **_call_params(target, params, flags),
         )
 
     def estimate_price(
