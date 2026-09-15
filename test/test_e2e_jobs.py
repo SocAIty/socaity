@@ -77,7 +77,10 @@ def create_and_index_job() -> str:
         "/predictions",
         {"prompt": PROMPT},
     )
-    result = handle.get_result()
+    try:
+        result = handle.get_result()
+    except Exception as exc:
+        raise AssertionError(f"flux-schnell job failed: {exc}") from exc
     assert result is not None, "flux-schnell returned no result"
 
     job_id = _platform_job_id(handle)

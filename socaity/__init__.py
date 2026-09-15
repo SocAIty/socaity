@@ -14,11 +14,12 @@ from fastsdk import (
 )
 from socaity_schemas.platform import (
     AIModel,
-    AIService,
     Deployment,
     Job,
     PriceEstimate,
+    Service,
     ServiceCategory,
+    ServiceDetails,
 )
 from socaity.client import SocaityClient
 from socaity.core.socaity_service_registry import SocaityServiceRegistry
@@ -47,7 +48,7 @@ if _community_root.exists():
 
 
 def install(service_name_or_id: str) -> None:
-    """Install a specific service by name or ID."""
+    """Install a specific service by slug or ID."""
     if service_name_or_id == "all":
         service_registry.install_all()
     else:
@@ -81,7 +82,8 @@ __all__ = [
     "generate_stub",
     "inspect_service",
     "register_service",
-    "AIService",
+    "Service",
+    "ServiceDetails",
     "AIModel",
     "Deployment",
     "ServiceCategory",
