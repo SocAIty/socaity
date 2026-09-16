@@ -18,7 +18,7 @@ DEFAULT_APIPOD_GATE_URL = "https://api.socaity.ai"
 
 
 def _retarget_socaity_details(service: Service, gate_url: str) -> Service:
-    """Point gateway bindings (``details[].address``) at this session's gate origin.
+    """Point gateway bindings (nested ``deployment.address``) at this session's gate origin.
 
     ``install_service`` copies ``APIPOD_GATE_URL`` from the *backend* process.
     A local engines container talking to a backend whose .env still names
@@ -28,11 +28,13 @@ def _retarget_socaity_details(service: Service, gate_url: str) -> Service:
     details = []
     changed = False
     for binding in service.details or []:
-        address = binding.address
+        deployment = binding.deployment
+        address = deployment.address if deployment is not None else None
+        provider = deployment.provider if deployment is not None else None
         if (
             address is None
             or not getattr(address, "base_url", None)
-            or binding.provider not in (None, "socaity")
+            or provider not in (None, "socaity")
         ):
             details.append(binding)
             continue
@@ -41,7 +43,11 @@ def _retarget_socaity_details(service: Service, gate_url: str) -> Service:
             continue
         details.append(
             binding.model_copy(
-                update={"address": address.model_copy(update={"base_url": origin})}
+                update={
+                    "deployment": deployment.model_copy(
+                        update={"address": address.model_copy(update={"base_url": origin})}
+                    )
+                }
             )
         )
         changed = True

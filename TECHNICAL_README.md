@@ -63,7 +63,8 @@ List calls request a sparse fieldset (`fields=id,slug,display_name,...`) and opt
 `filter` / `q`. Results are schema models (`Service`, `Job`, …), not lazy proxies.
 Call ``get_service`` with expand (``details.contract``, ``endpoints``) when you need the
 runtime bindings (``details[]``, each optionally carrying a hosting ``deployment``) or contracts.
-``run_service(..., details_id=details[0].id)`` pins one binding. Connectors are catalog
+``run_service(..., details_id=details[0].id)`` pins the spec. Compute URL is
+``details[0].deployment``; connector URL is ``details[0].connector``. Connectors are catalog
 services with ``kind == "connector"``; they run like any other service.
 
 ## Mental Model

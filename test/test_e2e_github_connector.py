@@ -38,9 +38,9 @@ pytestmark = [
 ]
 
 
-def _wait_gate_route(details_id: str, path: str, timeout_s: float = 45) -> None:
+def _wait_gate_route(service_id: str, path: str, timeout_s: float = 45) -> None:
     """First 404 remounts the binding; later statuses mean the route is live."""
-    url = f"{env.GATE}/services/v1/{details_id}{path}"
+    url = f"{env.GATE}/services/v1/{service_id}{path}"
     deadline = time.monotonic() + timeout_s
     last = None
     while time.monotonic() < deadline:
@@ -80,6 +80,7 @@ def _connector_doc(service) -> dict:
                 "service_id": service.id,
                 "endpoint_id": endpoint.id,
                 "details_id": details.id,
+                "connectors_id": details.connector.id if details.connector else None,
                 "path": endpoint.path,
                 "specification_hash": details.specification_hash,
                 "inputs": {"q": SEARCH_Q},
@@ -121,7 +122,7 @@ def run() -> None:
         paths = {row.path for row in service.endpoints}
         assert "/search/repositories" in paths, paths
         env.log("T8.2", "waiting for gate to mount the connector")
-        _wait_gate_route(details.id, "/search/repositories")
+        _wait_gate_route(service.id, "/search/repositories")
 
         saved = client.upsert_workflow(
             _connector_doc(service),
