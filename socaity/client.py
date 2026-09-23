@@ -9,7 +9,7 @@ import fastsdk
 from fastsdk.fastClient import FastClient
 from fastsdk.service_access import service_contract
 from socaity_cli import SocaityBackendClient
-from socaity_schemas.platform import Service
+from socaity_schemas.platform import Service, SocaityContext, SocaityOptions
 
 from socaity.core.gateway import gateway_client
 from socaity.core.serialize import serialize_value
@@ -73,6 +73,29 @@ def _resolve_endpoint(client: FastClient, endpoint: Optional[str]):
             return candidate
     known = ", ".join(candidate.path for candidate in endpoints)
     raise ValueError(f"Endpoint '{endpoint}' not found. This service exposes: {known}")
+
+
+def _dump_model(raw: Any) -> Optional[dict]:
+    """Dict or pydantic model to a JSON object. Empty stays empty."""
+    if raw is None:
+        return None
+    if isinstance(raw, dict):
+        return raw
+    if hasattr(raw, "model_dump"):
+        return raw.model_dump(mode="json", exclude_none=True)
+    return None
+
+
+def _inherit_context(explicit: Any, session: Any) -> Optional[SocaityContext]:
+    """Explicit context wins per field. Thread falls back to the session conversation."""
+    base = _dump_model(getattr(session, "socaity_context", None)) or {}
+    over = _dump_model(explicit) or {}
+    merged = {**base, **{key: value for key, value in over.items() if value is not None}}
+    if not merged.get("thread_id"):
+        conversation_id = getattr(session, "conversation_id", None)
+        if conversation_id:
+            merged["thread_id"] = conversation_id
+    return SocaityContext.model_validate(merged) if merged else None
 
 
 def _call_params(endpoint, params: Optional[dict], flags: Dict[str, Any]) -> dict:
@@ -142,8 +165,9 @@ class SocaityClient(SocaityBackendClient):
         service: str,
         endpoint: Optional[str] = None,
         params: Optional[dict] = None,
-        socaity_options: Optional[dict] = None,
+        socaity_options: Optional[Union[SocaityOptions, dict]] = None,
         details_id: Optional[str] = None,
+        socaity_context: Optional[Union[SocaityContext, dict]] = None,
     ) -> fastsdk.APISeex:
         """Submit a catalog service job. Returns an ``APISeex`` handle immediately.
 
@@ -160,6 +184,8 @@ class SocaityClient(SocaityBackendClient):
             socaity_options: Platform retention and visibility. Default: session inherit.
             details_id: Pinned ``ServiceDetails`` binding (``details[0].id`` from
                 ``get_service``). Default: the service's primary binding.
+            socaity_context: Workflow, node, thread, and run-once slot names.
+                Default: session inherit. ``thread_id`` falls back to the conversation.
 
         Returns:
             FastSDK job handle. Call ``get_result()`` or ``subscribe`` yourself.
@@ -169,16 +195,16 @@ class SocaityClient(SocaityBackendClient):
 
         client = self.connect(service, details_id=details_id)
         target = _resolve_endpoint(client, endpoint)
-        options = socaity_options
-        if options is None:
-            options = getattr(current_session(), "socaity_options", None)
+        session = current_session()
+        options = socaity_options if socaity_options is not None else getattr(session, "socaity_options", None)
         flags: Dict[str, Any] = {}
-        if options:
-            flags["socaity_options"] = options
-        return client.submit_job(
-            target.path,
-            **_call_params(target, params, flags),
-        )
+        dumped_options = _dump_model(options)
+        if dumped_options:
+            flags["socaity_options"] = dumped_options
+        context = _inherit_context(socaity_context, session)
+        if context is not None:
+            flags["socaity_context"] = context.model_dump(mode="json", exclude_none=True)
+        return client.submit_job(target.path, **_call_params(target, params, flags))
 
     def estimate_price(
         self,

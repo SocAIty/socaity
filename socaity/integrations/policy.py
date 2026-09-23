@@ -19,8 +19,6 @@ from socaity_cli.clients.workflows import WorkflowsClient
 PROGRAMMATIC_ONLY = frozenset({
     DeploymentClient.analyze_deployment,
     DeploymentClient.create_deployment_draft,
-    DeploymentClient.upsert_hf_token,
-    DeploymentClient.list_hf_tokens,
     DeploymentClient.get_registry_usage,
     DeploymentClient.get_push_credentials,
     DeploymentClient.confirm_image_pushed,
