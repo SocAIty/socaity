@@ -58,8 +58,13 @@ def test_query_services_slim():
     assert slim.id and slim.slug
     assert not slim.details, "list view should be slim (no relations)"
 
-    full = client.get_service(slim.slug)
-    assert full.details and full.details[0].provider
+    full = client.get_service(slim.slug, expand=["details.deployment", "details.connector"])
+    assert full.details
+    binding = full.details[0]
+    if binding.execution == "external":
+        assert binding.connector and binding.connector.address
+    else:
+        assert binding.deployment and binding.deployment.provider
 
 
 def test_get_service_full():

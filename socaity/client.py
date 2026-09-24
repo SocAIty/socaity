@@ -13,6 +13,8 @@ from socaity_schemas.platform import Service, SocaityContext, SocaityOptions
 
 from socaity.core.gateway import gateway_client
 from socaity.core.serialize import serialize_value
+from socaity.core.session import current_session
+
 
 DEFAULT_APIPOD_GATE_URL = "https://api.socaity.ai"
 
@@ -191,8 +193,6 @@ class SocaityClient(SocaityBackendClient):
             FastSDK job handle. Call ``get_result()`` or ``subscribe`` yourself.
             LLM tool conversion waits for the terminal event and serializes it.
         """
-        from socaity.core.session import current_session
-
         client = self.connect(service, details_id=details_id)
         target = _resolve_endpoint(client, endpoint)
         session = current_session()

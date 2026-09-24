@@ -1,9 +1,10 @@
-"""E2E Phase 8: official GitHub connector through catalog, workflow, job.
+"""E2E Phase 8: GitHub connector through catalog, workflow, job.
 
-Connect via ``socaity connect github``, find the row, pin it as a
-``ServiceNode``, run the workflow. Credential names are stored; the child
-job is a normal catalog job on the external details binding. Vault inject
-is Phase 9; this path uses a public GitHub read so no token is required.
+Register the canonical GitHub OpenAPI document, register it again (the platform
+answers ``connector_exists`` with the same service), pin the connector as a
+``ServiceNode`` searching ``socaity_frontend``, run the workflow and check the
+private repository shows up. The child job is a normal catalog job on the
+external details binding and carries the job-floor charge.
 
     python test/test_e2e_github_connector.py
     pytest test/test_e2e_github_connector.py -v -s
@@ -12,24 +13,24 @@ Keys: see ``agentic_utils``.
 """
 from __future__ import annotations
 
-import io
 import sys
 import time
 from pathlib import Path
 from uuid import uuid4
 
-import httpx
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import agentic_utils as env  # noqa: E402  (sets URL defaults before socaity import)
 
-import socaity  # noqa: E402
 from socaity import Session, client  # noqa: E402
-from socaity_cli.cli import main as cli_main  # noqa: E402
+from socaity_cli.errors import BackendApiError  # noqa: E402
 
-SLUG = f"github-e2e-{int(time.time())}"
-SEARCH_Q = "socaity"
+GITHUB_SPEC_URL = (
+    "https://raw.githubusercontent.com/github/rest-api-description/main/"
+    "descriptions/api.github.com/api.github.com.json"
+)
+PRIVATE_REPO = "socaity_frontend"
 
 pytestmark = [
     pytest.mark.skipif(not env.backend_up(), reason=f"backend not reachable at {env.BACKEND}"),
@@ -38,39 +39,23 @@ pytestmark = [
 ]
 
 
-def _wait_gate_route(service_id: str, path: str, timeout_s: float = 45) -> None:
-    """First 404 remounts the binding; later statuses mean the route is live."""
-    url = f"{env.GATE}/services/v1/{service_id}{path}"
-    deadline = time.monotonic() + timeout_s
-    last = None
-    while time.monotonic() < deadline:
-        try:
-            last = httpx.post(url, json={}, timeout=10)
-            if last.status_code != 404:
-                return
-        except httpx.HTTPError as exc:
-            last = exc
-        time.sleep(1)
-    raise AssertionError(f"gate did not mount {url} within {timeout_s}s (last={last})")
-
-
-def _run_cli(*argv: str) -> str:
-    buffer = io.StringIO()
-    stdout, sys.stdout = sys.stdout, buffer
+def _register(source: str) -> tuple[str, bool]:
+    """Return ``(service_id, already_existed)`` for one register call."""
     try:
-        cli_main(list(argv))
-    finally:
-        sys.stdout = stdout
-    return buffer.getvalue()
+        service = client.register_connector(source)
+    except BackendApiError as exc:
+        assert exc.status_code == 409 and exc.code == "connector_exists", (exc.status_code, exc.code, str(exc))
+        return exc.detail["service"]["id"], True
+    assert service is not None, f"register rejected {source}"
+    return service.id, False
 
 
-def _connector_doc(service) -> dict:
+def _connector_doc(service, endpoint) -> dict:
     details = service.details[0]
-    endpoint = next(row for row in service.endpoints if row.path == "/search/repositories")
     return {
         "id": f"wf_{uuid4()}",
-        "title": f"GitHub connector {SLUG}",
-        "goal": "Search public repositories through the GitHub connector.",
+        "title": "GitHub connector e2e",
+        "goal": f"Find the private {PRIVATE_REPO} repository through the GitHub connector.",
         "nodes": [
             {"id": "nd_input", "kind": "builtin", "title": "input"},
             {
@@ -80,10 +65,10 @@ def _connector_doc(service) -> dict:
                 "service_id": service.id,
                 "endpoint_id": endpoint.id,
                 "details_id": details.id,
-                "connectors_id": details.connector.id if details.connector else None,
+                "connectors_id": details.connector.id,
                 "path": endpoint.path,
                 "specification_hash": details.specification_hash,
-                "inputs": {"q": SEARCH_Q},
+                "inputs": {"q": PRIVATE_REPO},
             },
             {"id": "nd_output", "kind": "builtin", "title": "output"},
         ],
@@ -94,40 +79,54 @@ def _connector_doc(service) -> dict:
     }
 
 
+def _child_job(wf_id: str, parent_job_id: str, details_id: str):
+    for row in client.query_workflow_runs(wf_id):
+        live = client.get_workflow_run(row.id, expand=["traces"]) or row
+        for trace in live.traces or []:
+            job_id = getattr(trace, "job_id", None)
+            if job_id and job_id != parent_job_id:
+                job = client.get_job(job_id)
+                if job and job.details_id == details_id:
+                    return job
+    return None
+
+
 def run() -> None:
     session = Session(api_key=env.api_key(), backend_url=env.BACKEND)
     with session:
-        env.log("T8.1", f"socaity connect github --slug {SLUG}")
-        output = _run_cli("connect", "github", "--slug", SLUG)
-        env.log("T8.1", output.strip() or "(no cli stdout)")
-        assert "Connected" in output, output
-        assert SLUG in output, output
-        assert "GitHubAuth" in output, output
+        env.log("T8.1", f"register {GITHUB_SPEC_URL}")
+        service_id, existed = _register(GITHUB_SPEC_URL)
+        env.log("T8.1", f"service_id={service_id} already_existed={existed}")
 
-        hits = client.query_services(q=SLUG, filters=["kind:eq:connector"], limit=10)
-        slugs = [row.slug for row in hits]
-        env.log("T8.2", f"catalog hits={slugs}")
-        assert any(row.slug == SLUG for row in hits), slugs
+        again_id, again_existed = _register(GITHUB_SPEC_URL)
+        env.log("T8.1", f"second register service_id={again_id} already_existed={again_existed}")
+        assert again_existed, "second register of the same OpenAPI document created a new connector"
+        assert again_id == service_id, (again_id, service_id)
 
-        service = client.get_service(SLUG, expand=["details.contract", "endpoints", "credential_requirements"])
-        assert service is not None, f"get_service missed {SLUG}"
-        assert service.kind == "connector", service.kind
-        assert service.details, "connector has no details binding"
+        hits = client.query_services(q="github", filters=["kind:eq:connector"], limit=50, mine=True)
+        env.log("T8.2", f"catalog hits={[row.slug for row in hits]}")
+        assert service_id in {row.id for row in hits}, "connector missing from catalog search"
+
+        service = client.get_service(
+            service_id,
+            expand=["details.contract", "details.connector", "endpoints", "credential_requirements"],
+        )
+        assert service is not None and service.kind == "connector", service
         details = service.details[0]
         assert details.execution == "external", details.execution
         assert details.deployment is None, "connector must not have a hosting row"
-        names = {row.name for row in (service.credential_requirements or [])}
-        env.log("T8.2", f"details_id={details.id} credentials={sorted(names)}")
-        assert "GitHubAuth" in names, names
-        paths = {row.path for row in service.endpoints}
-        assert "/search/repositories" in paths, paths
-        env.log("T8.2", "waiting for gate to mount the connector")
-        _wait_gate_route(service.id, "/search/repositories")
+        assert details.connector and details.connector.id, "connector row missing"
+        assert details.spec_url == GITHUB_SPEC_URL, details.spec_url
+        endpoint = next((row for row in service.endpoints if row.path == "/search/repositories"), None)
+        assert endpoint is not None, "GET /search/repositories missing from connector endpoints"
+        env.log(
+            "T8.2",
+            f"details_id={details.id} connectors_id={details.connector.id} "
+            f"credentials={sorted(row.name for row in service.credential_requirements or [])}",
+        )
 
         saved = client.upsert_workflow(
-            _connector_doc(service),
-            slug=f"wf-{SLUG}",
-            message="github connector e2e",
+            _connector_doc(service, endpoint), slug=f"wf-github-e2e-{int(time.time())}", message="github e2e",
         )
         assert saved and saved.workflow, "workflow upsert failed"
         wf_id = saved.workflow.id
@@ -138,54 +137,19 @@ def run() -> None:
         assert finished.get("status") == "finished", finished
         result = finished.get("result") or {}
         assert result.get("status") == "completed", result
-
         outputs = result.get("outputs") or {}
-        repo_out = outputs.get("nd_gh") or outputs.get("nd_output") or result
-        blob = str(repo_out).lower()
-        env.log("T8.3", f"output={str(repo_out)[:400]}")
-        assert SEARCH_Q in blob or "total_count" in blob or "items" in blob or "git" in blob, repo_out
+        search = outputs.get("nd_gh") or outputs.get("nd_output") or {}
+        names = [item.get("name") for item in (search.get("items") or []) if isinstance(item, dict)]
+        env.log("T8.3", f"total_count={search.get('total_count')} names={names[:10]}")
+        assert PRIVATE_REPO in names, f"private repository {PRIVATE_REPO} not in search results: {names[:10]}"
 
-        child = None
-        runs = client.query_workflow_runs(wf_id)
-        for row in runs:
-            live = client.get_workflow_run(row.id, expand=["traces"]) or row
-            for trace in live.traces or []:
-                job_id = getattr(trace, "job_id", None)
-                if job_id and job_id != finished.get("job_id"):
-                    child = client.get_job(job_id)
-                    if child:
-                        break
-            if child:
-                break
-        if child is None:
-            jobs = client.query_jobs(filters=[f"details_id:eq:{details.id}"], expand=["billing"], limit=10)
-            done = ("finished", "completed", "success")
-            child = next(
-                (job for job in jobs if (job.status or "").lower() in done),
-                next((job for job in jobs if job.details_id == details.id), None),
-            )
-        assert child is not None, "connector child job was not enqueued"
-        env.log("T8.4", f"child job={child.id} status={child.status} details_id={child.details_id}")
-        assert child.details_id == details.id, (child.details_id, details.id)
-
-        deadline = time.monotonic() + 60
-        billed = None
-        while time.monotonic() < deadline:
-            billed = client.get_job(child.id, expand=["billing"])
-            status = ((billed.status if billed else child.status) or "").lower()
-            if status in ("finished", "completed", "success"):
-                break
-            time.sleep(2)
-        else:
-            raise AssertionError(f"connector child job {child.id} did not finish (last={billed or child})")
-        billing = billed.billing if billed else None
-        env.log("T8.4", f"status={billed.status if billed else None} billing={billing}")
-        assert billing is not None, "job-floor billing missing on connector job"
-        cost = getattr(billing, "cost_amount", None)
-        if cost is None:
-            cost = getattr(billing, "customer_charge_amount", None)
-        assert cost is not None, billing
-        assert cost >= 0, cost
+        child = _child_job(wf_id, finished.get("job_id"), details.id)
+        assert child is not None, "connector child job was not recorded on the workflow run"
+        billed = client.get_job(child.id, expand=["billing"])
+        env.log("T8.4", f"child job={child.id} status={billed.status} billing={billed.billing}")
+        assert (billed.status or "").lower() in ("finished", "completed", "success"), billed.status
+        assert billed.billing is not None, "job-floor billing missing on connector job"
+        assert billed.billing.cost_amount is not None and billed.billing.cost_amount >= 0, billed.billing
     env.log("T8", "PASS")
 
 
