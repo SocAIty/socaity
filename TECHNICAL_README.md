@@ -21,8 +21,8 @@ explicit ``Client(...)``, or ``with Session(api_key=...)``.
 | ``from socaity import model`` | none (import generated stub) | ``FastClient`` subclass |
 | ``client`` / ``Client(...)`` | active session proxy, or an explicit credential-bound handle | ``Client`` |
 | ``Session(...)`` | bind credentials for a block; ``with Session(api_key=...)`` | ``Session`` |
-| ``Client.query_services(...)`` | one catalog fetch (slim, sparse fieldset) | ``List[AIService]`` |
-| ``Client.get_service(id_or_name)`` | one catalog fetch (full) | ``AIService`` |
+| ``Client.query_services(...)`` | one catalog fetch (slim, sparse fieldset) | ``List[Service]`` |
+| ``Client.get_service(id_or_slug)`` | one catalog fetch (full) | ``Service`` |
 | ``Client.query_models(...)`` / ``get_model(...)`` | catalog fetch | ``List[AIModel]`` / ``AIModel`` |
 | ``Client.query_categories()`` | catalog fetch | ``List[ServiceCategory]`` |
 | ``Client.list_pricing_rules()`` | catalog fetch | pricing rule rows |
@@ -54,12 +54,18 @@ Module-level CLI: `socaity login`, `install`, `update`, `list`, `search`, `jobs`
 `ChatSocaity` (LangChain) forwards OpenAI ``tools``, ``tool_choice``, and
 ``parallel_tool_calls`` to the catalog chat service. Native ``tool_calls`` on
 blocking and streamed turns drive ``create_agent`` tool loops and HITL interrupts.
+``image_url`` parts stay on the message. Remote http(s) URLs are sent as the
+VLM ``images`` param so current qwen pods download them. Data URIs stay inline.
 
 ### Catalog reads: slim by default
 
-List calls request a sparse fieldset (`fields=id,name,display_name,...`) and optional
-`filter` / `q`. Results are schema models (`AIService`, `Job`, …), not lazy proxies.
-Call ``get_service`` with expand when you need deployments, endpoints, or contracts.
+List calls request a sparse fieldset (`fields=id,slug,display_name,...`) and optional
+`filter` / `q`. Results are schema models (`Service`, `Job`, …), not lazy proxies.
+Call ``get_service`` with expand (``details.contract``, ``endpoints``) when you need the
+runtime bindings (``details[]``, each optionally carrying a hosting ``deployment``) or contracts.
+``run_service(..., details_id=details[0].id)`` pins the spec. Compute URL is
+``details[0].deployment``; connector URL is ``details[0].connector``. Connectors are catalog
+services with ``kind == "connector"``; they run like any other service.
 
 ## Mental Model
 
@@ -67,13 +73,13 @@ Think of socaity as two connected subsystems:
 
 1. **Catalog layer**
    - Talks to `webapi.socaity.ai`: `v1/catalog/*` for discovery (list, get, search), `v1/sdk/*` for install/update payloads
-   - Persists `AIService` objects (from `socaity_schemas.platform`) in a local cache
+   - Persists `Service` objects (from `socaity_schemas.platform`) in a local cache, keyed for updates by `details_id` + `specification_hash`
    - Generates `FastClient` subclasses under `socaity/sdk/services/`
    - Wires namespace `__init__.py` files so imports resolve cleanly
 
 2. **Runtime layer (delegated to fastSDK)**
    - Generated stubs call `FastClient.submit_job(endpoint, **params)` → `APISeex`
-   - `Client.run_agent` / `run_workflow` build a local gateway `AIService` (`core/gateway.py`) and call `FastClient.submit_job` → the same `APISeex`
+   - `Client.run_agent` / `run_workflow` build a local gateway `Service` (`core/gateway.py`) and call `FastClient.submit_job` → the same `APISeex`
    - Jobs poll, cancel, stream, and notify subscribers through fastSDK's `JobRuntime` + meseex pipeline
    - Media results deserialize via `media-toolkit`
 
@@ -108,8 +114,7 @@ socaity/
   __main__.py                     # python -m socaity (delegates to socaity_cli.cli)
   core/
     catalog.py                    # public list/get/search/connect functions
-    gateway.py                    # local AIService for agent/workflow factory paths
-    lazy.py                       # LazyAIService relation hydration
+    gateway.py                    # local Service for agent/workflow factory paths
     socaity_service_registry.py   # catalog sync + stub generation
     session.py                    # ContextVar credentials + inference origin
   sdk/                            # runtime-generated (mostly empty in git)
@@ -408,4 +413,3 @@ For context only. These are roadmap items, not current API:
 - Job cost/runtime estimation endpoints
 - Standalone CLI package imported by socaity
 - Agentic workflow execution in the framework layer
-- Connectors as catalog services (`Service.kind=connector`). CLI connect (GitHub seed). `AIService` → `Service`. See `socaity_backend/agents/SPAINE/connectors_concept.md`.

@@ -17,7 +17,7 @@ from typing import Any, AsyncIterator, Dict, Iterator, List, Optional, Union
 from fastsdk import APISeex, FastClient
 from fastsdk.service_access import service_contract
 from socaity_schemas.contract import Endpoint
-from socaity_schemas.platform import AIService
+from socaity_schemas.platform import Service
 
 from socaity import client
 
@@ -28,7 +28,7 @@ class ChatServiceAdapter:
     """One chat-capable platform service, spoken to in OpenAI wire shapes.
 
     Args:
-        service: Service slug, id, URL, ``AIService`` or an existing
+        service: Service slug, id, URL, ``Service`` or an existing
             ``FastClient`` (reused as-is).
         api_key: Socaity API key; falls back to the stored login.
         endpoint_path: Chat endpoint path override. Default: the endpoint
@@ -37,7 +37,7 @@ class ChatServiceAdapter:
 
     def __init__(
         self,
-        service: Union[str, dict, AIService, FastClient],
+        service: Union[str, dict, Service, FastClient],
         api_key: Optional[str] = None,
         endpoint_path: Optional[str] = None,
     ):
@@ -49,7 +49,7 @@ class ChatServiceAdapter:
         self.jobs: List[APISeex] = []
 
     @property
-    def service(self) -> AIService:
+    def service(self) -> Service:
         return self.client.service
 
     # ------------------------------------------------------------------
@@ -62,7 +62,7 @@ class ChatServiceAdapter:
             for endpoint in contract.endpoints:
                 if endpoint.path == endpoint_path:
                     return endpoint
-            raise ValueError(f"Service {self.service.name} has no endpoint {endpoint_path!r}.")
+            raise ValueError(f"Service {self.service.slug} has no endpoint {endpoint_path!r}.")
 
         # Prefer the declared standard schema; VLM chat endpoints subclass the
         # schema (VLMChatRequest) and are found via the conventional /chat path.
@@ -73,7 +73,7 @@ class ChatServiceAdapter:
             if endpoint.path == "/chat":
                 return endpoint
         raise ValueError(
-            f"Service {self.service.name} exposes no chat endpoint "
+            f"Service {self.service.slug} exposes no chat endpoint "
             f"(no {CHAT_SCHEMA_NAME} schema and no /chat path)."
         )
 

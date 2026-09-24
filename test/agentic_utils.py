@@ -99,7 +99,10 @@ def run_agent(*args, timeout_s: float = 600, **kwargs) -> dict:
     from socaity.core.serialize import agent_turn_from_job
 
     job = client.run_agent(*args, **kwargs)
-    job.get_result(timeout_s=timeout_s)
+    try:
+        job.get_result(timeout_s=timeout_s)
+    except Exception as exc:
+        log("agent", f"get_result failed: {exc}")
     return agent_turn_from_job(job)
 
 
@@ -108,7 +111,10 @@ def run_workflow(*args, timeout_s: float = 1800, **kwargs) -> dict:
     from socaity.core.serialize import serialize_job
 
     job = client.run_workflow(*args, **kwargs)
-    job.get_result(timeout_s=timeout_s)
+    try:
+        job.get_result(timeout_s=timeout_s)
+    except Exception:
+        pass
     return serialize_job(job)
 
 

@@ -9,43 +9,50 @@ import fastsdk
 from fastsdk.fastClient import FastClient
 from fastsdk.service_access import service_contract
 from socaity_cli import SocaityBackendClient
-from socaity_schemas.platform import AIService
+from socaity_schemas.platform import Service, SocaityContext, SocaityOptions
 
 from socaity.core.gateway import gateway_client
 from socaity.core.serialize import serialize_value
 
+
 DEFAULT_APIPOD_GATE_URL = "https://api.socaity.ai"
 
 
-def _retarget_socaity_deployments(service: AIService, gate_url: str) -> AIService:
-    """Point gateway deployments at this session's gate origin.
+def _retarget_socaity_details(service: Service, gate_url: str) -> Service:
+    """Point gateway bindings (nested ``deployment.address``) at this session's gate origin.
 
     ``install_service`` copies ``APIPOD_GATE_URL`` from the *backend* process.
     A local engines container talking to a backend whose .env still names
     production would otherwise POST nested /chat to api.socaity.ai.
     """
     origin = gate_url.rstrip("/")
-    deployments = []
+    details = []
     changed = False
-    for deployment in service.deployments or []:
-        address = getattr(deployment, "address", None)
+    for binding in service.details or []:
+        deployment = binding.deployment
+        address = deployment.address if deployment is not None else None
+        provider = deployment.provider if deployment is not None else None
         if (
             address is None
             or not getattr(address, "base_url", None)
-            or getattr(deployment, "provider", None) not in (None, "socaity")
+            or provider not in (None, "socaity")
         ):
-            deployments.append(deployment)
+            details.append(binding)
             continue
         if address.base_url.rstrip("/") == origin:
-            deployments.append(deployment)
+            details.append(binding)
             continue
-        deployments.append(
-            deployment.model_copy(
-                update={"address": address.model_copy(update={"base_url": origin})}
+        details.append(
+            binding.model_copy(
+                update={
+                    "deployment": deployment.model_copy(
+                        update={"address": address.model_copy(update={"base_url": origin})}
+                    )
+                }
             )
         )
         changed = True
-    return service.model_copy(update={"deployments": deployments}) if changed else service
+    return service.model_copy(update={"details": details}) if changed else service
 
 
 def _looks_like_direct_source(source: str) -> bool:
@@ -57,7 +64,7 @@ def _resolve_endpoint(client: FastClient, endpoint: Optional[str]):
     """Pick the requested endpoint, or the service's first one when none was named."""
     endpoints = service_contract(client.service).endpoints
     if not endpoints:
-        raise ValueError(f"Service '{client.service.name or client.service.id}' exposes no endpoints.")
+        raise ValueError(f"Service '{client.service.slug or client.service.id}' exposes no endpoints.")
     if endpoint is None:
         return endpoints[0]
 
@@ -67,6 +74,29 @@ def _resolve_endpoint(client: FastClient, endpoint: Optional[str]):
             return candidate
     known = ", ".join(candidate.path for candidate in endpoints)
     raise ValueError(f"Endpoint '{endpoint}' not found. This service exposes: {known}")
+
+
+def _dump_model(raw: Any) -> Optional[dict]:
+    """Dict or pydantic model to a JSON object. Empty stays empty."""
+    if raw is None:
+        return None
+    if isinstance(raw, dict):
+        return raw
+    if hasattr(raw, "model_dump"):
+        return raw.model_dump(mode="json", exclude_none=True)
+    return None
+
+
+def _inherit_context(explicit: Any, session: Any) -> Optional[SocaityContext]:
+    """Explicit context wins per field. Thread falls back to the session conversation."""
+    base = _dump_model(getattr(session, "socaity_context", None)) or {}
+    over = _dump_model(explicit) or {}
+    merged = {**base, **{key: value for key, value in over.items() if value is not None}}
+    if not merged.get("thread_id"):
+        conversation_id = getattr(session, "conversation_id", None)
+        if conversation_id:
+            merged["thread_id"] = conversation_id
+    return SocaityContext.model_validate(merged) if merged else None
 
 
 def _call_params(endpoint, params: Optional[dict], flags: Dict[str, Any]) -> dict:
@@ -97,15 +127,23 @@ class SocaityClient(SocaityBackendClient):
         self.gate_url = (gate_url or env_gate or DEFAULT_APIPOD_GATE_URL).rstrip("/")
         self.materialize_media = materialize_media
 
-    def connect(self, source: Union[str, dict, AIService, Path], api_key: Optional[str] = None, **kwargs) -> FastClient:
+    def connect(
+        self,
+        source: Union[str, dict, Service, Path],
+        api_key: Optional[str] = None,
+        details_id: Optional[str] = None,
+        **kwargs,
+    ) -> FastClient:
         """Resolve a platform service or spec source into a FastSDK client.
 
         Platform identifiers (id, slug, ``owner/service``) resolve through
         ``install_service``. URLs, spec files, and ``replicate:`` refs go to FastSDK.
 
         Args:
-            source: Service id, name, URL, spec, or ``AIService``.
+            source: Service id, slug, URL, spec, or ``Service``.
             api_key: Override the session credential for this client.
+            details_id: Pin one ``ServiceDetails`` binding; installs that binding
+                instead of the service's primary one.
 
         Returns:
             A credential-bound ``FastClient``.
@@ -113,13 +151,13 @@ class SocaityClient(SocaityBackendClient):
         resolved_key = api_key if api_key is not None else self.api_key
         is_platform = isinstance(source, str) and not _looks_like_direct_source(source)
         if is_platform:
-            item = self.install_service(source)
+            item = self.install_service(details_id or source)
             service_data = (item or {}).get("service")
             if not service_data:
-                raise RuntimeError(f"Platform could not resolve service '{source}'.")
-            source = AIService(**service_data)
+                raise RuntimeError(f"Platform could not resolve service '{details_id or source}'.")
+            source = Service(**service_data)
             if self._gate_url_explicit:
-                source = _retarget_socaity_deployments(source, self.gate_url)
+                source = _retarget_socaity_details(source, self.gate_url)
         kwargs.setdefault("materialize_media", self.materialize_media)
         return FastClient(source, api_key=resolved_key, temporary=False, **kwargs)
 
@@ -128,40 +166,45 @@ class SocaityClient(SocaityBackendClient):
         service: str,
         endpoint: Optional[str] = None,
         params: Optional[dict] = None,
-        socaity_options: Optional[dict] = None,
+        socaity_options: Optional[Union[SocaityOptions, dict]] = None,
+        details_id: Optional[str] = None,
+        socaity_context: Optional[Union[SocaityContext, dict]] = None,
     ) -> fastsdk.APISeex:
         """Submit a catalog service job. Returns an ``APISeex`` handle immediately.
 
-        Call ``get_service`` (expand ``deployments.contract``) when you do not know
+        Call ``get_service`` (expand ``details.contract``) when you do not know
         the parameter names. ``params`` keys must match that endpoint exactly.
 
         Nested jobs inside an agent or workflow inherit ``socaity_options`` from
         the active session when the caller omits them.
 
         Args:
-            service: Service id, name, ``owner/service``, or model slug.
+            service: Service id, slug, ``owner/service``, or model slug.
             endpoint: Endpoint path such as ``/predictions``. Defaults to the first.
             params: Endpoint arguments, e.g. ``{"prompt": "a cute robot dog"}``.
             socaity_options: Platform retention and visibility. Default: session inherit.
+            details_id: Pinned ``ServiceDetails`` binding (``details[0].id`` from
+                ``get_service``). Default: the service's primary binding.
+            socaity_context: Workflow, node, thread, and run-once slot names.
+                Default: session inherit. ``thread_id`` falls back to the conversation.
 
         Returns:
             FastSDK job handle. Call ``get_result()`` or ``subscribe`` yourself.
             LLM tool conversion waits for the terminal event and serializes it.
         """
         from socaity.core.session import current_session
-
-        client = self.connect(service)
+        client = self.connect(service, details_id=details_id)
         target = _resolve_endpoint(client, endpoint)
-        options = socaity_options
-        if options is None:
-            options = getattr(current_session(), "socaity_options", None)
+        session = current_session()
+        options = socaity_options if socaity_options is not None else getattr(session, "socaity_options", None)
         flags: Dict[str, Any] = {}
-        if options:
-            flags["socaity_options"] = options
-        return client.submit_job(
-            target.path,
-            **_call_params(target, params, flags),
-        )
+        dumped_options = _dump_model(options)
+        if dumped_options:
+            flags["socaity_options"] = dumped_options
+        context = _inherit_context(socaity_context, session)
+        if context is not None:
+            flags["socaity_context"] = context.model_dump(mode="json", exclude_none=True)
+        return client.submit_job(target.path, **_call_params(target, params, flags))
 
     def estimate_price(
         self,
@@ -172,7 +215,7 @@ class SocaityClient(SocaityBackendClient):
         """Estimate price and runtime of a job before running it.
 
         Args:
-            service: Service id, name, or ``owner/service``.
+            service: Service id, slug, or ``owner/service``.
             endpoint: Endpoint path. Defaults to the service's first endpoint.
             params: The arguments you intend to pass to ``run_service``.
 
@@ -203,7 +246,7 @@ class SocaityClient(SocaityBackendClient):
         """Submit one agent turn to ``POST /v1/agents/{id}/chat``.
 
         Args:
-            agent: Agent service id, name, or ``owner/service``.
+            agent: Agent service id, slug, or ``owner/service``.
             message: Convenience single user message; appended to ``messages``.
             messages: Full ChatCompletion message list for the turn.
             thread_id: Conversation thread; reuse it to continue or resume.

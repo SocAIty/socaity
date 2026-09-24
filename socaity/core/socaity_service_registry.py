@@ -8,7 +8,7 @@ from apipod_registry import Registry
 from apipod_registry.service_registry.file_system_store import FileSystemStore
 from apipod_registry.utils.normalization import normalize_name_for_py
 from fastsdk import generate_stub
-from socaity_schemas.platform import AIService
+from socaity_schemas.platform import Service
 
 IMPORT_PATTERN = re.compile(
     r"^from\s+socaity\.sdk\.services\.(\w+)\s+import\s+(\w+)(?:\s+as\s+(\w+))?$"
@@ -59,7 +59,7 @@ class SocaityServiceRegistry(Registry):
     # ---- Public API ----
 
     def install_service(self, service_name_or_id: str) -> None:
-        """Install a service by name, UUID, or 'user/service' identifier."""
+        """Install a service by slug, UUID (service or details), or 'user/service' identifier."""
         item = self._backend.install_service(service_name_or_id)
         if not item:
             raise RuntimeError(
@@ -83,7 +83,7 @@ class SocaityServiceRegistry(Registry):
         if not force and not self._is_cache_stale():
             return
 
-        items = self._backend.get_service_updates(self._deployment_version_index())
+        items = self._backend.get_service_updates(self._details_version_index())
         if not items:
             return
 
@@ -109,7 +109,7 @@ class SocaityServiceRegistry(Registry):
 
     @staticmethod
     def _resolve_namespace(
-        service: AIService,
+        service: Service,
         is_official: bool,
         creator_display_name: str,
         provider: Optional[str] = None,
@@ -120,7 +120,7 @@ class SocaityServiceRegistry(Registry):
         the display name already looks like ``org/model`` (e.g. Replicate). User
         deploys on RunPod/etc. with a plain title go under ``community/{creator}``.
         """
-        display_name = service.display_name or service.name or service.id
+        display_name = service.display_name or service.slug or service.id
         is_brokered = (
             provider
             and provider.lower() != "socaity"
@@ -143,8 +143,8 @@ class SocaityServiceRegistry(Registry):
         return f"community/{user}", alias
 
     @staticmethod
-    def _derive_class_name(service: AIService, provider: Optional[str] = None) -> str:
-        display_name = service.display_name or service.name or service.id
+    def _derive_class_name(service: Service, provider: Optional[str] = None) -> str:
+        display_name = service.display_name or service.slug or service.id
         is_brokered = (
             provider
             and provider.lower() != "socaity"
@@ -171,7 +171,7 @@ class SocaityServiceRegistry(Registry):
         class_name = self._derive_class_name(service, provider)
         namespace, alias = self._resolve_namespace(service, is_official, creator_display_name, provider)
 
-        print(f"  Installing {service.display_name or service.name} -> {namespace}/{alias}")
+        print(f"  Installing {service.display_name or service.slug} -> {namespace}/{alias}")
 
         try:
             stub = generate_stub(
@@ -194,10 +194,10 @@ class SocaityServiceRegistry(Registry):
             print(f"  Warning: cache write failed for {service.id}: {e}")
 
     def _handle_deletion(self, item: dict) -> None:
-        deployment_id = item.get("deployment_id")
+        details_id = item.get("details_id")
         message = item.get("message", "")
 
-        service = self._find_installed_by_deployment(deployment_id) if deployment_id else None
+        service = self._find_installed_by_details(details_id) if details_id else None
         if not service:
             # Deletion without an installed counterpart: only a message, no file to remove.
             print(f"  Delete notice: {message}")
@@ -211,7 +211,7 @@ class SocaityServiceRegistry(Registry):
         module_name = normalize_name_for_py(service.id)
         service_file = self.SERVICES_DIR / f"{module_name}.py"
 
-        print(f"  Deleting {service.display_name or service.name} from {namespace}")
+        print(f"  Deleting {service.display_name or service.slug} from {namespace}")
 
         if service_file.exists():
             service_file.unlink()
@@ -310,29 +310,29 @@ class SocaityServiceRegistry(Registry):
 
     # ---- Misc helpers ----
 
-    def _deployment_version_index(self) -> Dict[str, str]:
-        """{deployment_id: specification_hash} of every installed service."""
+    def _details_version_index(self) -> Dict[str, str]:
+        """{details_id: specification_hash} of every installed service binding."""
         index: Dict[str, str] = {}
         for service in self.service_store.list_all():
-            for deployment in service.deployments:
-                if deployment.id:
-                    index[deployment.id] = deployment.specification_hash or ""
+            for details in service.details:
+                if details.id:
+                    index[details.id] = details.specification_hash or ""
         return index
 
-    def _find_installed_by_deployment(self, deployment_id: str) -> Optional[AIService]:
+    def _find_installed_by_details(self, details_id: str) -> Optional[Service]:
         for service in self.service_store.list_all():
-            if any(d.id == deployment_id for d in service.deployments):
+            if any(d.id == details_id for d in service.details):
                 return service
         return None
 
     @staticmethod
-    def _extract_service(item: dict) -> Optional[AIService]:
+    def _extract_service(item: dict) -> Optional[Service]:
         data = item.get("service")
         if not data:
             print(f"  No service in item: {item.get('message', '')}. Skipping.")
             return None
         if isinstance(data, dict):
-            return AIService(**data)
+            return Service(**data)
         return data
 
     @staticmethod

@@ -392,7 +392,7 @@ def _wire_content(content) -> Any:
     return parts
 
 
-def _image_url_parts(content: Any) -> List[Dict[str, Any]]:
+def _image_url_parts(content: Any, *, remote: bool = True, inline: bool = True) -> List[Dict[str, Any]]:
     """OpenAI ``image_url`` / ``image`` blocks already on a message."""
     if not isinstance(content, list):
         return []
@@ -404,20 +404,23 @@ def _image_url_parts(content: Any) -> List[Dict[str, Any]]:
             url = _image_url(block)
         except ValueError:
             continue
-        if url and _is_inline_image_url(url):
+        if not url:
+            continue
+
+
+        _is_inline_image_url = url.startswith("data:image/")
+        _is_remote_image_url = url.startswith(("http://", "https://"))
+        if (_is_inline_image_url and inline) or (_is_remote_image_url and remote):
             parts.append({"type": "image_url", "image_url": {"url": url}})
     return parts
 
 
-def _is_inline_image_url(url: str) -> bool:
-    """vLLM rejects remote http(s) ``image_url`` parts (HTTP 400). Data URIs only."""
-    return url.startswith("data:image/")
-
-
 def _coerce_message_content(messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Normalize content; keep inline ``image_url`` data URIs for VLMs.
+    """Normalize content. Keep ``image_url`` parts (data URI or http(s)).
 
-    Remote http(s) image URLs stay as text. vLLM returns HTTP 400 on them.
+    Catalog ``/chat`` is ChatCompletionRequest: remote URLs stay on the
+    message. APIPod inlines them before vLLM. Do not send a top-level
+    ``images`` field; the gate rejects it as extra.
     """
     coerced = []
     for message in messages:
@@ -465,14 +468,6 @@ def _content_text(content: Any) -> str:
                 parts.append(block)
             elif isinstance(block, dict):
                 if block.get("type") in ("image", "image_url"):
-                    try:
-                        url = _image_url(block)
-                    except ValueError:
-                        url = ""
-                    if url and not _is_inline_image_url(url):
-                        if parts:
-                            parts.append(" ")
-                        parts.append(url)
                     continue
                 parts.append(block.get("text") or block.get("content") or "")
         return "".join(parts)
