@@ -99,12 +99,18 @@ def _inherit_context(explicit: Any, session: Any) -> Optional[SocaityContext]:
     return SocaityContext.model_validate(merged) if merged else None
 
 
-def _call_params(endpoint, params: Optional[dict], flags: Dict[str, Any]) -> dict:
-    """Merge caller params with job flags the endpoint actually accepts."""
-    call = dict(params or {})
-    accepted = {parameter.name for parameter in endpoint.parameters}
-    call.update({name: value for name, value in flags.items() if name in accepted})
-    return call
+def job_flags(socaity_options: Any = None, socaity_context: Any = None) -> Dict[str, Any]:
+    """Platform flags for a nested job. Explicit values win; the active session fills the rest."""
+    from socaity.core.session import current_session
+    session = current_session()
+    flags: Dict[str, Any] = {}
+    options = _dump_model(socaity_options if socaity_options is not None else getattr(session, "socaity_options", None))
+    if options:
+        flags["socaity_options"] = options
+    context = _inherit_context(socaity_context, session)
+    if context is not None:
+        flags["socaity_context"] = context.model_dump(mode="json", exclude_none=True)
+    return flags
 
 
 class SocaityClient(SocaityBackendClient):
@@ -192,19 +198,9 @@ class SocaityClient(SocaityBackendClient):
             FastSDK job handle. Call ``get_result()`` or ``subscribe`` yourself.
             LLM tool conversion waits for the terminal event and serializes it.
         """
-        from socaity.core.session import current_session
         client = self.connect(service, details_id=details_id)
         target = _resolve_endpoint(client, endpoint)
-        session = current_session()
-        options = socaity_options if socaity_options is not None else getattr(session, "socaity_options", None)
-        flags: Dict[str, Any] = {}
-        dumped_options = _dump_model(options)
-        if dumped_options:
-            flags["socaity_options"] = dumped_options
-        context = _inherit_context(socaity_context, session)
-        if context is not None:
-            flags["socaity_context"] = context.model_dump(mode="json", exclude_none=True)
-        return client.submit_job(target.path, **_call_params(target, params, flags))
+        return client.submit_job(target.path, **{**(params or {}), **job_flags(socaity_options, socaity_context)})
 
     def estimate_price(
         self,
@@ -285,6 +281,7 @@ class SocaityClient(SocaityBackendClient):
         for key, value in (("thread_id", thread_id), ("decisions", decisions), ("workflow", workflow)):
             if value:
                 body[key] = value
+        body.update(job_flags())
 
         if supersedes_job_id:
             prior = self.track_job(supersedes_job_id)

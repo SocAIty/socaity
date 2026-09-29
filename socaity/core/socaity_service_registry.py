@@ -45,6 +45,7 @@ class SocaityServiceRegistry(Registry):
 
     def __init__(self):
         super().__init__(service_store=FileSystemStore(str(self.CACHE_DIR)))
+        self.load_all()
         self._namespace_additions: Dict[str, List[ImportEntry]] = {}
         self._namespace_deletions: Dict[str, Set[str]] = {}
         self._ensure_sdk_structure()

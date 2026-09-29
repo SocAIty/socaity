@@ -297,6 +297,8 @@ with Session(api_key=other_key):
 
 ``Client.connect()`` first resolves platform identifiers (service name, UUID, `user/service`) through the backend, then builds a FastSDK client. URLs, spec paths and `replicate:` references skip the backend and go straight to fastsdk. Use `generate_stub()` to persist a `.py` file instead. The package-level ``client`` forwards to the active session. Explicit ``Client(...)`` handles ignore it.
 
+Inside an engine session (agent turn, workflow run), ``run_service``, ``run_agent`` and the chat adapter attach the session's ``socaity_options`` and ``socaity_context``. Nested jobs inherit the data policy and become children of the engine job (``parent_job_id``).
+
 ## Authentication and credentials
 
 | Mechanism | Storage | Used for |

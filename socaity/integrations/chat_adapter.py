@@ -20,6 +20,7 @@ from socaity_schemas.contract import Endpoint
 from socaity_schemas.platform import Service
 
 from socaity import client
+from socaity.client import job_flags
 
 CHAT_SCHEMA_NAME = "ChatCompletionRequest"
 
@@ -82,8 +83,12 @@ class ChatServiceAdapter:
     # ------------------------------------------------------------------
 
     def submit(self, request: Dict[str, Any]) -> APISeex:
-        """Submit one chat request as a platform job and record the handle."""
-        job = self.client.submit_job(self.endpoint.path, **self._job_kwargs(request))
+        """Submit one chat request as a platform job and record the handle.
+
+        Session lineage rides along, so a call inside an agent turn or workflow
+        run becomes a child job of it.
+        """
+        job = self.client.submit_job(self.endpoint.path, **{**self._job_kwargs(request), **job_flags()})
         self.jobs.append(job)
         return job
 
