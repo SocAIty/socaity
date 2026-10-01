@@ -9,7 +9,11 @@ import fastsdk
 from fastsdk.fastClient import FastClient
 from fastsdk.service_access import service_contract
 from socaity_cli import SocaityBackendClient
-from socaity_schemas.platform import Service, SocaityContext, SocaityOptions
+from socaity_schemas.platform.catalog.service import Service
+from socaity_schemas.platform.context import (
+    SocaityContext,
+    SocaityOptions,
+)
 
 from socaity.core.gateway import gateway_client
 from socaity.core.serialize import serialize_value

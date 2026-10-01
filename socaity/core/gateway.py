@@ -12,8 +12,11 @@ import hashlib
 from apipod_registry import create_service
 from fastsdk import FastSDK
 from fastsdk.fastClient import FastClient
-from socaity_schemas.contract import Endpoint, ServiceContract
-from socaity_schemas.contract.address import SocaityServiceAddress
+from socaity_schemas.public.spec.endpoint import (
+    Endpoint,
+    ServiceContract,
+)
+from socaity_schemas.public.spec.address import SocaityServiceAddress
 
 _GATEWAY_PREFIX = "_socaity_gateway"
 

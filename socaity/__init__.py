@@ -12,11 +12,11 @@ from fastsdk import (
     inspect_service,
     register_service,
 )
-from socaity_schemas.platform import (
-    AIModel,
-    Deployment,
-    Job,
-    PriceEstimate,
+from socaity_schemas.platform.catalog.model import AIModel
+from socaity_schemas.platform.catalog.hosting import Deployment
+from socaity_schemas.platform.jobs.job import Job
+from socaity_schemas.platform.catalog.pricing import PriceEstimate
+from socaity_schemas.platform.catalog.service import (
     Service,
     ServiceCategory,
     ServiceDetails,

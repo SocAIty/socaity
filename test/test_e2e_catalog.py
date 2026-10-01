@@ -140,7 +140,7 @@ def test_search_typo_tolerant():
 
 
 def test_search_models_collection():
-    from socaity_schemas.platform import AIModel
+    from socaity_schemas.platform.catalog.model import AIModel
 
     hits = client.query_models(q="deepseek", limit=5)
     assert hits and all(isinstance(hit, AIModel) for hit in hits)

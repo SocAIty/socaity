@@ -73,7 +73,7 @@ Think of socaity as two connected subsystems:
 
 1. **Catalog layer**
    - Talks to `webapi.socaity.ai`: `v1/catalog/*` for discovery (list, get, search), `v1/sdk/*` for install/update payloads
-   - Persists `Service` objects (from `socaity_schemas.platform`) in a local cache, keyed for updates by `details_id` + `specification_hash`
+   - Persists `Service` objects (from `socaity_schemas.platform.catalog.service`) in a local cache, keyed for updates by `details_id` + `specification_hash`
    - Generates `FastClient` subclasses under `socaity/sdk/services/`
    - Wires namespace `__init__.py` files so imports resolve cleanly
 
@@ -148,7 +148,7 @@ This is the single wiring point. Generated stubs use `service_name_or_id="<servi
 
 ```python
 from socaity import service_registry
-from socaity_schemas import SocaityServiceAddress
+from socaity_schemas.public.spec.address import SocaityServiceAddress
 
 service_registry.update_service(
     client.service_definition.id,
@@ -205,15 +205,18 @@ Shared Pydantic models live in the standalone `socaity-schemas` package. socaity
 
 | Module | Contents |
 |---|---|
-| `socaity_schemas.service_definitions` | `ServiceDefinition`, `EndpointDefinition`, `SocaityServiceAddress`, … |
-| `socaity_schemas.schemas` | OpenAI-compatible request/response pairs (`ChatCompletionRequest`, `SpeechRequest`, …) |
-| `socaity_schemas.transport` | Job envelopes (`SocaityJobResponse`, `JobLinks`) and `StreamingResponse` sentinel |
-| `socaity_schemas.media_files` | `FileModel` wire shape for nested media in schema bodies |
+| `socaity_schemas.public.inference.language` | Chat, completion, embedding, tools, usage, stream chunks |
+| `socaity_schemas.public.inference.generation` | Image, video, audio, vision, 3D (`SpeechRequest`, …) |
+| `socaity_schemas.public.inference.media` | `FileModel` wire shape for nested media |
+| `socaity_schemas.public.providers` | Job envelopes (`SocaityJobResponse`, `JobLinks`) and `StreamingResponse` |
+| `socaity_schemas.public.spec` | `ServiceAddress`, URL helpers, `Endpoint`, `ServiceContract` |
+| `socaity_schemas.platform.catalog` | `Service`, `ServiceDetails`, `AIModel`, hosting, pricing |
 
-socaity re-exports `ServiceDefinition` and `SocaityServiceAddress` at package level. For typed chat/TTS/image payloads, import request models directly:
+socaity re-exports catalog types (`Service`, `ServiceDetails`, `AIModel`, `Deployment`, `ServiceCategory`, `PriceEstimate`) and `Job` at package level. For typed chat or speech payloads, import the request models directly:
 
 ```python
-from socaity_schemas import ChatCompletionRequest, SpeechRequest
+from socaity_schemas.public.inference.language import ChatCompletionRequest
+from socaity_schemas.public.inference.generation import SpeechRequest
 ```
 
 Generated stub methods accept plain Python values or dicts; schema-typed bodies are serialized by fastSDK's request formatter when the endpoint expects JSON.
