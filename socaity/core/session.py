@@ -39,6 +39,7 @@ class Session:
         local_root: User-local sandbox root on the host.
         gate_url: APIPod gate origin for factory jobs (agent chat, workflow run).
         socaity_options: Inherited platform options for nested catalog jobs.
+        socaity_context: Inherited resolver lineage for nested catalog jobs.
     """
 
     def __init__(
@@ -52,6 +53,7 @@ class Session:
         local_root: Optional[Path] = None,
         gate_url: Optional[str] = None,
         socaity_options: Optional[Dict[str, Any]] = None,
+        socaity_context: Optional[Any] = None,
     ):
         self.client = SocaityClient(
             api_key=api_key,
@@ -67,6 +69,7 @@ class Session:
         self.local_root = local_root
         self.gate_url = self.client.gate_url
         self.socaity_options = socaity_options
+        self.socaity_context = socaity_context
         self._tokens: List[Token] = []
 
     def __enter__(self) -> Session:

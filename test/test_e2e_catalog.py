@@ -55,18 +55,23 @@ def test_query_services_slim():
     assert services, "catalog returned no services"
 
     slim = services[0]
-    assert slim.id and slim.name
-    assert not slim.deployments, "list view should be slim (no relations)"
+    assert slim.id and slim.slug
+    assert not slim.details, "list view should be slim (no relations)"
 
-    full = client.get_service(slim.name)
-    assert full.deployments and full.deployments[0].provider
+    full = client.get_service(slim.slug, expand=["details.deployment", "details.connector"])
+    assert full.details
+    binding = full.details[0]
+    if binding.execution == "external":
+        assert binding.connector and binding.connector.address
+    else:
+        assert binding.deployment and binding.deployment.provider
 
 
 def test_get_service_full():
-    name = client.query_services(limit=1)[0].name
-    service = client.get_service(name)
-    assert service.name == name
-    assert service.deployments and service.endpoints
+    slug = client.query_services(limit=1)[0].slug
+    service = client.get_service(slug)
+    assert service.slug == slug
+    assert service.details and service.endpoints
 
 
 def test_pagination_no_overlap():
@@ -79,12 +84,12 @@ def test_pagination_no_overlap():
 def test_query_services_slim_no_relation_keys():
     response = httpx.get(
         BACKEND + "v1/catalog/services",
-        params={"limit": 2, "fields": "id,name"},
+        params={"limit": 2, "fields": "id,slug"},
         timeout=30,
     ).json()
     rows = response["entities"]
     assert rows and all(
-        set(row.keys()) <= {"id", "name"} and "deployments" not in row
+        set(row.keys()) <= {"id", "slug"} and "details" not in row
         for row in rows
     )
 
@@ -92,20 +97,20 @@ def test_query_services_slim_no_relation_keys():
 def test_filter_provider():
     rows = httpx.get(
         BACKEND + "v1/catalog/services",
-        params={"limit": 5, "filter": "provider:eq:replicate", "fields": "id,name"},
+        params={"limit": 5, "filter": "provider:eq:replicate", "fields": "id,slug"},
         timeout=30,
     ).json()
     assert rows, "expected replicate services when filter applied"
 
 
 def test_expand_contract():
-    name = client.query_services(limit=1)[0].name
+    slug = client.query_services(limit=1)[0].slug
     row = httpx.get(
-        BACKEND + f"v1/catalog/services/{name}",
-        params={"expand": "deployments.contract", "fields": "name,deployments(contract)"},
+        BACKEND + f"v1/catalog/services/{slug}",
+        params={"expand": "details.contract", "fields": "slug,details(contract)"},
         timeout=60,
     ).json()
-    assert row["deployments"][0]["contract"]["specification"]
+    assert row["details"][0]["contract"]["specification"]
 
 
 def test_list_and_get_models():
@@ -130,8 +135,8 @@ def test_list_categories():
 
 def test_search_typo_tolerant():
     hits = client.query_services(q="flux schnel", limit=5)
-    names = [item.name for item in hits]
-    assert any("flux-schnell" in name for name in names), names
+    slugs = [item.slug for item in hits]
+    assert any("flux-schnell" in slug for slug in slugs), slugs
 
 
 def test_search_models_collection():
@@ -143,6 +148,7 @@ def test_search_models_collection():
 
 def test_query_latency_budget():
     """List + search should stay under a generous local budget (ms)."""
+    client.query_services(limit=1)
     start = time.perf_counter()
     client.query_services(limit=20)
     list_ms = (time.perf_counter() - start) * 1000
