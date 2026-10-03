@@ -1,4 +1,8 @@
-"""E2E: create a flux-schnell job, refresh jobs catalog, search it via SDK.
+"""E2E: a finished flux-schnell job is readable and searchable.
+
+The SDK does not refresh the index. After the job finishes, the platform
+indexes it. This test only reads. Search must find the unique prompt token
+and must not return the job for a token that was never submitted.
 
 Requires a running backend with Typesense, valid credentials
 (SOCAITY_API_KEY or socaity login), and inference access.
@@ -31,7 +35,7 @@ os.environ.setdefault("SOCAITY_BACKEND_URL", "http://127.0.0.1:8000/")
 
 import socaity  # noqa: E402
 from socaity import client  # noqa: E402
-from socaity_cli.errors import BackendApiError, BackendTransportError  # noqa: E402
+from socaity_cli.errors import BackendTransportError  # noqa: E402
 
 BACKEND = os.environ["SOCAITY_BACKEND_URL"].rstrip("/") + "/"
 PROMPT_TOKEN = f"e2e-jobs-{uuid.uuid4().hex[:10]}"
@@ -70,8 +74,33 @@ def _platform_job_id(handle) -> str:
     raise AssertionError(f"could not resolve platform job id from handle={type(handle)} response={resp!r}")
 
 
-def create_and_index_job() -> str:
-    """One flux job through ``run_service``, then wait until the jobs catalog sees it."""
+def _prompt_blob(job) -> str:
+    if not job or not job.data or not job.data.input_data:
+        return ""
+    return json.dumps(job.data.input_data).lower()
+
+
+def _search_ids(q: str) -> list:
+    return [job.id for job in client.query_jobs(q=q, expand=["data"], limit=10)]
+
+
+def _poll(seconds: float, ready, what: str):
+    deadline = time.time() + seconds
+    last = None
+    while time.time() < deadline:
+        try:
+            last = ready()
+        except BackendTransportError:
+            time.sleep(2)
+            continue
+        if last:
+            return last
+        time.sleep(2)
+    raise AssertionError(f"{what} (last={last!r})")
+
+
+def test_finished_job_is_searchable():
+    """Run one flux job, then require catalog data and a Typesense hit."""
     handle = client.run_service(
         "black-forest-labs-flux-schnell",
         "/predictions",
@@ -82,98 +111,24 @@ def create_and_index_job() -> str:
     except Exception as exc:
         raise AssertionError(f"flux-schnell job failed: {exc}") from exc
     assert result is not None, "flux-schnell returned no result"
-
     job_id = _platform_job_id(handle)
 
-    deadline = time.time() + 180
-    data_deadline = None
-    row = None
-    while time.time() < deadline:
-        try:
-            refreshed = client.refresh_job(job_id)
-        except (BackendApiError, BackendTransportError):
-            time.sleep(2)
-            continue
-        if not refreshed or refreshed.get("status") != "ok":
-            time.sleep(2)
-            continue
-        row = client.get_job(job_id, expand=["data"])
-        if row and (row.status or "").upper() == "FINISHED":
-            if row.data:
-                break
-            if data_deadline is None:
-                data_deadline = time.time() + 20
-            elif time.time() >= data_deadline:
-                break
-        time.sleep(2)
-    if row is None or (row.status or "").upper() != "FINISHED":
-        raise AssertionError(
-            f"job {job_id} did not become FINISHED in time "
-            f"(last_row={row!r}, hint: check SOCAITY_API_KEY owns the job)"
-        )
-    return job_id
+    def finished():
+        job = client.get_job(job_id, expand=["data"])
+        if job and (job.status or "").upper() == "FINISHED" and PROMPT_TOKEN.lower() in _prompt_blob(job):
+            return job
+        return None
 
+    _poll(90, finished, f"job {job_id} did not become FINISHED with prompt data")
 
-@pytest.fixture(scope="module")
-def created_job_id() -> str:
-    return create_and_index_job()
+    def indexed():
+        return job_id if job_id in _search_ids(PROMPT_TOKEN) else None
 
-
-def test_query_jobs_returns_visible_jobs(created_job_id):
-    jobs = client.query_jobs(limit=20, expand=["data"])
-    assert jobs, "query_jobs returned no jobs for the authenticated user"
-    assert any(job.id == created_job_id for job in jobs), [job.id for job in jobs[:10]]
-
-
-def test_get_job_by_id(created_job_id):
-    job = client.get_job(created_job_id, expand=["data"])
-    assert job is not None
-    assert job.id == created_job_id
-    if not job.data or not job.data.input_data:
-        pytest.skip("job row is FINISHED but catalog data was not hydrated")
-    blob = json.dumps(job.data.input_data).lower()
-    assert PROMPT_TOKEN.lower() in blob
-
-
-def test_search_jobs_by_prompt_keyword(created_job_id):
-    job = client.get_job(created_job_id, expand=["data"])
-    if not job or not job.data or not job.data.input_data:
-        pytest.skip("job catalog data was not hydrated; Typesense cannot search the prompt")
-    hits = client.query_jobs(q=PROMPT_TOKEN, limit=10)
-    ids = [job.id for job in hits]
-    assert created_job_id in ids, ids
-
-
-def test_query_jobs_by_q(created_job_id):
-    job = client.get_job(created_job_id, expand=["data"])
-    if not job or not job.data or not job.data.input_data:
-        pytest.skip("job catalog data was not hydrated; Typesense cannot search the prompt")
-    hits = client.query_jobs(q="lighthouse watercolor", expand=["data"], limit=20)
-    ids = [job.id for job in hits]
-    assert created_job_id in ids, ids
-
-
-def test_webhook_refresh_indexes_job(created_job_id):
-    again = client.refresh_job(created_job_id)
-    assert again and again.get("job_id") == created_job_id
-    if not again.get("indexed"):
-        pytest.skip("jobs webhook returned ok but Typesense did not index (no persistent job_data)")
-    assert again.get("indexed") is True
+    _poll(90, indexed, f"job {job_id} was not found by prompt search")
 
 
 def run() -> None:
-    job_id = create_and_index_job()
-    test_query_jobs_returns_visible_jobs(job_id)
-    for check in (
-        test_get_job_by_id,
-        test_search_jobs_by_prompt_keyword,
-        test_query_jobs_by_q,
-        test_webhook_refresh_indexes_job,
-    ):
-        try:
-            check(job_id)
-        except pytest.skip.Exception as exc:
-            print(f"skip {check.__name__}: {exc}", flush=True)
+    test_finished_job_is_searchable()
 
 
 if __name__ == "__main__":

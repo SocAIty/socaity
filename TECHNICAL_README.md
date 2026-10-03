@@ -367,7 +367,7 @@ test/
   bundle/test_core.py      # PyPI publish gate: invariants + stacked platform e2e
   test_e2e_catalog.py      # catalog list/get/search
   test_e2e_files.py        # file_service
-  test_e2e_jobs.py         # one flux via run_service + jobs catalog
+  test_e2e_jobs.py         # one flux via run_service; search finds the prompt
   test_e2e_conversations.py
   test_e2e_agent_hitl.py
   test_e2e_wait_cancel.py

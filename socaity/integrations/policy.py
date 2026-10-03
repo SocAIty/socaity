@@ -27,8 +27,6 @@ PROGRAMMATIC_ONLY = frozenset({
     DeploymentClient.upsert_service_endpoint,
     DeploymentClient.upsert_deployment,
     DeploymentClient.upsert_service,
-    DeploymentClient.order_async_deployment,
-    DeploymentClient.get_deployment_status,
     DeploymentClient.is_dockerhub_repo_accessible,
     DeploymentClient.is_slug_available,
     SdkInstallClient.install_service,
