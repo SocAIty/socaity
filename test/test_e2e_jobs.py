@@ -101,10 +101,9 @@ def _poll(seconds: float, ready, what: str):
 
 def test_finished_job_is_searchable():
     """Run one flux job, then require catalog data and a Typesense hit."""
-    handle = client.run_service(
-        "black-forest-labs-flux-schnell",
-        "/predictions",
-        {"prompt": PROMPT},
+    handle = client.run(
+        "black-forest-labs-flux-schnell/predictions",
+        prompt=PROMPT,
     )
     try:
         result = handle.get_result()

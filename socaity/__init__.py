@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from media_toolkit import MediaFile, ImageFile, VideoFile, AudioFile
@@ -8,7 +7,6 @@ from fastsdk import (
     FastSDK,
     gather_results,
     gather_results_async,
-    generate_stub,
     inspect_service,
     register_service,
 )
@@ -22,47 +20,18 @@ from socaity_schemas.platform.catalog.service import (
     ServiceDetails,
 )
 from socaity.client import SocaityClient
-from socaity.core.socaity_service_registry import SocaityServiceRegistry
-from socaity.core.session import Session, current_session
+from socaity.core.session import ActiveClient, Session, current_session
 
 Client = SocaityClient
 
 if TYPE_CHECKING:
     client: SocaityClient
 else:
-    from socaity.core.session import ActiveClient
     client = ActiveClient()
 
-service_registry = FastSDK().service_registry = SocaityServiceRegistry()
-
-# Extend package search path so namespace imports resolve through sdk/:
-#   socaity.official       -> socaity/sdk/official/
-#   socaity.replicate.X    -> socaity/sdk/replicate/X/
-#   socaity.{username}     -> socaity/sdk/community/{username}/
-_sdk_root = Path(__file__).parent / "sdk"
-__path__.append(str(_sdk_root))
-
-_community_root = _sdk_root / "community"
-if _community_root.exists():
-    __path__.append(str(_community_root))
-
-
-def install(service_name_or_id: str) -> None:
-    """Install a specific service by slug or ID."""
-    if service_name_or_id == "all":
-        service_registry.install_all()
-    else:
-        service_registry.install_service(service_name_or_id)
-
-
-# Re-export official services at top level: from socaity import face2face
-try:
-    from socaity.sdk.official import *  # noqa: F401,F403
-except ImportError:
-    pass
+service_registry = FastSDK().service_registry
 
 __all__ = [
-    "install",
     "service_registry",
     "client",
     "Client",
@@ -79,7 +48,6 @@ __all__ = [
     "FastSDK",
     "gather_results",
     "gather_results_async",
-    "generate_stub",
     "inspect_service",
     "register_service",
     "Service",

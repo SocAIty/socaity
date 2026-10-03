@@ -13,7 +13,6 @@ from socaity_cli.clients.files import FilesClient
 from socaity_cli.clients.jobs import JobsClient
 from socaity_cli.clients.profile import ProfileClient
 from socaity_cli.clients.projects import ProjectsClient
-from socaity_cli.clients.sdk_install import SdkInstallClient
 from socaity_cli.clients.workflows import WorkflowsClient
 
 PROGRAMMATIC_ONLY = frozenset({
@@ -29,8 +28,6 @@ PROGRAMMATIC_ONLY = frozenset({
     DeploymentClient.upsert_service,
     DeploymentClient.is_dockerhub_repo_accessible,
     DeploymentClient.is_slug_available,
-    SdkInstallClient.install_service,
-    SdkInstallClient.get_service_updates,
     ProfileClient.whoami,
     ProfileClient.exchange_cli_auth,
     FilesClient.upload_files,
@@ -39,7 +36,7 @@ PROGRAMMATIC_ONLY = frozenset({
 })
 
 RUN_METHODS = frozenset({
-    SocaityClient.run_service,
+    SocaityClient.run,
     SocaityClient.run_agent,
     SocaityClient.run_workflow,
 })

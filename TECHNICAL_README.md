@@ -2,9 +2,9 @@
 
 ## TL;DR
 
-The socaity SDK is the **catalog and namespace layer** on top of [fastSDK](https://github.com/SocAIty/fastsdk). It syncs model definitions from the socaity.ai platform, generates typed client stubs, and routes imports through a curated model zoo (`official/`, `replicate/`, `community/`).
+The socaity SDK is the **catalog and session layer** on top of [fastSDK](https://github.com/SocAIty/fastsdk). Discovery goes through `v1/catalog/*`. Execution is `Client.run` (catalog services), `Client.run_agent`, `Client.run_workflow`, or `Client.connect(source)` then `submit_job`. Addresses retarget to `{gate}/services/v1/{slug}`.
 
-fastSDK owns transport: HTTP, polling, cancellation, and streaming. socaity owns platform integration: authentication, backend sync, stub codegen, and import paths.
+fastSDK owns transport: HTTP, polling, cancellation, and streaming. socaity owns platform integration: authentication, catalog resolve, and the `run` verb.
 
 For job execution internals, streaming modes, and provider stacks, see [fastSDK TECHNICAL_README](https://github.com/SocAIty/fastsdk/blob/main/TECHNICAL_README.md). For server-side schemas and streaming producers, see [APIPod TECHNICAL_README](https://github.com/SocAIty/APIPod/blob/main/docs/TECHNICAL_README.md).
 
@@ -16,9 +16,7 @@ explicit ``Client(...)``, or ``with Session(api_key=...)``.
 
 | Symbol | Side effects | Returns |
 |---|---|---|
-| ``socaity.install(name)`` | backend fetch + stub write + registry upsert | ``None`` |
-| ``socaity.service_registry`` | shared singleton | ``SocaityServiceRegistry`` |
-| ``from socaity import model`` | none (import generated stub) | ``FastClient`` subclass |
+| ``socaity.service_registry`` | FastSDK in-process registry | ``Registry`` |
 | ``client`` / ``Client(...)`` | active session proxy, or an explicit credential-bound handle | ``Client`` |
 | ``Session(...)`` | bind credentials for a block; ``with Session(api_key=...)`` | ``Session`` |
 | ``Client.query_services(...)`` | one catalog fetch (slim, sparse fieldset) | ``List[Service]`` |
@@ -33,13 +31,12 @@ explicit ``Client(...)``, or ``with Session(api_key=...)``.
 | ``Client.estimate(...)`` / ``get_stats(...)`` / ``get_similar_services(...)`` | ``v1/analytics`` | estimate / stats / similar |
 | ``Client.query_interrupts(...)`` / ``get_interrupt(...)`` | ``v1/interrupts`` HIT inbox (pending by default) | ``List[Interrupt]`` / ``Interrupt`` |
 | ``Client.resolve_interrupt(id, decision, ...)`` | records decision; ``continue_run=True`` enqueues the agent continue job | ``InterruptResolveResult`` |
-| ``Client.connect(source)`` | resolves platform identifiers via backend, then FastSDK | ``FastClient`` |
-| ``Client.run_service(...)`` | catalog job via FastSDK | ``APISeex`` |
-| ``Client.run_agent(...)`` | gateway ``POST /v1/agents/{id}/chat`` | ``APISeex`` |
-| ``Client.run_workflow(...)`` | gateway ``POST /v1/workflows/{id}/run`` | ``APISeex`` |
+| ``Client.connect(source)`` | catalog GET, in-memory Registry, gate address | ``FastClient`` |
+| ``Client.run(target, **params)`` | catalog service job | ``APISeex`` |
+| ``Client.run_agent(...)`` | ``POST /v1/agents/{id}/chat`` | ``APISeex`` |
+| ``Client.run_workflow(...)`` | ``POST /v1/workflows/{id}/run`` | ``APISeex`` |
 | ``Client.track_job(job_id)`` | re-attach to a running gateway job | ``APISeex`` |
 | ``Client.cancel_job(job_id)`` | ``APISeex.cancel`` on an attached job | cancel summary |
-| ``socaity.generate_stub(...)`` | re-export of ``fastsdk.generate_stub`` | ``FastStub`` |
 | ``socaity.APISeex`` | re-export | job handle from every model call |
 
 ``socaity-cli`` owns all backend HTTP. FastSDK and Meseex own job submission,
@@ -49,7 +46,7 @@ polling, streaming, cancellation, and ``APISeex.subscribe``. Eligible
 do not redefine those methods. The workflow engine calls ``Client``
 directly.
 
-Module-level CLI: `socaity login`, `install`, `update`, `list`, `search`, `jobs`, `projects`, `interrupts`, plus optional APIPod deploy commands when `[apipod]` is installed.
+Module-level CLI: `socaity login`, `run`, `list`, `search`, `jobs`, `projects`, `interrupts`, plus optional APIPod deploy commands when `[apipod]` is installed.
 
 `ChatSocaity` (LangChain) forwards OpenAI ``tools``, ``tool_choice``, and
 ``parallel_tool_calls`` to the catalog chat service. Native ``tool_calls`` on
@@ -63,7 +60,7 @@ List calls request a sparse fieldset (`fields=id,slug,display_name,...`) and opt
 `filter` / `q`. Results are schema models (`Service`, `Job`, …), not lazy proxies.
 Call ``get_service`` with expand (``details.contract``, ``endpoints``) when you need the
 runtime bindings (``details[]``, each optionally carrying a hosting ``deployment``) or contracts.
-``run_service(..., details_id=details[0].id)`` pins the spec. Compute URL is
+``run(..., details_id=details[0].id)`` pins the spec. Compute URL is
 ``details[0].deployment``; connector URL is ``details[0].connector``. Connectors are catalog
 services with ``kind == "connector"``; they run like any other service.
 
@@ -72,101 +69,48 @@ services with ``kind == "connector"``; they run like any other service.
 Think of socaity as two connected subsystems:
 
 1. **Catalog layer**
-   - Talks to `webapi.socaity.ai`: `v1/catalog/*` for discovery (list, get, search), `v1/sdk/*` for install/update payloads
-   - Persists `Service` objects (from `socaity_schemas.platform.catalog.service`) in a local cache, keyed for updates by `details_id` + `specification_hash`
-   - Generates `FastClient` subclasses under `socaity/sdk/services/`
-   - Wires namespace `__init__.py` files so imports resolve cleanly
+   - Talks to `webapi.socaity.ai`: `v1/catalog/*` for discovery (list, get, search)
+   - `connect` loads one `Service`, retargets the binding to `{gate}/services/v1/{slug}`, upserts an in-memory Registry
+   - `run` resolves `wf_`/`wr_`, then catalog agent, then compute/connector, then the owner's workflow slug
 
 2. **Runtime layer (delegated to fastSDK)**
-   - Generated stubs call `FastClient.submit_job(endpoint, **params)` → `APISeex`
-   - `Client.run_agent` / `run_workflow` build a local gateway `Service` (`core/gateway.py`) and call `FastClient.submit_job` → the same `APISeex`
+   - `connect` returns `FastClient`. `run` calls `submit_job` or the agent/workflow factory
    - Jobs poll, cancel, stream, and notify subscribers through fastSDK's `JobRuntime` + meseex pipeline
    - Media results deserialize via `media-toolkit`
 
-Generated model imports and `connect()` are two entry points into the same runtime.
+`connect()` and `run()` are the two entry points into the same runtime.
 
 ## Easy Overview
 
 ```
 Platform (webapi.socaity.ai)
-  │  v1/sdk/install_service, v1/sdk/update_package
+  │  v1/catalog/services
   ▼
-SocaityBackendClient
+SocaityClient.get_service / connect / run
   ▼
-SocaityServiceRegistry
-  │  fastsdk.generate_stub(ServiceDefinition) → socaity/sdk/services/{id}.py
-  │  namespace __init__.py updates (official/, replicate/, community/)
+FastClient(details_id) → POST {gate}/services/v1/{slug}/{path}?details_id=
   ▼
-User code: from socaity import speechcraft
-  ▼
-speechcraft().text2voice(...) → APISeex
-  ▼
-fastSDK ApiJobManager → inference at api.socaity.ai
+fastSDK ApiJobManager → APISeex
 ```
 
-On import, `socaity/__init__.py` installs `SocaityServiceRegistry` (FileSystemStore at `socaity/sdk/cache/`) only when FastSDK still has its default registry. Host processes that already assigned a store-backed `Registry` (workers, gate) keep that catalog. `FileSystemStore.load` resolves by id or slug, so SDK stubs do not need an eager `list_all` at `Registry` construction.
+`socaity.service_registry` is FastSDK's in-process registry. `connect` upserts with `persist=False`. Workers do not import this package.
 
 ## Package Layout
 
 ```
 socaity/
-  __init__.py                     # registry swap, namespace path extension, re-exports
+  __init__.py                     # Client, session, FastSDK re-exports
   __main__.py                     # python -m socaity (delegates to socaity_cli.cli)
+  client.py                       # connect + run
   core/
-    catalog.py                    # public list/get/search/connect functions
     gateway.py                    # local Service for agent/workflow factory paths
-    socaity_service_registry.py   # catalog sync + stub generation
     session.py                    # ContextVar credentials + inference origin
-  sdk/                            # runtime-generated (mostly empty in git)
-    services/                     # one FastClient stub per installed service
-    official/                     # re-exports for platform models
-    community/{user}/             # user-published services
-    replicate/{provider}/{user}/    # third-party Replicate models
-    cache/                        # FileSystemStore JSON (gitignored)
+    serialize.py
+  sdk/                            # reserved empty package
+  integrations/                   # MCP / LangChain policy
 ```
-
-PyPI ships the skeleton `sdk/` tree. Installed models appear after `socaity login` and `socaity install …`.
 
 ## Core Building Blocks
-
-### Registry swap (`socaity/__init__.py`)
-
-```python
-from apipod_registry.registry import Registry
-from fastsdk import FastSDK
-from socaity.core.socaity_service_registry import SocaityServiceRegistry
-
-_sdk = FastSDK()
-_host = getattr(_sdk, "_service_registry", None)
-if type(_host) is Registry and _host.service_store is not None:
-    service_registry = _host
-else:
-    service_registry = _sdk.service_registry = SocaityServiceRegistry()
-```
-
-This is the single wiring point. Generated stubs use `service_name_or_id="<service-id>"` and resolve definitions from this registry. Override inference URLs at runtime:
-
-```python
-from socaity import service_registry
-from socaity_schemas.public.spec.address import SocaityServiceAddress
-
-service_registry.update_service(
-    client.service_definition.id,
-    service_address=SocaityServiceAddress(url="https://localhost:8009"),
-)
-```
-
-### `SocaityServiceRegistry`
-
-Extends `apipod_registry.Registry` with platform-aware install/update.
-
-| Method | Backend endpoint | Effect |
-|---|---|---|
-| `install_service(name_or_id)` | `POST v1/sdk/install_service` | fetch definition, generate stub, update namespace |
-| `update_package(force=False)` | `POST v1/sdk/update_package` | sync stale services (15-minute TTL unless forced) |
-| `install_all()` | n/a | not supported by backend yet |
-
-Install/update items carry `action` (`install`, `update`, `delete`), `service_definition`, `is_official`, `third_party_provider`, and creator metadata. The registry routes each model into the correct namespace and calls `FastSDK().generate_stub(...)`, which registers the service and writes the `.py` stub.
 
 ### `SocaityBackendClient`
 
@@ -174,30 +118,7 @@ Sync `httpx` client for **platform metadata only** (not inference). Auth via `SO
 
 Catalog reads use the backend's sparse fieldsets (`select`), relation embedding (`include`) and pagination (`limit`/`offset`).
 
-### Generated stubs
-
-Each installed service becomes a `FastClient` subclass (Jinja2 template from fastSDK):
-
-```python
-class Speechcraft(FastClient):
-    def __init__(self, api_key: str = None):
-        super().__init__(service_name_or_id="<service-id>", api_key=api_key)
-
-    def text2voice(self, text: str, ...) -> APISeex:
-        return self.submit_job("/text2voice", text=text, ...)
-```
-
-Every endpoint method returns `APISeex` immediately. Collect with `get_result()`, stream with `stream()`, or cancel with `cancel()`.
-
-### Namespace routing
-
-| Condition | Import path | Example |
-|---|---|---|
-| `is_official=True` | `socaity.sdk.official` / top-level re-export | `from socaity import speechcraft` |
-| `third_party_provider=replicate` | `socaity.sdk.replicate.{provider}.{user}` | `from socaity.sdk.replicate.black_forest_labs import flux_schnell` |
-| community model | `socaity.sdk.community.{user}` | `from socaity.sdk.community.alice import my_model` |
-
-Alias conflicts within a namespace get suffixed (`flux_schnell_1`).
+Every `run` / `submit_job` returns `APISeex` immediately. Collect with `get_result()`, stream with `stream()`, or cancel with `cancel()`.
 
 ## Schemas (`socaity-schemas`)
 
@@ -219,7 +140,7 @@ from socaity_schemas.public.inference.language import ChatCompletionRequest
 from socaity_schemas.public.inference.generation import SpeechRequest
 ```
 
-Generated stub methods accept plain Python values or dicts; schema-typed bodies are serialized by fastSDK's request formatter when the endpoint expects JSON.
+`run` and `submit_job` accept plain Python values or dicts; schema-typed bodies are serialized by fastSDK's request formatter when the endpoint expects JSON.
 
 ## Streaming
 
@@ -231,13 +152,13 @@ Three modes (same as fastSDK):
 2. **Raw binary** — e.g. `SpeechRequest(stream=True)` streams audio bytes
 3. **Job + stream link** — queued serverless jobs expose `links.stream`; poll `/status` or read the live stream
 
-### Usage from socaity models
+### Usage from socaity
 
 ```python
-from socaity.sdk.replicate.deepseek_ai import deepseek_v3
+from socaity import client
 from fastsdk.service_interaction.response.sse_assembly import chunk_text
 
-job = deepseek_v3()(messages=[{"role": "user", "content": "Hello"}], stream=True)
+job = client.run("deepseek-v3", messages=[{"role": "user", "content": "Hello"}], stream=True)
 
 # Option A: iterate live
 for chunk in job.stream():
@@ -298,16 +219,16 @@ with Session(api_key=other_key):
     client.query_categories()
 ```
 
-``Client.connect()`` first resolves platform identifiers (service name, UUID, `user/service`) through the backend, then builds a FastSDK client. URLs, spec paths and `replicate:` references skip the backend and go straight to fastsdk. Use `generate_stub()` to persist a `.py` file instead. The package-level ``client`` forwards to the active session. Explicit ``Client(...)`` handles ignore it.
+``Client.connect()`` resolves platform identifiers through the catalog, retargets the binding to the gate, and returns a FastClient. URLs, spec paths and `replicate:` references skip the backend and go straight to fastsdk. The package-level ``client`` forwards to the active session. Explicit ``Client(...)`` handles ignore it.
 
-Inside an engine session (agent turn, workflow run), ``run_service``, ``run_agent`` and the chat adapter attach the session's ``socaity_options`` and ``socaity_context``. Nested jobs inherit the data policy and become children of the engine job (``parent_job_id``).
+Inside an engine session (agent turn, workflow run), ``run`` and the chat adapter attach the session's ``socaity_options`` and ``socaity_context``. Nested jobs inherit the data policy and become children of the engine job (``parent_job_id``).
 
 ## Authentication and credentials
 
 | Mechanism | Storage | Used for |
 |---|---|---|
 | `SOCAITY_API_KEY` env | n/a | inference + backend |
-| `socaity login` | `~/.config/socaity/credentials.json` | backend install/update |
+| `socaity login` | `~/.config/socaity/credentials.json` | backend + run |
 | Per-client `api_key=` | n/a | overrides env for that client |
 
 Legacy token migration from `~/.apipod/token` is handled in `socaity_cli.credentials`.
@@ -315,18 +236,16 @@ Legacy token migration from `~/.apipod/token` is handled in `socaity_cli.credent
 ## CLI
 
 The `socaity` command lives in the separate **socaity-cli** package (a hard dependency
-of this SDK). It bundles login, catalog browsing, and APIPod deployment commands with
-minimal dependencies (httpx + socaity-schemas). `socaity install` / `socaity update`
-delegate back into `socaity.core.socaity_service_registry` via socaity-cli's
-`requires("socaity")` optional-dependency guard; `scan` / `build` / `start` delegate
+of this SDK). It bundles login, catalog browsing, `socaity run`, and APIPod deployment
+commands with minimal dependencies (httpx + socaity-schemas). `socaity run` delegates
+into `SocaityClient.run` via `requires("socaity")`; `scan` / `build` / `start` delegate
 to `apipod` the same way. `SocaityBackendClient` and credentials handling are imported
 from `socaity_cli`.
 
 | Command | Needs | Notes |
 |---|---|---|
 | `socaity login` | - | browser flow via `v1/cli-auth/start` |
-| `socaity install SERVICE` | socaity | requires login; calls `install_service` |
-| `socaity update` | socaity | syncs installed services |
+| `socaity run TARGET` | socaity | catalog service job |
 | `socaity list services\|models` | - | catalog listing, `--category`, `--family`, `--limit` |
 | `socaity search QUERY` | - | typo-tolerant fuzzy search over services and models |
 | `socaity scan/build/start` | apipod | delegates to the apipod CLI |
@@ -343,22 +262,18 @@ The socaity CLI does not duplicate fastSDK's `inspect` / `call` / `registry` com
 | **fastSDK** | Client runtime: jobs, polling, streaming, stub factory |
 | **media-toolkit** | Media I/O on results |
 | **meseex** | Async job orchestration inside fastSDK |
-| **socaity SDK** | Platform catalog sync + generated import paths |
+| **socaity SDK** | Catalog resolve + `client.run` |
 
 Data flow for a catalog model:
 
 1. APIPod service deployed on socaity.ai publishes OpenAPI + schemas
-2. Platform stores `ServiceDefinition` (socaity-schemas)
-3. `socaity install` fetches definition, generates stub, updates namespace
-4. User imports model; fastSDK executes against `api.socaity.ai`
+2. Platform stores `Service` + `ServiceDetails` (socaity-schemas)
+3. `client.run("slug/path", **params)` loads the catalog, retargets to the gate
+4. fastSDK executes against `{gate}/services/v1/{slug}`
 
-## Cache and Updates
+## Cache
 
-- **Cache path:** `socaity/sdk/cache/` (`FileSystemStore`)
-- **TTL:** 15 minutes (`CACHE_TTL_MINUTES`); `update_package()` no-ops when fresh
-- **Force refresh:** `service_registry.force_update_package()` or `socaity update` after manual cache delete
-
-Re-running install for the same service upserts (same service ID from backend). Stub files and namespace imports are rewritten.
+The gate holds a 24h LRU of catalog rows and prepared materializers. `catalog.changed` evicts. The SDK does not write stubs.
 
 ## Testing
 
@@ -367,7 +282,7 @@ test/
   bundle/test_core.py      # PyPI publish gate: invariants + stacked platform e2e
   test_e2e_catalog.py      # catalog list/get/search
   test_e2e_files.py        # file_service
-  test_e2e_jobs.py         # one flux via run_service; search finds the prompt
+  test_e2e_jobs.py         # one flux via client.run; search finds the prompt
   test_e2e_conversations.py
   test_e2e_agent_hitl.py
   test_e2e_wait_cancel.py

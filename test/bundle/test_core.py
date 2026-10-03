@@ -31,20 +31,21 @@ import test_e2e_workflow_repair as workflow_repair  # noqa: E402
 
 
 def test_core_request_invariants() -> None:
-    """Always-on: run_agent body rules and ChatSocaity request shape."""
+    """Always-on: agent-turn body rules and ChatSocaity request shape."""
     client = SocaityClient(api_key="sk_test_core")
     with pytest.raises(ValueError, match="message"):
-        client.run_agent("spaine")
+        client._submit_agent("spaine", {})
     with pytest.raises(ValueError, match="thread_id"):
-        client.run_agent("spaine", continue_turn=True)
+        client._submit_agent("spaine", {"continue_turn": True})
     with pytest.raises(ValueError, match="no messages"):
-        client.run_agent("spaine", message="hi", thread_id="chat-1", continue_turn=True)
-    with pytest.raises(ValueError, match="supersede"):
-        client.run_agent(
+        client._submit_agent(
             "spaine",
-            thread_id="chat-1",
-            continue_turn=True,
-            supersedes_job_id="job-1",
+            {"message": "hi", "thread_id": "chat-1", "continue_turn": True},
+        )
+    with pytest.raises(ValueError, match="supersede"):
+        client._submit_agent(
+            "spaine",
+            {"thread_id": "chat-1", "continue_turn": True, "supersedes_job_id": "job-1"},
         )
 
     pytest.importorskip("langchain_core")
@@ -66,7 +67,7 @@ def test_core_platform_stack() -> None:
     catalog.run()
     env.log("core", "files")
     files.run()
-    env.log("core", "jobs (one flux via run_service)")
+    env.log("core", "jobs (one flux via run)")
     jobs.run()
     env.log("core", "conversations")
     conversations.run()

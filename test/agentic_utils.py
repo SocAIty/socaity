@@ -82,12 +82,11 @@ def inference_up() -> bool:
 
 
 from socaity import client  # noqa: E402
+from socaity.core.serialize import agent_turn_from_job, serialize_job  # noqa: E402
 
 
 def poll_job(job_id: str, api_key: Optional[str] = None, timeout_s: float = 600) -> dict:
     """Wait until the gateway job is terminal."""
-    from socaity.core.serialize import serialize_job
-
     _ = api_key
     job = client.track_job(job_id)
     job.get_result(timeout_s=timeout_s)
@@ -96,8 +95,6 @@ def poll_job(job_id: str, api_key: Optional[str] = None, timeout_s: float = 600)
 
 def run_agent(*args, timeout_s: float = 600, **kwargs) -> dict:
     """Submit an agent turn and wait for the serializable terminal payload."""
-    from socaity.core.serialize import agent_turn_from_job
-
     job = client.run_agent(*args, **kwargs)
     try:
         job.get_result(timeout_s=timeout_s)
@@ -108,8 +105,6 @@ def run_agent(*args, timeout_s: float = 600, **kwargs) -> dict:
 
 def run_workflow(*args, timeout_s: float = 1800, **kwargs) -> dict:
     """Submit a workflow run and wait for the serializable terminal payload."""
-    from socaity.core.serialize import serialize_job
-
     job = client.run_workflow(*args, **kwargs)
     try:
         job.get_result(timeout_s=timeout_s)
