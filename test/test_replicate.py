@@ -1,4 +1,4 @@
-"""Platform-mediated Replicate services through ``client.run_service``.
+"""Platform-mediated Replicate services through ``client.run``.
 
 Separate path from the core stack: these jobs go Replicate via the gateway,
 not official hosted APIPod services. Not collected by default pytest
@@ -34,7 +34,7 @@ pytestmark = [
 
 
 def _result(service: str, endpoint: str, params: dict, timeout_s: float = 600):
-    job = client.run_service(service, endpoint, params)
+    job = client.run(f"{service}{endpoint}", **params)
     payload = job.get_result(timeout_s=timeout_s)
     assert payload is not None, f"{service}{endpoint} returned no result"
     assert job.platform_job_id, f"{service} produced no platform job id"

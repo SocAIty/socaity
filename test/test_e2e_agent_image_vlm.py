@@ -2,7 +2,7 @@
 
 The agent already runs on official qwen3.8, which is a VLM. The describe
 turn attaches the flux URL as an ``image_url`` part. The model must see
-the pixels itself. It must not ``run_service`` another chat/VLM.
+the pixels itself. It must not ``run`` another chat/VLM.
 
     python test/test_e2e_agent_image_vlm.py
     pytest test/test_e2e_agent_image_vlm.py -v -s
@@ -29,7 +29,7 @@ DESCRIBE_TIMEOUT_S = 600.0
 FLUX = "black-forest-labs-flux-schnell"
 MARKER = f"image-vlm-e2e-{int(time.time())}"
 GENERATE = (
-    "Use run_service on "
+    "Use run on "
     f"{FLUX} "
     "with prompt: an image of a monkey 3d clipart. "
     f"After the job finishes, reply in one short sentence that includes {MARKER}."
@@ -92,9 +92,9 @@ def _tool_results(items, name: str) -> list:
     return hits
 
 
-def _run_service_results(items) -> list:
+def _run_results(items) -> list:
     hits = []
-    for item, part, output in _tool_results(items, "run_service"):
+    for item, part, output in _tool_results(items, "run"):
         if isinstance(output, dict) and output.get("job_id"):
             hits.append((item, part, output))
     return hits
@@ -138,7 +138,7 @@ def _describe_message(image_url: str) -> dict:
                 "text": (
                     "Look at the attached image. Describe the composition. "
                     "Name the subject, layout, and colors. "
-                    "Do not call run_service. Do not search for a vision service. "
+                    "Do not call run. Do not search for a vision service. "
                     "Do not say you cannot see the image. "
                     f"Include the token {MARKER}-vlm in the reply."
                 ),
@@ -160,8 +160,8 @@ def run() -> None:
         _wait_conversation(thread_id)
 
         items = client.query_conversation_items(thread_id, branch="active")
-        results = _run_service_results(items)
-        assert results, f"no run_service tool_result with job_id (bubble/panel data missing): {items}"
+        results = _run_results(items)
+        assert results, f"no run tool_result with job_id (bubble/panel data missing): {items}"
         _item, _part, output = results[0]
         child_job_id = output["job_id"]
         env.log("T3.1", f"child_job={child_job_id} status={output.get('status')}")
@@ -175,7 +175,7 @@ def run() -> None:
             getattr(tracked, "status", None),
         )
         files = _files_of(output)
-        assert files, f"run_service returned no image URLs: {output}"
+        assert files, f"run returned no image URLs: {output}"
         assert (output.get("status") or "").lower() in ("finished", "completed", "success"), output
         env.log("T3.1", f"tracked status={status} files={len(files)}")
 
@@ -202,8 +202,8 @@ def run() -> None:
         env.log("T3.2", f"sdk ids={sorted(job_id for job_id in sdk_ids if job_id)}")
         assert child_job_id in sdk_ids, (child_job_id, sdk_ids)
 
-        env.log("T3.3", "describe composition (agent VLM, no nested run_service)")
-        before_describe = len(_run_service_results(after_list))
+        env.log("T3.3", "describe composition (agent VLM, no nested run)")
+        before_describe = len(_run_results(after_list))
         second = env.run_agent(
             "spaine",
             messages=[_describe_message(files[0])],
@@ -214,7 +214,7 @@ def run() -> None:
         assert second["agent_status"] == "completed", second["response"]
         _wait_conversation(thread_id)
         after = client.query_conversation_items(thread_id, branch="active")
-        describe_runs = _run_service_results(after)
+        describe_runs = _run_results(after)
         assert len(describe_runs) == before_describe, (
             "agent spawned another catalog job instead of using its own VLM: "
             f"{[out for _i, _p, out in describe_runs[before_describe:]]}"

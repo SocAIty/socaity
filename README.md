@@ -12,8 +12,8 @@
 </p>
 
 <p align="center">
-  <b>socaity SDK</b> ships the full <a href="https://www.socaity.ai">socaity.ai</a> model catalog ready to import.<br/>
-  One line to install. One import to call. Hosted in the EU, or on your own hardware.
+  <b>socaity SDK</b> talks to the <a href="https://www.socaity.ai">socaity.ai</a> catalog and gate.<br/>
+  Catalog jobs via <code>client.run</code>. Agents and workflows have their own verbs. Hosted in the EU, or on your own hardware.
 </p>
 
 <p align="center">
@@ -33,25 +33,17 @@
 Two steps. Under five minutes. You get any LLM running or an audio file on disk.
 
 ```python
-import os
-from socaity import speechcraft
+from socaity import client
 
-client = speechcraft()
-job = client.text2voice(text="Welcome to generative AI", voice="hermine")
+job = client.run("speechcraft/text2voice", text="Welcome to generative AI", voice="hermine")
 job.get_result().save("welcome.mp3")
 ```
 
-That is the whole pattern: **import a model, call it like a function, save the result.**
-
-Need a specific model from the community catalog?
+That is the whole pattern: **name the service and endpoint, pass params, save the result.**
 
 ```bash
-socaity -i black-forest-labs/flux-schnell
-# or
-python -m socaity install speechcraft
+socaity run speechcraft/text2voice --text "Welcome to generative AI"
 ```
-
-Official models sync on install. Community and third-party models install on demand.
 
 Authentication. We support CLI Login, but for production environment we recommend to set the API key as environment variable.
 ```bash
@@ -67,14 +59,14 @@ Real applications chain models: LLM → image → speech → video. Raw HTTP, pe
 
 | | Raw HTTP | Per-provider SDKs | socaity SDK |
 |---|---|---|---|
-| Call pattern | Write requests yourself | One SDK per provider | `from socaity import model` |
+| Call pattern | Write requests yourself | One SDK per provider | `client.run("slug/path", **params)` |
 | Long-running jobs | Build your own poll loop | Varies | Built-in via [fastSDK](https://github.com/SocAIty/fastsdk) |
 | Media I/O | Manual upload/download | Partial | [media-toolkit](https://github.com/SocAIty/media-toolkit) handles files |
 | Multi-model apps | Glue code everywhere | Fragmented imports | One package, parallel jobs |
 | Hosting | Your problem | Mostly US clouds | [socaity.ai](https://www.socaity.ai) (EU) or bring your own |
 | Compliance | Your problem | Rarely GDPR-ready | GDPR and EU AI Act aligned by design |
 
-**Why not just use fastSDK?** You can. fastSDK connects to any OpenAPI, APIPod, RunPod, or Replicate service. socaity SDK adds the curated model zoo, selective install, and auto-sync from the socaity.ai catalog so you skip spec hunting and stub generation for every model.
+**Why not just use fastSDK?** You can. fastSDK connects to any OpenAPI, APIPod, RunPod, or Replicate service. socaity SDK adds catalog resolve, `client.run`, and session credentials so you skip spec hunting for every model.
 
 **Why not OpenRouter or Replicate alone?** Both are pay-per-call model catalogs. Neither gives you deployment, workflow orchestration, or EU-sovereign hosting. socaity combines MaaS, deployment, and agentic workflows in one stack. The SDK is your entry point to all of it.
 
@@ -93,7 +85,7 @@ img_job = flux_schnell(prompt="A robot at sunset in the Alps.")
 text, images = llm_job.get_result(), img_job.get_result()
 ```
 
-**Selective install.** Official models ship with the package. Install only what your app needs via CLI or `socaity.install("model_id")`.
+**Catalog jobs.** `client.run("speechcraft/text2voice", text="hello")` or `client.connect("speechcraft").submit_job("/text2voice", text="hello")`. Slug on the URL. `details_id` on the query. Agents: `client.run_agent`. Workflows: `client.run_workflow`.
 
 **Switch models without rewriting.** Want to try another model? No need to rewrite your code-base just switch the call. Having a local model? Point at it at use it likewise from the same sdk.
 
@@ -106,18 +98,17 @@ text, images = llm_job.get_result(), img_job.get_result()
 No single model covers a real task. The SDK is built for composition.
 
 ```python
-import os
-from socaity import speechcraft
-from socaity.sdk.replicate.deepseek_ai import deepseek_v3
-from socaity.sdk.replicate.black_forest_labs import flux_schnell
+from socaity import client
 
-poem = deepseek_v3()(
-    prompt="Three sentences on why an SDK beats raw HTTP."
+poem = client.run(
+    "deepseek-v3",
+    prompt="Three sentences on why an SDK beats raw HTTP.",
 ).get_result()
 
-speechcraft().text2voice(text="".join(poem), voice="hermine").get_result().save("poem.mp3")
+client.run("speechcraft/text2voice", text="".join(poem), voice="hermine").get_result().save("poem.mp3")
 
-flux_schnell()(
+client.run(
+    "black-forest-labs-flux-schnell/predictions",
     prompt="A robot at sunset in the Alps, cinematic anime, 4k.",
     num_outputs=1,
 ).get_result()[0].save("poem.png")
@@ -127,10 +118,10 @@ https://github.com/user-attachments/assets/978ee377-3ceb-4a87-add5-daee15306231
 
 ### Jobs vs. results
 
-Calls return a **job** handle, not a blocked connection. Poll when ready, cancel when not, run hundreds in parallel. Agent turns and workflow runs use the same handle via ``client.run_agent`` / ``client.run_workflow``. To cut in on a live agent turn, pass ``supersedes_job_id`` to ``run_agent`` so the previous job is interrupted and settled before the next POST.
+Calls return a **job** handle, not a blocked connection. Poll when ready, cancel when not, run hundreds in parallel. Agent turns use ``client.run_agent``. Workflow runs use ``client.run_workflow``. To cut in on a live agent turn, pass ``supersedes_job_id`` so the previous job is interrupted and settled before the next POST.
 
 ```python
-job = deepseek_v3("What a time to be alive.")
+job = client.run("deepseek-v3", prompt="What a time to be alive.")
 # ... other work ...
 result = job.get_result()
 ```

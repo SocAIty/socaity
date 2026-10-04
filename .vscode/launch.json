@@ -2,16 +2,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "socaity_sdk: Create Socaity SDK",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/socaity/core/socaity_service_registry.py",
-            "console": "integratedTerminal",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder};${workspaceFolder}/../fastCloud;${workspaceFolder}/../media-toolkit;${workspaceFolder}/../fastsdk;${workspaceFolder}/../meseex;${workspaceFolder}/../APIPodRegistry;${workspaceFolder}/../socaity_schemas;${workspaceFolder}/../socaity-cli"
-            }
-        },
-        {
             "name": "socaity_sdk: Core bundle",
             "type": "debugpy",
             "request": "launch",

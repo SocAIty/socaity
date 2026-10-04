@@ -25,7 +25,7 @@ class Session:
     Use as a context manager to switch the active ``client``:
 
         with Session(api_key=key):
-            client.run_service(...)
+            client.run(...)
 
     Args:
         api_key: Socaity API key. ``None`` falls back to ``SOCAITY_API_KEY`` or
