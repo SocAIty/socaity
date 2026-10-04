@@ -74,14 +74,15 @@ Real applications chain models: LLM → image → speech → video. Raw HTTP, pe
 
 ## Key features
 
-**Import and call.** Models are Python classes with typed methods. No GPU setup, no REST boilerplate.
+**Import and call.** Name the catalog slug and endpoint. No GPU setup, no REST boilerplate.
 
 **Parallel by default.** Every call returns a job immediately. Run ten models at once, collect results when you need them.
 
 ```python
-llm_job = deepseek_v3(prompt="Write a haiku about SDKs.")
-img_job = flux_schnell(prompt="A robot at sunset in the Alps.")
-# ... do other work ...
+from socaity import client
+
+llm_job = client.run("deepseek-v3", prompt="Write a haiku about SDKs.")
+img_job = client.run("black-forest-labs-flux-schnell/predictions", prompt="A robot at sunset in the Alps.")
 text, images = llm_job.get_result(), img_job.get_result()
 ```
 
@@ -232,7 +233,7 @@ Representative domains available today:
 | Audio | [SpeechCraft](https://github.com/SocAIty/SpeechCraft) (TTS, voice cloning, voice conversion) |
 | Video | Hunyuan Video and growing |
 
-New models land frequently. The SDK syncs official services on install and checks for updates every 15 minutes.
+New models land frequently. Catalog reads hit the live backend. There is no local generated-client sync.
 
 Browse the full list, pricing, and API keys at [socaity.ai](https://www.socaity.ai?utm_source=github&utm_content=socaity-sdk).
 
@@ -249,8 +250,8 @@ export SOCAITY_API_KEY=sk-...
 You can pass `api_key=` directly in code for local experiments, but do not commit it.
 
 ```python
-from socaity import face2face
-client = face2face(api_key=os.getenv("SOCAITY_API_KEY"))
+from socaity import Client
+client = Client(api_key=os.getenv("SOCAITY_API_KEY"))
 ```
 
 ---
@@ -278,7 +279,7 @@ Three packages, one pipeline:
 | **[APIPod](https://github.com/SocAIty/APIPod)** | Build and deploy AI services (server side) |
 | **[fastSDK](https://github.com/SocAIty/fastsdk)** | Connect to any compatible API (client runtime, streaming, jobs) |
 | **[socaity-schemas](https://github.com/SocAIty/socaity-schemas)** | Shared Pydantic models for AI payloads and service definitions |
-| **socaity SDK** (this repo) | Curated model zoo + generated clients for socaity.ai |
+| **socaity SDK** (this repo) | Catalog resolve, `client.run` / `run_agent` / `run_workflow` |
 
 Build a service with APIPod. Consume it with fastSDK. Import it from socaity when it is in the catalog.
 
@@ -293,10 +294,10 @@ Build a service with APIPod. Consume it with fastSDK. Import it from socaity whe
 | Resource | What you get |
 |---|---|
 | [socaity.ai](https://www.socaity.ai) | Model catalog, pricing, API keys, deployment |
-| [fastSDK README](https://github.com/SocAIty/fastsdk) | Generic client: connect, generate stubs, CLI |
+| [fastSDK README](https://github.com/SocAIty/fastsdk) | Generic client: connect, submit_job, CLI |
 | [APIPod README](https://github.com/SocAIty/APIPod) | Build and deploy your own AI services |
 | [docs/UseCases.md](docs/UseCases.md) | Composition patterns by domain |
-| [TECHNICAL_README.md](TECHNICAL_README.md) | Architecture: catalog sync, namespaces, streaming, schemas |
+| [TECHNICAL_README.md](TECHNICAL_README.md) | Architecture: catalog, sessions, streaming, schemas |
 
 Deep architecture docs for fastSDK and APIPod live in each repo's `TECHNICAL_README.md`. The README here stays focused on getting you to a first result.
 

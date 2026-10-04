@@ -205,7 +205,7 @@ info = job.cancel()  # local + remote when provider supports it
 
 Details: fastSDK TECHNICAL_README (Cancellation, JobRuntime).
 
-## Ad-hoc clients without install
+## Ad-hoc clients
 
 For services not in the catalog, or local APIPod dev servers:
 
@@ -259,7 +259,7 @@ The socaity CLI does not duplicate fastSDK's `inspect` / `call` / `registry` com
 | **APIPod** | Server framework; produces OpenAPI + standardized schemas |
 | **socaity-schemas** | Shared Pydantic models (definitions, AI payloads, transport) |
 | **apipod-registry** | Registry base class + spec parsers |
-| **fastSDK** | Client runtime: jobs, polling, streaming, stub factory |
+| **fastSDK** | Client runtime: jobs, polling, streaming |
 | **media-toolkit** | Media I/O on results |
 | **meseex** | Async job orchestration inside fastSDK |
 | **socaity SDK** | Catalog resolve + `client.run` |
@@ -315,12 +315,12 @@ Run with the project venv: `pytest` (after `pip install -e ".[dev]"`).
 
 ## Why the Architecture Looks Like This
 
-Python users want `from socaity import flux_schnell`, not manual OpenAPI hunting per model. The platform already owns service metadata; duplicating transport in socaity would fork fastSDK.
+Python users want `client.run("flux-schnell/predictions", prompt=...)`, not manual OpenAPI hunting per model. The platform already owns service metadata; duplicating transport in socaity would fork fastSDK.
 
 socaity therefore stays thin:
 
-- **Platform sync** is socaity-specific (backend endpoints, namespaces, credentials)
-- **Everything after stub generation** is fastSDK (including streaming added in 0.3.0)
+- **Catalog and session** are socaity-specific (backend endpoints, credentials, `run` verbs)
+- **Transport** is fastSDK (submit, poll, stream, cancel)
 - **Schema contracts** are centralized in socaity-schemas so APIPod servers and clients stay aligned
 
 Future platform features (model search, cost estimation, agentic workflows) will extend the catalog layer and backend client without moving transport back into socaity.
