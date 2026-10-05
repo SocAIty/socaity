@@ -82,12 +82,36 @@ class ChatServiceAdapter:
     # Calls
     # ------------------------------------------------------------------
 
+    def _bind_session_key(self) -> None:
+        """Reconnect when this turn's session key is not the one on the FastClient.
+
+        Engines keep one ChatSocaity. The first completion connects once and
+        would otherwise keep sending that turn's key after ``agent._session``
+        is replaced. An unchanged key keeps the same client, including across
+        tokens of one stream (this runs once per submit, not per chunk).
+        """
+        from socaity.core.session import _current
+
+        # Only an entered session (agent turn) may replace the client key.
+        # The process-wide default session is not a new turn.
+        session = _current.get()
+        session_key = getattr(session, "api_key", None) if session is not None else None
+        bound = getattr(self.client, "api_key", None)
+        if not session_key or session_key == bound:
+            return
+        service = self.client.service
+        # A temporary client's destructor unregisters the service. The
+        # replacement uses the same id, so leave the previous entry registered.
+        self.client.temporary = False
+        self.client = client.connect(service, api_key=session_key)
+
     def submit(self, request: Dict[str, Any]) -> APISeex:
         """Submit one chat request as a platform job and record the handle.
 
         Session lineage rides along, so a call inside an agent turn or workflow
         run becomes a child job of it.
         """
+        self._bind_session_key()
         job = self.client.submit_job(self.endpoint.path, **{**self._job_kwargs(request), **job_flags()})
         self.jobs.append(job)
         return job
