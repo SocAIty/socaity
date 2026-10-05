@@ -34,7 +34,7 @@ AGENT = "spaine"
 pytestmark = [
     pytest.mark.skipif(not env.backend_up(), reason=f"backend not reachable at {env.BACKEND}"),
     pytest.mark.skipif(not env.inference_up(), reason=f"APIPod gate not reachable at {env.GATE}"),
-    pytest.mark.skipif(not env.rich_key(), reason="no test API key (SOCAITY_TEST_RICH_KEY / SOCAITY_API_KEY)"),
+    pytest.mark.skipif(not env.api_key(), reason=env.missing_env("SOCAITY_API_KEY") or "no SOCAITY_API_KEY"),
 ]
 
 BASE_DOC = {
@@ -54,7 +54,7 @@ BASE_DOC = {
 
 
 def run() -> None:  # noqa: PLR0915 - linear e2e scenario
-    session = Session(api_key=env.rich_key(), backend_url=env.BACKEND)
+    session = Session(api_key=env.api_key(), backend_url=env.BACKEND)
     with session:
         saved = client.upsert_workflow(BASE_DOC, slug=f"wait-cancel-{int(time.time())}", message="wait-cancel base")
         wf_id = saved.workflow.id

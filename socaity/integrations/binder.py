@@ -7,8 +7,9 @@ import queue
 from contextlib import nullcontext
 from typing import Any, Callable, Optional
 
-from meseex import EventKind, MeseexEvent
 from fastsdk.service_interaction.api_seex import APISeex
+from langchain_core.tools import ToolException
+from meseex import EventKind, MeseexEvent
 
 from socaity.integrations.policy import (
     DESTRUCTIVE_METHODS,
@@ -66,6 +67,15 @@ def _publish_runtime_event(event: MeseexEvent, tool_name: str, job: APISeex) -> 
     writer(payload)
 
 
+def _looks_like_agent_turn(job: APISeex, result: Any = None) -> bool:
+    """True when the finished payload is a chat/agent envelope."""
+    dumped = serialize_value(result if result is not None else getattr(job, "result", None))
+    if not isinstance(dumped, dict):
+        return False
+    payload = dumped["output"] if isinstance(dumped.get("output"), dict) else dumped
+    return any(key in payload for key in ("choices", "pending_actions"))
+
+
 def consume_job_sync(job: APISeex, tool_name: str) -> dict:
     """Wait for the terminal job event and return a JSON-serializable result."""
     events: queue.Queue = queue.Queue()
@@ -83,13 +93,13 @@ def consume_job_sync(job: APISeex, tool_name: str) -> dict:
                     if job.error is not None:
                         raise job.error
                     result = serialize_job(job)
-                    if tool_name == "run_agent":
+                    if _looks_like_agent_turn(job):
                         return agent_turn_from_job(job)
                     return result
                 continue
             _publish_runtime_event(event, tool_name, job)
             if event.kind is EventKind.SUCCEEDED:
-                if tool_name == "run_agent":
+                if _looks_like_agent_turn(job, event.result):
                     return agent_turn_from_job(job)
                 return serialize_job(job, event.result)
             if event.kind is EventKind.FAILED:
@@ -112,9 +122,12 @@ def bind_method(method: Callable, session: Optional[Callable] = None):
     def invoke_sync(**arguments):
         from socaity import client
 
-        with _session_scope(session):
-            result = getattr(client, method.__name__)(**arguments)
-            return consume_or_serialize(method, result)
+        try:
+            with _session_scope(session):
+                result = getattr(client, method.__name__)(**arguments)
+                return consume_or_serialize(method, result)
+        except Exception as exc:
+            raise ToolException(f"{method.__name__} failed: {exc}") from exc
 
     async def invoke_async(**arguments):
         return await asyncio.to_thread(invoke_sync, **arguments)

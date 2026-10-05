@@ -1,9 +1,9 @@
 """Build a FastClient for a gateway factory path.
 
 Agent turns and workflow runs are not catalog services. FastSDK still
-requires an ``AIService`` plus ``Endpoint`` to run the job lifecycle, so
-this module constructs that pair locally and returns a client that talks
-through ``submit_job`` / ``track_job``.
+requires a ``Service`` with one ``ServiceDetails`` binding plus ``Endpoint``
+to run the job lifecycle, so this module constructs that locally and returns
+a client that talks through ``submit_job`` / ``track_job``.
 """
 from __future__ import annotations
 
@@ -12,8 +12,11 @@ import hashlib
 from apipod_registry import create_service
 from fastsdk import FastSDK
 from fastsdk.fastClient import FastClient
-from socaity_schemas.contract import Endpoint, ServiceContract
-from socaity_schemas.contract.address import SocaityServiceAddress
+from socaity_schemas.public.spec.endpoint import (
+    Endpoint,
+    ServiceContract,
+)
+from socaity_schemas.public.spec.address import SocaityServiceAddress
 
 _GATEWAY_PREFIX = "_socaity_gateway"
 
@@ -51,7 +54,8 @@ def gateway_client(
         address=SocaityServiceAddress(base_url=origin, path=""),
         provider="socaity",
         service_id=service_id,
-        name=service_id,
+        slug=service_id,
+        execution="platform",
     )
     FastSDK().service_registry.add_service(service, persist=False)
     return FastClient(

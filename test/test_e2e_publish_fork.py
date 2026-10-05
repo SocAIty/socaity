@@ -30,8 +30,8 @@ AGENT = "spaine"
 pytestmark = [
     pytest.mark.skipif(not env.backend_up(), reason=f"backend not reachable at {env.BACKEND}"),
     pytest.mark.skipif(not env.inference_up(), reason=f"APIPod gate not reachable at {env.GATE}"),
-    pytest.mark.skipif(not env.rich_key(), reason="no test API key (SOCAITY_TEST_RICH_KEY / SOCAITY_API_KEY)"),
-    pytest.mark.skipif(not env.poor_key(), reason="no second-user key (SOCAITY_TEST_POOR_KEY)"),
+    pytest.mark.skipif(not env.api_key(), reason=env.missing_env("SOCAITY_API_KEY") or "no SOCAITY_API_KEY"),
+    pytest.mark.skipif(not env.poor_key(), reason=env.missing_env("SOCAITY_POOR_API_KEY") or "no SOCAITY_POOR_API_KEY"),
 ]
 
 TITLE = f"Publish fork probe {int(time.time())}"
@@ -52,7 +52,7 @@ BASE_DOC = {
 
 
 def run() -> None:
-    owner = Session(api_key=env.rich_key(), backend_url=env.BACKEND)
+    owner = Session(api_key=env.api_key(), backend_url=env.BACKEND)
     with owner:
         saved = client.upsert_workflow(BASE_DOC, slug=f"publish-fork-{int(time.time())}", message="publish-fork base")
         wf_id = saved.workflow.id
