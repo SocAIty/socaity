@@ -15,7 +15,7 @@ readme = "README.md"
 dependencies = [
     "tqdm",
     "httpx",
-    "fastsdk>=0.4.18",
+    "fastsdk>=0.4.20",
     "apipod-registry>=0.1.9",
     "socaity-schemas>=0.1.9",
     "socaity-cli>=0.1.10",
