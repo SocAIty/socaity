@@ -19,6 +19,7 @@ def to_langchain(functions: Iterable[Callable], session: Optional[Callable] = No
                 coroutine=invoke_async,
                 parse_docstring=True,
                 error_on_invalid_docstring=False,
+                handle_tool_error=True,
                 metadata=metadata,
             )
         )

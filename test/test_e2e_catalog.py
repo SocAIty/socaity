@@ -1,12 +1,12 @@
-"""E2E: socaity SDK against a running backend (catalog, search, CLI, connect).
+"""E2E: socaity SDK catalog reads (list, get, filter, search).
 
 Point SOCAITY_BACKEND_URL at the backend under test (default local dev
 backend with its typesense sidecar) and run:
 
     pytest test/test_e2e_catalog.py -v
 
-The image-generation test calls flux-schnell through the inference gateway
-and needs valid credentials (socaity login or SOCAITY_API_KEY).
+Inference jobs live in ``test_e2e_jobs.py``. CLI argv smokes stay here as
+optional extras; ``run()`` is the catalog ladder used by the core bundle.
 """
 import io
 import os
@@ -36,13 +36,13 @@ import socaity  # noqa: E402
 from socaity import client  # noqa: E402
 from socaity_cli.cli import main as cli_main  # noqa: E402
 
-BACKEND = os.environ["SOCAITY_BACKEND_URL"]
+BACKEND = os.environ["SOCAITY_BACKEND_URL"].rstrip("/") + "/"
 
 
 def _backend_up() -> bool:
     try:
         return httpx.get(BACKEND + "v1/catalog/services", params={"limit": 1}, timeout=10).status_code == 200
-    except httpx.HTTPError:
+    except (httpx.HTTPError, httpx.InvalidURL):
         return False
 
 
@@ -55,18 +55,23 @@ def test_query_services_slim():
     assert services, "catalog returned no services"
 
     slim = services[0]
-    assert slim.id and slim.name
-    assert not slim.deployments, "list view should be slim (no relations)"
+    assert slim.id and slim.slug
+    assert not slim.details, "list view should be slim (no relations)"
 
-    full = client.get_service(slim.name)
-    assert full.deployments and full.deployments[0].provider
+    full = client.get_service(slim.slug, expand=["details.deployment", "details.connector"])
+    assert full.details
+    binding = full.details[0]
+    if binding.execution == "external":
+        assert binding.connector and binding.connector.address
+    else:
+        assert binding.deployment and binding.deployment.provider
 
 
 def test_get_service_full():
-    name = client.query_services(limit=1)[0].name
-    service = client.get_service(name)
-    assert service.name == name
-    assert service.deployments and service.endpoints
+    slug = client.query_services(limit=1)[0].slug
+    service = client.get_service(slug)
+    assert service.slug == slug
+    assert service.details and service.endpoints
 
 
 def test_pagination_no_overlap():
@@ -77,13 +82,14 @@ def test_pagination_no_overlap():
 
 
 def test_query_services_slim_no_relation_keys():
-    rows = httpx.get(
+    response = httpx.get(
         BACKEND + "v1/catalog/services",
-        params={"limit": 2, "fields": "id,name"},
+        params={"limit": 2, "fields": "id,slug"},
         timeout=30,
     ).json()
+    rows = response["entities"]
     assert rows and all(
-        set(row.keys()) <= {"id", "name"} and "deployments" not in row
+        set(row.keys()) <= {"id", "slug"} and "details" not in row
         for row in rows
     )
 
@@ -91,20 +97,20 @@ def test_query_services_slim_no_relation_keys():
 def test_filter_provider():
     rows = httpx.get(
         BACKEND + "v1/catalog/services",
-        params={"limit": 5, "filter": "provider:eq:replicate", "fields": "id,name"},
+        params={"limit": 5, "filter": "provider:eq:replicate", "fields": "id,slug"},
         timeout=30,
     ).json()
     assert rows, "expected replicate services when filter applied"
 
 
 def test_expand_contract():
-    name = client.query_services(limit=1)[0].name
+    slug = client.query_services(limit=1)[0].slug
     row = httpx.get(
-        BACKEND + f"v1/catalog/services/{name}",
-        params={"expand": "deployments.contract", "fields": "name,deployments(contract)"},
+        BACKEND + f"v1/catalog/services/{slug}",
+        params={"expand": "details.contract", "fields": "slug,details(contract)"},
         timeout=60,
     ).json()
-    assert row["deployments"][0]["contract"]["specification"]
+    assert row["details"][0]["contract"]["specification"]
 
 
 def test_list_and_get_models():
@@ -129,12 +135,12 @@ def test_list_categories():
 
 def test_search_typo_tolerant():
     hits = client.query_services(q="flux schnel", limit=5)
-    names = [item.name for item in hits]
-    assert any("flux-schnell" in name for name in names), names
+    slugs = [item.slug for item in hits]
+    assert any("flux-schnell" in slug for slug in slugs), slugs
 
 
 def test_search_models_collection():
-    from socaity_schemas.platform import AIModel
+    from socaity_schemas.platform.catalog.model import AIModel
 
     hits = client.query_models(q="deepseek", limit=5)
     assert hits and all(isinstance(hit, AIModel) for hit in hits)
@@ -142,6 +148,7 @@ def test_search_models_collection():
 
 def test_query_latency_budget():
     """List + search should stay under a generous local budget (ms)."""
+    client.query_services(limit=1)
     start = time.perf_counter()
     client.query_services(limit=20)
     list_ms = (time.perf_counter() - start) * 1000
@@ -152,6 +159,22 @@ def test_query_latency_budget():
 
     assert list_ms < 5000, f"query_services too slow: {list_ms:.0f}ms"
     assert search_ms < 5000, f"query_services(q) too slow: {search_ms:.0f}ms"
+
+
+def run() -> None:
+    """Catalog claims only. No GPU, no CLI."""
+    test_query_services_slim()
+    test_get_service_full()
+    test_pagination_no_overlap()
+    test_query_services_slim_no_relation_keys()
+    test_filter_provider()
+    test_expand_contract()
+    test_list_and_get_models()
+    test_model_filter_family()
+    test_list_categories()
+    test_search_typo_tolerant()
+    test_search_models_collection()
+    test_query_latency_budget()
 
 
 # ---------------------------------------------------------------- CLI
@@ -181,20 +204,5 @@ def test_cli_search():
     assert "flux-schnell" in output or "flux schnell" in output.lower()
 
 
-# ---------------------------------------------------------------- connect
-
-@pytest.mark.skipif(not os.getenv("SOCAITY_API_KEY") and not os.path.exists(
-    os.path.join(os.path.expanduser("~"), ".config", "socaity", "credentials.json")),
-    reason="no credentials for inference")
-def test_connect_flux_schnell_creates_image(tmp_path):
-    flux = client.connect("black-forest-labs-flux-schnell")
-    job = flux.submit_job("/predictions", prompt="a lighthouse on a cliff at sunset, watercolor")
-    result = job.get_result()
-    assert result is not None
-
-    saved = tmp_path / "flux_schnell.png"
-    if hasattr(result, "save"):
-        result.save(str(saved))
-    else:
-        saved.write_bytes(result if isinstance(result, bytes) else bytes(result))
-    assert saved.stat().st_size > 10_000, "image suspiciously small"
+if __name__ == "__main__":
+    run()

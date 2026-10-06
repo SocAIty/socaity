@@ -79,7 +79,7 @@ def serialize_job(job: "APISeex", result: Any = None) -> dict:
 
 
 def agent_turn_from_job(job: "APISeex") -> dict:
-    """Agent-turn envelope from a finished ``run_agent`` handle."""
+    """Agent-turn envelope from a finished ``run`` handle."""
     envelope = serialize_job(job)
     response = envelope.get("result") if isinstance(envelope.get("result"), dict) else {}
     if "choices" not in response and isinstance(response.get("output"), dict):

@@ -1,9 +1,8 @@
-"""E2E Test 3: agent image job (flux-schnell) then qwen3.8 VLM describe.
+"""E2E Test 3: agent image job (flux-schnell) then the same agent describes it.
 
-Runs through the local platform stack (backend + gateway + engines). The
-engines process must have ``AGENT_ENGINE_DSN`` so LangGraph uses
-``PostgresSaver``. Do not run this against a standalone SPAINE
-``InMemorySaver`` process.
+The agent already runs on official qwen3.8, which is a VLM. The describe
+turn attaches the flux URL as an ``image_url`` part. The model must see
+the pixels itself. It must not ``run`` another chat/VLM.
 
     python test/test_e2e_agent_image_vlm.py
     pytest test/test_e2e_agent_image_vlm.py -v -s
@@ -30,7 +29,7 @@ DESCRIBE_TIMEOUT_S = 600.0
 FLUX = "black-forest-labs-flux-schnell"
 MARKER = f"image-vlm-e2e-{int(time.time())}"
 GENERATE = (
-    "Use run_service on "
+    "Use run on "
     f"{FLUX} "
     "with prompt: an image of a monkey 3d clipart. "
     f"After the job finishes, reply in one short sentence that includes {MARKER}."
@@ -39,12 +38,6 @@ LIST = (
     "Use query_jobs with limit 10 to list my last 10 jobs. "
     "Reply with each job id and status. "
     f"Include the token {MARKER}-jobs."
-)
-DESCRIBE = (
-    "Describe the composition of the image you just generated. "
-    "Name the subject, layout, and colors. "
-    "Do not say you cannot see the image. "
-    f"Include the token {MARKER}-vlm in the reply."
 )
 BLIND = (
     "cannot see",
@@ -63,7 +56,7 @@ BLIND = (
 pytestmark = [
     pytest.mark.skipif(not env.backend_up(), reason=f"backend not reachable at {env.BACKEND}"),
     pytest.mark.skipif(not env.inference_up(), reason=f"APIPod gate not reachable at {env.GATE}"),
-    pytest.mark.skipif(not env.rich_key(), reason="no test API key (SOCAITY_TEST_RICH_KEY / SOCAITY_API_KEY)"),
+    pytest.mark.skipif(not env.api_key(), reason=env.missing_env("SOCAITY_API_KEY") or "no SOCAITY_API_KEY"),
 ]
 
 
@@ -99,9 +92,9 @@ def _tool_results(items, name: str) -> list:
     return hits
 
 
-def _run_service_results(items) -> list:
+def _run_results(items) -> list:
     hits = []
-    for item, part, output in _tool_results(items, "run_service"):
+    for item, part, output in _tool_results(items, "run"):
         if isinstance(output, dict) and output.get("job_id"):
             hits.append((item, part, output))
     return hits
@@ -136,8 +129,27 @@ def _files_of(output: dict) -> list[str]:
     return urls
 
 
+def _describe_message(image_url: str) -> dict:
+    return {
+        "role": "user",
+        "content": [
+            {
+                "type": "text",
+                "text": (
+                    "Look at the attached image. Describe the composition. "
+                    "Name the subject, layout, and colors. "
+                    "Do not call run. Do not search for a vision service. "
+                    "Do not say you cannot see the image. "
+                    f"Include the token {MARKER}-vlm in the reply."
+                ),
+            },
+            {"type": "image_url", "image_url": {"url": image_url}},
+        ],
+    }
+
+
 def run() -> None:
-    session = Session(api_key=env.rich_key(), backend_url=env.BACKEND)
+    session = Session(api_key=env.api_key(), backend_url=env.BACKEND)
     with session:
         env.log("T3.1", f"generate monkey clipart via {FLUX}")
         first = env.run_agent("spaine", message=GENERATE, mode="agent", timeout_s=GENERATE_TIMEOUT_S)
@@ -148,8 +160,8 @@ def run() -> None:
         _wait_conversation(thread_id)
 
         items = client.query_conversation_items(thread_id, branch="active")
-        results = _run_service_results(items)
-        assert results, f"no run_service tool_result with job_id (bubble/panel data missing): {items}"
+        results = _run_results(items)
+        assert results, f"no run tool_result with job_id (bubble/panel data missing): {items}"
         _item, _part, output = results[0]
         child_job_id = output["job_id"]
         env.log("T3.1", f"child_job={child_job_id} status={output.get('status')}")
@@ -163,7 +175,7 @@ def run() -> None:
             getattr(tracked, "status", None),
         )
         files = _files_of(output)
-        assert files, f"run_service returned no image URLs: {output}"
+        assert files, f"run returned no image URLs: {output}"
         assert (output.get("status") or "").lower() in ("finished", "completed", "success"), output
         env.log("T3.1", f"tracked status={status} files={len(files)}")
 
@@ -182,17 +194,19 @@ def run() -> None:
         assert list_parts, f"query_jobs tool_result missing (tool not bound or call failed): {after_list}"
         list_output = list_parts[0][2]
         listed_ids = _job_ids(list_output)
-        env.log("T3.2", f"query_jobs n={len(listed_ids)}")
+        env.log("T3.2", f"query_jobs n={len(listed_ids)} ids={listed_ids}")
         assert listed_ids, f"query_jobs returned no jobs: {list_output!r}"
         assert child_job_id in listed_ids, (child_job_id, listed_ids)
         sdk_jobs = client.query_jobs(limit=10)
         sdk_ids = {getattr(job, "id", None) for job in sdk_jobs}
+        env.log("T3.2", f"sdk ids={sorted(job_id for job_id in sdk_ids if job_id)}")
         assert child_job_id in sdk_ids, (child_job_id, sdk_ids)
 
-        env.log("T3.3", "describe composition (qwen3.8 VLM on the image URL)")
+        env.log("T3.3", "describe composition (agent VLM, no nested run)")
+        before_describe = len(_run_results(after_list))
         second = env.run_agent(
             "spaine",
-            message=DESCRIBE,
+            messages=[_describe_message(files[0])],
             thread_id=thread_id,
             mode="agent",
             timeout_s=DESCRIBE_TIMEOUT_S,
@@ -200,6 +214,11 @@ def run() -> None:
         assert second["agent_status"] == "completed", second["response"]
         _wait_conversation(thread_id)
         after = client.query_conversation_items(thread_id, branch="active")
+        describe_runs = _run_results(after)
+        assert len(describe_runs) == before_describe, (
+            "agent spawned another catalog job instead of using its own VLM: "
+            f"{[out for _i, _p, out in describe_runs[before_describe:]]}"
+        )
         assistants = [item for item in after if item.role == "assistant" and item.kind == "message"]
         describe_text = " ".join(_item_text(item) for item in assistants[-1:])
         if MARKER + "-vlm" not in describe_text:
