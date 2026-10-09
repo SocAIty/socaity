@@ -31,7 +31,9 @@ def _load_repo_env() -> None:
 
 
 _load_repo_env()
-os.environ.setdefault("SOCAITY_BACKEND_URL", "http://127.0.0.1:8000/")
+# Local stack. Overrides a checkout .env that still points the SDK at the public gate.
+os.environ["SOCAITY_BACKEND_URL"] = "http://127.0.0.1:8000/"
+os.environ["APIPOD_GATE_URL"] = "http://127.0.0.1:8001"
 
 import socaity  # noqa: E402
 from socaity import client  # noqa: E402
