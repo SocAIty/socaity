@@ -17,8 +17,8 @@ dependencies = [
     "httpx",
     "fastsdk>=0.4.21",
     "apipod-registry>=0.1.9",
-    "socaity-schemas>=0.1.9",
-    "socaity-cli>=0.1.10",
+    "socaity-schemas>=0.1.10",
+    "socaity-cli>=0.1.11",
     "media-toolkit>=00.02.22"
 ]
 
