@@ -8,9 +8,12 @@ from typing import Any, Dict, List, Optional, Union
 import fastsdk
 from fastsdk.fastClient import FastClient
 from fastsdk.service_access import service_contract, set_reachability
+from pydantic import ValidationError
 from socaity_cli import SocaityBackendClient
+from socaity_schemas.platform.agent_tools import POSTURES
 from socaity_schemas.platform.catalog.service import Service
 from socaity_schemas.platform.context import (
+    ChatSettings,
     SocaityContext,
     SocaityOptions,
 )
@@ -18,7 +21,6 @@ from socaity_schemas.public.spec.address import SocaityServiceAddress
 
 from socaity.core.gateway import gateway_client
 from socaity.core.serialize import serialize_value
-
 
 DEFAULT_APIPOD_GATE_URL = "https://api.socaity.ai"
 
@@ -104,6 +106,35 @@ def _inherit_context(explicit: Any, session: Any) -> Optional[SocaityContext]:
         if conversation_id:
             merged["thread_id"] = conversation_id
     return SocaityContext.model_validate(merged) if merged else None
+
+
+def _chat_overlay(settings: Any) -> Optional[dict]:
+    """Validate a chat overlay as ``ChatSettings``. Nulls and unknown keys drop out."""
+    if not isinstance(settings, dict):
+        return None
+    candidate: Dict[str, Any] = {}
+    memory = settings.get("memory")
+    if isinstance(memory, dict):
+        candidate["memory"] = {
+            key: value
+            for key, value in memory.items()
+            if key in ("personalization", "summary", "suggestions") and isinstance(value, bool)
+        }
+    tools = settings.get("tools")
+    if isinstance(tools, dict):
+        candidate["tools"] = {
+            name: posture for name, posture in tools.items() if posture in POSTURES
+        }
+    try:
+        parsed = ChatSettings.model_validate(candidate)
+    except ValidationError:
+        return None
+    dumped = parsed.model_dump(exclude_none=True)
+    if not dumped.get("memory"):
+        dumped.pop("memory", None)
+    if not dumped.get("tools"):
+        dumped.pop("tools", None)
+    return dumped or None
 
 
 def job_flags(socaity_options: Any = None, socaity_context: Any = None) -> Dict[str, Any]:
@@ -232,9 +263,11 @@ class SocaityClient(SocaityBackendClient):
         model: Optional[str] = None,
         decisions: Optional[List[dict]] = None,
         continue_turn: bool = False,
+        predecessor_job_id: Optional[str] = None,
         supersedes_job_id: Optional[str] = None,
         parent_item_id: Optional[str] = None,
         workflow: Optional[dict] = None,
+        settings: Optional[dict] = None,
     ) -> fastsdk.APISeex:
         """Submit one agent turn to ``POST /v1/agents/{id}/chat``.
 
@@ -247,9 +280,11 @@ class SocaityClient(SocaityBackendClient):
             model: Model override passed through to the agent.
             decisions: HIT decisions answering a previous ``pending_actions`` batch.
             continue_turn: After a cancel, invoke from the last checkpoint.
+            predecessor_job_id: Job that owns the turn being continued or answered.
             supersedes_job_id: Live agent job this turn replaces (interrupted first).
             parent_item_id: Edit-and-fork parent of the new user message.
             workflow: Workflow document draft to seed the agent with.
+            settings: Chat overlay for this turn. Only ``memory`` and ``tools`` are sent.
 
         Returns:
             FastSDK job handle for the gateway factory job.
@@ -273,12 +308,25 @@ class SocaityClient(SocaityBackendClient):
             body["agent"] = agent_config
         if continue_turn:
             body["continue"] = True
+        if predecessor_job_id:
+            body["predecessor_job_id"] = predecessor_job_id
         if parent_item_id is not None:
             body["parent_item_id"] = parent_item_id
         for key, value in (("thread_id", thread_id), ("decisions", decisions), ("workflow", workflow)):
             if value:
                 body[key] = value
         body.update(job_flags())
+        options = body.get("socaity_options")
+        if not isinstance(options, dict):
+            options = {}
+        options.pop("settings", None)
+        overlay = _chat_overlay(settings)
+        if overlay:
+            options["settings"] = overlay
+        if options:
+            body["socaity_options"] = options
+        elif "socaity_options" in body:
+            body.pop("socaity_options")
 
         if supersedes_job_id:
             prior = self.track_job(supersedes_job_id)
