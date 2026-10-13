@@ -6,8 +6,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 import fastsdk
+from apipod_registry import active_details, resolve_operation
 from fastsdk.fastClient import FastClient
-from fastsdk.service_access import service_contract, set_reachability
+from fastsdk.service_access import set_reachability
 from pydantic import ValidationError
 from socaity_cli import SocaityBackendClient
 from socaity_schemas.platform.agent_tools import POSTURES
@@ -29,8 +30,8 @@ def _gate_bind(service: Service, gate_url: str, details_id: Optional[str] = None
     """Point every binding at ``{gate}/services/v1/{slug_or_id}``.
 
     Marketplace ``sk_`` catalog reads redact origin addresses. The SDK always
-    stamps the gate URL. Pinned ``details_id`` is first so FastSDK's primary
-    binding is the one the caller asked for.
+    stamps the gate URL. A pinned ``details_id`` moves to ``details[0]``
+    so calls on this client use that binding.
     """
     ident = service.slug or service.id
     if not ident:
@@ -43,23 +44,23 @@ def _gate_bind(service: Service, gate_url: str, details_id: Optional[str] = None
     rows = list(service.details or [])
     if not rows:
         raise RuntimeError(f"Service '{ident}' has no details binding.")
-    if details_id:
-        pinned = [row for row in rows if row.id == details_id]
-        if not pinned:
-            raise RuntimeError(f"Service details '{details_id}' not found.")
-        rows = pinned + [row for row in rows if row.id != details_id]
+    if details_id and not any(row.id == details_id for row in rows):
+        raise RuntimeError(f"Service details '{details_id}' not found.")
     updated = []
     for binding in rows:
         copy = binding.model_copy(deep=True)
         set_reachability(copy, provider="socaity", address=address)
         updated.append(copy)
+    if details_id:
+        updated.sort(key=lambda row: row.id != details_id)
     return service.model_copy(update={"details": updated})
 
 
 def _target_candidates(target: str) -> list[tuple[str, Optional[str]]]:
+    """Split ``target`` into (service key, operation reference). Longest key first."""
     parts = [part for part in target.strip("/").split("/") if part]
     return [
-        ("/".join(parts[:index]), ("/" + "/".join(parts[index:])) if index < len(parts) else None)
+        ("/".join(parts[:index]), "/".join(parts[index:]) or None)
         for index in range(len(parts), 0, -1)
     ]
 
@@ -69,20 +70,31 @@ def _looks_like_direct_source(source: str) -> bool:
     return lowered.startswith(("http://", "https://", "replicate:")) or lowered.endswith(".json")
 
 
-def _resolve_endpoint(client: FastClient, endpoint: Optional[str]):
-    """Pick the requested endpoint, or the service's first one when none was named."""
-    endpoints = service_contract(client.service).endpoints
-    if not endpoints:
-        raise ValueError(f"Service '{client.service.slug or client.service.id}' exposes no endpoints.")
-    if endpoint is None:
-        return endpoints[0]
+def _resolve_endpoint(client: FastClient, operation: Optional[str]):
+    """Resolve an operation reference on the active binding.
 
-    wanted = endpoint if endpoint.startswith("/") else f"/{endpoint}"
-    for candidate in endpoints:
-        if candidate.path == wanted:
-            return candidate
-    known = ", ".join(candidate.path for candidate in endpoints)
-    raise ValueError(f"Endpoint '{endpoint}' not found. This service exposes: {known}")
+    Args:
+        client: Connected FastSDK client.
+        operation: Operation key, catalog endpoint id, provider operation id,
+            or a unique HTTP path. A leading slash is ignored. None selects
+            the first public operation.
+
+    Returns:
+        The contract endpoint.
+
+    Raises:
+        ValueError: Nothing matches. The message lists known operation keys.
+    """
+    details = active_details(client.service)
+    resolved = resolve_operation(client.service, details, operation)
+    if resolved is not None:
+        return resolved
+    endpoints = details.contract.endpoints if details is not None and details.contract is not None else []
+    known = ", ".join(endpoint.operation_key for endpoint in endpoints)
+    name = client.service.slug or client.service.id
+    if not operation:
+        raise ValueError(f"Service '{name}' exposes no endpoints.")
+    raise ValueError(f"Operation '{operation}' not found. This service exposes: {known}")
 
 
 def _dump_model(raw: Any) -> Optional[dict]:
@@ -221,7 +233,7 @@ class SocaityClient(SocaityBackendClient):
         Agents use ``run_agent``. Workflows use ``run_workflow``.
 
         Args:
-            target: ``{slug_or_id}/{path}`` or a bare slug (first contract endpoint).
+            target: ``{slug_or_id}/{operation_key}`` or a bare slug (first public operation).
             params: Endpoint arguments. ``**kwargs`` merge on top.
             details_id: Pin one ``ServiceDetails`` binding.
             socaity_options: Platform retention and visibility.
@@ -236,10 +248,10 @@ class SocaityClient(SocaityBackendClient):
 
         service = None
         remainder = None
-        for key, path in _target_candidates(target):
+        for key, operation in _target_candidates(target):
             service = self.get_service(key)
             if service is not None:
-                remainder = path
+                remainder = operation
                 break
         if service is None:
             raise RuntimeError(f"Service '{target}' not found.")
@@ -251,7 +263,9 @@ class SocaityClient(SocaityBackendClient):
         job_params = {**(params or {}), **kwargs}
         if details_id:
             job_params["details_id"] = details_id
-        return client.submit_job(endpoint.path, **{**job_params, **job_flags(socaity_options, socaity_context)})
+        return client.submit_job(
+            endpoint.operation_key, **{**job_params, **job_flags(socaity_options, socaity_context)}
+        )
 
     def run_agent(
         self,
@@ -339,7 +353,7 @@ class SocaityClient(SocaityBackendClient):
 
         path = f"/v1/agents/{agent}/chat"
         client = gateway_client(self.gate_url, self.api_key, path, self.materialize_media)
-        return client.submit_job(path, **{key: value for key, value in body.items() if value is not None})
+        return client.submit_job(**{key: value for key, value in body.items() if value is not None})
 
     def run_workflow(
         self,
@@ -389,7 +403,7 @@ class SocaityClient(SocaityBackendClient):
             "seed_outputs": seed_outputs,
             **job_flags(),
         }
-        return client.submit_job(path, **{key: value for key, value in body.items() if value is not None})
+        return client.submit_job(**{key: value for key, value in body.items() if value is not None})
 
     def estimate_price(
         self,
@@ -401,7 +415,7 @@ class SocaityClient(SocaityBackendClient):
 
         Args:
             service: Service id, slug, or ``owner/service``.
-            endpoint: Endpoint path. Defaults to the service's first endpoint.
+            endpoint: Operation key. Defaults to the service's first public operation.
             params: The arguments you intend to pass to ``run``.
 
         Returns:
@@ -409,9 +423,9 @@ class SocaityClient(SocaityBackendClient):
         """
         client = self.connect(service)
         target = _resolve_endpoint(client, endpoint)
-        estimate = client.estimate(target.path, **(params or {}))
+        estimate = client.estimate(target.operation_key, **(params or {}))
         if estimate is None:
-            raise ValueError(f"No estimate available for {service}{target.path}.")
+            raise ValueError(f"No estimate available for {service}/{target.operation_key}.")
         return estimate.model_dump(mode="json")
 
     def track_job(self, job_id: str) -> fastsdk.APISeex:

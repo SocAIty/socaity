@@ -1,10 +1,12 @@
 """E2E Phase 8: GitHub connector through catalog, workflow, job.
 
-Register the canonical GitHub OpenAPI document, register it again (the platform
-answers ``connector_exists`` with the same service), pin the connector as a
-``ServiceNode`` searching ``socaity_frontend``, run the workflow and check the
-private repository shows up. The child job is a normal catalog job on the
-external details binding and carries the job-floor charge.
+The full GitHub REST description (about 1200 operations) exceeds the 500-operation
+inspect cap: register rejects it before anything persists. GitHub publishes no
+smaller official REST description, so the private-repository call runs through the
+official GitHub MCP server. Register it with ``GITHUB_TOKEN`` (a second register
+answers ``connector_exists`` with the same service), pin ``list_branches`` on the
+private ``socaity_frontend`` repository as a ``ServiceNode``, run the workflow and
+check the child job carries the job-floor charge.
 
     python test/test_e2e_github_connector.py
     pytest test/test_e2e_github_connector.py -v -s
@@ -13,6 +15,7 @@ Keys: see ``agentic_utils``.
 """
 from __future__ import annotations
 
+import os
 import sys
 import time
 from pathlib import Path
@@ -23,6 +26,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import agentic_utils as env  # noqa: E402  (sets URL defaults before socaity import)
 
+from apipod_registry import active_details  # noqa: E402
 from socaity import Session, client  # noqa: E402
 from socaity_cli.errors import BackendApiError  # noqa: E402
 
@@ -30,45 +34,66 @@ GITHUB_SPEC_URL = (
     "https://raw.githubusercontent.com/github/rest-api-description/main/"
     "descriptions/api.github.com/api.github.com.json"
 )
+GITHUB_MCP_URL = "https://api.githubcopilot.com/mcp/"
+REPO_OWNER = "w4hns1nn"
 PRIVATE_REPO = "socaity_frontend"
+INSPECT_LIMIT_CODES = {"too_many_operations", "document_too_large"}
 
 pytestmark = [
     pytest.mark.skipif(not env.backend_up(), reason=f"backend not reachable at {env.BACKEND}"),
     pytest.mark.skipif(not env.inference_up(), reason=f"APIPod gate not reachable at {env.GATE}"),
     pytest.mark.skipif(not env.api_key(), reason=env.missing_env("SOCAITY_API_KEY") or "no SOCAITY_API_KEY"),
+    pytest.mark.skipif(not os.getenv("GITHUB_TOKEN"), reason=env.missing_env("GITHUB_TOKEN") or "no GITHUB_TOKEN"),
 ]
 
 
-def _register(source: str) -> tuple[str, bool]:
-    """Return ``(service_id, already_existed)`` for one register call."""
+def connect_github_mcp() -> tuple[str, bool]:
+    """Return ``(service_id, already_existed)``; an existing connector gets ``GITHUB_TOKEN`` bound again."""
+    token = os.environ["GITHUB_TOKEN"]
     try:
-        service = client.register_connector(source)
+        return client.register_connector(GITHUB_MCP_URL, secret=token).id, False
     except BackendApiError as exc:
         assert exc.status_code == 409 and exc.code == "connector_exists", (exc.status_code, exc.code, str(exc))
-        return exc.detail["service"]["id"], True
-    assert service is not None, f"register rejected {source}"
-    return service.id, False
+        service_id = exc.detail["service"]["id"]
+    client.change_connector_credential(service_id, secret=token)
+    return service_id, True
+
+
+def lists_branches(output) -> bool:
+    """MCP ``structuredContent`` arrives as branch objects (Python repr once stringified), text as JSON."""
+    text = str(output)
+    return "'name': " in text or '"name": ' in text
+
+
+def tool_endpoint(service, tool: str):
+    """Catalog endpoint of one MCP tool; the provider tool name stays in the contract's ``operation_id``."""
+    contract_endpoints = active_details(service).contract.endpoints
+    key = next((row.operation_key for row in contract_endpoints if row.operation_id == tool), None)
+    endpoint = next((row for row in service.endpoints or [] if row.operation_key == key), None)
+    assert endpoint is not None, f"tool {tool} missing from {sorted(row.operation_id for row in contract_endpoints)}"
+    return endpoint
 
 
 def _connector_doc(service, endpoint) -> dict:
-    details = service.details[0]
+    details = active_details(service)
+    assert details is not None and details.connector is not None
     return {
         "id": f"wf_{uuid4()}",
         "title": "GitHub connector e2e",
-        "goal": f"Find the private {PRIVATE_REPO} repository through the GitHub connector.",
+        "goal": f"List the branches of the private {PRIVATE_REPO} repository through the GitHub MCP connector.",
         "nodes": [
             {"id": "nd_input", "kind": "builtin", "title": "input"},
             {
                 "id": "nd_gh",
                 "kind": "service",
-                "title": "github search repos",
+                "title": "github list branches",
                 "service_id": service.id,
                 "endpoint_id": endpoint.id,
                 "details_id": details.id,
                 "connectors_id": details.connector.id,
-                "path": endpoint.path,
+                "operation_key": endpoint.operation_key,
                 "specification_hash": details.specification_hash,
-                "inputs": {"q": PRIVATE_REPO},
+                "inputs": {"arguments": {"owner": REPO_OWNER, "repo": PRIVATE_REPO}},
             },
             {"id": "nd_output", "kind": "builtin", "title": "output"},
         ],
@@ -94,14 +119,20 @@ def _child_job(wf_id: str, parent_job_id: str, details_id: str):
 def run() -> None:
     session = Session(api_key=env.api_key(), backend_url=env.BACKEND)
     with session:
-        env.log("T8.1", f"register {GITHUB_SPEC_URL}")
-        service_id, existed = _register(GITHUB_SPEC_URL)
-        env.log("T8.1", f"service_id={service_id} already_existed={existed}")
+        for attempt in ("first", "second"):
+            env.log("T8.1", f"{attempt} register of the full REST description {GITHUB_SPEC_URL}")
+            with pytest.raises(BackendApiError) as rejected:
+                client.register_connector(GITHUB_SPEC_URL)
+            env.log("T8.1", f"status={rejected.value.status_code} code={rejected.value.code}")
+            # A second identical rejection (not connector_exists) proves nothing persisted.
+            assert rejected.value.code in INSPECT_LIMIT_CODES, (rejected.value.code, str(rejected.value))
 
-        again_id, again_existed = _register(GITHUB_SPEC_URL)
-        env.log("T8.1", f"second register service_id={again_id} already_existed={again_existed}")
-        assert again_existed, "second register of the same OpenAPI document created a new connector"
-        assert again_id == service_id, (again_id, service_id)
+        service_id, existed = connect_github_mcp()
+        env.log("T8.2", f"github mcp service_id={service_id} already_existed={existed}")
+        with pytest.raises(BackendApiError) as again:
+            client.register_connector(GITHUB_MCP_URL, secret=os.environ["GITHUB_TOKEN"])
+        assert again.value.code == "connector_exists", (again.value.code, str(again.value))
+        assert again.value.detail["service"]["id"] == service_id, again.value.detail["service"]["id"]
 
         hits = client.query_services(q="github", filters=["kind:eq:connector"], limit=50, mine=True)
         env.log("T8.2", f"catalog hits={[row.slug for row in hits]}")
@@ -112,18 +143,14 @@ def run() -> None:
             expand=["details.contract", "details.connector", "endpoints", "credential_requirements"],
         )
         assert service is not None and service.kind == "connector", service
-        details = service.details[0]
+        details = active_details(service)
+        assert details is not None, "connector has no active details binding"
         assert details.execution == "external", details.execution
         assert details.deployment is None, "connector must not have a hosting row"
         assert details.connector and details.connector.id, "connector row missing"
-        assert details.spec_url == GITHUB_SPEC_URL, details.spec_url
-        endpoint = next((row for row in service.endpoints if row.path == "/search/repositories"), None)
-        assert endpoint is not None, "GET /search/repositories missing from connector endpoints"
-        env.log(
-            "T8.2",
-            f"details_id={details.id} connectors_id={details.connector.id} "
-            f"credentials={sorted(row.name for row in service.credential_requirements or [])}",
-        )
+        assert details.contract.specification == "mcp", details.contract.specification
+        endpoint = tool_endpoint(service, "list_branches")
+        env.log("T8.2", f"details_id={details.id} tools={len(service.endpoints)} key={endpoint.operation_key}")
 
         saved = client.upsert_workflow(
             _connector_doc(service, endpoint), slug=f"wf-github-e2e-{int(time.time())}", message="github e2e",
@@ -138,10 +165,9 @@ def run() -> None:
         result = finished.get("result") or {}
         assert result.get("status") == "completed", result
         outputs = result.get("outputs") or {}
-        search = outputs.get("nd_gh") or outputs.get("nd_output") or {}
-        names = [item.get("name") for item in (search.get("items") or []) if isinstance(item, dict)]
-        env.log("T8.3", f"total_count={search.get('total_count')} names={names[:10]}")
-        assert PRIVATE_REPO in names, f"private repository {PRIVATE_REPO} not in search results: {names[:10]}"
+        branches = str(outputs.get("nd_gh") or outputs.get("nd_output") or "")
+        env.log("T8.3", f"list_branches output={branches[:300]}")
+        assert lists_branches(branches), f"no branch listed for private {REPO_OWNER}/{PRIVATE_REPO}: {branches[:300]}"
 
         child = _child_job(wf_id, finished.get("job_id"), details.id)
         assert child is not None, "connector child job was not recorded on the workflow run"
@@ -149,7 +175,7 @@ def run() -> None:
         env.log("T8.4", f"child job={child.id} status={billed.status} billing={billed.billing}")
         assert (billed.status or "").lower() in ("finished", "completed", "success"), billed.status
         assert billed.billing is not None, "job-floor billing missing on connector job"
-        assert billed.billing.cost_amount is not None and billed.billing.cost_amount >= 0, billed.billing
+        assert billed.billing.cost_amount is not None and billed.billing.cost_amount > 0, billed.billing
     env.log("T8", "PASS")
 
 

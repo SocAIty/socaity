@@ -5,7 +5,8 @@ inference gateway + orchestrator + engines, and SPAINE in the catalog.
 Import this module before ``socaity`` so the URL defaults land first.
 
 Credentials are env-only, from this repo's ``.env``:
-``SOCAITY_API_KEY`` (funded user) and ``SOCAITY_POOR_API_KEY`` (second user).
+``SOCAITY_API_KEY`` (funded user), ``SOCAITY_POOR_API_KEY`` (second user) and
+``GITHUB_TOKEN`` (PAT with access to the private ``socaity_frontend`` repository).
 Gate origin is forced to local ``APIPOD_GATE_URL``.
 """
 from __future__ import annotations
@@ -14,11 +15,11 @@ import os
 from pathlib import Path
 from typing import Optional
 
-import httpx
+import httpx2
 
 
 _ENV_FILE = Path(__file__).resolve().parents[1] / ".env"
-_CRED_KEYS = ("SOCAITY_API_KEY", "SOCAITY_POOR_API_KEY")
+_CRED_KEYS = ("SOCAITY_API_KEY", "SOCAITY_POOR_API_KEY", "GITHUB_TOKEN")
 
 
 def _load_repo_env() -> None:
@@ -69,15 +70,15 @@ if _missing_api:
 
 def backend_up() -> bool:
     try:
-        return httpx.get(f"{BACKEND}/v1/catalog/services", params={"limit": 1}, timeout=10).status_code == 200
-    except httpx.HTTPError:
+        return httpx2.get(f"{BACKEND}/v1/catalog/services", params={"limit": 1}, timeout=10).status_code == 200
+    except httpx2.HTTPError:
         return False
 
 
 def inference_up() -> bool:
     try:
-        return httpx.get(f"{GATE}/health", timeout=30).status_code == 200
-    except httpx.HTTPError:
+        return httpx2.get(f"{GATE}/health", timeout=30).status_code == 200
+    except httpx2.HTTPError:
         return False
 
 

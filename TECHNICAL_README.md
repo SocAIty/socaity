@@ -60,8 +60,9 @@ List calls request a sparse fieldset (`fields=id,slug,display_name,...`) and opt
 `filter` / `q`. Results are schema models (`Service`, `Job`, …), not lazy proxies.
 Call ``get_service`` with expand (``details.contract``, ``endpoints``) when you need the
 runtime bindings (``details[]``, each optionally carrying a hosting ``deployment``) or contracts.
-``run(..., details_id=details[0].id)`` pins the spec. Compute URL is
-``details[0].deployment``; connector URL is ``details[0].connector``. Connectors are catalog
+``details[0]`` is the binding unpinned calls use (the catalog orders details active first). Pass that id
+as ``details_id`` to pin the spec. Compute URL is that binding's ``deployment``;
+connector URL is its ``connector``. Connectors are catalog
 services with ``kind == "connector"``; they run like any other service.
 
 ## Mental Model
@@ -88,7 +89,7 @@ Platform (webapi.socaity.ai)
   ▼
 SocaityClient.get_service / connect / run
   ▼
-FastClient(details_id) → POST {gate}/services/v1/{slug}/{path}?details_id=
+FastClient(details_id) → POST {gate}/services/v1/{slug}/{operation_key}?details_id=
   ▼
 fastSDK ApiJobManager → APISeex
 ```
@@ -114,7 +115,7 @@ socaity/
 
 ### `SocaityBackendClient`
 
-Sync `httpx` client for **platform metadata only** (not inference). Auth via `SOCAITY_API_KEY` or credentials from `socaity login`. Backend URL is resolved per client (constructor, then `SOCAITY_BACKEND_URL`, then the login file, then prod). Looking up an API key never writes `SOCAITY_BACKEND_URL` into the process. Inference traffic goes through fastSDK to `api.socaity.ai`.
+Sync `httpx2` client for **platform metadata only** (not inference). Auth via `SOCAITY_API_KEY` or credentials from `socaity login`. Backend URL is resolved per client (constructor, then `SOCAITY_BACKEND_URL`, then the login file, then prod). Looking up an API key never writes `SOCAITY_BACKEND_URL` into the process. Inference traffic goes through fastSDK to `api.socaity.ai`.
 
 Catalog reads use the backend's sparse fieldsets (`select`), relation embedding (`include`) and pagination (`limit`/`offset`).
 
@@ -212,7 +213,7 @@ For services not in the catalog, or local APIPod dev servers:
 ```python
 from socaity import client, Client, Session
 
-job = client.connect("http://localhost:8009").submit_job("/chat", messages=[...], stream=True)
+job = client.connect("http://localhost:8009").submit_job("chat", messages=[...], stream=True)
 
 mine = Client(api_key=key)
 with Session(api_key=other_key):
@@ -237,7 +238,7 @@ Legacy token migration from `~/.apipod/token` is handled in `socaity_cli.credent
 
 The `socaity` command lives in the separate **socaity-cli** package (a hard dependency
 of this SDK). It bundles login, catalog browsing, `socaity run`, and APIPod deployment
-commands with minimal dependencies (httpx + socaity-schemas). `socaity run` delegates
+commands with minimal dependencies (httpx2 + socaity-schemas). `socaity run` delegates
 into `SocaityClient.run` via `requires("socaity")`; `scan` / `build` / `start` delegate
 to `apipod` the same way. `SocaityBackendClient` and credentials handling are imported
 from `socaity_cli`.
@@ -268,7 +269,7 @@ Data flow for a catalog model:
 
 1. APIPod service deployed on socaity.ai publishes OpenAPI + schemas
 2. Platform stores `Service` + `ServiceDetails` (socaity-schemas)
-3. `client.run("slug/path", **params)` loads the catalog, retargets to the gate
+3. `client.run("slug/operation_key", **params)` loads the catalog, retargets to the gate
 4. fastSDK executes against `{gate}/services/v1/{slug}`
 
 ## Cache

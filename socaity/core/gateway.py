@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import hashlib
 
-from apipod_registry import create_service
+from apipod_registry import create_service, http_operation_key
 from fastsdk import FastSDK
 from fastsdk.fastClient import FastClient
 from socaity_schemas.public.spec.endpoint import (
@@ -27,10 +27,12 @@ def gateway_client(
     path: str,
     materialize_media: bool,
 ) -> FastClient:
-    """Return a temporary FastClient whose contract has exactly ``path``.
+    """Return a temporary FastClient for one gateway factory HTTP route.
 
-    The stand-in is registered in memory only. ``FastClient(service=...)``
-    would persist it through the file-backed catalog store.
+    ``path`` stays the request path FastSDK appends. The contract's
+    ``operation_key`` is what ``submit_job`` resolves. The stand-in is
+    registered in memory only. ``FastClient(service=...)`` would persist it
+    through the file-backed catalog store.
     """
     origin = origin.rstrip("/")
     normalized = path if path.startswith("/") else f"/{path}"
@@ -42,6 +44,7 @@ def gateway_client(
         has_job_queue=True,
         endpoints=[
             Endpoint(
+                operation_key=http_operation_key("POST", normalized),
                 path=normalized,
                 method="POST",
                 request_body_content_type="application/json",
