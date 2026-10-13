@@ -19,7 +19,7 @@ import httpx2
 
 
 _ENV_FILE = Path(__file__).resolve().parents[1] / ".env"
-_CRED_KEYS = ("SOCAITY_API_KEY", "SOCAITY_POOR_API_KEY", "GITHUB_TOKEN")
+_CRED_KEYS = ("SOCAITY_API_KEY", "SOCAITY_POOR_API_KEY", "GITHUB_TOKEN", "GOOGLE_SHEETS_TOKEN")
 
 
 def _load_repo_env() -> None:

@@ -35,12 +35,23 @@ pytestmark = [
 ]
 
 
-def _searched_since(started_at: datetime, tavily_id: str) -> list:
-    return [
+def _searched_since(started_at: datetime, tavily_id: str, conversation_id: str | None = None) -> list:
+    jobs = [
         job for job in client.query_jobs(limit=50)
         if job.service_id == tavily_id and job.created_at
         and datetime.fromisoformat(job.created_at.replace("Z", "+00:00")) >= started_at
     ]
+    if conversation_id:
+        conv = client.get_conversation(conversation_id, expand=["items"])
+        for item in (conv.items if conv else None) or []:
+            for part in item.parts or []:
+                output = getattr(part, "output", None)
+                job_id = output.get("job_id") if isinstance(output, dict) else None
+                if job_id:
+                    job = client.get_job(job_id)
+                    if job and job.service_id == tavily_id and all(j.id != job.id for j in jobs):
+                        jobs.append(job)
+    return jobs
 
 
 def _is_github_mcp(service_id: str) -> bool:
@@ -61,7 +72,7 @@ def run() -> None:
         env.log("T5.1", f"pending={[action.get('name') for action in turn['pending_actions']]}")
         assert turn["agent_status"] == "completed", turn["response"]
 
-        searches = _searched_since(started_at, tavily.id)
+        searches = _searched_since(started_at, tavily.id, turn.get("thread_id"))
         env.log("T5.2", f"web searches={[job.id for job in searches]}")
         assert searches, "the agent did not use web_search to find the GitHub MCP endpoint"
 
