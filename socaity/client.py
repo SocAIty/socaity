@@ -275,6 +275,11 @@ class SocaityClient(SocaityBackendClient):
         thread_id: Optional[str] = None,
         mode: Optional[str] = None,
         model: Optional[str] = None,
+        system_prompt: Optional[str] = None,
+        details_id: Optional[str] = None,
+        grants: Optional[List[str]] = None,
+        grant_exclusions: Optional[List[str]] = None,
+        output_schema: Optional[dict] = None,
         decisions: Optional[List[dict]] = None,
         continue_turn: bool = False,
         predecessor_job_id: Optional[str] = None,
@@ -282,6 +287,8 @@ class SocaityClient(SocaityBackendClient):
         parent_item_id: Optional[str] = None,
         workflow: Optional[dict] = None,
         settings: Optional[dict] = None,
+        socaity_options: Optional[Union[SocaityOptions, dict]] = None,
+        socaity_context: Optional[Union[SocaityContext, dict]] = None,
     ) -> fastsdk.APISeex:
         """Submit one agent turn to ``POST /v1/agents/{id}/chat``.
 
@@ -292,6 +299,11 @@ class SocaityClient(SocaityBackendClient):
             thread_id: Conversation thread; reuse it to continue or resume.
             mode: Agent mode (SPAINE: chat | plan | agent | repair).
             model: Model override passed through to the agent.
+            system_prompt: Per-turn/step instructions overlay.
+            details_id: Pinned ``ServiceDetails`` row for this agent.
+            grants: Step-scoped endpoint ids or targets allowed on this turn.
+            grant_exclusions: Base agent grants excluded on this turn.
+            output_schema: JSON Schema for structured output extraction.
             decisions: HIT decisions answering a previous ``pending_actions`` batch.
             continue_turn: After a cancel, invoke from the last checkpoint.
             predecessor_job_id: Job that owns the turn being continued or answered.
@@ -299,6 +311,8 @@ class SocaityClient(SocaityBackendClient):
             parent_item_id: Edit-and-fork parent of the new user message.
             workflow: Workflow document draft to seed the agent with.
             settings: Chat overlay for this turn. Only ``memory`` and ``tools`` are sent.
+            socaity_options: Explicit platform options.
+            socaity_context: Explicit lineage context.
 
         Returns:
             FastSDK job handle for the gateway factory job.
@@ -316,7 +330,18 @@ class SocaityClient(SocaityBackendClient):
         elif not turn_messages and not decisions:
             raise ValueError("run_agent needs a message, messages, or decisions to resume with.")
 
-        agent_config = {key: value for key, value in (("mode", mode), ("model", model)) if value}
+        agent_config: Dict[str, Any] = {}
+        for key, value in (
+            ("mode", mode),
+            ("model", model),
+            ("system_prompt", system_prompt),
+            ("details_id", details_id),
+            ("grants", grants),
+            ("grant_exclusions", grant_exclusions),
+            ("output_schema", output_schema),
+        ):
+            if value is not None and value != "" and value != []:
+                agent_config[key] = value
         body: Dict[str, Any] = {"messages": turn_messages, "stream": False}
         if agent_config:
             body["agent"] = agent_config
@@ -329,7 +354,7 @@ class SocaityClient(SocaityBackendClient):
         for key, value in (("thread_id", thread_id), ("decisions", decisions), ("workflow", workflow)):
             if value:
                 body[key] = value
-        body.update(job_flags())
+        body.update(job_flags(socaity_options, socaity_context))
         options = body.get("socaity_options")
         if not isinstance(options, dict):
             options = {}
