@@ -36,7 +36,7 @@ VIDEO = INPUT / "test_video_ultra_short.mp4"
 
 def _swap_img():
     job = connect("face2face").submit_job(
-        "/swap-img-to-img",
+        "swap-img-to-img",
         source_img=str(FACE_1),
         target_img=str(FACE_2),
         enhance_face_model=None,
@@ -50,7 +50,7 @@ def _swap_img():
 
 def _embedding():
     job = connect("face2face").submit_job(
-        "/add-face",
+        "add-face",
         face_name="hagrid",
         image=str(FACE_1),
         save=False,
@@ -69,7 +69,7 @@ def _swap_with_embedding():
         _embedding()
     faces = MediaFile().from_file(str(path))
     job = connect("face2face").submit_job(
-        "/swap",
+        "swap",
         media=str(FACE_2),
         faces=faces,
         enhance_face_model="gpen_bfr",
@@ -87,7 +87,7 @@ def _swap_video():
         _embedding()
     faces = MediaFile().from_file(str(path))
     job = connect("face2face").submit_job(
-        "/swap-video",
+        "swap-video",
         faces=faces,
         target_video=str(VIDEO),
         include_audio=True,

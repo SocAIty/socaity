@@ -37,7 +37,7 @@ class ChatSocaity(BaseChatModel):
     Args:
         model: Service slug, id or direct URL (resolved via the catalog).
         api_key: Socaity API key; falls back to the stored login.
-        endpoint_path: Chat endpoint override (default: auto-resolved).
+        operation: Chat operation override (default: auto-resolved).
         temperature / max_tokens / top_p / seed: Default sampling parameters,
             overridable per call via ``.bind(...)`` or invoke kwargs.
         reasoning_effort: Forwarded to the catalog chat service (Qwen think).
@@ -45,7 +45,7 @@ class ChatSocaity(BaseChatModel):
 
     model: str
     api_key: Optional[str] = None
-    endpoint_path: Optional[str] = None
+    operation: Optional[str] = None
     temperature: Optional[float] = None
     max_tokens: Optional[int] = None
     top_p: Optional[float] = None
@@ -81,7 +81,7 @@ class ChatSocaity(BaseChatModel):
     def adapter(self) -> ChatServiceAdapter:
         """The underlying platform adapter (connects lazily on first call)."""
         if self._adapter is None:
-            self._adapter = ChatServiceAdapter(self.model, api_key=self.api_key, endpoint_path=self.endpoint_path)
+            self._adapter = ChatServiceAdapter(self.model, api_key=self.api_key, operation=self.operation)
         return self._adapter
 
     @property
@@ -418,7 +418,7 @@ def _image_url_parts(content: Any, *, remote: bool = True, inline: bool = True) 
 def _coerce_message_content(messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Normalize content. Keep ``image_url`` parts (data URI or http(s)).
 
-    Catalog ``/chat`` is ChatCompletionRequest: remote URLs stay on the
+    Catalog chat (``ChatCompletionRequest``) keeps remote URLs on the
     message. APIPod inlines them before vLLM. Do not send a top-level
     ``images`` field; the gate rejects it as extra.
     """

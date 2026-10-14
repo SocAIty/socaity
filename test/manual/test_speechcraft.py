@@ -1,7 +1,7 @@
 """Manual: official speechcraft through ``client.connect`` / ``submit_job``.
 
 Checks file transfer (wav in, audio out), job progress events, and
-byte streaming on ``/text2voice`` with ``stream=True``. Not part of the
+byte streaming on operation key ``text2voice`` with ``stream=True``. Not part of the
 default pytest suite.
 
     python test/manual/test_speechcraft.py
@@ -42,7 +42,7 @@ CLONE_2 = first_existing(
 
 
 def _text2voice():
-    job = connect("speechcraft").submit_job("/text2voice", text=SAMPLE, voice="hermine")
+    job = connect("speechcraft").submit_job("text2voice", text=SAMPLE, voice="hermine")
     events = watch(job)
     audio = job.get_result()
     assert_progress(events, job)
@@ -53,7 +53,7 @@ def _text2voice():
 def _text2voice_stream():
     """Consume the live audio byte stream instead of assembling after the fact."""
     job = connect("speechcraft").submit_job(
-        "/text2voice",
+        "text2voice",
         text=SAMPLE,
         voice="hermine",
         stream=True,
@@ -78,7 +78,7 @@ def _voice2embedding():
     if CLONE_1 is None:
         raise FileNotFoundError("missing voice clone wav under test_files/text2speech")
     job = connect("speechcraft").submit_job(
-        "/voice2embedding",
+        "voice2embedding",
         audio_file=str(CLONE_1),
         voice_name="hermine",
         save=False,
@@ -96,7 +96,7 @@ def _text2voice_with_embedding():
     if not path.is_file():
         _voice2embedding()
     voice = MediaFile().from_file(str(path))
-    job = connect("speechcraft").submit_job("/text2voice", text=SAMPLE, voice=voice)
+    job = connect("speechcraft").submit_job("text2voice", text=SAMPLE, voice=voice)
     events = watch(job)
     audio = job.get_result()
     assert_progress(events, job)
@@ -108,7 +108,7 @@ def _voice2voice():
     if CLONE_2 is None:
         raise FileNotFoundError("missing voice2voice wav under test_files/text2speech")
     job = connect("speechcraft").submit_job(
-        "/voice2voice",
+        "voice2voice",
         audio_file=str(CLONE_2),
         voice_name="hermine",
     )

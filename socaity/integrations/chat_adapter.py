@@ -20,7 +20,7 @@ from socaity_schemas.public.spec.endpoint import Endpoint
 from socaity_schemas.platform.catalog.service import Service
 
 from socaity import client
-from socaity.client import job_flags
+from socaity.client import _resolve_endpoint, job_flags
 
 CHAT_SCHEMA_NAME = "ChatCompletionRequest"
 
@@ -32,21 +32,22 @@ class ChatServiceAdapter:
         service: Service slug, id, URL, ``Service`` or an existing
             ``FastClient`` (reused as-is).
         api_key: Socaity API key; falls back to the stored login.
-        endpoint_path: Chat endpoint path override. Default: the endpoint
-            implementing ``ChatCompletionRequest``, else ``/chat``.
+        operation: Operation reference (key, id, or operation id). Default:
+            the endpoint whose ``standard_schema`` is ``ChatCompletionRequest``,
+            else operation key ``chat``.
     """
 
     def __init__(
         self,
         service: Union[str, dict, Service, FastClient],
         api_key: Optional[str] = None,
-        endpoint_path: Optional[str] = None,
+        operation: Optional[str] = None,
     ):
         self.client = (
             service if isinstance(service, FastClient)
             else client.connect(service, api_key=api_key)
         )
-        self.endpoint = self._resolve_chat_endpoint(endpoint_path)
+        self.endpoint = self._resolve_chat_endpoint(operation)
         self.jobs: List[APISeex] = []
 
     @property
@@ -57,25 +58,23 @@ class ChatServiceAdapter:
     # Endpoint resolution
     # ------------------------------------------------------------------
 
-    def _resolve_chat_endpoint(self, endpoint_path: Optional[str]) -> Endpoint:
-        contract = service_contract(self.service)
-        if endpoint_path:
-            for endpoint in contract.endpoints:
-                if endpoint.path == endpoint_path:
-                    return endpoint
-            raise ValueError(f"Service {self.service.slug} has no endpoint {endpoint_path!r}.")
+    def _resolve_chat_endpoint(self, operation: Optional[str]) -> Endpoint:
+        """Chat operation: explicit reference, else the standard schema, else key ``chat``."""
+        if operation:
+            return _resolve_endpoint(self.client, operation)
 
-        # Prefer the declared standard schema; VLM chat endpoints subclass the
-        # schema (VLMChatRequest) and are found via the conventional /chat path.
-        for endpoint in contract.endpoints:
+        # Prefer the declared standard schema. A VLM route whose schema is a
+        # subclass still matches the conventional operation key ``chat``.
+        endpoints = service_contract(self.service).endpoints
+        for endpoint in endpoints:
             if endpoint.standard_schema == CHAT_SCHEMA_NAME:
                 return endpoint
-        for endpoint in contract.endpoints:
-            if endpoint.path == "/chat":
+        for endpoint in endpoints:
+            if endpoint.operation_key == "chat":
                 return endpoint
         raise ValueError(
             f"Service {self.service.slug} exposes no chat endpoint "
-            f"(no {CHAT_SCHEMA_NAME} schema and no /chat path)."
+            f"(no {CHAT_SCHEMA_NAME} schema and no operation key 'chat')."
         )
 
     # ------------------------------------------------------------------
@@ -88,7 +87,7 @@ class ChatServiceAdapter:
         Session lineage rides along, so a call inside an agent turn or workflow
         run becomes a child job of it.
         """
-        job = self.client.submit_job(self.endpoint.path, **{**self._job_kwargs(request), **job_flags()})
+        job = self.client.submit_job(self.endpoint.operation_key, **{**self._job_kwargs(request), **job_flags()})
         self.jobs.append(job)
         return job
 

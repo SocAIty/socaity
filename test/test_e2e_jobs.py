@@ -15,7 +15,7 @@ import time
 import uuid
 from pathlib import Path
 
-import httpx
+import httpx2
 import pytest
 
 
@@ -52,8 +52,8 @@ def _has_credentials() -> bool:
 
 def _backend_up() -> bool:
     try:
-        return httpx.get(BACKEND + "v1/catalog/services", params={"limit": 1}, timeout=10).status_code == 200
-    except (httpx.HTTPError, httpx.InvalidURL):
+        return httpx2.get(BACKEND + "v1/catalog/services", params={"limit": 1}, timeout=10).status_code == 200
+    except (httpx2.HTTPError, httpx2.InvalidURL):
         return False
 
 

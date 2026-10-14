@@ -14,7 +14,7 @@ import sys
 import time
 from pathlib import Path
 
-import httpx
+import httpx2
 import pytest
 
 
@@ -33,6 +33,7 @@ _load_repo_env()
 os.environ.setdefault("SOCAITY_BACKEND_URL", "http://127.0.0.1:8000/")
 
 import socaity  # noqa: E402
+from apipod_registry import active_details  # noqa: E402
 from socaity import client  # noqa: E402
 from socaity_cli.cli import main as cli_main  # noqa: E402
 
@@ -41,8 +42,8 @@ BACKEND = os.environ["SOCAITY_BACKEND_URL"].rstrip("/") + "/"
 
 def _backend_up() -> bool:
     try:
-        return httpx.get(BACKEND + "v1/catalog/services", params={"limit": 1}, timeout=10).status_code == 200
-    except (httpx.HTTPError, httpx.InvalidURL):
+        return httpx2.get(BACKEND + "v1/catalog/services", params={"limit": 1}, timeout=10).status_code == 200
+    except (httpx2.HTTPError, httpx2.InvalidURL):
         return False
 
 
@@ -60,7 +61,8 @@ def test_query_services_slim():
 
     full = client.get_service(slim.slug, expand=["details.deployment", "details.connector"])
     assert full.details
-    binding = full.details[0]
+    binding = active_details(full)
+    assert binding is not None
     if binding.execution == "external":
         assert binding.connector and binding.connector.address
     else:
@@ -82,7 +84,7 @@ def test_pagination_no_overlap():
 
 
 def test_query_services_slim_no_relation_keys():
-    response = httpx.get(
+    response = httpx2.get(
         BACKEND + "v1/catalog/services",
         params={"limit": 2, "fields": "id,slug"},
         timeout=30,
@@ -95,7 +97,7 @@ def test_query_services_slim_no_relation_keys():
 
 
 def test_filter_provider():
-    rows = httpx.get(
+    rows = httpx2.get(
         BACKEND + "v1/catalog/services",
         params={"limit": 5, "filter": "provider:eq:replicate", "fields": "id,slug"},
         timeout=30,
@@ -105,7 +107,7 @@ def test_filter_provider():
 
 def test_expand_contract():
     slug = client.query_services(limit=1)[0].slug
-    row = httpx.get(
+    row = httpx2.get(
         BACKEND + f"v1/catalog/services/{slug}",
         params={"expand": "details.contract", "fields": "slug,details(contract)"},
         timeout=60,
