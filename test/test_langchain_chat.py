@@ -26,13 +26,13 @@ import tempfile
 import time
 from pathlib import Path
 
-import httpx
+import httpx2
 import pytest
 
 PROJECTS_ROOT = Path(__file__).resolve().parents[2]
 APIPOD_REPO = PROJECTS_ROOT / "apipod"
 LAUNCHER = APIPOD_REPO / "test" / "debug_test_services.py"
-CHAT_ENDPOINT = "/streaming/chat"
+CHAT_OPERATION = "chat"
 STARTUP_TIMEOUT_S = 120.0
 
 # Mirrors apipod/test/services/streaming_service.py (stable fake-LLM contract).
@@ -99,9 +99,9 @@ def _wait_ready(url: str, process: subprocess.Popen, log_path: Path) -> None:
             output = log_path.read_text(encoding="utf-8", errors="replace") if log_path.is_file() else ""
             pytest.fail(f"debug service exited with {process.returncode}:\n{output[-3000:]}")
         try:
-            if httpx.get(f"{url}/openapi.json", timeout=5).status_code == 200:
+            if httpx2.get(f"{url}/openapi.json", timeout=5).status_code == 200:
                 return
-        except httpx.HTTPError:
+        except httpx2.HTTPError:
             pass
         time.sleep(1.0)
     pytest.fail(f"debug service at {url} not ready within {STARTUP_TIMEOUT_S}s")
@@ -142,14 +142,14 @@ def chat_service(request):
 def _adapter(url: str):
     from socaity.integrations import ChatServiceAdapter
 
-    return ChatServiceAdapter(url, endpoint_path=CHAT_ENDPOINT)
+    return ChatServiceAdapter(url, operation=CHAT_OPERATION)
 
 
 def _langchain_model(url: str):
     pytest.importorskip("langchain_core", reason="langchain-core not installed")
     from socaity.integrations.langchain import ChatSocaity
 
-    return ChatSocaity(model=url, endpoint_path=CHAT_ENDPOINT)
+    return ChatSocaity(model=url, operation=CHAT_OPERATION)
 
 
 # ---------------------------------------------------------------------------

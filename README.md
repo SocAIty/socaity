@@ -7,7 +7,7 @@
 <p align="center">
   <a href="https://pypi.org/project/socaity/"><img src="https://badge.fury.io/py/socaity.svg" alt="PyPI version" /></a>
   <a href="LICENSE.txt"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License: GPL v3" /></a>
-  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python 3.8+" /></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="Python 3.10+" /></a>
   <a href="https://www.socaity.ai?utm_source=github&utm_content=socaity-sdk"><img src="https://img.shields.io/badge/platform-socaity.ai-0A86BF" alt="socaity.ai" /></a>
 </p>
 
@@ -59,7 +59,7 @@ Real applications chain models: LLM → image → speech → video. Raw HTTP, pe
 
 | | Raw HTTP | Per-provider SDKs | socaity SDK |
 |---|---|---|---|
-| Call pattern | Write requests yourself | One SDK per provider | `client.run("slug/path", **params)` |
+| Call pattern | Write requests yourself | One SDK per provider | `client.run("slug/operation_key", **params)` |
 | Long-running jobs | Build your own poll loop | Varies | Built-in via [fastSDK](https://github.com/SocAIty/fastsdk) |
 | Media I/O | Manual upload/download | Partial | [media-toolkit](https://github.com/SocAIty/media-toolkit) handles files |
 | Multi-model apps | Glue code everywhere | Fragmented imports | One package, parallel jobs |
@@ -86,7 +86,7 @@ img_job = client.run("black-forest-labs-flux-schnell/predictions", prompt="A rob
 text, images = llm_job.get_result(), img_job.get_result()
 ```
 
-**Catalog jobs.** `client.run("speechcraft/text2voice", text="hello")` or `client.connect("speechcraft").submit_job("/text2voice", text="hello")`. Slug on the URL. `details_id` on the query. Agents: `client.run_agent`. Workflows: `client.run_workflow`.
+**Catalog jobs.** `client.run("speechcraft/text2voice", text="hello")` or `client.connect("speechcraft").submit_job("text2voice", text="hello")`. Slug and operation key on the URL: `POST /services/v1/{slug}/{operation_key}`. `details_id` on the query. Agents: `client.run_agent`. Workflows: `client.run_workflow`.
 
 **Switch models without rewriting.** Want to try another model? No need to rewrite your code-base just switch the call. Having a local model? Point at it at use it likewise from the same sdk.
 
@@ -133,7 +133,7 @@ result = job.get_result()
 from socaity import client
 
 estimate = client.connect("black-forest-labs-flux-schnell").estimate(
-    "/predictions", prompt="a lighthouse at sunset"
+    "predictions", prompt="a lighthouse at sunset"
 )
 print(estimate.estimated_price_eur, estimate.estimated_inference_time_s)
 ```

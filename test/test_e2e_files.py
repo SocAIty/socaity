@@ -12,7 +12,7 @@ from pathlib import Path
 import os
 import sys
 
-import httpx
+import httpx2
 import pytest
 
 
@@ -43,8 +43,8 @@ if not WAV_PATH.is_file():
 
 def _backend_up() -> bool:
     try:
-        return httpx.get(BACKEND + "v1/catalog/services", params={"limit": 1}, timeout=10).status_code == 200
-    except (httpx.HTTPError, httpx.InvalidURL):
+        return httpx2.get(BACKEND + "v1/catalog/services", params={"limit": 1}, timeout=10).status_code == 200
+    except (httpx2.HTTPError, httpx2.InvalidURL):
         return False
 
 
@@ -62,7 +62,7 @@ pytestmark = [
 
 def test_malware_upload_rejected():
     assert MW_PATH.is_file(), f"missing malware fixture: {MW_PATH}"
-    with pytest.raises(httpx.HTTPStatusError) as exc_info:
+    with pytest.raises(httpx2.HTTPStatusError) as exc_info:
         client.upload_files(MW_PATH, purpose="USER_UPLOAD")
     response = exc_info.value.response
     assert response.status_code == 400

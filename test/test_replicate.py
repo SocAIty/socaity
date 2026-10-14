@@ -33,10 +33,11 @@ pytestmark = [
 ]
 
 
-def _result(service: str, endpoint: str, params: dict, timeout_s: float = 600):
-    job = client.run(f"{service}{endpoint}", **params)
+def _result(service: str, operation: str, params: dict, timeout_s: float = 600):
+    target = f"{service}/{operation}"
+    job = client.run(target, **params)
     payload = job.get_result(timeout_s=timeout_s)
-    assert payload is not None, f"{service}{endpoint} returned no result"
+    assert payload is not None, f"{target} returned no result"
     assert job.platform_job_id, f"{service} produced no platform job id"
     return payload
 
@@ -44,7 +45,7 @@ def _result(service: str, endpoint: str, params: dict, timeout_s: float = 600):
 def test_flux_schnell_image() -> None:
     images = _result(
         FLUX,
-        "/predictions",
+        "predictions",
         {
             "prompt": "a lighthouse on a cliff at sunset, watercolor, replicate-e2e",
             "num_outputs": 1,
@@ -58,7 +59,7 @@ def test_flux_schnell_image() -> None:
 def test_deepseek_v3_text() -> None:
     text = _result(
         DEEPSEEK,
-        "/predictions",
+        "predictions",
         {"prompt": "Reply with the single word pong and nothing else."},
     )
     blob = text if isinstance(text, str) else str(text)
@@ -69,7 +70,7 @@ def test_deepseek_v3_text() -> None:
 def test_whisper_transcribe() -> None:
     text = _result(
         WHISPER,
-        "/predictions",
+        "predictions",
         {"audio": str(AUDIO)},
         timeout_s=300,
     )
