@@ -31,6 +31,8 @@ explicit ``Client(...)``, or ``with Session(api_key=...)``.
 | ``Client.estimate(...)`` / ``get_stats(...)`` / ``get_similar_services(...)`` | ``v1/analytics`` | estimate / stats / similar |
 | ``Client.query_interrupts(...)`` / ``get_interrupt(...)`` | ``v1/interrupts`` HIT inbox (pending by default) | ``List[Interrupt]`` / ``Interrupt`` |
 | ``Client.resolve_interrupt(id, decision, ...)`` | records decision; ``continue_run=True`` enqueues the agent continue job | ``InterruptResolveResult`` |
+| ``Client.query_schedules(...)`` / ``get_schedule(...)`` / ``create_schedule(...)`` / ``update_schedule(...)`` / ``delete_schedule(...)`` | ``v1/schedules`` operational schedules (`sc_`) | ``List[Schedule]`` / ``Schedule`` / ``bool`` |
+| ``Client.preview_schedule(...)`` / ``get_schedule_occurrences(...)`` / ``query_schedule_calendar(...)`` | ``v1/schedules/preview`` and ``occurrences`` | ``SchedulePreviewResponse`` / ``List[ScheduleOccurrence]`` / ``List[ScheduleCalendarItem]`` |
 | ``Client.connect(source)`` | catalog GET, in-memory Registry, gate address | ``FastClient`` |
 | ``Client.run(target, **params)`` | catalog service job | ``APISeex`` |
 | ``Client.run_agent(...)`` | ``POST /v1/agents/{id}/chat`` | ``APISeex`` |
