@@ -166,3 +166,6 @@ cython_debug/
 
 # testing our malware scanner
 test/test_files/mw-test.txt
+
+# Generated client stubs and response cache from local SDK calls
+socaity/sdk/
