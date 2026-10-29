@@ -16,15 +16,15 @@ dependencies = [
     "tqdm",
     "httpx2>=2.9",
     "fastsdk>=0.4.27",
-    "apipod-registry>=0.1.13",
-    "socaity-schemas>=0.1.13",
+    "apipod-registry>=0.1.14",
+    "socaity-schemas>=0.1.14",
     "socaity-cli>=0.1.14",
     "media-toolkit>=00.02.24"
 ]
 
 [project.optional-dependencies]
 apipod = [
-    "apipod>=1.0.33",
+    "apipod>=1.0.34",
 ]
 dev = [
     "pytest",
