@@ -13,6 +13,7 @@ from socaity_cli.clients.files import FilesClient
 from socaity_cli.clients.jobs import JobsClient
 from socaity_cli.clients.profile import ProfileClient
 from socaity_cli.clients.projects import ProjectsClient
+from socaity_cli.clients.schedules import SchedulesClient
 from socaity_cli.clients.workflows import WorkflowsClient
 
 PROGRAMMATIC_ONLY = frozenset({
@@ -50,6 +51,7 @@ DESTRUCTIVE_METHODS = frozenset({
     ProjectsClient.delete_project,
     ConversationsClient.delete_conversation,
     WorkflowsClient.delete_workflow,
+    SchedulesClient.delete_schedule,
     DeploymentClient.delete_service,
 })
 
