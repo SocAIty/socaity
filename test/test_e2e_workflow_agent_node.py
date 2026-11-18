@@ -37,7 +37,7 @@ def _build_workflow_doc() -> dict:
         "title": "Inline AgentNode Structured Output E2E",
         "goal": "Extract capital city and country as structured JSON and pass city downstream",
         "nodes": [
-            {"id": "nd_input", "kind": "builtin", "title": "input"},
+            {"id": "nd_input", "kind": "transform", "title": "input", "op": "identity"},
             {
                 "id": "nd_agent",
                 "kind": "agent",
@@ -57,7 +57,7 @@ def _build_workflow_doc() -> dict:
                 },
                 "inputs": {},
             },
-            {"id": "nd_output", "kind": "builtin", "title": "output"},
+            {"id": "nd_output", "kind": "transform", "title": "output", "op": "identity"},
         ],
         "edges": [
             {

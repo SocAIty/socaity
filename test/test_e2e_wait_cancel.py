@@ -42,9 +42,9 @@ BASE_DOC = {
     "title": "Wait cancel probe",
     "goal": "Pass the text input through unchanged.",
     "nodes": [
-        {"id": "nd_input", "kind": "builtin", "title": "input"},
-        {"id": "nd_echo", "kind": "builtin", "title": "echo", "config": {"op": "identity"}},
-        {"id": "nd_output", "kind": "builtin", "title": "output"},
+        {"id": "nd_input", "kind": "transform", "title": "input", "op": "identity"},
+        {"id": "nd_echo", "kind": "transform", "title": "echo", "op": "identity"},
+        {"id": "nd_output", "kind": "transform", "title": "output", "op": "identity"},
     ],
     "edges": [
         {"id": "ed_in_echo", "source": "nd_input", "target": "nd_echo", "map": "text"},
@@ -65,8 +65,8 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
             AGENT,
             message=(
                 "Modify the draft workflow with exactly these three tool calls and nothing else: "
-                "1) workflow_add_node with kind='builtin', node_id='nd_wait', title='wait', "
-                "config={\"op\": \"wait\", \"seconds\": 5}. "
+                "1) workflow_add_node with kind='control', node_id='nd_wait', title='Wait', "
+                "node_config={\"op\": \"wait\", \"seconds\": 5}. "
                 "2) workflow_add_edge with source='nd_echo', target='nd_wait'. "
                 "3) workflow_change_edge with edge_id='ed_echo_out', source='nd_wait'. "
                 "Then reply with the single word: done."
@@ -99,12 +99,12 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
             wait_node = nodes.get("nd_wait")
             if wait_node is None:
                 fixes.append(
-                    "workflow_add_node with kind='builtin', node_id='nd_wait', title='wait', "
-                    "config={\"op\": \"wait\", \"seconds\": 5}"
+                    "workflow_add_node with kind='control', node_id='nd_wait', title='Wait', "
+                    "node_config={\"op\": \"wait\", \"seconds\": 5}"
                 )
             elif (wait_node.config or {}).get("op") != "wait":
                 fixes.append(
-                    "workflow_change_node with node_id='nd_wait', config={\"op\": \"wait\", \"seconds\": 5}"
+                    "workflow_change_node with node_id='nd_wait', node_config={\"op\": \"wait\", \"seconds\": 5}"
                 )
             if not any(e.source == "nd_echo" and e.target == "nd_wait" for e in latest_doc.edges):
                 fixes.append("workflow_add_edge with source='nd_echo', target='nd_wait'")
@@ -139,7 +139,7 @@ def run() -> None:  # noqa: PLR0915 - linear e2e scenario
             doc = latest_doc.model_dump(mode="json", exclude_none=True)
             nodes = {n["id"]: n for n in doc["nodes"]}
             if "nd_wait" not in nodes:
-                doc["nodes"].append({"id": "nd_wait", "kind": "builtin", "title": "wait"})
+                doc["nodes"].append({"id": "nd_wait", "kind": "control", "title": "Wait"})
             next(n for n in doc["nodes"] if n["id"] == "nd_wait")["config"] = {"op": "wait", "seconds": 5}
             doc["edges"] = [e for e in doc["edges"] if not (e["source"] == "nd_echo" and e["target"] == "nd_wait")]
             for edge in doc["edges"]:

@@ -40,9 +40,9 @@ BASE_DOC = {
     "title": TITLE,
     "goal": "Wait shortly, then pass the text input through.",
     "nodes": [
-        {"id": "nd_input", "kind": "builtin", "title": "input"},
-        {"id": "nd_wait", "kind": "builtin", "title": "wait", "config": {"op": "wait", "seconds": 2}},
-        {"id": "nd_output", "kind": "builtin", "title": "output"},
+        {"id": "nd_input", "kind": "transform", "title": "input", "op": "identity"},
+        {"id": "nd_wait", "kind": "control", "title": "Wait", "config": {"op": "wait", "seconds": 2}},
+        {"id": "nd_output", "kind": "transform", "title": "output", "op": "identity"},
     ],
     "edges": [
         {"id": "ed_in_wait", "source": "nd_input", "target": "nd_wait", "map": "text"},
@@ -74,8 +74,8 @@ def run() -> None:
             AGENT,
             message=(
                 "Modify the draft workflow with exactly one tool call and nothing else: "
-                "workflow_add_node with kind='builtin', node_id='nd_note', title='note', "
-                "config={\"op\": \"identity\"}. Then reply with the single word: done."
+                "workflow_add_node with kind='transform', node_id='nd_note', title='Clean', "
+                "op='remove_empty'. Then reply with the single word: done."
             ),
             mode="plan",
             workflow=document,

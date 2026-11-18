@@ -82,7 +82,7 @@ def _connector_doc(service, endpoint) -> dict:
         "title": "GitHub connector e2e",
         "goal": f"List the branches of the private {PRIVATE_REPO} repository through the GitHub MCP connector.",
         "nodes": [
-            {"id": "nd_input", "kind": "builtin", "title": "input"},
+            {"id": "nd_input", "kind": "transform", "title": "input", "op": "identity"},
             {
                 "id": "nd_gh",
                 "kind": "service",
@@ -95,7 +95,7 @@ def _connector_doc(service, endpoint) -> dict:
                 "specification_hash": details.specification_hash,
                 "inputs": {"arguments": {"owner": REPO_OWNER, "repo": PRIVATE_REPO}},
             },
-            {"id": "nd_output", "kind": "builtin", "title": "output"},
+            {"id": "nd_output", "kind": "transform", "title": "output", "op": "identity"},
         ],
         "edges": [
             {"id": "ed_in_gh", "source": "nd_input", "target": "nd_gh"},
