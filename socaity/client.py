@@ -391,6 +391,8 @@ class SocaityClient(SocaityBackendClient):
         entry_nodes: Optional[list] = None,
         scope_nodes: Optional[list] = None,
         seed_outputs: Optional[dict] = None,
+        socaity_options: Optional[Union[SocaityOptions, dict]] = None,
+        socaity_context: Optional[Union[SocaityContext, dict]] = None,
     ) -> fastsdk.APISeex:
         """Submit a workflow run to ``POST /v1/workflows/{id}/run``.
 
@@ -426,7 +428,7 @@ class SocaityClient(SocaityBackendClient):
             "entry_nodes": entry_nodes,
             "scope_nodes": scope_nodes,
             "seed_outputs": seed_outputs,
-            **job_flags(),
+            **job_flags(socaity_options, socaity_context),
         }
         return client.submit_job(**{key: value for key, value in body.items() if value is not None})
 
