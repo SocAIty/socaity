@@ -74,12 +74,16 @@ def run() -> None:
         child_id = f"wf_{uuid4()}"
         c1 = client.upsert_workflow(_child_doc(child_id, "v1"), slug=f"nested-child-{ts}", message="child v1")
         rev1 = c1.revision.id
+        assert c1.workflow.contract is not None and c1.workflow.contract.specification == "workflow"
+        assert [p.name for p in c1.workflow.contract.endpoints[0].parameters] == ["text"]
 
         p_a = client.upsert_workflow(
             _parent_doc(f"Parent A {ts}", c1.workflow.id, rev1),
             slug=f"nested-parent-a-{ts}",
             message="parent a",
         )
+        assert p_a.workflow.contract is not None
+        assert [p.name for p in p_a.workflow.contract.endpoints[0].parameters] == ["text"]
         p_b = client.upsert_workflow(
             _parent_doc(f"Parent B {ts}", c1.workflow.id, rev1),
             slug=f"nested-parent-b-{ts}",
@@ -124,6 +128,18 @@ def run() -> None:
         res_b = run_b.get("result") or {}
         assert res_b.get("status") == "completed", run_b
         assert res_b.get("outputs", {}).get("nd_out") == ["v1", "beta"]
+
+        # Multi-output `is_output: True` on intermediate node exposes both in contract and run outputs.
+        multi_doc = copy.deepcopy(client.get_workflow(p_a.workflow.id).document.model_dump(mode="json", exclude_none=True))
+        multi_doc.get("metadata", {}).pop("content_hash", None)
+        next(n for n in multi_doc["nodes"] if n["id"] == "nd_in")["is_output"] = True
+        p_multi = client.upsert_workflow(multi_doc, message="expose intermediate output")
+        multi_schema = p_multi.workflow.contract.endpoints[0].responses["200"]["content"]["application/json"]["schema"]
+        assert set(multi_schema.get("properties", {}).keys()) == {"nd_in", "nd_out"}
+        multi_run = env.run_workflow(p_multi.workflow.id, inputs={"text": "dual"}, timeout_s=180)
+        multi_res = multi_run.get("result") or {}
+        assert multi_res.get("status") == "completed", multi_run
+        assert multi_res.get("outputs") == {"nd_in": {"text": "dual"}, "nd_out": ["v2", "dual"]}, multi_res
         env.log("nested", "PASS")
 
 

@@ -73,11 +73,12 @@ Think of socaity as two connected subsystems:
 
 1. **Catalog layer**
    - Talks to `webapi.socaity.ai`: `v1/catalog/*` for discovery (list, get, search)
-   - `connect` loads one `Service`, retargets the binding to `{gate}/services/v1/{slug}`, upserts an in-memory Registry
-   - `run` resolves `wf_`/`wr_`, then catalog agent, then compute/connector, then the owner's workflow slug
+   - `connect` loads one catalog `Service`, retargets the binding to `{gate}/services/v1/{slug}`, upserts an in-memory Registry
+   - `run` resolves a catalog service slug or id (not workflows or agents). Workflows use `run_workflow`; agents use `run_agent`
 
 2. **Runtime layer (delegated to fastSDK)**
-   - `connect` returns `FastClient`. `run` calls `submit_job` or the agent/workflow factory
+   - `connect` returns `FastClient` for gate service jobs. `run` / `submit_job` hit `{gate}/services/v1/{slug}/{operation_key}`
+   - `run_agent` and `run_workflow` post to the platform gateway factories (`/v1/agents/{id}/chat`, `/v1/workflows/{id}/run`)
    - Jobs poll, cancel, stream, and notify subscribers through fastSDK's `JobRuntime` + meseex pipeline
    - Media results deserialize via `media-toolkit`
 

@@ -192,9 +192,8 @@ class SocaityClient(SocaityBackendClient):
     ) -> FastClient:
         """Resolve a platform service or spec source into a FastSDK client.
 
-        Platform identifiers (id, slug, ``owner/service``, details id) resolve
-        through catalog ``get_service``. The binding is pointed at this session's
-        gate. URLs, spec files, and ``replicate:`` refs go to FastSDK.
+        Platform identifiers (id, slug, ``owner/service``, or details id) resolve
+        through catalog ``get_service``; URLs and specs go straight to ``FastClient``.
 
         Args:
             source: Service id, slug, URL, spec, or ``Service``.
@@ -205,6 +204,7 @@ class SocaityClient(SocaityBackendClient):
             A credential-bound ``FastClient``.
         """
         resolved_key = api_key if api_key is not None else self.api_key
+        materialize = kwargs.pop("materialize_media", self.materialize_media)
         if isinstance(source, Service):
             service = source
         elif isinstance(source, str) and not _looks_like_direct_source(source):
@@ -212,12 +212,10 @@ class SocaityClient(SocaityBackendClient):
             if service is None:
                 raise RuntimeError(f"Platform could not resolve service '{details_id or source}'.")
         else:
-            kwargs.setdefault("materialize_media", self.materialize_media)
-            return FastClient(source, api_key=resolved_key, temporary=True, **kwargs)
+            return FastClient(source, api_key=resolved_key, temporary=True, materialize_media=materialize, **kwargs)
 
         service = _gate_bind(service, self.gate_url, details_id)
-        kwargs.setdefault("materialize_media", self.materialize_media)
-        return FastClient(service, api_key=resolved_key, temporary=True, **kwargs)
+        return FastClient(service, api_key=resolved_key, temporary=True, materialize_media=materialize, **kwargs)
 
     def run(
         self,

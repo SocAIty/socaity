@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import inspect
-from typing import Any, Callable, Iterable, List, Type, Union, get_args, get_origin
+from typing import Any, Callable, Iterable, List, Type, Union, get_args, get_origin, get_type_hints
 
 from pydantic import create_model
 
@@ -67,7 +67,7 @@ def iter_public_methods(client_type: Type = SocaityClient) -> Iterable[Callable]
 def resolved_hints(method: Callable) -> dict:
     """Evaluate postponed annotations against the method's own module."""
     try:
-        return inspect.get_type_hints(method, include_extras=True)
+        return get_type_hints(method, include_extras=True)
     except Exception:
         return dict(getattr(method, "__annotations__", {}) or {})
 
@@ -107,10 +107,7 @@ def exposed_signature(method: Callable):
 def validate_tool_schema(method: Callable) -> None:
     """Fail if ``method`` cannot produce a Pydantic model for a JSON tool schema."""
     fields = {}
-    try:
-        hints = inspect.get_type_hints(method, include_extras=True)
-    except Exception:
-        hints = getattr(method, "__annotations__", {}) or {}
+    hints = resolved_hints(method)
     for name, parameter in exposed_signature(method).parameters.items():
         if parameter.kind in (parameter.VAR_POSITIONAL, parameter.VAR_KEYWORD):
             continue

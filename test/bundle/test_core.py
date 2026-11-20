@@ -34,18 +34,22 @@ def test_core_request_invariants() -> None:
     """Always-on: agent-turn body rules and ChatSocaity request shape."""
     client = SocaityClient(api_key="sk_test_core")
     with pytest.raises(ValueError, match="message"):
-        client._submit_agent("spaine", {})
+        client.run_agent("spaine")
     with pytest.raises(ValueError, match="thread_id"):
-        client._submit_agent("spaine", {"continue_turn": True})
+        client.run_agent("spaine", continue_turn=True)
     with pytest.raises(ValueError, match="no messages"):
-        client._submit_agent(
+        client.run_agent(
             "spaine",
-            {"message": "hi", "thread_id": "chat-1", "continue_turn": True},
+            message="hi",
+            thread_id="chat-1",
+            continue_turn=True,
         )
     with pytest.raises(ValueError, match="supersede"):
-        client._submit_agent(
+        client.run_agent(
             "spaine",
-            {"thread_id": "chat-1", "continue_turn": True, "supersedes_job_id": "job-1"},
+            thread_id="chat-1",
+            continue_turn=True,
+            supersedes_job_id="job-1",
         )
 
     pytest.importorskip("langchain_core")
