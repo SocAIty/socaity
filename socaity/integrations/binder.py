@@ -5,7 +5,7 @@ import asyncio
 import inspect
 import queue
 from contextlib import nullcontext
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, get_type_hints
 
 from fastsdk.service_interaction.api_seex import APISeex
 from langchain_core.tools import ToolException
@@ -116,6 +116,40 @@ def consume_or_serialize(method: Callable, result: Any) -> Any:
     return serialize_value(result)
 
 
+def _tool_annotations(method: Callable, signature: inspect.Signature) -> dict:
+    """Resolve postponed annotations in ``method``'s module globals.
+
+    Wrappers live in this module, so LangChain/Pydantic must not re-evaluate
+    string forms like ``Optional[Union[SocaityOptions, dict]]`` here — ``Union``
+    and the schema types are not in binder globals.
+    """
+    try:
+        hints = get_type_hints(method, include_extras=True)
+    except Exception:
+        hints = {}
+    annotations = {
+        name: hints.get(name, parameter.annotation)
+        for name, parameter in signature.parameters.items()
+        if parameter.annotation is not inspect.Parameter.empty
+    }
+    if signature.return_annotation is not inspect.Signature.empty:
+        annotations["return"] = hints.get("return", signature.return_annotation)
+    return annotations
+
+
+def _signature_with_annotations(
+    signature: inspect.Signature, annotations: dict
+) -> inspect.Signature:
+    """Rebuild ``signature`` so parameter annotations match ``annotations``."""
+    parameters = []
+    for name, parameter in signature.parameters.items():
+        if name in annotations:
+            parameter = parameter.replace(annotation=annotations[name])
+        parameters.append(parameter)
+    return_annotation = annotations.get("return", signature.return_annotation)
+    return signature.replace(parameters=parameters, return_annotation=return_annotation)
+
+
 def bind_method(method: Callable, session: Optional[Callable] = None):
     """Bind an unbound client method to the active session and expose it without ``self``."""
 
@@ -134,13 +168,8 @@ def bind_method(method: Callable, session: Optional[Callable] = None):
 
     signature = exposed_signature(method)
     doc = inspect.getdoc(method)
-    annotations = {
-        name: parameter.annotation
-        for name, parameter in signature.parameters.items()
-        if parameter.annotation is not inspect.Parameter.empty
-    }
-    if signature.return_annotation is not inspect.Signature.empty:
-        annotations["return"] = signature.return_annotation
+    annotations = _tool_annotations(method, signature)
+    signature = _signature_with_annotations(signature, annotations)
     for function in (invoke_sync, invoke_async):
         function.__name__ = method.__name__
         function.__doc__ = doc
