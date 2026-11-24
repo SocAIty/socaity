@@ -1,13 +1,13 @@
 """E2E Test 1: Schedule-Core (`docs/planned/schedules.md`).
 
-Tests one service schedule on official `qwen3.8` chat (`FREQ=SECONDLY;INTERVAL=5`):
+Tests one service schedule on official `qwen3.8` chat (`FREQ=SECONDLY;INTERVAL=20`):
 1. Cold start / overlap rule: while the first job stays active, due instants are
    recorded as `skipped` and the schedule stays `enabled`.
-2. Upsert `INTERVAL=10` (`dtstart` stays put): reads `next_run_at` as `T`,
-   verifies no occurrence fires on the old 5s grid and the next `fired` row is `T`.
+2. Upsert `INTERVAL=40` (`dtstart` stays put): reads `next_run_at` as `T`,
+   verifies no occurrence fires on the old 20s grid and the next `fired` row is `T`.
    Adds two `EXDATE`s for the two instants after the next one, verifies they are
-   `excluded`, and verifies the instant after them (`+30s` gap) fires after a run
-   finishes inside the 10s interval.
+   `excluded`, and verifies the instant after them (`+120s` gap) fires after a run
+   finishes inside the 40s interval.
 3. Deletes the schedule: `get_schedule` returns `None` and the next interval
    creates no new job.
 """
@@ -90,14 +90,14 @@ def run() -> None:
         try:
             dtstart_dt = datetime.now(timezone.utc).replace(microsecond=0) + timedelta(seconds=1)
             dtstart_iso = format_utc_instant(dtstart_dt)
-            env.log("T1.1", f"Creating schedule on {QWEN_SERVICE} dtstart={dtstart_iso} FREQ=SECONDLY;INTERVAL=5")
+            env.log("T1.1", f"Creating schedule on {QWEN_SERVICE} dtstart={dtstart_iso} FREQ=SECONDLY;INTERVAL=20")
 
             sched = client.create_schedule(
                 target_type="service/endpoint",
                 target_id=QWEN_SERVICE,
                 tzid="UTC",
                 dtstart=dtstart_iso,
-                rrule="FREQ=SECONDLY;INTERVAL=5",
+                rrule="FREQ=SECONDLY;INTERVAL=20",
                 inputs={
                     "messages": [
                         {
@@ -116,7 +116,7 @@ def run() -> None:
             schedule_id = sched.id
             env.log("T1.1", f"Created schedule id={schedule_id} next_run_at={sched.next_run_at}")
 
-            # 1. Cold start / overlap rule: first job stays active >5s, so later instants are skipped.
+            # 1. Cold start / overlap rule: first job stays active >20s, so later instants are skipped.
             first_job_id, occs = _wait_for_first_fired_and_skipped(schedule_id, timeout_s=180.0)
             skipped_count = sum(1 for o in occs if o.status == "skipped")
             sched_now = client.get_schedule(schedule_id)
@@ -131,7 +131,7 @@ def run() -> None:
             env.log("T1.1", f"First job finished: {str(first_res.get('result'))[:120]}")
             _wait_for_active_job_to_finish(schedule_id, min_lead_s=0.8)
 
-            # 2. Upsert INTERVAL=10 while next instant is ahead. dtstart stays put.
+            # 2. Upsert INTERVAL=40 while next instant is ahead. dtstart stays put.
             before_update = client.get_schedule(schedule_id)
             assert before_update is not None
             fired_before_T = {
@@ -140,7 +140,7 @@ def run() -> None:
 
             updated = client.update_schedule(
                 schedule_id,
-                rrule="FREQ=SECONDLY;INTERVAL=10",
+                rrule="FREQ=SECONDLY;INTERVAL=40",
                 inputs={
                     "messages": [{"role": "user", "content": "Reply with the single word pong only, no explanation."}],
                     "max_tokens": 16,
@@ -152,11 +152,11 @@ def run() -> None:
             T_iso = updated.next_run_at
             T_dt = parse_utc_instant(T_iso)
             offset_from_dtstart = int((T_dt - dtstart_dt).total_seconds())
-            assert offset_from_dtstart % 10 == 0, f"T={T_iso} is not on the 10s grid from dtstart={dtstart_iso}"
-            env.log("T1.2", f"Upserted INTERVAL=10; dtstart={updated.dtstart} T={T_iso}")
+            assert offset_from_dtstart % 40 == 0, f"T={T_iso} is not on the 40s grid from dtstart={dtstart_iso}"
+            env.log("T1.2", f"Upserted INTERVAL=40; dtstart={updated.dtstart} T={T_iso}")
 
-            # Wait until T fires and verify no occurrence fired on an odd 5-second instant.
-            deadline = time.monotonic() + 60.0
+            # Wait until T fires and verify no occurrence fired on an odd 20-second instant.
+            deadline = time.monotonic() + 90.0
             fired_T_occ = None
             while time.monotonic() < deadline:
                 occs = client.get_schedule_occurrences(schedule_id)
@@ -180,9 +180,9 @@ def run() -> None:
             assert sched_before_ex is not None and sched_before_ex.next_run_at
             next_one_dt = parse_utc_instant(sched_before_ex.next_run_at)
             next_one_iso = format_utc_instant(next_one_dt)
-            ex1_dt = next_one_dt + timedelta(seconds=10)
-            ex2_dt = next_one_dt + timedelta(seconds=20)
-            after_ex_dt = next_one_dt + timedelta(seconds=30)
+            ex1_dt = next_one_dt + timedelta(seconds=40)
+            ex2_dt = next_one_dt + timedelta(seconds=80)
+            after_ex_dt = next_one_dt + timedelta(seconds=120)
             ex1_iso = format_utc_instant(ex1_dt)
             ex2_iso = format_utc_instant(ex2_dt)
             after_ex_iso = format_utc_instant(after_ex_dt)
@@ -198,8 +198,8 @@ def run() -> None:
             excluded_at = {o.occurrence_at for o in occs_with_ex if o.status == "excluded"}
             assert ex1_iso in excluded_at and ex2_iso in excluded_at, f"Missing excluded rows: {excluded_at}"
 
-            # Wait for next_one_iso to fire and finish inside the 10-second interval, then wait for after_ex_iso.
-            deadline = time.monotonic() + 90.0
+            # Wait for next_one_iso to fire and finish inside the 40-second interval, then wait for after_ex_iso.
+            deadline = time.monotonic() + 210.0
             fired_after_ex = None
             while time.monotonic() < deadline:
                 occs = client.get_schedule_occurrences(schedule_id)
@@ -217,7 +217,7 @@ def run() -> None:
             )
             assert next_one_iso in fired_set and after_ex_iso in fired_set
             gap_s = (parse_utc_instant(after_ex_iso) - parse_utc_instant(next_one_iso)).total_seconds()
-            assert gap_s == 30.0, f"Expected 30s gap across two EXDATEs, got {gap_s}s"
+            assert gap_s == 120.0, f"Expected 120s gap across two EXDATEs, got {gap_s}s"
             env.log("T1.2", f"Verified EXDATE gap={gap_s}s: {next_one_iso} -> {after_ex_iso}")
 
             # 3. Delete the schedule. The GET is gone. The next interval creates no new job.
@@ -225,10 +225,10 @@ def run() -> None:
             assert deleted is True, "delete_schedule returned False"
             assert client.get_schedule(schedule_id) is None, "get_schedule should return None after delete"
             jobs_before_wait = {j.id for j in client.query_jobs(limit=25)}
-            env.log("T1.3", f"Schedule {schedule_id} deleted; waiting 12s to verify no new job is created")
+            env.log("T1.3", f"Schedule {schedule_id} deleted; waiting 42s to verify no new job is created")
             schedule_id_deleted = schedule_id
             schedule_id = None
-            time.sleep(12.0)
+            time.sleep(42.0)
             assert client.get_schedule(schedule_id_deleted) is None
             jobs_after_wait = {j.id for j in client.query_jobs(limit=25)}
             new_jobs = jobs_after_wait - jobs_before_wait
