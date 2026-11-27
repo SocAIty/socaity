@@ -15,16 +15,16 @@ readme = "README.md"
 dependencies = [
     "tqdm",
     "httpx2>=2.9",
-    "fastsdk>=0.4.27",
-    "apipod-registry>=0.1.14",
-    "socaity-schemas>=0.1.14",
-    "socaity-cli>=0.1.14",
-    "media-toolkit>=00.02.24"
+    "fastsdk>=0.4.28",
+    "apipod-registry>=0.1.15",
+    "socaity-schemas>=0.1.15",
+    "socaity-cli>=0.1.16",
+    "media-toolkit>=0.2.25"
 ]
 
 [project.optional-dependencies]
 apipod = [
-    "apipod>=1.0.34",
+    "apipod>=1.0.35",
 ]
 dev = [
     "pytest",
